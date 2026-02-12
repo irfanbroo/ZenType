@@ -220,7 +220,9 @@ let userConfig = {
     zenMode: false,
     particle: true,
     particleColor: '#ffd700',
-    showTrackSelector: true
+    showTrackSelector: true,
+    comboSound: true,
+    pitchShift: true
 };
 
 const UI = {
@@ -1248,17 +1250,24 @@ function previewSound(profile) {
 }
 
 function playComboSound(comboLevel) {
-    if (!soundEnabled || !audioCtx) return;
+    if (!soundEnabled || !audioCtx || !userConfig.comboSound) return;
 
     const osc = audioCtx.createOscillator();
     const gain = audioCtx.createGain();
     osc.connect(gain);
     gain.connect(audioCtx.destination);
 
-    // Higher pitch at higher combos
-    const baseFreq = 500 + (comboLevel * 30);
-    osc.frequency.setValueAtTime(baseFreq, audioCtx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(baseFreq * 1.5, audioCtx.currentTime + 0.1);
+    // Pitch Shift Logic: Use fixed freq if disabled, otherwise scale with combo
+    const baseFreq = userConfig.pitchShift ? 500 + (comboLevel * 30) : 500;
+
+    // Slight ramp if pitch shift is on, otherwise steady tone
+    if (userConfig.pitchShift) {
+        osc.frequency.setValueAtTime(baseFreq, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(baseFreq * 1.5, audioCtx.currentTime + 0.1);
+    } else {
+        osc.frequency.setValueAtTime(500, audioCtx.currentTime);
+    }
+
     osc.type = 'sine';
     gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.2);
@@ -2207,6 +2216,38 @@ function setupSettingsListeners() {
     if (pToggle) {
         pToggle.addEventListener('change', (e) => {
             userConfig.particle = e.target.checked;
+            saveConfig();
+        });
+    }
+
+    // Combo Sound Controls
+    const comboToggle = document.getElementById('combo-sound-toggle');
+    const pitchToggle = document.getElementById('pitch-shift-toggle');
+    const pitchControl = document.getElementById('pitch-shift-control');
+
+    if (comboToggle) {
+        comboToggle.checked = userConfig.comboSound !== false; // Default true
+
+        // Initial state of dependent controls
+        if (pitchControl) {
+            pitchControl.style.opacity = comboToggle.checked ? '1' : '0.5';
+            pitchControl.style.pointerEvents = comboToggle.checked ? 'auto' : 'none';
+        }
+
+        comboToggle.addEventListener('change', (e) => {
+            userConfig.comboSound = e.target.checked;
+            if (pitchControl) {
+                pitchControl.style.opacity = e.target.checked ? '1' : '0.5';
+                pitchControl.style.pointerEvents = e.target.checked ? 'auto' : 'none';
+            }
+            saveConfig();
+        });
+    }
+
+    if (pitchToggle) {
+        pitchToggle.checked = userConfig.pitchShift !== false; // Default true
+        pitchToggle.addEventListener('change', (e) => {
+            userConfig.pitchShift = e.target.checked;
             saveConfig();
         });
     }
