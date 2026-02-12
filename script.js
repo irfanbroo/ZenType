@@ -125,6 +125,24 @@ const wallpapers = [
         opacity: 15
     },
     {
+        id: 'batman',
+        isVideo: true,
+        category: 'aesthetic-videos',
+        url: 'videos/batman.mp4',
+        thumb: 'videos/thumbs/batman.png',
+        tint: 'dark',
+        opacity: 15
+    },
+    {
+        id: 'dark_queen',
+        isVideo: true,
+        category: 'aesthetic-videos',
+        url: 'videos/dark queen.mp4',
+        thumb: 'videos/thumbs/dark queen.png',
+        tint: 'dark',
+        opacity: 15
+    },
+    {
         id: 'apt_cut',
         isVideo: true,
         category: 'styles',
