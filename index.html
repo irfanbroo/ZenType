@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZenType | Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@400;500;700&family=Pixelify+Sans:wght@400;500;700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&family=Caveat:wght@400..700&display=swap"
+        rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+</head>
+
+<body>
+    <div id="track-selector" class="hidden">
+        <div class="current-track">
+            <i class="ri-music-2-line"></i>
+            <span id="current-track-name">Track 1</span>
+            <i class="ri-arrow-down-s-line"></i>
+        </div>
+        <div class="track-list" id="track-list">
+            <!-- Items added by JS -->
+        </div>
+    </div>
+    <!-- SoundCloud Widget (Hidden) -->
+    <iframe id="sc-widget"
+        src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/user-722231447/20250204_184406191-m4r&auto_play=false&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false&visual=false"
+        width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay" style="display: none;"></iframe>
+    <script src="https://w.soundcloud.com/player/api.js"></script>
+
+    <video id="bg-video" autoplay loop muted playsinline class="fade-out"></video>
+    <canvas id="particles"></canvas>
+    <canvas id="keypress-canvas"></canvas>
+
+    <input type="text" id="hidden-input" autocomplete="off" spellcheck="false">
+
+    <button id="zen-btn" class="glass-icon" aria-label="Zen Mode" title="Zen Mode">
+        <i class="ri-eye-off-line text-xl"></i>
+    </button>
+
+    <button id="sound-btn" class="glass-icon" aria-label="Toggle Sound">
+        <i class="ri-volume-up-line text-xl"></i>
+    </button>
+
+    <button id="settings-btn" class="glass-icon" aria-label="Settings">
+        <i class="ri-settings-4-line text-xl"></i>
+    </button>
+
+    <div class="glass-panel" id="game-ui">
+
+        <div class="stats-bar">
+            <div id="timer">30s</div>
+            <div class="time-modes" id="time-modes">
+                <button class="time-btn" data-time="15">15</button>
+                <button class="time-btn active" data-time="30">30</button>
+                <button class="time-btn" data-time="60">60</button>
+                <button class="time-btn" data-time="120">120</button>
+            </div>
+            <div id="wpm">0 WPM</div>
+        </div>
+
+        <div id="combo-display" class="combo-hidden">
+            <span id="combo-count">0</span>
+            <span id="combo-label">COMBO</span>
+        </div>
+
+        <div id="words-wrapper">
+            <div id="words-container"></div>
+        </div>
+
+        <div class="footer-hint">
+            <span class="key">TAB</span> TO RESTART
+        </div>
+    </div>
+
+    <div id="settings-modal" class="hidden">
+        <div class="settings-content">
+            <!-- Premium Header -->
+            <div class="settings-header">
+                <div class="settings-header-left">
+                    <div class="settings-icon-wrap">
+                        <i class="ri-palette-line"></i>
+                    </div>
+                    <div>
+                        <h2 class="settings-title">Theme Studio</h2>
+                        <p class="settings-subtitle">Personalize your experience</p>
+                    </div>
+                </div>
+
+                <button id="close-settings" class="close-btn">
+                    <i class="ri-close-line"></i>
+                </button>
+            </div>
+
+            <!-- Settings Tab Navigation -->
+            <div class="settings-tabs">
+                <button class="settings-tab active" data-tab="wallpaper">
+                    <i class="ri-image-2-line"></i>
+                    <span>Wallpaper</span>
+                </button>
+                <button class="settings-tab" data-tab="effects">
+                    <i class="ri-sparkle-line"></i>
+                    <span>Effects</span>
+                </button>
+                <button class="settings-tab" data-tab="sound">
+                    <i class="ri-volume-up-line"></i>
+                    <span>Sound</span>
+                </button>
+                <button class="settings-tab" data-tab="typing">Typing</button>
+            </div>
+
+            <!-- Tab: Wallpaper -->
+            <div class="tab-pane active" id="tab-wallpaper">
+                <div class="wallpaper-section">
+                    <div class="section-header">
+                        <i class="ri-image-2-line section-icon"></i>
+                        <label class="section-label">WALLPAPER</label>
+                    </div>
+                    <div class="wallpaper-tabs" id="wallpaper-tabs"></div>
+                    <div class="wallpaper-grid" id="wallpaper-grid"></div>
+                </div>
+
+                <!-- Controls Footer -->
+                <div class="settings-controls">
+                    <!-- Opacity -->
+                    <div class="control-group">
+                        <div class="control-header">
+                            <div class="control-label-wrap">
+                                <i class="ri-contrast-2-line section-icon"></i>
+                                <label class="section-label">PANEL OPACITY</label>
+                            </div>
+                            <span id="opacity-value" class="control-value">15%</span>
+                        </div>
+                        <div class="slider-track">
+                            <input type="range" id="opacity-slider" min="0" max="100" value="15" class="styled-slider">
+                        </div>
+                    </div>
+
+                    <!-- Tint -->
+                    <div class="control-group">
+                        <div class="control-header">
+                            <div class="control-label-wrap">
+                                <i class="ri-drop-line section-icon"></i>
+                                <label class="section-label">PANEL TINT</label>
+                            </div>
+                        </div>
+                        <div class="tint-options">
+                            <button class="tint-btn active" data-tint="dark">
+                                <span class="tint-preview" style="background: #14141e;"></span>
+                                <span class="tint-name">Dark</span>
+                            </button>
+                            <button class="tint-btn" data-tint="light">
+                                <span class="tint-preview" style="background: #eef;"></span>
+                                <span class="tint-name">Light</span>
+                            </button>
+                            <button class="tint-btn" data-tint="glass">
+                                <span class="tint-preview"
+                                    style="background: linear-gradient(135deg, #555, #999);"></span>
+                                <span class="tint-name">Glass</span>
+                            </button>
+                            <button class="tint-btn" data-tint="midnight">
+                                <span class="tint-preview"
+                                    style="background: linear-gradient(135deg, #0a0a2e, #1a1a4e);"></span>
+                                <span class="tint-name">Midnight</span>
+                            </button>
+                            <button class="tint-btn" data-tint="warm">
+                                <span class="tint-preview"
+                                    style="background: linear-gradient(135deg, #2a1a0a, #3d2b1a);"></span>
+                                <span class="tint-name">Warm</span>
+                            </button>
+                            <button class="tint-btn" data-tint="transparent">
+                                <span class="tint-preview"
+                                    style="background: repeating-conic-gradient(rgba(255,255,255,0.1) 0% 25%, transparent 0% 50%) 0 0 / 10px 10px;"></span>
+                                <span class="tint-name">None</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: Effects -->
+            <div class="tab-pane" id="tab-effects">
+                <div class="effects-section">
+                    <div class="section-header">
+                        <i class="ri-sparkle-line section-icon"></i>
+                        <label class="section-label">BACKGROUND EFFECT</label>
+                    </div>
+                    <div class="effect-options" id="effect-options">
+                        <button class="effect-btn active" data-effect="dust">
+                            <i class="ri-sparkling-2-line"></i>
+                            <span>Dust</span>
+                        </button>
+                        <button class="effect-btn" data-effect="matrix">
+                            <i class="ri-code-s-slash-line"></i>
+                            <span>Matrix</span>
+                        </button>
+                        <button class="effect-btn" data-effect="starfield">
+                            <i class="ri-rocket-line"></i>
+                            <span>Starfield</span>
+                        </button>
+                        <button class="effect-btn" data-effect="fireflies">
+                            <i class="ri-fire-line"></i>
+                            <span>Fireflies</span>
+                        </button>
+                        <button class="effect-btn" data-effect="snow">
+                            <i class="ri-snowy-line"></i>
+                            <span>Snow</span>
+                        </button>
+                        <button class="effect-btn" data-effect="rain">
+                            <i class="ri-rainy-line"></i>
+                            <span>Rain</span>
+                        </button>
+                    </div>
+
+                    <div class="section-header" style="margin-top: 20px;">
+                        <i class="ri-palette-line section-icon"></i>
+                        <label class="section-label">EFFECT COLOR</label>
+                    </div>
+                    <div class="color-presets" id="color-presets">
+                        <button class="color-dot active" data-color="#ffd700" style="--dot-color: #ffd700;"
+                            title="Gold"></button>
+                        <button class="color-dot" data-color="#00d4ff" style="--dot-color: #00d4ff;"
+                            title="Cyan"></button>
+                        <button class="color-dot" data-color="#ff6bca" style="--dot-color: #ff6bca;"
+                            title="Pink"></button>
+                        <button class="color-dot" data-color="#39ff14" style="--dot-color: #39ff14;"
+                            title="Green"></button>
+                        <button class="color-dot" data-color="#bf5fff" style="--dot-color: #bf5fff;"
+                            title="Purple"></button>
+                        <button class="color-dot" data-color="#ff4444" style="--dot-color: #ff4444;"
+                            title="Red"></button>
+                        <button class="color-dot" data-color="#ffffff" style="--dot-color: #ffffff;"
+                            title="White"></button>
+                        <div class="color-picker-wrap">
+                            <input type="color" id="custom-color-picker" value="#ffd700" title="Custom Color">
+                            <i class="ri-add-line"></i>
+                        </div>
+                    </div>
+
+                    <!-- Intensity Slider -->
+                    <div class="control-group" style="margin-top: 20px;">
+                        <div class="control-header">
+                            <div class="control-label-wrap">
+                                <i class="ri-speed-line section-icon"></i>
+                                <label class="section-label">INTENSITY</label>
+                            </div>
+                            <span id="intensity-value" class="control-value">50%</span>
+                        </div>
+                        <div class="slider-track">
+                            <input type="range" id="intensity-slider" min="10" max="100" value="50"
+                                class="styled-slider">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: Sound -->
+            <div class="tab-pane" id="tab-sound">
+                <div class="sound-section">
+                    <div class="section-header">
+                        <i class="ri-keyboard-box-line section-icon"></i>
+                        <label class="section-label">KEY SOUND</label>
+                    </div>
+                    <div class="sound-options" id="sound-options">
+                        <button class="sound-btn active" data-sound="typewriter">
+                            <i class="ri-keyboard-line"></i>
+                            <span>Typewriter</span>
+                        </button>
+                        <button class="sound-btn" data-sound="blue">
+                            <i class="ri-circle-fill" style="color: #4fc3f7;"></i>
+                            <span>Blue</span>
+                        </button>
+                        <button class="sound-btn" data-sound="red">
+                            <i class="ri-circle-fill" style="color: #ff5252;"></i>
+                            <span>Red</span>
+                        </button>
+                        <button class="sound-btn" data-sound="creamy">
+                            <i class="ri-drop-fill" style="color: #e6cba5;"></i>
+                            <span>Creamy</span>
+                        </button>
+                        <button class="sound-btn" data-sound="bubble">
+                            <i class="ri-bubble-chart-line"></i>
+                            <span>Bubble</span>
+                        </button>
+                        <button class="sound-btn" data-sound="laser">
+                            <i class="ri-flashlight-line"></i>
+                            <span>Laser</span>
+                        </button>
+                        <button class="sound-btn" data-sound="tactile">
+                            <i class="ri-circle-fill" style="color: #a1887f;"></i>
+                            <span>Tactile</span>
+                        </button>
+                        <button class="sound-btn" data-sound="membrane">
+                            <i class="ri-checkbox-blank-fill" style="color: #90a4ae;"></i>
+                            <span>Membrane</span>
+                        </button>
+                        <button class="sound-btn" data-sound="neon">
+                            <i class="ri-lightbulb-flash-line" style="color: #b388ff;"></i>
+                            <span>Neon</span>
+                        </button>
+                        <button class="sound-btn" data-sound="retro">
+                            <i class="ri-gamepad-line" style="color: #ffab40;"></i>
+                            <span>Retro</span>
+                        </button>
+                        <button class="sound-btn" data-sound="space">
+                            <i class="ri-rocket-line" style="color: #80deea;"></i>
+                            <span>Space</span>
+                        </button>
+                        <button class="sound-btn" data-sound="bullet">
+                            <i class="ri-crosshair-2-line" style="color: #ef5350;"></i>
+                            <span>Bullet</span>
+                        </button>
+                    </div>
+
+                    <!-- Volume Slider -->
+                    <!-- Key Volume Slider -->
+                    <div class="control-group" style="margin-top: 20px;">
+                        <div class="control-header">
+                            <div class="control-label-wrap">
+                                <i class="ri-volume-up-line section-icon"></i>
+                                <label class="section-label">KEY VOLUME</label>
+                            </div>
+                            <span id="volume-value" class="control-value">70%</span>
+                        </div>
+                        <div class="slider-track">
+                            <input type="range" id="volume-slider" min="0" max="100" value="70" class="styled-slider">
+                        </div>
+                    </div>
+
+                    <!-- Music Volume Slider -->
+                    <div class="control-group" style="margin-top: 20px;">
+                        <div class="control-header">
+                            <div class="control-label-wrap">
+                                <i class="ri-music-2-line section-icon"></i>
+                                <label class="section-label">MUSIC VOLUME</label>
+                            </div>
+                            <span id="bg-volume-value" class="control-value">50%</span>
+                        </div>
+                        <div class="slider-track">
+                            <input type="range" id="bg-volume-slider" min="0" max="100" value="50"
+                                class="styled-slider">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TYPING TAB -->
+            <div class="tab-pane" id="tab-typing">
+                <div class="settings-group">
+                    <label class="group-title">CURSOR</label>
+                    <div class="control-group">
+                        <label class="section-label">STYLE</label>
+                        <div class="caret-options">
+                            <button class="caret-btn active" data-caret="line">
+                                <span class="btn-icon" style="font-family: inherit;">|</span>
+                                <span class="btn-label">Line</span>
+                            </button>
+                            <button class="caret-btn" data-caret="block">
+                                <span class="btn-icon">█</span>
+                                <span class="btn-label">Block</span>
+                            </button>
+                            <button class="caret-btn" data-caret="underline">
+                                <span class="btn-icon">_</span>
+                                <span class="btn-label">Underline</span>
+                            </button>
+                            <button class="caret-btn" data-caret="outline">
+                                <span class="btn-icon"
+                                    style="border: 1px solid currentColor; width: 12px; height: 16px; display: inline-block; vertical-align: middle;"></span>
+                                <span class="btn-label">Outline</span>
+                            </button>
+                            <button class="caret-btn" data-caret="blade">
+                                <span class="btn-icon" style="transform: skewX(-15deg); font-weight: bold;">|</span>
+                                <span class="btn-label">Blade</span>
+                            </button>
+                            <button class="caret-btn" data-caret="glow">
+                                <span class="btn-icon" style="text-shadow: 0 0 5px currentColor;">|</span>
+                                <span class="btn-label">Glow</span>
+                            </button>
+                            <button class="caret-btn" data-caret="beam">
+                                <span class="btn-icon">I</span>
+                                <span class="btn-label">Beam</span>
+                            </button>
+                            <button class="caret-btn" data-caret="off">
+                                <span class="btn-icon">×</span>
+                                <span class="btn-label">Off</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="control-group" style="margin-top: 30px;">
+                        <label class="section-label">FONT</label>
+                        <div class="font-options">
+                            <button class="font-btn active" data-font="modern">
+                                <span class="btn-icon" style="font-family: 'JetBrains Mono', monospace;">Aa</span>
+                                <span class="btn-label">Modern</span>
+                            </button>
+                            <button class="font-btn" data-font="retro">
+                                <span class="btn-icon" style="font-family: 'Pixelify Sans', monospace;">Aa</span>
+                                <span class="btn-label">Retro</span>
+                            </button>
+                            <button class="font-btn" data-font="clean">
+                                <span class="btn-icon" style="font-family: 'Outfit', sans-serif;">Aa</span>
+                                <span class="btn-label">Clean</span>
+                            </button>
+                            <button class="font-btn" data-font="serif">
+                                <span class="btn-icon" style="font-family: 'Playfair Display', serif;">Aa</span>
+                                <span class="btn-label">Serif</span>
+                            </button>
+                            <button class="font-btn" data-font="typewriter">
+                                <span class="btn-icon" style="font-family: 'Courier Prime', monospace;">Aa</span>
+                                <span class="btn-label">Type</span>
+                            </button>
+                            <button class="font-btn" data-font="hand">
+                                <span class="btn-icon"
+                                    style="font-family: 'Caveat', cursive; font-size: 1.4rem;">Aa</span>
+                                <span class="btn-label">Hand</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="control-group" style="margin-top: 30px;">
+                        <label class="section-label">CARET COLOR</label>
+                        <div class="color-presets" id="caret-color-presets">
+                            <button class="color-dot caret-color-dot active" data-caret-color="#ffd700"
+                                style="--dot-color: #ffd700;" title="Gold"></button>
+                            <button class="color-dot caret-color-dot" data-caret-color="#00d4ff"
+                                style="--dot-color: #00d4ff;" title="Cyan"></button>
+                            <button class="color-dot caret-color-dot" data-caret-color="#ff00ff"
+                                style="--dot-color: #ff00ff;" title="Magenta"></button>
+                            <button class="color-dot caret-color-dot" data-caret-color="#ffffff"
+                                style="--dot-color: #ffffff;" title="White"></button>
+                            <button class="color-dot caret-color-dot" data-caret-color="#ff4444"
+                                style="--dot-color: #ff4444;" title="Red"></button>
+                            <div class="color-picker-wrap">
+                                <input type="color" id="caret-custom-color" value="#ffd700" title="Custom Caret Color">
+                                <i class="ri-add-line"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="settings-group"
+                        style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1);">
+                        <div class="group-header"
+                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <label class="group-title" style="margin: 0;">PARTICLES</label>
+                            <label class="switch">
+                                <input type="checkbox" id="particle-toggle" checked>
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="section-label">COLOR</label>
+                            <div class="color-options">
+                                <button class="color-btn active" data-color="gold"
+                                    style="background: #ffd700; box-shadow: 0 0 10px #ffd700;"></button>
+                                <button class="color-btn" data-color="cyan"
+                                    style="background: #00d4ff; box-shadow: 0 0 10px #00d4ff;"></button>
+                                <button class="color-btn" data-color="magenta"
+                                    style="background: #ff00ff; box-shadow: 0 0 10px #ff00ff;"></button>
+                                <button class="color-btn" data-color="white"
+                                    style="background: #ffffff; box-shadow: 0 0 10px #ffffff;"></button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="loading-overlay" class="hidden">
+        <div class="loader-spinner"></div>
+        <div class="loader-text">APPLYING THEME...</div>
+    </div>
+
+    <div id="results-overlay" class="hidden">
+
+        <div class="glass-panel results-content">
+            <h1 class="text-3xl font-bold mb-2">Session Complete</h1>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="label">WPM</span>
+                    <span class="value" id="final-wpm">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="label">Accuracy</span>
+                    <span class="value" id="final-acc">0%</span>
+                </div>
+            </div>
+            <div class="footer-hint mt-8">PRESS <span class="key">TAB</span> TO TRY AGAIN</div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
