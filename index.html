@@ -655,11 +655,21 @@
                 <!-- User Profile View (Hidden by default) -->
                 <div id="user-profile" class="hidden">
                     <div class="profile-info">
-                        <div class="avatar-large">
+                        <div class="avatar-large" style="position: relative;">
                             <span id="user-initial">U</span>
+                            <button id="profile-edit-btn" class="avatar-edit-btn" title="Edit Profile">
+                                <i class="ri-pencil-fill"></i>
+                            </button>
                         </div>
                         <h3 id="user-email-display">user@example.com</h3>
-                        <p class="member-since">ZenTyper</p>
+                        <p class="member-since" id="user-bio-display">ZenTyper</p>
+                        <div id="profile-badges" class="badges-container"></div>
+
+                        <!-- Heatmap -->
+                        <div class="heatmap-section">
+                            <p class="heatmap-title">Activity</p>
+                            <div id="activity-heatmap" class="heatmap-grid"></div>
+                        </div>
                     </div>
 
                     <div class="profile-stats">
