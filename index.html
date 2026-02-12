@@ -52,6 +52,11 @@
         <i class="ri-settings-4-line text-xl"></i>
     </button>
 
+    <button id="login-btn" class="glass-icon" aria-label="Login"
+        onclick="document.getElementById('auth-modal').classList.remove('hidden')">
+        <i class="ri-user-line text-xl"></i>
+    </button>
+
     <div class="glass-panel" id="game-ui">
 
         <div class="stats-bar">
@@ -496,6 +501,8 @@
                     </div>
 
                 </div>
+
+
             </div>
 
         </div>
@@ -524,7 +531,128 @@
         </div>
     </div>
 
+    <!-- Supabase SDK -->
+    <!-- AUTH MODAL MOVED HERE -->
+    <div id="auth-modal" class="hidden">
+        <div class="settings-content auth-content">
+            <div class="settings-header">
+                <div class="settings-header-left">
+                    <div class="settings-icon-wrap">
+                        <i class="ri-user-line"></i>
+                    </div>
+                    <div>
+                        <h2 class="settings-title">Account</h2>
+                        <p class="settings-subtitle">Sync your progress</p>
+                    </div>
+                </div>
+                <button id="close-auth" class="close-btn">
+                    <i class="ri-close-line"></i>
+                </button>
+            </div>
+
+            <div class="auth-body">
+                <div id="auth-forms">
+                    <!-- Login Form -->
+                    <div id="login-form-container">
+                        <h3 class="auth-heading">Welcome Back</h3>
+                        <p class="auth-sub">Sign in to continue your journey</p>
+
+                        <button id="google-btn" class="social-btn">
+                            <i class="ri-google-fill"></i>
+                            <span>Continue with Google</span>
+                        </button>
+
+                        <div class="divider">
+                            <span>OR</span>
+                        </div>
+
+                        <form id="login-form">
+                            <div class="input-group">
+                                <i class="ri-mail-line input-icon"></i>
+                                <input type="email" id="login-email" placeholder="Email address" required>
+                            </div>
+                            <div class="input-group">
+                                <i class="ri-lock-line input-icon"></i>
+                                <input type="password" id="login-password" placeholder="Password" required>
+                            </div>
+                            <button type="submit" class="submit-btn">Sign In</button>
+                        </form>
+
+                        <p class="auth-footer">
+                            Don't have an account? <a href="#" id="switch-to-signup">Sign up</a>
+                        </p>
+                    </div>
+
+                    <!-- Signup Form -->
+                    <div id="signup-form-container" class="hidden">
+                        <h3 class="auth-heading">Create Account</h3>
+                        <p class="auth-sub">Join the ZenType community</p>
+
+                        <button id="google-signup-btn" class="social-btn">
+                            <i class="ri-google-fill"></i>
+                            <span>Sign up with Google</span>
+                        </button>
+
+                        <div class="divider">
+                            <span>OR</span>
+                        </div>
+
+                        <form id="signup-form">
+                            <div class="input-group">
+                                <i class="ri-mail-line input-icon"></i>
+                                <input type="email" id="signup-email" placeholder="Email address" required>
+                            </div>
+                            <div class="input-group">
+                                <i class="ri-lock-line input-icon"></i>
+                                <input type="password" id="signup-password" placeholder="Password" required>
+                            </div>
+                            <button type="submit" class="submit-btn">Create Account</button>
+                        </form>
+
+                        <p class="auth-footer">
+                            Already have an account? <a href="#" id="switch-to-login">Log see in</a>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- User Profile View (Hidden by default) -->
+                <div id="user-profile" class="hidden">
+                    <div class="profile-info">
+                        <div class="avatar-large">
+                            <span id="user-initial">U</span>
+                        </div>
+                        <h3 id="user-email-display">user@example.com</h3>
+                        <p class="member-since">ZenTyper</p>
+                    </div>
+
+                    <div class="profile-stats">
+                        <div class="p-stat">
+                            <span class="p-val">0</span>
+                            <span class="p-label">TESTS</span>
+                        </div>
+                        <div class="p-stat">
+                            <span class="p-val">0</span>
+                            <span class="p-label">BEST WPM</span>
+                        </div>
+                        <div class="p-stat">
+                            <span class="p-val">0h</span>
+                            <span class="p-label">TIME</span>
+                        </div>
+                    </div>
+
+                    <button id="logout-btn" class="logout-btn">
+                        <i class="ri-logout-box-r-line"></i>
+                        <span>Sign Out</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="script.js"></script>
+    <script src="auth.js"></script>
 </body>
 
 </html>

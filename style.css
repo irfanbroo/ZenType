@@ -131,12 +131,18 @@ body::before {
     right: 3rem;
 }
 
-#sound-btn {
+#login-btn {
     right: 7rem;
+    z-index: 10000;
+    /* Force on top */
+}
+
+#sound-btn {
+    right: 11rem;
 }
 
 #zen-btn {
-    right: 11rem;
+    right: 15rem;
 }
 
 #sound-btn.muted {
@@ -1613,7 +1619,7 @@ input:checked+.slider::before {
 #track-selector {
     position: absolute;
     top: 2rem;
-    right: 15rem;
+    right: 20rem;
     /* Aligns with new button spacing */
     z-index: 50;
     font-family: 'Outfit', sans-serif;
@@ -1771,4 +1777,289 @@ input:checked+.slider::before {
     font-family: 'JetBrains Mono', monospace;
     font-weight: 800;
     letter-spacing: 0.1em;
+}
+
+/* --- AUTH MODAL --- */
+#auth-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 210;
+    /* Above settings modal */
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+#auth-modal.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.auth-content {
+    width: 420px;
+    /* Narrower than settings */
+    height: auto;
+    max-height: 90vh;
+}
+
+.auth-body {
+    padding: 30px 35px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.auth-heading {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #fff;
+    margin: 0;
+    text-align: center;
+    margin-bottom: 6px;
+}
+
+.auth-sub {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    text-align: center;
+    margin: 0 0 25px 0;
+}
+
+/* Social Button */
+.social-btn {
+    width: 100%;
+    padding: 12px;
+    border-radius: 12px;
+    background: #fff;
+    color: #111;
+    border: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.social-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 255, 255, 0.15);
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin: 20px 0;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.divider::before,
+.divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Form Inputs */
+.input-group {
+    position: relative;
+    margin-bottom: 12px;
+}
+
+.input-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    pointer-events: none;
+    transition: color 0.2s ease;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 12px 12px 12px 42px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    color: #fff;
+    font-family: inherit;
+    font-size: 0.9rem;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.input-group input:focus {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--accent-gold);
+    box-shadow: 0 0 0 4px rgba(255, 215, 0, 0.1);
+}
+
+.input-group input:focus+.input-icon {
+    color: var(--accent-gold);
+}
+
+/* Submit Button */
+.submit-btn {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--accent-gold), #ffb800);
+    color: #111;
+    border: none;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(255, 215, 0, 0.25);
+}
+
+.auth-footer {
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin: 20px 0 0 0;
+}
+
+.auth-footer a {
+    color: var(--accent-gold);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.auth-footer a:hover {
+    text-decoration: underline;
+}
+
+/* User Profile Styles */
+.profile-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.avatar-large {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-gold), #ffb800);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #111;
+    margin-bottom: 15px;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+}
+
+#user-email-display {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #fff;
+}
+
+.member-since {
+    margin: 4px 0 0 0;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.profile-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 30px;
+}
+
+.p-stat {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 15px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+.p-val {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--accent-gold);
+}
+
+.p-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.logout-btn {
+    width: 100%;
+    padding: 12px;
+    border-radius: 12px;
+    background: rgba(255, 68, 68, 0.1);
+    border: 1px solid rgba(255, 68, 68, 0.2);
+    color: #ff4444;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+}
+
+.logout-btn:hover {
+    background: rgba(255, 68, 68, 0.2);
+    transform: translateY(-2px);
+}
+
+/* User Icon in Header/Login Button */
+#login-btn.logged-in i {
+    color: var(--accent-gold);
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+#login-btn {
+    right: 15rem;
+    /* Position to the left of Zen button */
+}
+
+/* Adjust positions for other buttons to accommodate login button */
+#zen-btn {
+    right: 11rem;
+}
+
+#sound-btn {
+    right: 7rem;
+}
+
+#settings-btn {
+    right: 3rem;
 }
