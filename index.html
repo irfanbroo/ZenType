@@ -40,22 +40,32 @@
 
     <input type="text" id="hidden-input" autocomplete="off" spellcheck="false">
 
-    <button id="zen-btn" class="glass-icon" aria-label="Zen Mode" title="Zen Mode">
-        <i class="ri-eye-off-line text-xl"></i>
-    </button>
+    <div id="top-nav-buttons">
+        <!-- Buttons are reversed in HTML for Flexbox (Row-Reverse) or standard Row? Let's use Standard Row and Right Alignment -->
+        <!-- Order: Zen, Sound, Login, Leaderboard, Settings (Left to Right) -->
 
-    <button id="sound-btn" class="glass-icon" aria-label="Toggle Sound">
-        <i class="ri-volume-up-line text-xl"></i>
-    </button>
+        <button id="zen-btn" class="glass-icon" aria-label="Zen Mode" title="Zen Mode">
+            <i class="ri-eye-off-line text-xl"></i>
+        </button>
 
-    <button id="settings-btn" class="glass-icon" aria-label="Settings">
-        <i class="ri-settings-4-line text-xl"></i>
-    </button>
+        <button id="sound-btn" class="glass-icon" aria-label="Toggle Sound">
+            <i class="ri-volume-up-line text-xl"></i>
+        </button>
 
-    <button id="login-btn" class="glass-icon" aria-label="Login"
-        onclick="document.getElementById('auth-modal').classList.remove('hidden')">
-        <i class="ri-user-line text-xl"></i>
-    </button>
+        <button id="login-btn" class="glass-icon" aria-label="Login"
+            onclick="document.getElementById('auth-modal').classList.remove('hidden')">
+            <i class="ri-user-line text-xl"></i>
+        </button>
+
+        <!-- Leaderboard (Added here) -->
+        <button id="leaderboard-btn" class="glass-icon" aria-label="Leaderboard">
+            <i class="ri-trophy-line text-xl"></i>
+        </button>
+
+        <button id="settings-btn" class="glass-icon" aria-label="Settings">
+            <i class="ri-settings-4-line text-xl"></i>
+        </button>
+    </div>
 
     <div class="glass-panel" id="game-ui">
 
@@ -532,6 +542,33 @@
     </div>
 
     <!-- Supabase SDK -->
+    <!-- LEADERBOARD MODAL -->
+    <div id="leaderboard-modal" class="hidden">
+        <div class="settings-content auth-content">
+            <div class="settings-header">
+                <div class="settings-header-left">
+                    <div class="settings-icon-wrap" style="background: rgba(255, 215, 0, 0.2); color: #ffd700;">
+                        <i class="ri-trophy-fill"></i>
+                    </div>
+                    <div>
+                        <h2 class="settings-title">Leaderboard</h2>
+                        <p class="settings-subtitle">Top ZenTypers</p>
+                    </div>
+                </div>
+                <button id="close-leaderboard" class="close-btn">
+                    <i class="ri-close-line"></i>
+                </button>
+            </div>
+
+            <div class="leaderboard-body">
+                <div class="leaderboard-list" id="leaderboard-list">
+                    <!-- Items injected by JS -->
+                    <div class="loading-spinner">Loading...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- AUTH MODAL MOVED HERE -->
     <div id="auth-modal" class="hidden">
         <div class="settings-content auth-content">
