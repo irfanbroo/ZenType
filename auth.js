@@ -3,18 +3,22 @@
 // SUPABASE CONFIGURATION
 // ══════════════════════════════════════════════════════════
 
-// TODO: REPLACE THESE WITH YOUR OWN SUPABASE PROJECT DETAILS
-const SUPABASE_URL = 'INSERT_YOUR_SUPABASE_URL_HERE';
-const SUPABASE_KEY = 'INSERT_YOUR_SUPABASE_ANON_KEY_HERE';
+// ══════════════════════════════════════════════════════════
+// SUPABASE CONFIGURATION
+// ══════════════════════════════════════════════════════════
+
+// Using credentials from config.js
+const SUPABASE_URL = typeof CONFIG !== 'undefined' ? CONFIG.SUPABASE_URL : 'INSERT_YOUR_SUPABASE_URL_HERE';
+const SUPABASE_KEY = typeof CONFIG !== 'undefined' ? CONFIG.SUPABASE_ANON_KEY : 'INSERT_YOUR_SUPABASE_ANON_KEY_HERE';
 
 let supabaseClient = null;
 
 try {
-    if (window.supabase) {
+    if (window.supabase && SUPABASE_URL && SUPABASE_KEY) {
         supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        console.log("Supabase initialized");
+        console.log("Supabase initialized with provided credentials");
     } else {
-        console.error("Supabase SDK not loaded");
+        console.error("Supabase SDK not loaded or credentials missing");
     }
 } catch (e) {
     console.error("Error initializing Supabase:", e);
