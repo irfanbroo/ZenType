@@ -7,18 +7,26 @@
 // SUPABASE CONFIGURATION
 // ══════════════════════════════════════════════════════════
 
-// Using credentials from config.js
-const SUPABASE_URL = typeof CONFIG !== 'undefined' ? CONFIG.SUPABASE_URL : 'INSERT_YOUR_SUPABASE_URL_HERE';
-const SUPABASE_KEY = typeof CONFIG !== 'undefined' ? CONFIG.SUPABASE_ANON_KEY : 'INSERT_YOUR_SUPABASE_ANON_KEY_HERE';
+// ══════════════════════════════════════════════════════════
+// SUPABASE CONFIGURATION
+// ══════════════════════════════════════════════════════════
+
+// NOTE: The Supabase 'Anon' key is designed to be public. 
+// It is safe to use in client-side code as long as RLS (Row Level Security) is enabled on Supabase.
+const SUPABASE_URL = "https://zcubjnqfouqurxacssrj.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpjdWJqbnFmb3VxdXJ4YWNzc3JqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA5MTE3MTUsImV4cCI6MjA4NjQ4NzcxNX0.lDOmJidV8cyVlEQoCxy5gKazRfCITz3t6pXf-Kpgzyg";
+
 
 let supabaseClient = null;
 
 try {
-    if (window.supabase && SUPABASE_URL && SUPABASE_KEY) {
+    if (window.supabase && SUPABASE_URL !== 'INSERT_YOUR_SUPABASE_URL_HERE') {
         supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        console.log("Supabase initialized with provided credentials");
+        console.log("Supabase initialized successfully");
     } else {
-        console.error("Supabase SDK not loaded or credentials missing");
+        console.error("Supabase Initialization Failed:");
+        if (!window.supabase) console.error("- Supabase SDK not loaded (check script tag)");
+        if (SUPABASE_URL === 'INSERT_YOUR_SUPABASE_URL_HERE') console.error("- Supabase credentials missing (check config.js)");
     }
 } catch (e) {
     console.error("Error initializing Supabase:", e);
