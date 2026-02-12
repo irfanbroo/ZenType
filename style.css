@@ -127,22 +127,31 @@ body::before {
     top: 2rem;
 }
 
-#settings-btn {
+/* --- TOP NAV BUTTONS CONTAINER --- */
+#top-nav-buttons {
+    position: absolute;
+    top: 2rem;
     right: 3rem;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    z-index: 500;
 }
 
-#login-btn {
-    right: 7rem;
-    z-index: 10000;
-    /* Force on top */
-}
-
-#sound-btn {
-    right: 11rem;
-}
-
+/* Reset partial positioning for children */
+#top-nav-buttons .glass-icon,
+#settings-btn,
+#leaderboard-btn,
+#login-btn,
+#sound-btn,
 #zen-btn {
-    right: 15rem;
+    position: relative;
+    /* Override absolute */
+    top: auto;
+    right: auto;
+    left: auto;
+    bottom: auto;
+    margin: 0;
 }
 
 #sound-btn.muted {
@@ -1619,7 +1628,7 @@ input:checked+.slider::before {
 #track-selector {
     position: absolute;
     top: 2rem;
-    right: 20rem;
+    right: 24rem;
     /* Aligns with new button spacing */
     z-index: 50;
     font-family: 'Outfit', sans-serif;
@@ -1779,8 +1788,9 @@ input:checked+.slider::before {
     letter-spacing: 0.1em;
 }
 
-/* --- AUTH MODAL --- */
-#auth-modal {
+/* --- AUTH & LEADERBOARD MODALS --- */
+#auth-modal,
+#leaderboard-modal {
     position: fixed;
     top: 0;
     left: 0;
@@ -1798,7 +1808,8 @@ input:checked+.slider::before {
     transition: opacity 0.3s ease;
 }
 
-#auth-modal.hidden {
+#auth-modal.hidden,
+#leaderboard-modal.hidden {
     opacity: 0;
     pointer-events: none;
 }
@@ -1894,15 +1905,295 @@ input:checked+.slider::before {
 .input-group input {
     width: 100%;
     padding: 12px 12px 12px 42px;
+    border-radius: 12px;
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
     color: #fff;
-    font-family: inherit;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     outline: none;
     transition: all 0.2s ease;
 }
+
+.input-group input:focus {
+    border-color: var(--accent-gold);
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 0 0 4px rgba(255, 215, 0, 0.1);
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 14px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #ffd700 0%, #ffc000 100%);
+    color: #000;
+    border: none;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 5px 20px rgba(255, 215, 0, 0.3);
+    margin-top: 10px;
+}
+
+.submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
+}
+
+/* Leaderboard Specifics */
+/* --- LEADERBOARD (MEGA PREMIUM) --- */
+.leaderboard-list {
+    margin-top: 1.5rem;
+    max-height: 480px;
+    overflow-y: auto;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.leaderboard-list::-webkit-scrollbar {
+    width: 4px;
+}
+
+.leaderboard-list::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+
+.leaderboard-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.5rem;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+    overflow: hidden;
+
+    /* Animation In */
+    opacity: 0;
+    transform: translateY(20px);
+    animation: slideUpFade 0.5s forwards;
+}
+
+@keyframes slideUpFade {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Stagger Delay */
+.leaderboard-item:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.leaderboard-item:nth-child(2) {
+    animation-delay: 0.15s;
+}
+
+.leaderboard-item:nth-child(3) {
+    animation-delay: 0.2s;
+}
+
+/* ... generic for others */
+
+.leaderboard-item:hover {
+    transform: scale(1.02) translateY(-2px);
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+    border-color: rgba(255, 255, 255, 0.15);
+    z-index: 10;
+}
+
+/* New Layout Sections */
+.l-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.l-right {
+    text-align: right;
+}
+
+/* Rank & Avatar */
+.l-rank {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.3);
+    font-family: 'JetBrains Mono', monospace;
+    width: 30px;
+}
+
+.l-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 1.1rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Top 3 Specials */
+.leaderboard-item.gold {
+    background: linear-gradient(90deg, rgba(255, 215, 0, 0.15) 0%, rgba(20, 20, 20, 0.8) 100%);
+    border: 1px solid rgba(255, 215, 0, 0.4);
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.1);
+}
+
+.leaderboard-item.gold .l-rank {
+    color: #ffd700;
+    text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+    font-size: 1.4rem;
+}
+
+.leaderboard-item.gold .l-avatar {
+    background: linear-gradient(135deg, #ffd700 0%, #ffaa00 100%);
+    color: #000;
+    border: none;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+}
+
+.leaderboard-item.gold .l-wpm {
+    color: #ffd700;
+    text-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+}
+
+.leaderboard-item.silver {
+    background: linear-gradient(90deg, rgba(192, 192, 192, 0.15) 0%, rgba(20, 20, 20, 0.8) 100%);
+    border: 1px solid rgba(192, 192, 192, 0.4);
+}
+
+.leaderboard-item.silver .l-rank {
+    color: #e0e0e0;
+    font-size: 1.3rem;
+}
+
+.leaderboard-item.silver .l-avatar {
+    background: linear-gradient(135deg, #e0e0e0 0%, #a0a0a0 100%);
+    color: #000;
+    border: none;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+}
+
+.leaderboard-item.bronze {
+    background: linear-gradient(90deg, rgba(205, 127, 50, 0.15) 0%, rgba(20, 20, 20, 0.8) 100%);
+    border: 1px solid rgba(205, 127, 50, 0.4);
+}
+
+.leaderboard-item.bronze .l-rank {
+    color: #ffa07a;
+    font-size: 1.2rem;
+}
+
+.leaderboard-item.bronze .l-avatar {
+    background: linear-gradient(135deg, #ffa07a 0%, #cd7f32 100%);
+    color: #000;
+    border: none;
+    box-shadow: 0 0 15px rgba(205, 127, 50, 0.2);
+}
+
+/* Info & Stats */
+.l-info {
+    flex: 1;
+    margin-left: 15px;
+}
+
+.l-name {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.95);
+    margin-bottom: 2px;
+}
+
+.l-stats {
+    display: flex;
+    gap: 10px;
+}
+
+.l-stat-pill {
+    font-size: 0.75rem;
+    background: rgba(255, 255, 255, 0.08);
+    padding: 2px 8px;
+    border-radius: 6px;
+    color: rgba(255, 255, 255, 0.6);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.l-wpm {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--accent-gold);
+    line-height: 1;
+}
+
+.l-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.3);
+    letter-spacing: 0.1em;
+    margin-top: 4px;
+}
+
+/* Edit Username Input */
+.username-edit {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 8px 16px;
+    border-radius: 12px;
+    width: fit-content;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.username-input {
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    font-size: 1.25rem;
+    font-weight: 700;
+    width: 200px;
+    padding: 4px 0;
+    font-family: inherit;
+    transition: all 0.3s ease;
+}
+
+.username-input:focus {
+    outline: none;
+    border-color: var(--accent-gold);
+}
+
+.edit-icon {
+    font-size: 1.1rem;
+    opacity: 0.6;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--text-muted);
+}
+
+.edit-icon:hover {
+    opacity: 1;
+    color: var(--accent-gold);
+    transform: rotate(15deg);
+}
+
+/* Cleanup of malformed code */
 
 .input-group input:focus {
     background: rgba(255, 255, 255, 0.08);

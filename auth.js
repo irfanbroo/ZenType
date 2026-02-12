@@ -67,7 +67,13 @@ function initAuth() {
         // Profile Elements
         userEmailDisplay: document.getElementById('user-email-display'),
         userInitial: document.getElementById('user-initial'),
-        logoutBtn: document.getElementById('logout-btn')
+        logoutBtn: document.getElementById('logout-btn'),
+
+        // Leaderboard
+        leaderboardBtn: document.getElementById('leaderboard-btn'),
+        leaderboardModal: document.getElementById('leaderboard-modal'),
+        closeLeaderboardBtn: document.getElementById('close-leaderboard'),
+        leaderboardList: document.getElementById('leaderboard-list')
     };
 
     console.log("Auth.js: UI Elements found:", authUI);
@@ -194,7 +200,7 @@ function initAuth() {
 
         let { data, error } = await supabaseClient
             .from('profiles')
-            .select('tests_completed, best_wpm, time_typed_seconds')
+            .select('tests_completed, best_wpm, time_typed_seconds, username')
             .eq('id', user.id)
             .single();
 
@@ -215,6 +221,9 @@ function initAuth() {
 
         if (data) {
             console.log("Stats fetched:", data);
+
+            // Setup Username Edit
+            setupUsernameEdit(data.username);
 
             // Update UI safely
             const testsEl = document.getElementById('tests-count');
@@ -281,6 +290,144 @@ function initAuth() {
         }
     };
 
+    // --- LEADERBOARD LOGIC ---
+    if (authUI.leaderboardBtn && authUI.leaderboardModal) {
+        authUI.leaderboardBtn.onclick = () => {
+            authUI.leaderboardModal.classList.remove('hidden');
+            fetchLeaderboard();
+        };
+
+        if (authUI.closeLeaderboardBtn) {
+            authUI.closeLeaderboardBtn.onclick = () => {
+                authUI.leaderboardModal.classList.add('hidden');
+            };
+        }
+
+        // Close on outside click
+        window.addEventListener('click', (e) => {
+            if (e.target === authUI.leaderboardModal) {
+                authUI.leaderboardModal.classList.add('hidden');
+            }
+        });
+    }
+
+    async function fetchLeaderboard() {
+        if (!authUI.leaderboardList) return;
+        authUI.leaderboardList.innerHTML = '<div class="loading-spinner"></div>';
+
+        const { data, error } = await supabaseClient
+            .from('profiles')
+            .select('username, best_wpm, time_typed_seconds')
+            .order('best_wpm', { ascending: false })
+            .limit(10);
+
+        if (error) {
+            console.error("Error fetching leaderboard:", error);
+            authUI.leaderboardList.innerHTML = '<p class="param-label" style="text-align:center">Failed to load leaderboard.</p>';
+            return;
+        }
+
+        authUI.leaderboardList.innerHTML = '';
+        data.forEach((player, index) => {
+            const rank = index + 1;
+            let rankClass = '';
+            if (rank === 1) rankClass = 'gold';
+            else if (rank === 2) rankClass = 'silver';
+            else if (rank === 3) rankClass = 'bronze';
+
+            const item = document.createElement('div');
+            item.className = `leaderboard-item ${rankClass}`;
+
+            // Format time
+            const hrs = Math.floor(player.time_typed_seconds / 3600);
+            const mins = Math.floor((player.time_typed_seconds % 3600) / 60);
+            const timeStr = hrs > 0 ? `${hrs}h ${mins}m` : `${mins}m`;
+
+            // Avatar Letter
+            const initial = (player.username || 'Z').charAt(0).toUpperCase();
+
+            item.innerHTML = `
+                <div class="l-left">
+                    <div class="l-rank">#${rank}</div>
+                    <div class="l-avatar">${initial}</div>
+                </div>
+                
+                <div class="l-info">
+                    <div class="l-name">${player.username || 'ZenTyper'}</div>
+                    <div class="l-stats">
+                        <span class="l-stat-pill"><i class="ri-time-line"></i> ${timeStr}</span>
+                    </div>
+                </div>
+
+                <div class="l-right">
+                    <div class="l-wpm">${player.best_wpm}</div>
+                    <div class="l-label">WPM</div>
+                </div>
+            `;
+            authUI.leaderboardList.appendChild(item);
+        });
+    }
+
+    // --- USERNAME EDIT LOGIC ---
+    // Inject edit icon into profile if not present
+    function setupUsernameEdit(currentUsername) {
+        const emailDisplay = authUI.userEmailDisplay;
+        if (!emailDisplay) return;
+
+        // Clear previous content and set HTML structure
+        emailDisplay.innerHTML = `
+            <div class="username-edit">
+                <span id="username-text">${currentUsername || 'ZenTyper'}</span>
+                <i class="ri-edit-line edit-icon" id="edit-username-btn" title="Edit Username"></i>
+            </div>
+        `;
+
+        const editBtn = document.getElementById('edit-username-btn');
+        const usernameText = document.getElementById('username-text');
+
+        editBtn.onclick = () => {
+            const currentName = usernameText.innerText;
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.value = currentName;
+            input.className = 'username-input';
+            input.maxLength = 15;
+
+            // Replace text with input
+            usernameText.replaceWith(input);
+            input.focus();
+            editBtn.style.display = 'none';
+
+            // Save on blur or enter
+            const saveName = async () => {
+                const newName = input.value.trim() || 'ZenTyper';
+
+                // Optimistic update
+                const newSpan = document.createElement('span');
+                newSpan.id = 'username-text';
+                newSpan.innerText = newName;
+                input.replaceWith(newSpan);
+                editBtn.style.display = 'inline-block';
+
+                // Update Supabase
+                const { data: { user } } = await supabaseClient.auth.getUser();
+                if (user) {
+                    await supabaseClient
+                        .from('profiles')
+                        .update({ username: newName })
+                        .eq('id', user.id);
+                }
+            };
+
+            input.onblur = saveName;
+            input.onkeydown = (e) => {
+                if (e.key === 'Enter') {
+                    input.blur();
+                }
+            };
+        };
+    }
+
     // 5. State Management
     function updateAuthState(session) {
         if (session) {
@@ -289,7 +436,7 @@ function initAuth() {
             authUI.userProfile.classList.remove('hidden');
 
             const email = session.user.email;
-            if (authUI.userEmailDisplay) authUI.userEmailDisplay.innerText = email;
+            // We won't use email anymore for display, we'll fetch profile
             if (authUI.userInitial) authUI.userInitial.innerText = email.charAt(0).toUpperCase();
             if (authUI.openBtn) authUI.openBtn.classList.add('logged-in');
 
