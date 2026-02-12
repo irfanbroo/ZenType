@@ -415,18 +415,13 @@ function playSpecificMasterTrack(index) {
 
         // Helper to clear loading state
         const clearLoading = () => {
-            // Verify we are still looking at the same track context if possible, 
-            // but strictly speaking just clearing the loading state for the *current* UI element is safe enough
-            // as long as we put the correct name back.
-            // But wait, if we switched tracks *again* while loading, we shouldn't overwrite the new track's name.
-            // We can check if the current active item index matches.
-            const activeItem = document.querySelector('.track-item.active');
-            // If the active item index corresponds to THIS track, then update the name.
-            // This is a bit tricky without storing state. 
-            // Simpler: Just check if the text is still "LOADING".
-            if (trackNameEl.innerText.includes("LOADING")) {
-                trackNameEl.innerText = track.name;
-                trackNameEl.classList.remove('track-loading');
+            // Verify we are still playing the SAME track we started loading
+            if (currentTrackIndex === index) {
+                const trackNameEl = document.getElementById('current-track-name');
+                if (trackNameEl) {
+                    trackNameEl.innerText = track.name;
+                    trackNameEl.classList.remove('track-loading');
+                }
             }
         };
 
