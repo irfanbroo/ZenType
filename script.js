@@ -140,7 +140,8 @@ const wallpapers = [
         soundProfile: 'typewriter',
         particleColor: '#ff6bca',
         caretColor: '#ff6bca',
-        wordPoolId: 1
+        wordPoolId: 1,
+        linkedTrackUrl: 'https://soundcloud.com/irfan-s-761237717/apt'
     },
 
     {
@@ -294,13 +295,15 @@ let masterPlaylist = [
     { url: 'https://soundcloud.com/eternityfounddead/stellar', name: 'Stellar', type: 'soundcloud' },
     { url: 'https://soundcloud.com/cadred/zenzenzense-lofi', name: 'Zenzenzense Lofi', type: 'soundcloud' },
     { url: 'https://soundcloud.com/txrtaa/zen-zen-zense', name: 'Zen Zen Zense', type: 'soundcloud' },
-    { url: 'https://soundcloud.com/maki-chill/suzume-lofi-cover', name: 'Suzume lofi', type: 'soundcloud' }
+    { url: 'https://soundcloud.com/maki-chill/suzume-lofi-cover', name: 'Suzume lofi', type: 'soundcloud' },
+    { url: 'https://soundcloud.com/irfan-s-761237717/apt', name: 'APT', type: 'soundcloud' }
 ];
 
 // SoundCloud Widget Interface
 let scWidget = null;
 let currentSCUrl = 'https://soundcloud.com/user-722231447/20250204_184406191-m4r';
 let currentTrackIndex = 0;
+let pendingTrackIndex = null;
 
 window.addEventListener('load', () => {
     const iframe = document.getElementById('sc-widget');
@@ -309,6 +312,13 @@ window.addEventListener('load', () => {
         scWidget.bind(SC.Widget.Events.READY, () => {
             console.log('SoundCloud Widget Ready');
             scWidget.setVolume(userConfig.bgVolume !== undefined ? userConfig.bgVolume : 50);
+
+            // Play pending track if any (e.g. from initTheme with APT wallpaper)
+            if (pendingTrackIndex !== null) {
+                console.log("Playing pending track:", pendingTrackIndex);
+                playSpecificMasterTrack(pendingTrackIndex);
+                pendingTrackIndex = null;
+            }
         });
         scWidget.bind(SC.Widget.Events.FINISH, () => {
             // Loop the current track
@@ -381,7 +391,12 @@ function playSpecificMasterTrack(index) {
 
     // Handle SoundCloud
     if (track.type === 'soundcloud') {
-        if (!scWidget) return;
+        if (!scWidget) {
+            // Widget not ready yet, queue it
+            console.log("Widget not ready, queuing track:", index);
+            pendingTrackIndex = index;
+            return;
+        }
 
         // Pause local audio
         masterAudio.pause();
@@ -1739,10 +1754,15 @@ function toggleZenMode(forceState = null) {
 function applyTheme(skipLoader = false) {
     const wp = wallpapers.find(w => w.id === userConfig.wallpaperId) || wallpapers[0];
 
-    // --- AUDIO CLASH PREVENTION ---
-    // If the wallpaper has its own audio (e.g. video with audio), stop master music
-    if (wp.hasAudio) {
-        // Switch to "No Track" (Index 0)
+    // --- AUDIO CLASH PREVENTION & LINKED TRACKS ---
+    if (wp.linkedTrackUrl) {
+        // Find the track in masterPlaylist
+        const trackIndex = masterPlaylist.findIndex(t => t.url === wp.linkedTrackUrl);
+        if (trackIndex !== -1) {
+            playSpecificMasterTrack(trackIndex);
+        }
+    } else if (wp.hasAudio) {
+        // If wallpaper has its own audio (video), stop master music
         playSpecificMasterTrack(0);
     }
 
