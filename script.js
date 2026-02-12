@@ -138,6 +138,8 @@ const wallpapers = [
         effectIntensity: 77,
         tint: 'dark',
         soundProfile: 'typewriter',
+        particleColor: '#ff6bca',
+        caretColor: '#ff6bca',
         wordPoolId: 1
     },
 
@@ -1981,6 +1983,8 @@ function setupSettingsListeners() {
                 if (wp.tint) userConfig.tint = wp.tint;
                 if (wp.opacity) userConfig.opacity = wp.opacity;
                 if (wp.soundProfile) userConfig.soundProfile = wp.soundProfile;
+                if (wp.particleColor) userConfig.particleColor = wp.particleColor;
+                if (wp.caretColor) userConfig.caretColor = wp.caretColor;
 
                 // Refresh effects and UI
                 initParticles();
@@ -2004,6 +2008,19 @@ function setupSettingsListeners() {
 
                 document.querySelectorAll('.sound-btn').forEach(btn =>
                     btn.classList.toggle('active', btn.dataset.sound === userConfig.soundProfile));
+
+                // Sync Particle Color UI
+                document.querySelectorAll('.color-btn').forEach(btn => {
+                    const colorMap = { gold: '#ffd700', cyan: '#00d4ff', magenta: '#ff00ff', white: '#ffffff' };
+                    const hex = colorMap[btn.dataset.color] || btn.dataset.color;
+                    btn.classList.toggle('active', hex === (userConfig.particleColor || '#ffd700'));
+                });
+
+                // Sync Caret Color UI
+                document.querySelectorAll('.caret-color-dot').forEach(btn =>
+                    btn.classList.toggle('active', btn.dataset.caretColor === userConfig.caretColor));
+                const caretPicker = document.getElementById('caret-custom-color');
+                if (caretPicker) caretPicker.value = userConfig.caretColor || '#ffd700';
             }
             applyTheme();
             // specific lyrics update
