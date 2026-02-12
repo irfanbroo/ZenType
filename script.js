@@ -1688,7 +1688,7 @@ function initTheme() {
 
     renderWallpaperGrid();
     setupSettingsListeners();
-    applyTheme(true);
+    applyTheme();
 
     // Sync effect UI
     document.querySelectorAll('.effect-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.effect === userConfig.effectType));
