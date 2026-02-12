@@ -2538,6 +2538,11 @@ function endGame() {
     const accuracy = state.totalCharsTyped > 0 ? Math.round((state.correctChars / state.totalCharsTyped) * 100) : 0;
     UI.finalWpm.innerText = netWpm;
     UI.finalAcc.innerText = accuracy + "%";
+
+    // Save stats if user is logged in
+    if (window.updateUserStats) {
+        window.updateUserStats(netWpm, timeElapsed * 60); // timeElapsed is in minutes, convert to seconds
+    }
     UI.results.classList.remove('hidden');
 }
 
@@ -2577,6 +2582,14 @@ function updateCaretPosition() {
 }
 
 document.addEventListener('keydown', (e) => {
+    // Don't steal focus if user is typing in another field (like login)
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+        if (e.target !== UI.input) return;
+    }
+
+    // Don't focus if auth modal is open
+    if (!document.getElementById('auth-modal').classList.contains('hidden')) return;
+
     if (e.key !== 'Tab') UI.input.focus();
     if (e.key === 'Tab') {
         e.preventDefault();

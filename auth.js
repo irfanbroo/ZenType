@@ -164,9 +164,16 @@ function initAuth() {
             if (error) {
                 alert("Signup Failed: " + error.message);
             } else {
-                alert("Account created! Please verify your email.");
-                authUI.signupContainer.classList.add('hidden');
-                authUI.loginContainer.classList.remove('hidden');
+                // If email confirmation is disabled, user is likely signed in automatically.
+                if (data.session) {
+                    console.log("Signup successful!");
+                    authUI.modal.classList.add('hidden');
+                } else {
+                    // Fallback: If session not created immediately, show login
+                    alert("Account created! Please sign in.");
+                    authUI.signupContainer.classList.add('hidden');
+                    authUI.loginContainer.classList.remove('hidden');
+                }
             }
         };
     }
@@ -179,7 +186,102 @@ function initAuth() {
         };
     }
 
-    // 4. State Management
+    // 4. Stats Management
+    async function fetchUserStats() {
+        if (!supabaseClient) return;
+        const { data: { user } } = await supabaseClient.auth.getUser();
+        if (!user) return;
+
+        let { data, error } = await supabaseClient
+            .from('profiles')
+            .select('tests_completed, best_wpm, time_typed_seconds')
+            .eq('id', user.id)
+            .single();
+
+        if (error || !data) {
+            console.warn("Profile missing. Creating one now...");
+            // Auto-create profile if missing (for users who signed up before the trigger)
+            const { error: insertError } = await supabaseClient
+                .from('profiles')
+                .insert([{ id: user.id }]);
+
+            if (insertError) {
+                console.error("Failed to create profile:", insertError);
+                return;
+            }
+            // Retry fetch
+            return fetchUserStats();
+        }
+
+        if (data) {
+            console.log("Stats fetched:", data);
+
+            // Update UI safely
+            const testsEl = document.getElementById('tests-count');
+            const bestEl = document.getElementById('best-wpm');
+            const timeEl = document.getElementById('total-time');
+
+            if (testsEl) testsEl.innerText = data.tests_completed || 0;
+            if (bestEl) bestEl.innerText = data.best_wpm || 0;
+
+            // Convert seconds to readable time
+            const seconds = data.time_typed_seconds || 0;
+            const hrs = Math.floor(seconds / 3600);
+            const mins = Math.floor((seconds % 3600) / 60);
+
+            if (timeEl) {
+                if (hrs > 0) timeEl.innerText = `${hrs}h ${mins}m`;
+                else timeEl.innerText = `${mins}m`;
+            }
+        }
+    }
+
+    // Expose update function globally for script.js
+    window.updateUserStats = async (wpm, timeElapsedSeconds) => {
+        if (!supabaseClient) return;
+        const { data: { user } } = await supabaseClient.auth.getUser();
+        if (!user) return;
+
+        console.log(`Saving Stats: WPM=${wpm}, Time=${timeElapsedSeconds}s`);
+
+        // 1. Get current stats (or create if missing)
+        let { data: current, error: fetchError } = await supabaseClient
+            .from('profiles')
+            .select('tests_completed, best_wpm, time_typed_seconds')
+            .eq('id', user.id)
+            .single();
+
+        if (!current) {
+            console.warn("Profile missing during update. Creating...");
+            await supabaseClient.from('profiles').insert([{ id: user.id }]);
+            current = { tests_completed: 0, best_wpm: 0, time_typed_seconds: 0 };
+        }
+
+        // 2. Calculate new values
+        const newTests = (current.tests_completed || 0) + 1;
+        const newTime = (current.time_typed_seconds || 0) + Math.round(timeElapsedSeconds);
+        const newBest = Math.max(current.best_wpm || 0, wpm);
+
+        // 3. Update Supabase
+        const { error: updateError } = await supabaseClient
+            .from('profiles')
+            .update({
+                tests_completed: newTests,
+                time_typed_seconds: newTime,
+                best_wpm: newBest,
+                last_updated: new Date().toISOString()
+            })
+            .eq('id', user.id);
+
+        if (updateError) {
+            console.error("Failed to save stats:", updateError);
+        } else {
+            console.log("Stats saved successfully!");
+            fetchUserStats(); // Refresh UI
+        }
+    };
+
+    // 5. State Management
     function updateAuthState(session) {
         if (session) {
             // Logged In
@@ -190,6 +292,8 @@ function initAuth() {
             if (authUI.userEmailDisplay) authUI.userEmailDisplay.innerText = email;
             if (authUI.userInitial) authUI.userInitial.innerText = email.charAt(0).toUpperCase();
             if (authUI.openBtn) authUI.openBtn.classList.add('logged-in');
+
+            fetchUserStats(); // Load stats on login
         } else {
             // Logged Out
             authUI.authForms.classList.remove('hidden');
