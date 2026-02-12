@@ -87,6 +87,8 @@ function initAuth() {
 
             // If logged in, refresh stats to ensure we are viewing OUR profile, not a stale public one
             if (authUI.openBtn.classList.contains('logged-in')) {
+                // Hide stale profile immediately to prevent "flash" of previous user data
+                if (authUI.userProfile) authUI.userProfile.classList.add('hidden');
                 fetchUserStats();
             }
 
@@ -519,6 +521,9 @@ function initAuth() {
 
     // --- HELPER: RENDER PROFILE UI ---
     function renderProfile(data, isOwner) {
+        // Ensure profile is visible (it might have been hidden to prevent flicker)
+        if (authUI.userProfile) authUI.userProfile.classList.remove('hidden');
+
         // Setup Unified Editing (Only if owner)
         const editBtn = document.getElementById('profile-edit-btn');
         const logoutBtn = document.getElementById('logout-btn');
