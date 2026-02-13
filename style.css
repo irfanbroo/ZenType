@@ -1815,8 +1815,8 @@ input:checked+.slider::before {
 }
 
 .auth-content {
-    width: 420px;
-    /* Narrower than settings */
+    width: 480px;
+    /* Widened from 420px for better leaderboard spacing */
     height: auto;
     max-height: 90vh;
 }
@@ -1827,6 +1827,7 @@ input:checked+.slider::before {
     flex-direction: column;
     gap: 20px;
 }
+
 
 .auth-heading {
     font-size: 1.5rem;
@@ -1942,18 +1943,26 @@ input:checked+.slider::before {
 
 /* Leaderboard Specifics */
 /* --- LEADERBOARD (MEGA PREMIUM) --- */
+/* --- LEADERBOARD (MEGA PREMIUM REDESIGN) --- */
 .leaderboard-list {
     margin-top: 1.5rem;
-    max-height: 480px;
+    max-height: 500px;
     overflow-y: auto;
-    padding: 10px;
+    padding: 10px 20px;
+    /* More horizontal padding */
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 16px;
+    /* Increased gap */
 }
 
+/* Custom Scrollbar for Leaderboard */
 .leaderboard-list::-webkit-scrollbar {
-    width: 4px;
+    width: 6px;
+}
+
+.leaderboard-list::-webkit-scrollbar-track {
+    background: transparent;
 }
 
 .leaderboard-list::-webkit-scrollbar-thumb {
@@ -1961,23 +1970,29 @@ input:checked+.slider::before {
     border-radius: 10px;
 }
 
+.leaderboard-list::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
 .leaderboard-item {
-    display: flex;
+    display: grid;
+    grid-template-columns: 70px 1fr 70px;
+    column-gap: 15px;
+    /* Added explicit gap */
+    /* Fixed layout: [Rank/Avatar] [Info] [WPM] */
     align-items: center;
-    justify-content: space-between;
     padding: 1rem 1.5rem;
-    border-radius: 20px;
+    border-radius: 16px;
     background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.04);
     backdrop-filter: blur(10px);
-    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-    position: relative;
-    overflow: hidden;
+    transition: all 0.2s ease;
+    cursor: pointer;
 
     /* Animation In */
     opacity: 0;
-    transform: translateY(20px);
-    animation: slideUpFade 0.5s forwards;
+    transform: translateY(10px);
+    animation: slideUpFade 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
 
 @keyframes slideUpFade {
@@ -1987,82 +2002,79 @@ input:checked+.slider::before {
     }
 }
 
-/* Stagger Delay */
-.leaderboard-item:nth-child(1) {
-    animation-delay: 0.1s;
-}
-
-.leaderboard-item:nth-child(2) {
-    animation-delay: 0.15s;
-}
-
-.leaderboard-item:nth-child(3) {
-    animation-delay: 0.2s;
-}
-
-/* ... generic for others */
-
 .leaderboard-item:hover {
-    transform: scale(1.02) translateY(-2px);
-    background: rgba(255, 255, 255, 0.06);
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
-    border-color: rgba(255, 255, 255, 0.15);
-    z-index: 10;
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.07);
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
 }
 
 /* New Layout Sections */
+.l-left,
+.l-info,
+.l-right {
+    position: relative;
+    z-index: 2;
+    /* Ensure text is above shine */
+}
+
 .l-left {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 12px;
 }
 
 .l-right {
-    text-align: right;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
 }
+
 
 /* Rank & Avatar */
 .l-rank {
-    font-size: 1.1rem;
-    font-weight: 800;
-    color: rgba(255, 255, 255, 0.3);
+    font-size: 1rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.2);
     font-family: 'JetBrains Mono', monospace;
-    width: 30px;
+    width: 24px;
+    text-align: center;
 }
 
 .l-avatar {
-    width: 42px;
-    height: 42px;
-    border-radius: 12px;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.08);
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 700;
-    color: #fff;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    font-size: 1.1rem;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    color: #eee;
+    font-size: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-/* Top 3 Specials */
+/* Rank Specific Styles (Subtle & Premium) */
+/* 1st Place - Gold */
 .leaderboard-item.gold {
-    background: linear-gradient(90deg, rgba(255, 215, 0, 0.15) 0%, rgba(20, 20, 20, 0.8) 100%);
-    border: 1px solid rgba(255, 215, 0, 0.4);
-    box-shadow: 0 0 30px rgba(255, 215, 0, 0.1);
+    background: linear-gradient(90deg, rgba(255, 215, 0, 0.08) 0%, rgba(20, 20, 20, 0.6) 100%);
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.05);
 }
 
 .leaderboard-item.gold .l-rank {
     color: #ffd700;
-    text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
-    font-size: 1.4rem;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    font-size: 1.2rem;
 }
 
 .leaderboard-item.gold .l-avatar {
-    background: linear-gradient(135deg, #ffd700 0%, #ffaa00 100%);
+    background: #ffd700;
     color: #000;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
     border: none;
-    box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
 }
 
 .leaderboard-item.gold .l-wpm {
@@ -2070,83 +2082,185 @@ input:checked+.slider::before {
     text-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
 }
 
+/* 2nd Place - Silver */
 .leaderboard-item.silver {
-    background: linear-gradient(90deg, rgba(192, 192, 192, 0.15) 0%, rgba(20, 20, 20, 0.8) 100%);
-    border: 1px solid rgba(192, 192, 192, 0.4);
+    background: linear-gradient(90deg, rgba(224, 224, 224, 0.08) 0%, rgba(20, 20, 20, 0.6) 100%);
+    border: 1px solid rgba(224, 224, 224, 0.3);
 }
 
 .leaderboard-item.silver .l-rank {
     color: #e0e0e0;
-    font-size: 1.3rem;
+    font-size: 1.1rem;
 }
 
 .leaderboard-item.silver .l-avatar {
-    background: linear-gradient(135deg, #e0e0e0 0%, #a0a0a0 100%);
+    background: #e0e0e0;
     color: #000;
-    border: none;
     box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+    border: none;
 }
 
+/* 3rd Place - Bronze */
 .leaderboard-item.bronze {
-    background: linear-gradient(90deg, rgba(205, 127, 50, 0.15) 0%, rgba(20, 20, 20, 0.8) 100%);
-    border: 1px solid rgba(205, 127, 50, 0.4);
+    background: linear-gradient(90deg, rgba(205, 127, 50, 0.08) 0%, rgba(20, 20, 20, 0.6) 100%);
+    border: 1px solid rgba(205, 127, 50, 0.3);
 }
 
 .leaderboard-item.bronze .l-rank {
     color: #ffa07a;
-    font-size: 1.2rem;
+    font-size: 1.1rem;
 }
 
 .leaderboard-item.bronze .l-avatar {
-    background: linear-gradient(135deg, #ffa07a 0%, #cd7f32 100%);
+    background: #cd7f32;
     color: #000;
-    border: none;
     box-shadow: 0 0 15px rgba(205, 127, 50, 0.2);
+    border: none;
 }
 
 /* Info & Stats */
 .l-info {
-    flex: 1;
-    margin-left: 15px;
+    padding-left: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+    /* Ensure text truncation works */
 }
 
 .l-name {
-    font-size: 1.05rem;
-    font-weight: 700;
-    color: rgba(255, 255, 255, 0.95);
-    margin-bottom: 2px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-family: 'Outfit', sans-serif;
 }
 
 .l-stats {
     display: flex;
-    gap: 10px;
+    gap: 8px;
 }
 
 .l-stat-pill {
-    font-size: 0.75rem;
-    background: rgba(255, 255, 255, 0.08);
+    font-size: 0.7rem;
+    background: rgba(255, 255, 255, 0.05);
     padding: 2px 8px;
-    border-radius: 6px;
-    color: rgba(255, 255, 255, 0.6);
+    border-radius: 4px;
+    color: rgba(255, 255, 255, 0.5);
     display: flex;
     align-items: center;
     gap: 6px;
+    font-family: 'JetBrains Mono', monospace;
 }
 
+/* WPM Display */
 .l-wpm {
-    font-size: 1.8rem;
-    font-weight: 800;
-    color: var(--accent-gold);
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #fff;
     line-height: 1;
+    font-family: 'JetBrains Mono', monospace;
 }
 
 .l-label {
-    font-size: 0.7rem;
-    font-weight: 700;
+    font-size: 0.65rem;
+    font-weight: 600;
     color: rgba(255, 255, 255, 0.3);
     letter-spacing: 0.1em;
     margin-top: 4px;
 }
+
+/* --- LEADERBOARD HEADER --- */
+.leaderboard-header {
+    display: grid;
+    grid-template-columns: 70px 1fr 70px;
+    column-gap: 15px;
+    padding: 10px 1.5rem 10px;
+    /* Added vertical padding */
+    margin: 10px 20px 0;
+    /* Added top margin to push it down */
+    /* Match list padding */
+    margin-bottom: 0.5rem;
+    font-size: 0.7rem;
+    /* Slightly smaller */
+    color: rgba(255, 255, 255, 0.3);
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    /* Wider spacing for aesthetics */
+    font-family: 'JetBrains Mono', monospace;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    /* Subtle separator */
+}
+
+.lh-rank,
+.lh-wpm {
+    text-align: center;
+}
+
+.lh-user {
+    padding-left: 15px;
+}
+
+/* Header Glows */
+.lh-rank {
+    color: #ffd700;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
+}
+
+.lh-user {
+    color: #00e5ff;
+    text-shadow: 0 0 10px rgba(0, 229, 255, 0.6);
+}
+
+.lh-wpm {
+    color: #e056fd;
+    text-shadow: 0 0 10px rgba(224, 86, 253, 0.6);
+}
+
+/* --- RANK APPEARANCE (CLEAN & HIGH CONTRAST) --- */
+
+/* 1st Place - Gold */
+.leaderboard-item.gold {
+    background: linear-gradient(90deg, rgba(255, 215, 0, 0.15) 0%, rgba(20, 20, 20, 0.6) 100%);
+    border: 1px solid rgba(255, 215, 0, 0.6);
+    box-shadow: 0 0 25px rgba(255, 215, 0, 0.15);
+}
+
+/* 2nd Place - Silver */
+.leaderboard-item.silver {
+    background: linear-gradient(90deg, rgba(224, 224, 224, 0.15) 0%, rgba(20, 20, 20, 0.6) 100%);
+    border: 1px solid rgba(224, 224, 224, 0.6);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+}
+
+/* 3rd Place - Bronze */
+.leaderboard-item.bronze {
+    background: linear-gradient(90deg, rgba(205, 127, 50, 0.15) 0%, rgba(20, 20, 20, 0.6) 100%);
+    border: 1px solid rgba(205, 127, 50, 0.6);
+    box-shadow: 0 0 20px rgba(205, 127, 50, 0.1);
+}
+
+.leaderboard-item.gold:hover,
+.leaderboard-item.silver:hover,
+.leaderboard-item.bronze:hover {
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.1);
+    z-index: 5;
+}
+
+/* Content z-index is 2 (from previous block) */
+
+.leaderboard-item.gold:hover,
+.leaderboard-item.silver:hover,
+.leaderboard-item.bronze:hover {
+    transform: scale(1.02) translateY(-2px);
+    z-index: 20;
+}
+
 
 /* --- PROFILE EDIT REDESIGN --- */
 .avatar-edit-btn {
