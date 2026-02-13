@@ -245,7 +245,8 @@ let userConfig = {
     particleColor: '#ffd700',
     showTrackSelector: true,
     comboSound: true,
-    pitchShift: true
+    pitchShift: true,
+    wallpaperAudio: true // Default to true
 };
 
 const UI = {
@@ -268,6 +269,7 @@ const UI = {
     loadingOverlay: document.getElementById('loading-overlay'),
     bgVideo: document.getElementById('bg-video'),
     soundBtn: document.getElementById('sound-btn'),
+    wallpaperSoundBtn: document.getElementById('wallpaper-sound-btn'), // New Button
     timeModes: document.getElementById('time-modes'),
     comboDisplay: document.getElementById('combo-display'),
     comboCount: document.getElementById('combo-count'),
@@ -485,10 +487,7 @@ function playSpecificMasterTrack(index) {
         masterAudio.src = track.url + "?t=" + Date.now(); // Cache bust if needed, or just normal
         masterAudio.volume = (userConfig.bgVolume !== undefined ? userConfig.bgVolume : 50) / 100;
 
-        const wp = wallpapers.find(w => w.id === userConfig.wallpaperId);
-        const hasSpecificAudio = wp && (wp.audioUrl || (wp.isVideo && wp.hasAudio));
-
-        if (!hasSpecificAudio && soundEnabled) {
+        if (soundEnabled) {
             masterAudio.muted = false;
             masterAudio.play().catch(e => console.log("Manual track play failed:", e));
         }
@@ -1304,57 +1303,9 @@ function toggleSound() {
     if (soundEnabled) {
         icon.className = 'ri-volume-up-line text-xl';
         UI.soundBtn.classList.remove('muted');
-
-        // Unmute/play master audio if it's active (not paused by specific audio)
-        const wp = wallpapers.find(w => w.id === userConfig.wallpaperId);
-        const hasSpecificAudio = wp && (wp.audioUrl || (wp.isVideo && wp.hasAudio));
-
-        if (!masterAudio.paused || (!hasSpecificAudio && !currentBgAudio)) {
-            masterAudio.muted = false;
-            if (masterAudio.paused) {
-                if (!masterAudio.src || masterAudio.ended) {
-                    playNextMasterTrack();
-                } else {
-                    masterAudio.play().catch(e => console.log('Master Audio play failed:', e));
-                }
-            }
-        }
-
-        // Unmute/play bg audio if it exists
-        if (currentBgAudio) {
-            currentBgAudio.muted = false;
-            currentBgAudio.play().catch(e => console.log('Audio play failed:', e));
-        }
-
-        // Unmute video if it handles its own audio
-        if (UI.bgVideo && wp && wp.isVideo && wp.hasAudio) {
-            UI.bgVideo.muted = false;
-        }
-
-        // Unmute SC Widget
-        if (scWidget) {
-            scWidget.setVolume(userConfig.bgVolume !== undefined ? userConfig.bgVolume : 50);
-        }
-
     } else {
         icon.className = 'ri-volume-mute-line text-xl';
         UI.soundBtn.classList.add('muted');
-
-        masterAudio.muted = true;
-
-        // Mute/pause bg audio
-        if (currentBgAudio) {
-            currentBgAudio.muted = true;
-        }
-
-        if (UI.bgVideo) {
-            UI.bgVideo.muted = true;
-        }
-
-        // Mute SC Widget
-        if (scWidget) {
-            scWidget.setVolume(0);
-        }
     }
     localStorage.setItem('zenTypeSoundEnabled', soundEnabled);
 }
@@ -1717,6 +1668,8 @@ function initTheme() {
     const savedConfig = localStorage.getItem('zenTypeConfig');
     if (savedConfig) {
         userConfig = { ...userConfig, ...JSON.parse(savedConfig) };
+        // Ensure wallpaperAudio is present (migration)
+        if (userConfig.wallpaperAudio === undefined) userConfig.wallpaperAudio = true;
     }
 
     // Restore sound preference
@@ -1781,17 +1734,36 @@ function toggleZenMode(forceState = null) {
 function applyTheme(skipLoader = false) {
     const wp = wallpapers.find(w => w.id === userConfig.wallpaperId) || wallpapers[0];
 
+    // --- AUDIO TOGGLE UI ---
+    if (UI.wallpaperSoundBtn) {
+        if (wp.hasAudio) {
+            UI.wallpaperSoundBtn.classList.remove('hidden');
+            const icon = UI.wallpaperSoundBtn.querySelector('i');
+            if (userConfig.wallpaperAudio) {
+                icon.className = 'ri-volume-up-line text-xl';
+                UI.wallpaperSoundBtn.classList.remove('muted');
+            } else {
+                icon.className = 'ri-volume-mute-line text-xl';
+                UI.wallpaperSoundBtn.classList.add('muted');
+            }
+        } else {
+            UI.wallpaperSoundBtn.classList.add('hidden');
+        }
+    }
+
     // --- AUDIO CLASH PREVENTION & LINKED TRACKS ---
+    // If wallpaper has audio enabled, we stop music. 
+    // If it's disabled, we allow music.
+
     if (wp.linkedTrackUrl) {
         // Find the track in masterPlaylist
         const trackIndex = masterPlaylist.findIndex(t => t.url === wp.linkedTrackUrl);
         if (trackIndex !== -1) {
             playSpecificMasterTrack(trackIndex);
         }
-    } else if (wp.hasAudio) {
-        // If wallpaper has its own audio (video), stop master music
-        playSpecificMasterTrack(0);
     }
+    // Decoupled: Removed logic that stops master music if wallpaper has audio.
+    // They can now play simultaneously.
 
     // --- HANDLE AUDIO (Master vs Specific) ---
     // Since we removed local audio files, we only check for Soundboard (SC) or Video Audio.
@@ -1828,14 +1800,25 @@ function applyTheme(skipLoader = false) {
                     if (!skipLoader) UI.loadingOverlay.classList.add('hidden');
 
                     // If video has audio, unmute on first interaction
+                    // If video has audio, unmute on first interaction if enabled
                     if (wp.hasAudio) {
                         const enableAudio = () => {
-                            if (soundEnabled) UI.bgVideo.muted = false;
+                            if (soundEnabled && userConfig.wallpaperAudio) UI.bgVideo.muted = false;
+                            else UI.bgVideo.muted = true; // Ensure muted if disabled
+
                             document.removeEventListener('click', enableAudio);
                             document.removeEventListener('keydown', enableAudio);
                         };
-                        document.addEventListener('click', enableAudio);
-                        document.addEventListener('keydown', enableAudio);
+
+                        // If we are re-applying (skipLoader=true), we might already have interacted
+                        if (skipLoader && userConfig.wallpaperAudio) {
+                            UI.bgVideo.muted = false;
+                        } else if (skipLoader && !userConfig.wallpaperAudio) {
+                            UI.bgVideo.muted = true;
+                        } else {
+                            document.addEventListener('click', enableAudio);
+                            document.addEventListener('keydown', enableAudio);
+                        }
                     }
                 }).catch(error => {
                     console.log("Autoplay failed:", error);
@@ -2092,6 +2075,18 @@ function setupSettingsListeners() {
         initAudio();
         toggleSound();
     });
+
+    // Wallpaper Audio toggle
+    if (UI.wallpaperSoundBtn) {
+        UI.wallpaperSoundBtn.addEventListener('click', () => {
+            userConfig.wallpaperAudio = !userConfig.wallpaperAudio;
+            saveConfig();
+
+            // Re-apply theme to update audio state
+            // We call applyTheme(true) to skip loader
+            applyTheme(true);
+        });
+    }
 
     // Time mode buttons
     UI.timeModes.addEventListener('click', (e) => {

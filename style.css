@@ -1626,9 +1626,9 @@ input:checked+.slider::before {
 
 /* Track Selector - Top Right */
 #track-selector {
-    position: absolute;
-    top: 2rem;
-    right: 24rem;
+    position: relative;
+    top: auto;
+    right: auto;
     /* Aligns with new button spacing */
     z-index: 50;
     font-family: 'Outfit', sans-serif;
