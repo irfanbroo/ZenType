@@ -18,16 +18,7 @@
 </head>
 
 <body>
-    <div id="track-selector" class="hidden">
-        <div class="current-track">
-            <i class="ri-music-2-line"></i>
-            <span id="current-track-name">Track 1</span>
-            <i class="ri-arrow-down-s-line"></i>
-        </div>
-        <div class="track-list" id="track-list">
-            <!-- Items added by JS -->
-        </div>
-    </div>
+
     <!-- SoundCloud Widget (Hidden) -->
     <iframe id="sc-widget"
         src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/user-722231447/20250204_184406191-m4r&auto_play=false&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false&visual=false"
@@ -41,6 +32,18 @@
     <input type="text" id="hidden-input" autocomplete="off" spellcheck="false">
 
     <div id="top-nav-buttons">
+        <!-- Track Selector (Moved here for Flexbox Alignment) -->
+        <div id="track-selector" class="hidden">
+            <div class="current-track">
+                <i class="ri-music-2-line"></i>
+                <span id="current-track-name">Track 1</span>
+                <i class="ri-arrow-down-s-line"></i>
+            </div>
+            <div class="track-list" id="track-list">
+                <!-- Items added by JS -->
+            </div>
+        </div>
+
         <!-- Buttons are reversed in HTML for Flexbox (Row-Reverse) or standard Row? Let's use Standard Row and Right Alignment -->
         <!-- Order: Zen, Sound, Login, Leaderboard, Settings (Left to Right) -->
 
@@ -55,6 +58,11 @@
         <button id="login-btn" class="glass-icon" aria-label="Login"
             onclick="document.getElementById('auth-modal').classList.remove('hidden')">
             <i class="ri-user-line text-xl"></i>
+        </button>
+
+        <button id="wallpaper-sound-btn" class="glass-icon hidden" aria-label="Toggle Wallpaper Audio"
+            title="Mute Wallpaper Audio">
+            <i class="ri-volume-up-line text-xl"></i>
         </button>
 
         <!-- Leaderboard (Added here) -->
