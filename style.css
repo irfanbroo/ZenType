@@ -376,7 +376,9 @@ body.zen-mode #zen-btn:hover {
 }
 
 /* --- SETTINGS MODAL --- */
-#settings-modal {
+#settings-modal,
+#auth-modal,
+#leaderboard-modal {
     position: fixed;
     top: 0;
     left: 0;
@@ -396,7 +398,9 @@ body.zen-mode #zen-btn:hover {
     --text-muted: rgba(255, 255, 255, 0.4);
 }
 
-#settings-modal.hidden {
+#settings-modal.hidden,
+#auth-modal.hidden,
+#leaderboard-modal.hidden {
     opacity: 0;
     pointer-events: none;
 }
