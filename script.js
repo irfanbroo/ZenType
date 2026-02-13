@@ -2283,6 +2283,31 @@ function setupSettingsListeners() {
             saveConfig();
         });
     }
+    // Support Modal
+    const supportBtn = document.querySelector('.support-btn');
+    const supportModal = document.getElementById('support-modal');
+    const closeSupportBtn = document.getElementById('close-support');
+
+    if (supportBtn && supportModal) {
+        supportBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            supportModal.classList.remove('hidden');
+        });
+    }
+
+    if (closeSupportBtn && supportModal) {
+        closeSupportBtn.addEventListener('click', () => {
+            supportModal.classList.add('hidden');
+        });
+    }
+
+    if (supportModal) {
+        supportModal.addEventListener('click', (e) => {
+            if (e.target === supportModal) {
+                supportModal.classList.add('hidden');
+            }
+        });
+    }
 }
 
 function saveConfig() {
