@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google-site-verification" content="BWW0hMMw7Y84Myib4JPiUWQOsNLHf9sGvL9Ad4H39FQ" />
-    <title>ZenType | Pro</title>
+    <title>ZenType - Professional Typing Practice</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="style.css">
     <link
@@ -32,6 +32,9 @@
     <canvas id="keypress-canvas"></canvas>
 
     <input type="text" id="hidden-input" autocomplete="off" spellcheck="false">
+
+    <!-- App Logo / H1 -->
+    <h1 id="app-logo">ZenType</h1>
 
     <div id="top-nav-buttons">
         <!-- Track Selector (Moved here for Flexbox Alignment) -->
@@ -751,12 +754,19 @@
     </div>
 
     <footer class="site-footer">
-        <a href="privacy.html" class="footer-link-pill">
-            <i class="ri-lock-line"></i> Privacy
-        </a>
-        <a href="#" class="footer-link-pill support-btn">
-            <i class="ri-heart-fill"></i> Support
-        </a>
+        <div class="footer-info">
+            <span class="copyright">© 2026 ZenType</span>
+            <span class="separator">•</span>
+            <span class="app-desc">Minimalist typing practice tool designed to improve speed and accuracy.</span>
+        </div>
+        <div class="footer-links">
+            <a href="privacy.html" class="footer-link-pill">
+                <i class="ri-lock-line"></i> Privacy
+            </a>
+            <a href="#" class="footer-link-pill support-btn">
+                <i class="ri-heart-fill"></i> Support
+            </a>
+        </div>
     </footer>
 
     <!-- Supabase SDK -->

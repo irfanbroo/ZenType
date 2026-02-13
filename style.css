@@ -3105,19 +3105,61 @@ input:checked+.slider::before {
     }
 }
 
-/* --- FOOTER (MonkeyType Style) --- */
+.footer-link-pill i {
+    font-size: 1rem;
+}
+
+/* --- LOGO --- */
+#app-logo {
+    position: fixed;
+    top: 30px;
+    left: 40px;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-main);
+    z-index: 100;
+    margin: 0;
+    letter-spacing: -0.05em;
+    pointer-events: none;
+    opacity: 0.8;
+}
+
+/* --- UPDATED FOOTER --- */
 .site-footer {
     position: fixed;
     bottom: 25px;
-    right: 30px;
-    /* Move to bottom right */
-    left: auto;
-    transform: none;
-    /* Remove centering */
+    left: 40px;
+    right: 40px;
     display: flex;
-    align-items: center;
-    gap: 15px;
+    justify-content: space-between;
+    align-items: flex-end;
     z-index: 100;
+    pointer-events: none;
+}
+
+.footer-info {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    max-width: 400px;
+    line-height: 1.4;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.footer-info .copyright {
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.footer-info .separator {
+    margin: 0 8px;
+    opacity: 0.5;
+}
+
+.footer-links {
+    display: flex;
+    gap: 15px;
+    pointer-events: auto;
+    /* Re-enable clicks for buttons */
 }
 
 .footer-link-pill {
