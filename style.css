@@ -183,7 +183,12 @@ body.zen-mode .footer-hint,
 body.zen-mode #sound-btn,
 body.zen-mode #settings-btn,
 body.zen-mode #track-selector,
-body.zen-mode #combo-display {
+body.zen-mode #combo-display,
+body.zen-mode #app-header,
+body.zen-mode .site-footer,
+body.zen-mode #login-btn,
+body.zen-mode #leaderboard-btn,
+body.zen-mode #wallpaper-sound-btn {
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.5s ease;
