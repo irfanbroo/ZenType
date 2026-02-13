@@ -214,26 +214,45 @@ function initAuth() {
 
         if (error || !data) {
             console.warn("Profile missing. Creating one now...");
-            // Auto-create profile if missing (for users who signed up before the trigger)
-            const { error: insertError } = await supabaseClient
-                .from('profiles')
-                .insert([{ id: user.id }]);
-
-            if (insertError) {
-                console.error("Failed to create profile:", insertError);
-                return;
-            }
-            // Retry fetch
+            // ... (auto-create logic)
+            // ...
             return fetchUserStats();
         }
 
         if (data) {
-            console.log("Stats fetched:", data);
-
-            // USE HELPER: Render as Owner (true)
+            // Calculate Streak Dynamically
+            data.current_streak = calculateStreak(data.activity_log || {});
             renderProfile(data, true);
         }
     }
+
+    // Helper to calculate streak from activity log
+    function calculateStreak(activityLog) {
+        let streak = 0;
+        const today = new Date();
+        const oneDay = 24 * 60 * 60 * 1000;
+
+        // Start checking from today
+        let current = new Date(today);
+
+        while (true) {
+            const dateStr = current.toISOString().split('T')[0];
+            if (activityLog[dateStr] && activityLog[dateStr] > 0) {
+                streak++;
+                // Move back one day
+                current.setTime(current.getTime() - oneDay);
+            } else {
+                // If today has no entry, check if we haven't broken streak yet (yesterday might have entry)
+                if (streak === 0 && dateStr === today.toISOString().split('T')[0]) {
+                    current.setTime(current.getTime() - oneDay);
+                    continue;
+                }
+                break;
+            }
+        }
+        return streak;
+    }
+
 
     // Expose update function globally for script.js
     window.updateUserStats = async (wpm, timeElapsedSeconds) => {
@@ -246,7 +265,7 @@ function initAuth() {
         // 1. Get current stats (or create if missing)
         let { data: current, error: fetchError } = await supabaseClient
             .from('profiles')
-            .select('tests_completed, best_wpm, time_typed_seconds, activity_log, wpm_history')
+            .select('tests_completed, best_wpm, time_typed_seconds, activity_log, wpm_history, current_streak')
             .eq('id', user.id)
             .single();
 
@@ -696,60 +715,49 @@ function initAuth() {
         if (!grid) return;
         grid.innerHTML = '';
 
-        // 7 Columns (Weeks) x 3 Rows (Days) = 21 Days
-        const totalDays = 21;
+        // 13 Columns x 5 Rows = 65 Days
+        const numCols = 13;
+        const numRows = 5;
+        const totalCells = numCols * numRows;
+
         const today = new Date();
 
-        for (let c = 0; c < 7; c++) {
+        for (let c = 0; c < numCols; c++) {
             const colDiv = document.createElement('div');
             colDiv.className = 'heatmap-col';
 
-            for (let r = 0; r < 3; r++) {
-                // Calculate date index: Column major order?
-                // Visual layout: 
-                // Col 0: Days 20, 19, 18
-                // ...
-                // Col 6: Day 2, 1, 0 (Today)
-
-                // Let's iterate backwards from today.
-                // Rightmost column (c=6) is the most recent.
-                // Bottom-most row (r=2) is the most recent in that column? 
-                // Standard GitHub is Top-to-Bottom, Left-to-Right.
-
-                // Let's just create a linear index from 20 down to 0
-                // We want the LAST cell (Col 6, Row 2) to be Today.
-
-                // Grid: 7 cols, 3 rows.
-                // Col 0 (Oldest) -> Col 6 (Newest)
-
-                const colIndex = c; // 0..6
-                const rowIndex = r; // 0..2
-
-                // Flattened index (0 to 20), where 20 is the newest
-                const cellIndex = (colIndex * 3) + rowIndex;
-
-                // Days ago = 20 - cellIndex
-                const daysAgo = 20 - cellIndex;
+            for (let r = 0; r < numRows; r++) {
+                const colIndex = c;
+                const rowIndex = r;
+                const cellIndex = (colIndex * numRows) + rowIndex;
+                const daysAgo = (totalCells - 1) - cellIndex;
 
                 const date = new Date();
                 date.setDate(today.getDate() - daysAgo);
-
                 const dateStr = date.toISOString().split('T')[0];
-                const count = activityLog[dateStr] || 0;
 
-                // Determine Level
-                let level = '';
-                if (count >= 10) level = 'heatmap-l4';
-                else if (count >= 5) level = 'heatmap-l3';
-                else if (count >= 2) level = 'heatmap-l2';
-                else if (count > 0) level = 'heatmap-l1';
+                const count = activityLog && activityLog[dateStr] ? activityLog[dateStr] : 0;
 
                 const cell = document.createElement('div');
-                cell.className = `heatmap-cell ${level}`;
+                cell.className = 'heatmap-cell';
                 cell.title = `${dateStr}: ${count} tests`;
+
+                if (count === 0) cell.style.background = 'rgba(255, 255, 255, 0.05)';
+                else if (count <= 2) cell.style.background = 'rgba(57, 255, 20, 0.3)';
+                else if (count <= 5) cell.style.background = 'rgba(57, 255, 20, 0.6)';
+                else {
+                    cell.style.background = 'rgba(57, 255, 20, 1.0)';
+                    cell.style.boxShadow = '0 0 5px rgba(57, 255, 20, 0.6)';
+                }
                 colDiv.appendChild(cell);
             }
             grid.appendChild(colDiv);
+        }
+
+        // --- RENDER STREAK ---
+        const streakEl = document.getElementById('streak-display');
+        if (streakEl) {
+            streakEl.innerText = calculateStreak(activityLog); // Use helper
         }
     }
 
