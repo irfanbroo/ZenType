@@ -391,6 +391,9 @@ body.zen-mode #zen-btn:hover {
     z-index: 200;
     opacity: 1;
     transition: opacity 0.3s ease;
+    /* Force light text in settings modal regardless of theme */
+    --text-main: rgba(255, 255, 255, 0.9);
+    --text-muted: rgba(255, 255, 255, 0.4);
 }
 
 #settings-modal.hidden {
@@ -2996,6 +2999,7 @@ input:checked+.slider::before {
 #rank-title {
     background: linear-gradient(to right, #fff, var(--accent-gold));
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
     filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5));
     animation: fadeIn 0.8s ease-out;
