@@ -3167,8 +3167,9 @@ input:checked+.slider::before {
 .site-footer {
     position: fixed;
     bottom: 25px;
-    left: 40px;
-    right: 40px;
+    left: 25px;
+    /* Further left */
+    right: 30px;
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
@@ -3261,5 +3262,4 @@ input:checked+.slider::before {
 
 .footer-link-pill i {
     font-size: 1rem;
-}
 }
