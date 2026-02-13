@@ -535,6 +535,8 @@
 
         <div class="glass-panel results-content">
             <h1 class="text-3xl font-bold mb-2">Session Complete</h1>
+            <div id="rank-title" class="text-xl font-bold mb-6"
+                style="min-height: 1.8rem; letter-spacing: 0.2em; text-transform: uppercase;"></div>
             <div class="stats-grid">
                 <div class="stat-item">
                     <span class="label">WPM</span>
@@ -545,6 +547,14 @@
                     <span class="value" id="final-acc">0%</span>
                 </div>
             </div>
+
+            <!-- WPM Graph -->
+            <div class="wpm-chart-container"
+                style="margin-top: 2rem; width: 100%; height: 120px; overflow: hidden; border-radius: 12px; background: rgba(0,0,0,0.2);">
+                <canvas id="results-chart" width="600" height="150"
+                    style="width: 100%; height: 100%; display: block;"></canvas>
+            </div>
+
             <div class="footer-hint mt-8">PRESS <span class="key">TAB</span> TO TRY AGAIN</div>
         </div>
     </div>

@@ -2900,3 +2900,106 @@ input:checked+.slider::before {
         opacity: 1;
     }
 }
+
+/* --- RESULTS OVERLAY --- */
+#results-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    z-index: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+#results-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.results-content {
+    text-align: center;
+    max-width: 500px;
+    width: 90%;
+    padding: 3rem;
+    background: rgba(20, 20, 30, 0.95);
+    border: 1px solid rgba(255, 215, 0, 0.1);
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    width: 100%;
+    margin-top: 2rem;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.stat-item .label {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    font-family: var(--font-modern);
+    letter-spacing: 0.1em;
+}
+
+.stat-item .value {
+    font-size: 3.5rem;
+    font-weight: 800;
+    color: var(--accent-gold);
+    line-height: 1;
+    text-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+}
+
+/* Rank Title Styles */
+#rank-title {
+    background: linear-gradient(to right, #fff, var(--accent-gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5));
+    animation: fadeIn 0.8s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Stat Pop Animation */
+.stat-pop {
+    animation: statPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes statPop {
+    0% {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}

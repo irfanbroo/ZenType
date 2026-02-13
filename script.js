@@ -2378,6 +2378,11 @@ function initGame() {
     state.combo = 0;
     state.maxCombo = 0;
 
+    // WPM Graph Data
+    state.wpmHistory = [];
+    state.lastRecordTime = 0;
+    state.lastTotalChars = 0;
+
     state.words = generateWordList();
 
     UI.input.value = '';
@@ -2515,6 +2520,8 @@ UI.input.addEventListener('input', (e) => {
 function startTimer() {
     state.isActive = true;
     state.startTime = Date.now();
+    state.lastRecordTime = state.startTime;
+    state.lastTotalChars = state.totalCharsTyped;
     state.timerInterval = setInterval(() => {
         const now = Date.now();
         const elapsedSeconds = (now - state.startTime) / 1000;
@@ -2542,6 +2549,18 @@ function startTimer() {
 
         UI.wpm.innerText = wpm + " WPM";
 
+        // Record Instant WPM every ~1 second for graph
+        if (now - state.lastRecordTime >= 1000) {
+            const charsDiff = state.totalCharsTyped - state.lastTotalChars;
+            // Instant speed: (chars in last sec / 5) * 60
+            // Ensure we don't get negative or weird spikes
+            const instantWPM = Math.max(0, Math.round((charsDiff / 5) * 60));
+            state.wpmHistory.push(instantWPM);
+
+            state.lastRecordTime = now;
+            state.lastTotalChars = state.totalCharsTyped;
+        }
+
         if (state.timeLeft <= 0) endGame();
     }, 100); // Run faster for smoother updates
 }
@@ -2563,14 +2582,63 @@ function endGame() {
 
     const netWpm = Math.round((state.correctChars / 5) / finalTimeMin);
     const accuracy = state.totalCharsTyped > 0 ? Math.round((state.correctChars / state.totalCharsTyped) * 100) : 0;
-    UI.finalWpm.innerText = netWpm;
-    UI.finalAcc.innerText = accuracy + "%";
+
+    // UI.finalWpm.innerText = netWpm; // Removed static assignment
+    // UI.finalAcc.innerText = accuracy + "%"; // Removed static assignment
+
+    const rank = getRankTitle(netWpm);
+    const rankEl = document.getElementById('rank-title');
+    if (rankEl) {
+        rankEl.innerText = rank.title;
+        rankEl.style.color = rank.color; // Fallback if gradient fails
+        // Dynamic Glow based on rank color?
+        rankEl.style.filter = `drop-shadow(0 0 15px ${rank.color})`;
+        rankEl.style.background = `linear-gradient(to right, #fff, ${rank.color})`;
+        rankEl.style.webkitBackgroundClip = 'text';
+        rankEl.style.webkitTextFillColor = 'transparent';
+    }
+
+    // Draw Graph
+    drawResultChart(state.wpmHistory);
 
     // Save stats if user is logged in
     if (window.updateUserStats) {
-        window.updateUserStats(netWpm, finalTimeMin * 60); // timeElapsed is in minutes, convert to seconds
+        window.updateUserStats(netWpm, finalTimeMin * 60);
     }
+
     UI.results.classList.remove('hidden');
+
+    // Animate Numbers
+    animateValue(UI.finalWpm, 0, netWpm, 1500);
+    animateValue(UI.finalAcc, 0, accuracy, 1500, "%");
+}
+
+function getRankTitle(wpm) {
+    if (wpm < 20) return { title: "WANDERER", color: "#9ca3af" }; // Gray
+    if (wpm < 40) return { title: "RONIN", color: "#2dd4bf" }; // Teal
+    if (wpm < 60) return { title: "GLITCH", color: "#39ff14" }; // Matrix Green
+    if (wpm < 80) return { title: "SAMURAI", color: "#3b82f6" }; // Blue
+    if (wpm < 100) return { title: "CYBERPUNK", color: "#bc13fe" }; // Purple
+    if (wpm < 120) return { title: "PREDATOR", color: "#f43f5e" }; // Rose/Red
+    return { title: "SINGULARITY", color: "#ffd700" }; // Gold
+}
+
+function animateValue(obj, start, end, duration, suffix = "") {
+    let startTimestamp = null;
+    const step = (timestamp) => {
+        if (!startTimestamp) startTimestamp = timestamp;
+        const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+        // EaseOutExpo
+        const ease = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+
+        obj.innerHTML = Math.floor(ease * (end - start) + start) + suffix;
+        if (progress < 1) {
+            window.requestAnimationFrame(step);
+        } else {
+            obj.innerHTML = end + suffix; // Ensure final value
+        }
+    };
+    window.requestAnimationFrame(step);
 }
 
 function updateCaretPosition() {
@@ -2631,4 +2699,103 @@ initGame();
 initParticles();
 initKeypressParticles();
 initTrackSelector(); // Initialize UI
+function drawResultChart(data) {
+    const canvas = document.getElementById('results-chart');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+
+    // Detect high DPI
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+
+    ctx.scale(dpr, dpr);
+
+    const width = rect.width;
+    const height = rect.height;
+
+    ctx.clearRect(0, 0, width, height);
+
+    // If no data, show a flat line
+    if (!data || data.length === 0) data = [0, 0];
+    if (data.length === 1) data = [data[0], data[0]];
+
+    const maxVal = Math.max(...data, 60);
+    const padding = 15;
+    const graphWidth = width - padding * 2;
+    const graphHeight = height - padding * 2;
+
+    // Get Theme Color
+    let themeColor = userConfig.effectColor || userConfig.particleColor || '#ffd700';
+
+    const points = data.map((val, i) => {
+        return {
+            x: padding + (i / (data.length - 1)) * graphWidth,
+            y: height - padding - (val / maxVal) * graphHeight
+        };
+    });
+
+    // Draw Smooth Curve
+    ctx.beginPath();
+    ctx.moveTo(points[0].x, points[0].y);
+
+    for (let i = 0; i < points.length - 1; i++) {
+        const p0 = points[i];
+        const p1 = points[i + 1];
+        const midX = (p0.x + p1.x) / 2;
+        const midY = (p0.y + p1.y) / 2;
+        // Quadratic Bezier to midpoint for smoothness
+        const cpX = (p0.x + p1.x) / 2;
+        // Actually, standard smoothing: use control point as p0? No.
+        // Simple smoothing: Curve from p0 to midpoint of p0-p1?
+        // Better: Curve to midpoints.
+        if (i === 0) {
+            ctx.lineTo(p0.x, p0.y);
+        }
+        ctx.quadraticCurveTo(p0.x, p0.y, midX, midY);
+    }
+    // Connect to last point
+    ctx.lineTo(points[points.length - 1].x, points[points.length - 1].y);
+
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = themeColor;
+
+    // Add Glow
+    ctx.shadowBlur = 15;
+    ctx.shadowColor = themeColor;
+    ctx.stroke();
+
+    // Reset shadow for fill
+    ctx.shadowBlur = 0;
+
+    // Fill Gradient
+    ctx.lineTo(width - padding, height - padding);
+    ctx.lineTo(padding, height - padding);
+    ctx.closePath();
+
+    const grad = ctx.createLinearGradient(0, 0, 0, height);
+    grad.addColorStop(0, hexToRgba(themeColor, 0.5));
+    grad.addColorStop(1, hexToRgba(themeColor, 0.0));
+    ctx.fillStyle = grad;
+    ctx.fill();
+}
+
+// Helper for hex to rgba
+function hexToRgba(hex, alpha) {
+    let c;
+    if (/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)) {
+        c = hex.substring(1).split('');
+        if (c.length == 3) {
+            c = [c[0], c[0], c[1], c[1], c[2], c[2]];
+        }
+        c = '0x' + c.join('');
+        return 'rgba(' + [(c >> 16) & 255, (c >> 8) & 255, c & 255].join(',') + ',' + alpha + ')';
+    }
+    return `rgba(255, 215, 0, ${alpha})`; // fallback gold
+}
+
 window.addEventListener('resize', updateCaretPosition);
