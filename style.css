@@ -2589,13 +2589,19 @@ input:checked+.slider::before {
     width: 100%;
 }
 
+#progress-graph {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
 .graph-container {
     width: 100%;
     height: 120px;
     background: rgba(0, 0, 0, 0.3);
     border: 1px solid rgba(255, 255, 255, 0.05);
     border-radius: 12px;
-    padding: 10px;
+    padding: 0;
     position: relative;
     overflow: hidden;
     /* Cyberpunk grid background */

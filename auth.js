@@ -549,70 +549,84 @@ function initAuth() {
         const canvas = document.getElementById(canvasId);
         if (!canvas) return;
 
-        const ctx = canvas.getContext('2d');
-        const width = canvas.width;
-        const height = canvas.height;
+        // Ensure layout is computed (fix for modal transition/display:none)
+        requestAnimationFrame(() => {
+            if (canvas.clientWidth === 0) {
+                // Retry if still 0 (e.g. modal animation not finished)
+                setTimeout(() => renderGraph(canvasId, historyData), 50);
+                return;
+            }
 
-        // Clear
-        ctx.clearRect(0, 0, width, height);
+            // Resize canvas to match display size (taxes blur and ensures full width)
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientHeight;
 
-        // Data Validation
-        if (!historyData || historyData.length < 2) {
-            ctx.fillStyle = "rgba(255, 255, 255, 0.3)";
-            ctx.font = "12px 'Space Mono', monospace";
-            ctx.fillText("Not enough data", 10, height / 2);
-            return;
-        }
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
 
-        // Config
-        const padding = 10;
-        const usableWidth = width - (padding * 2);
-        const usableHeight = height - (padding * 2);
+            // Clear
+            ctx.clearRect(0, 0, width, height);
 
-        // Scales
-        const maxWPM = Math.max(...historyData) + 10;
-        const minWPM = Math.max(0, Math.min(...historyData) - 10);
-        const range = maxWPM - minWPM || 1; // Prevent div/0
+            // Data Validation
+            if (!historyData || historyData.length < 2) {
+                ctx.fillStyle = "rgba(255, 255, 255, 0.3)";
+                ctx.font = "12px 'Space Mono', monospace";
+                ctx.fillText("Not enough data", 10, height / 2);
+                return;
+            }
 
-        const getX = (i) => padding + (i / (historyData.length - 1)) * usableWidth;
-        const getY = (wpm) => height - padding - ((wpm - minWPM) / range) * usableHeight;
+            // Config
+            const paddingY = 10;
+            const paddingX = 0; // Extend to full width
+            const usableWidth = width - (paddingX * 2);
+            const usableHeight = height - (paddingY * 2);
 
-        // Draw Line
-        ctx.beginPath();
-        ctx.strokeStyle = '#39ff14'; // Neon Green
-        ctx.lineWidth = 2;
-        ctx.lineCap = 'round';
-        ctx.lineJoin = 'round';
+            // Scales
+            const maxWPM = Math.max(...historyData) + 10;
+            const minWPM = Math.max(0, Math.min(...historyData) - 10);
+            const range = maxWPM - minWPM || 1; // Prevent div/0
 
-        ctx.moveTo(getX(0), getY(historyData[0]));
+            const getX = (i) => paddingX + (i / (historyData.length - 1)) * usableWidth;
+            const getY = (wpm) => height - paddingY - ((wpm - minWPM) / range) * usableHeight;
 
-        for (let i = 1; i < historyData.length; i++) {
-            ctx.lineTo(getX(i), getY(historyData[i]));
-        }
-        ctx.stroke();
+            // Draw Line
+            ctx.beginPath();
+            ctx.strokeStyle = '#39ff14'; // Neon Green
+            ctx.lineWidth = 2;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
 
-        // Draw Glow (we can just set shadowBlur on the line, but let's do a simple overlay)
-        ctx.save();
-        ctx.shadowColor = '#39ff14';
-        ctx.shadowBlur = 10;
-        ctx.stroke();
-        ctx.restore();
+            ctx.moveTo(getX(0), getY(historyData[0]));
 
-        // Draw Dot at end
-        const lastX = getX(historyData.length - 1);
-        const lastY = getY(historyData[historyData.length - 1]);
+            for (let i = 1; i < historyData.length; i++) {
+                ctx.lineTo(getX(i), getY(historyData[i]));
+            }
+            ctx.stroke();
 
-        ctx.beginPath();
-        ctx.fillStyle = '#39ff14';
-        ctx.arc(lastX, lastY, 4, 0, Math.PI * 2);
-        ctx.fill();
+            // Draw Glow (we can just set shadowBlur on the line, but let's do a simple overlay)
+            ctx.save();
+            ctx.shadowColor = '#39ff14';
+            ctx.shadowBlur = 10;
+            ctx.stroke();
+            ctx.restore();
 
-        // Optional: Fill below
-        ctx.lineTo(lastX, height);
-        ctx.lineTo(padding, height);
-        ctx.closePath();
-        ctx.fillStyle = 'rgba(57, 255, 20, 0.1)';
-        ctx.fill();
+            // Draw Dot at end
+            const lastX = getX(historyData.length - 1);
+            const lastY = getY(historyData[historyData.length - 1]);
+
+            ctx.beginPath();
+            ctx.fillStyle = '#39ff14';
+            ctx.arc(lastX, lastY, 4, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Optional: Fill below
+            ctx.lineTo(lastX, height);
+            ctx.lineTo(paddingX, height);
+            ctx.closePath();
+            ctx.fillStyle = 'rgba(57, 255, 20, 0.1)';
+            ctx.fill();
+        });
     }
 
     // --- HELPER: RENDER PROFILE UI ---
@@ -695,11 +709,14 @@ function initAuth() {
         // Fetch User Data
         const { data, error } = await supabaseClient
             .from('profiles')
-            .select('tests_completed, best_wpm, time_typed_seconds, username, bio, activity_log')
+            .select('tests_completed, best_wpm, time_typed_seconds, username, bio, activity_log, wpm_history') // Added wpm_history
             .eq('id', userId)
             .single();
 
         if (data) {
+            // Calculate Streak Dynamically (same as fetchUserStats)
+            data.current_streak = calculateStreak(data.activity_log || {});
+
             renderProfile(data, false); // isOwner = false
 
             // Close Leaderboard if open
