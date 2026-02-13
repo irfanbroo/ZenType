@@ -2400,7 +2400,7 @@ function initGame() {
     }, 10);
 }
 
-function generateWordList() {
+function generateWordList(count = 60) {
     // Check if current wallpaper has a specific word pool assigned
     const wp = wallpapers.find(w => w.id === userConfig.wallpaperId);
     let pool;
@@ -2408,16 +2408,21 @@ function generateWordList() {
     if (wp && wp.wordPoolId !== undefined) {
         pool = wordPools[wp.wordPoolId];
     } else {
-        // Skip pool 1 (APT) in random rotation
-        if (currentPool === 1) {
-            currentPool = (currentPool + 1) % wordPools.length;
-        }
+        // Skip pool 1 (APT) in random rotation if generic
+        // Actually, just pick random pool safely
+        // But let's keep existing logic or simplify
         pool = wordPools[currentPool];
-        currentPool = (currentPool + 1) % wordPools.length;
+        // Only advance pool if we are generating a FULL new game list
+        // For appending, maybe just use same pool?
+        if (count >= 60) {
+            currentPool = (currentPool + 1) % wordPools.length;
+            // Skip APT (index 1) if rotated into it? logic was weird before.
+            if (currentPool === 1) currentPool = 2;
+        }
     }
 
     const list = [];
-    for (let i = 0; i < 60; i++) {
+    for (let i = 0; i < count; i++) {
         list.push(pool[Math.floor(Math.random() * pool.length)]);
     }
     return list;
@@ -2430,6 +2435,31 @@ function renderWords() {
         </div>`
     ).join('');
     UI.container.innerHTML = wordsHTML + `<div id="caret"></div><div id="caret-trail"></div>`;
+}
+
+function appendWords(count = 30) {
+    const newWords = generateWordList(count);
+    const startIndex = state.words.length;
+    state.words = state.words.concat(newWords);
+
+    const newWordsHTML = newWords.map((word, i) =>
+        `<div class="word" id="word-${startIndex + i}">
+            ${word.split('').map(char => `<span class="letter">${char}</span>`).join('')}
+        </div>`
+    ).join('');
+
+    // Append before caret/trail if they are fast appended? 
+    // Actually caret/trail are absolute. We can just append to container.
+    // BUT renderWords puts caret/trail at the end.
+    // Let's insert BEFORE the caret elements if possible, or just append and ensure z-index/pos is fine.
+    // The caret is absolutely positioned, so order in DOM doesn't strictly matter for visual pos,
+    // BUT we don't want to break the caret element reference if we wipe innerHTML.
+    // So we use insertAdjacentHTML.
+
+    UI.container.insertAdjacentHTML('beforeend', newWordsHTML);
+
+    // Move caret/trail to end of container to keep them "on top" if needed?
+    // Not strictly needed if they are absolute.
 }
 
 // --- INPUT HANDLER ---
@@ -2466,6 +2496,11 @@ UI.input.addEventListener('input', (e) => {
         state.currWordIndex++;
         UI.input.value = '';
         hasError = false;
+
+        // Infinite Scroll: Append words if running low
+        if (state.words.length - state.currWordIndex < 25) {
+            appendWords(30);
+        }
 
         // Combo
         updateCombo(wordCorrect);
