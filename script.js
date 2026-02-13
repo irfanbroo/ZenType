@@ -2588,14 +2588,24 @@ function endGame() {
 
     const rank = getRankTitle(netWpm);
     const rankEl = document.getElementById('rank-title');
+    const rankDescEl = document.getElementById('rank-desc');
+
     if (rankEl) {
         rankEl.innerText = rank.title;
-        rankEl.style.color = rank.color; // Fallback if gradient fails
-        // Dynamic Glow based on rank color?
+        rankEl.style.color = rank.color;
         rankEl.style.filter = `drop-shadow(0 0 15px ${rank.color})`;
         rankEl.style.background = `linear-gradient(to right, #fff, ${rank.color})`;
         rankEl.style.webkitBackgroundClip = 'text';
         rankEl.style.webkitTextFillColor = 'transparent';
+    }
+
+    if (rankDescEl) {
+        rankDescEl.innerText = rank.desc;
+        rankDescEl.style.opacity = 0;
+        setTimeout(() => {
+            rankDescEl.style.transition = 'opacity 1s ease';
+            rankDescEl.style.opacity = 0.8;
+        }, 500);
     }
 
     // Draw Graph
@@ -2613,14 +2623,108 @@ function endGame() {
     animateValue(UI.finalAcc, 0, accuracy, 1500, "%");
 }
 
+const rankQuotes = {
+    "WANDERER": [
+        "Lost in the digital mist, you take your first steps.",
+        "Every master began as a beginner. Keep going.",
+        "The keyboard is vast, and your journey has just started.",
+        "Stumbling is part of the dance. Find your footing.",
+        "Your fingers are waking up. Give them time.",
+        "A slow step forward is still a step forward.",
+        "The code whispers to you, but you cannot yet hear it.",
+        "Patience, young traveler. Speed will come.",
+        "Don't look at the keys. Look at the horizon.",
+        "You are finding your way. Trust the process."
+    ],
+    "RONIN": [
+        "A masterless warrior finding their rhythm in the chaos.",
+        "You serve no master but the flow of the keystrokes.",
+        "Your path is your own. Walk it with confidence.",
+        "The blade is dull, but the spirit is willing.",
+        "Wandering does not mean lost. You are learning.",
+        "Strike true, even if you strike slowly.",
+        "Honor is found in accuracy, not just speed.",
+        "You fight alone, but you fight with purpose.",
+        "The rhythm is inconsistent, but the potential is there.",
+        "Sharpen your mind, and your fingers will follow."
+    ],
+    "GLITCH": [
+        "You move between the frames, faster than the system can track.",
+        "A system error? No, just your raw untamed speed.",
+        "You are the bug in the machine that they can't patch.",
+        "Chaos is your ally. You type where you shouldn't.",
+        "Reality flickers when you hit the keys.",
+        "You aren't following the rules. You're rewriting them.",
+        "Static noise and neon flashes. That's your signature.",
+        "The server lag can't keep up with your inputs.",
+        "Unpredictable. Unstoppable. You are a glitch.",
+        "They tried to delete you. They failed."
+    ],
+    "SAMURAI": [
+        "Precision and speed. Your blade cuts through the code with honor.",
+        "One strike, one word. Perfect execution.",
+        "Calm mind, swift hands. The way of the warrior.",
+        "You do not type. You flow like water.",
+        "Your focus is sharp as a katana's edge.",
+        "Discipline has brought you this far. Keep cutting.",
+        "A samurai does not hurry, yet he is never late.",
+        "Strike with intention. Leave no errors behind.",
+        "Your keystrokes echo with the sound of steel.",
+        "Balance in all things. Speed and accuracy combined."
+    ],
+    "CYBERPUNK": [
+        "Neon veins and chrome reflexes. You ARE the machine.",
+        "Jacked in. The matrix is your playground now.",
+        "High tech, low life, maximum velocity.",
+        "You see the code in green rain. It makes sense.",
+        "Upgraded reflex boosters active. Systems nominal.",
+        "The streets of the net belong to you.",
+        "Hacking the mainframe with pure kinetic energy.",
+        "They call it typing. You call it interfacing.",
+        "Chrome hands move faster than flesh and bone.",
+        "Data flows through you. You are the conduit."
+    ],
+    "PREDATOR": [
+        "An apex hunter. No keystroke escapes your reach.",
+        "You don't just type words. You hunt them.",
+        "Lethal precision. The leaderboard is your prey.",
+        "Silence before the strike. Then, devastation.",
+        "You are at the top of the food chain.",
+        "Merciless efficiency. Zero wasted movement.",
+        "They run, but you are faster. Always faster.",
+        "Instinct takes over. You don't even need to think.",
+        "The hunt is on. And you are winning.",
+        "Dominance established. The territory is yours."
+    ],
+    "SINGULARITY": [
+        "You have transcended the keyboard. You are pure energy.",
+        "Physics no longer apply to your fingers.",
+        "You have merged with the infinite data stream.",
+        "Speed is an illusion. You are already there.",
+        "A god amongst mortals. Pure digital ascendance.",
+        "The universe types through you.",
+        "Beyond rank. Beyond measure. Infinite.",
+        "You are the event horizon. There is no return.",
+        "Time slows down when you begin to type.",
+        "Welcome to the void. You are its master."
+    ]
+};
+
 function getRankTitle(wpm) {
-    if (wpm < 20) return { title: "WANDERER", color: "#9ca3af" }; // Gray
-    if (wpm < 40) return { title: "RONIN", color: "#2dd4bf" }; // Teal
-    if (wpm < 60) return { title: "GLITCH", color: "#39ff14" }; // Matrix Green
-    if (wpm < 80) return { title: "SAMURAI", color: "#3b82f6" }; // Blue
-    if (wpm < 100) return { title: "CYBERPUNK", color: "#bc13fe" }; // Purple
-    if (wpm < 120) return { title: "PREDATOR", color: "#f43f5e" }; // Rose/Red
-    return { title: "SINGULARITY", color: "#ffd700" }; // Gold
+    let rank = { title: "WANDERER", color: "#9ca3af" };
+
+    if (wpm >= 120) rank = { title: "SINGULARITY", color: "#ffd700" };
+    else if (wpm >= 100) rank = { title: "PREDATOR", color: "#f43f5e" };
+    else if (wpm >= 80) rank = { title: "CYBERPUNK", color: "#bc13fe" };
+    else if (wpm >= 60) rank = { title: "SAMURAI", color: "#3b82f6" };
+    else if (wpm >= 40) rank = { title: "GLITCH", color: "#39ff14" };
+    else if (wpm >= 20) rank = { title: "RONIN", color: "#2dd4bf" };
+
+    // Pick random quote
+    const quotes = rankQuotes[rank.title] || rankQuotes["WANDERER"];
+    rank.desc = quotes[Math.floor(Math.random() * quotes.length)];
+
+    return rank;
 }
 
 function animateValue(obj, start, end, duration, suffix = "") {
