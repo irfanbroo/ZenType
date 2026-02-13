@@ -3268,3 +3268,70 @@ input:checked+.slider::before {
 .footer-link-pill i {
     font-size: 1rem;
 }
+
+/* --- SUPPORT MODAL --- */
+.support-content {
+    margin-left: 250px;
+    /* Shift to right as requested */
+}
+
+.bmc-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    background: #FFDD00;
+    color: #000;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    padding: 14px;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 15px rgba(255, 221, 0, 0.3);
+    border: 2px solid #FFDD00;
+    margin-bottom: 20px;
+}
+
+.bmc-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 221, 0, 0.5);
+    background: #ffe600;
+}
+
+.bmc-btn i {
+    font-size: 1.4rem;
+}
+
+.support-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.support-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 0.8rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.support-option.disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.support-option i {
+    font-size: 1.5rem;
+    margin-bottom: 4px;
+}
