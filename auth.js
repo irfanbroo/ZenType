@@ -405,7 +405,7 @@ function initAuth() {
 
             const item = document.createElement('div');
             item.className = `leaderboard-item ${rankClass}`;
-            item.style.cursor = 'pointer'; // Make it look clickable
+            // Cursor pointer handled in CSS now
 
             // CLICK TO VIEW PROFILE
             item.onclick = () => openPublicProfile(player.id);
@@ -686,13 +686,25 @@ function initAuth() {
         const logoutBtn = document.getElementById('logout-btn');
 
         if (isOwner) {
-            if (editBtn) editBtn.classList.remove('hidden');
-            if (logoutBtn) logoutBtn.classList.remove('hidden');
+            if (editBtn) {
+                editBtn.classList.remove('hidden');
+                editBtn.style.display = 'flex'; // Enable flex
+            }
+            if (logoutBtn) {
+                logoutBtn.classList.remove('hidden');
+                logoutBtn.style.display = 'flex';
+            }
             setupProfileEditing(data.username, data.bio);
         } else {
             // Read-Only View
-            if (editBtn) editBtn.classList.add('hidden');
-            if (logoutBtn) logoutBtn.classList.add('hidden');
+            if (editBtn) {
+                editBtn.classList.add('hidden');
+                editBtn.style.display = 'none'; // Force hide
+            }
+            if (logoutBtn) {
+                logoutBtn.classList.add('hidden');
+                logoutBtn.style.display = 'none';
+            }
 
             // Set simple text if not owner (remove inputs if any)
             const nameDisplay = document.getElementById('user-email-display');
