@@ -2452,6 +2452,11 @@ UI.input.addEventListener('input', (e) => {
                 state.correctChars++;
             }
         });
+        // Add +1 for the space if the word was fully correct (standard WPM rule)
+        // Or if we just want to count the space as a keystroke? 
+        // Usually space is a char. If word is correct, space is correct.
+        if (wordCorrect) state.correctChars++;
+
         state.totalCharsTyped += trimmedVal.length + 1;
         state.currWordIndex++;
         UI.input.value = '';
@@ -2511,13 +2516,34 @@ function startTimer() {
     state.isActive = true;
     state.startTime = Date.now();
     state.timerInterval = setInterval(() => {
-        state.timeLeft--;
+        const now = Date.now();
+        const elapsedSeconds = (now - state.startTime) / 1000;
+        state.timeLeft = Math.max(0, Math.ceil(state.timeLimit - elapsedSeconds));
+
         UI.timer.innerText = state.timeLeft + "s";
-        const timeElapsed = (state.timeLimit - state.timeLeft) / 60;
-        const wpm = Math.round((state.correctChars / 5) / timeElapsed) || 0;
+
+        // Calculate WPM with high precision
+        const timeElapsedMin = elapsedSeconds / 60;
+
+        // Calculate correct chars in the CURRENT word being typed
+        let currentWordCorrect = 0;
+        const currentInput = UI.input.value.trim();
+        const currentTarget = state.words[state.currWordIndex];
+        if (currentInput && currentTarget) {
+            for (let i = 0; i < currentInput.length; i++) {
+                if (i < currentTarget.length && currentInput[i] === currentTarget[i]) {
+                    currentWordCorrect++;
+                }
+            }
+        }
+
+        const effectiveChars = state.correctChars + currentWordCorrect;
+        const wpm = Math.round((effectiveChars / 5) / timeElapsedMin) || 0;
+
         UI.wpm.innerText = wpm + " WPM";
+
         if (state.timeLeft <= 0) endGame();
-    }, 1000);
+    }, 100); // Run faster for smoother updates
 }
 
 function endGame() {
@@ -2528,15 +2554,21 @@ function endGame() {
     const caretTrail = document.getElementById('caret-trail');
     if (caret) caret.style.display = 'none';
     if (caretTrail) caretTrail.style.display = 'none';
-    const timeElapsed = state.timeLimit / 60;
-    const netWpm = Math.round((state.correctChars / 5) / timeElapsed);
+
+    // Precise time calculation
+    const timeElapsedMin = (state.timeLimit - state.timeLeft) / 60;
+    // Ideally use (Date.now() - startTime) but if timeLeft hits 0 it should be exactly timeLimit
+    // Let's use the configured limit for final calc to avoid "29.999s"
+    const finalTimeMin = state.timeLimit / 60;
+
+    const netWpm = Math.round((state.correctChars / 5) / finalTimeMin);
     const accuracy = state.totalCharsTyped > 0 ? Math.round((state.correctChars / state.totalCharsTyped) * 100) : 0;
     UI.finalWpm.innerText = netWpm;
     UI.finalAcc.innerText = accuracy + "%";
 
     // Save stats if user is logged in
     if (window.updateUserStats) {
-        window.updateUserStats(netWpm, timeElapsed * 60); // timeElapsed is in minutes, convert to seconds
+        window.updateUserStats(netWpm, finalTimeMin * 60); // timeElapsed is in minutes, convert to seconds
     }
     UI.results.classList.remove('hidden');
 }
