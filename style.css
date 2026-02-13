@@ -1249,6 +1249,9 @@ body.zen-mode #zen-btn:hover {
     z-index: 50;
     opacity: 1;
     transition: opacity 0.3s ease;
+    /* Force light text in results overlay regardless of theme */
+    --text-main: rgba(255, 255, 255, 0.9);
+    --text-muted: rgba(255, 255, 255, 0.4);
 }
 
 #results-overlay.hidden {
@@ -1261,6 +1264,10 @@ body.zen-mode #zen-btn:hover {
     max-width: 500px;
     background: rgba(20, 20, 30, 0.9);
     animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    /* Force light text locally */
+    --text-main: rgba(255, 255, 255, 0.9);
+    --text-muted: rgba(255, 255, 255, 0.4);
+    color: var(--text-main);
 }
 
 .stats-grid {
