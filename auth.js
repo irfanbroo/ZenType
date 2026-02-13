@@ -214,8 +214,30 @@ function initAuth() {
 
         if (error || !data) {
             console.warn("Profile missing. Creating one now...");
-            // ... (auto-create logic)
-            // ...
+
+            // Auto-create profile for new user
+            const { error: insertError } = await supabaseClient
+                .from('profiles')
+                .insert([
+                    {
+                        id: user.id,
+                        username: 'ZenTyper',
+                        bio: 'Just started typing...',
+                        tests_completed: 0,
+                        best_wpm: 0,
+                        time_typed_seconds: 0,
+                        activity_log: {},
+                        wpm_history: []
+                    }
+                ]);
+
+            if (insertError) {
+                console.error("Failed to create profile:", insertError);
+                return;
+            }
+
+            console.log("Profile created successfully!");
+            // Retry fetching stats now that profile exists
             return fetchUserStats();
         }
 
@@ -265,13 +287,27 @@ function initAuth() {
         // 1. Get current stats (or create if missing)
         let { data: current, error: fetchError } = await supabaseClient
             .from('profiles')
-            .select('tests_completed, best_wpm, time_typed_seconds, activity_log, wpm_history, current_streak')
+            .select('tests_completed, best_wpm, time_typed_seconds, activity_log, wpm_history')
             .eq('id', user.id)
             .single();
 
         if (!current) {
             console.warn("Profile missing during update. Creating...");
-            await supabaseClient.from('profiles').insert([{ id: user.id }]);
+            const { error: insertError } = await supabaseClient.from('profiles').insert([
+                {
+                    id: user.id,
+                    username: 'ZenTyper',
+                    bio: 'Just started typing...',
+                    tests_completed: 0,
+                    best_wpm: 0,
+                    time_typed_seconds: 0,
+                    activity_log: {},
+                    wpm_history: []
+                }
+            ]);
+
+            if (insertError) console.error("Error creating profile in update:", insertError);
+
             current = { tests_completed: 0, best_wpm: 0, time_typed_seconds: 0, activity_log: {}, wpm_history: [] };
         }
 
@@ -286,9 +322,20 @@ function initAuth() {
         activity[today] = (activity[today] || 0) + 1;
 
         // History Update (Graph)
-        let history = current.wpm_history || [];
+        let history = current.wpm_history;
+
+        // DEBUG: Log history state
+        console.log("DEBUG: Current wpm_history before update:", history, "Type:", typeof history);
+
+        if (!Array.isArray(history)) {
+            console.warn("DEBUG: wpm_history is not an array! Resetting to empty array.");
+            history = [];
+        }
+
         history.push(wpm);
         if (history.length > 20) history = history.slice(history.length - 20);
+
+        console.log("DEBUG: New history to save:", history);
 
         // 3. Update Supabase
         const { error: updateError } = await supabaseClient
