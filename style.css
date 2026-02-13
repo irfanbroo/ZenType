@@ -3109,19 +3109,58 @@ input:checked+.slider::before {
     font-size: 1rem;
 }
 
-/* --- LOGO --- */
-#app-logo {
+/* --- APP HEADER (LOGO) --- */
+#app-header {
     position: fixed;
     top: 30px;
     left: 40px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    z-index: 100;
+    pointer-events: auto;
+    /* Enable clicks */
+    opacity: 0.9;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+
+#app-header:hover {
+    opacity: 1;
+}
+
+.logo-icon {
+    font-size: 2rem;
+    color: var(--accent-gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.3));
+}
+
+.logo-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    line-height: 1;
+}
+
+.logo-sub {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    margin-bottom: 2px;
+    font-family: 'Outfit', sans-serif;
+}
+
+.logo-main {
     font-size: 1.5rem;
     font-weight: 700;
     color: var(--text-main);
-    z-index: 100;
     margin: 0;
+    font-family: 'JetBrains Mono', monospace;
     letter-spacing: -0.05em;
-    pointer-events: none;
-    opacity: 0.8;
 }
 
 /* --- UPDATED FOOTER --- */
@@ -3222,4 +3261,5 @@ input:checked+.slider::before {
 
 .footer-link-pill i {
     font-size: 1rem;
+}
 }
