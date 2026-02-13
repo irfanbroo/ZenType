@@ -2581,3 +2581,33 @@ input:checked+.slider::before {
 #settings-btn {
     right: 3rem;
 }
+
+/* --- PROGRESS GRAPH --- */
+.progress-section {
+    margin-top: 2rem;
+    margin-bottom: 1.5rem;
+    width: 100%;
+}
+
+.graph-container {
+    width: 100%;
+    height: 120px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 10px;
+    position: relative;
+    overflow: hidden;
+    /* Cyberpunk grid background */
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 20px 20px;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+#wpm-chart {
+    width: 100%;
+    height: 100%;
+    display: block;
+}

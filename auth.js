@@ -208,7 +208,7 @@ function initAuth() {
 
         let { data, error } = await supabaseClient
             .from('profiles')
-            .select('tests_completed, best_wpm, time_typed_seconds, username, bio, activity_log')
+            .select('tests_completed, best_wpm, time_typed_seconds, username, bio, activity_log, wpm_history')
             .eq('id', user.id)
             .single();
 
@@ -246,14 +246,14 @@ function initAuth() {
         // 1. Get current stats (or create if missing)
         let { data: current, error: fetchError } = await supabaseClient
             .from('profiles')
-            .select('tests_completed, best_wpm, time_typed_seconds, activity_log')
+            .select('tests_completed, best_wpm, time_typed_seconds, activity_log, wpm_history')
             .eq('id', user.id)
             .single();
 
         if (!current) {
             console.warn("Profile missing during update. Creating...");
             await supabaseClient.from('profiles').insert([{ id: user.id }]);
-            current = { tests_completed: 0, best_wpm: 0, time_typed_seconds: 0, activity_log: {} };
+            current = { tests_completed: 0, best_wpm: 0, time_typed_seconds: 0, activity_log: {}, wpm_history: [] };
         }
 
         // 2. Calculate new values
@@ -266,6 +266,11 @@ function initAuth() {
         const activity = current.activity_log || {};
         activity[today] = (activity[today] || 0) + 1;
 
+        // History Update (Graph)
+        let history = current.wpm_history || [];
+        history.push(wpm);
+        if (history.length > 20) history = history.slice(history.length - 20);
+
         // 3. Update Supabase
         const { error: updateError } = await supabaseClient
             .from('profiles')
@@ -274,6 +279,7 @@ function initAuth() {
                 time_typed_seconds: newTime,
                 best_wpm: newBest,
                 activity_log: activity,
+                wpm_history: history,
                 last_updated: new Date().toISOString()
             })
             .eq('id', user.id);
@@ -519,6 +525,77 @@ function initAuth() {
     setup3DTilt();
     setupStatExplosions();
 
+    // --- HELPER: RENDER PLAIN GRAPH (Cardiogram Style) ---
+    function renderGraph(canvasId, historyData) {
+        const canvas = document.getElementById(canvasId);
+        if (!canvas) return;
+
+        const ctx = canvas.getContext('2d');
+        const width = canvas.width;
+        const height = canvas.height;
+
+        // Clear
+        ctx.clearRect(0, 0, width, height);
+
+        // Data Validation
+        if (!historyData || historyData.length < 2) {
+            ctx.fillStyle = "rgba(255, 255, 255, 0.3)";
+            ctx.font = "12px 'Space Mono', monospace";
+            ctx.fillText("Not enough data", 10, height / 2);
+            return;
+        }
+
+        // Config
+        const padding = 10;
+        const usableWidth = width - (padding * 2);
+        const usableHeight = height - (padding * 2);
+
+        // Scales
+        const maxWPM = Math.max(...historyData) + 10;
+        const minWPM = Math.max(0, Math.min(...historyData) - 10);
+        const range = maxWPM - minWPM || 1; // Prevent div/0
+
+        const getX = (i) => padding + (i / (historyData.length - 1)) * usableWidth;
+        const getY = (wpm) => height - padding - ((wpm - minWPM) / range) * usableHeight;
+
+        // Draw Line
+        ctx.beginPath();
+        ctx.strokeStyle = '#39ff14'; // Neon Green
+        ctx.lineWidth = 2;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+
+        ctx.moveTo(getX(0), getY(historyData[0]));
+
+        for (let i = 1; i < historyData.length; i++) {
+            ctx.lineTo(getX(i), getY(historyData[i]));
+        }
+        ctx.stroke();
+
+        // Draw Glow (we can just set shadowBlur on the line, but let's do a simple overlay)
+        ctx.save();
+        ctx.shadowColor = '#39ff14';
+        ctx.shadowBlur = 10;
+        ctx.stroke();
+        ctx.restore();
+
+        // Draw Dot at end
+        const lastX = getX(historyData.length - 1);
+        const lastY = getY(historyData[historyData.length - 1]);
+
+        ctx.beginPath();
+        ctx.fillStyle = '#39ff14';
+        ctx.arc(lastX, lastY, 4, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Optional: Fill below
+        ctx.lineTo(lastX, height);
+        ctx.lineTo(padding, height);
+        ctx.closePath();
+        ctx.fillStyle = 'rgba(57, 255, 20, 0.1)';
+        ctx.fill();
+    }
+
     // --- HELPER: RENDER PROFILE UI ---
     function renderProfile(data, isOwner) {
         // Ensure profile is visible (it might have been hidden to prevent flicker)
@@ -558,6 +635,10 @@ function initAuth() {
             </div>
         `).join('');
         }
+
+        // --- RENDER GRAPH ---
+        // Expect wpm_history array. If missing, pass empty.
+        renderGraph('wpm-chart', data.wpm_history || []);
 
         // --- RENDER HEATMAP ---
         renderHeatmap(data.activity_log || {});
