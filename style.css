@@ -394,8 +394,11 @@ body.zen-mode #zen-btn:hover {
     -webkit-backdrop-filter: blur(8px);
     display: flex;
     align-items: center;
+    display: flex;
+    align-items: center;
     justify-content: center;
-    z-index: 200;
+    z-index: 9999 !important;
+    /* Force high z-index to fix persistent overlay issues */
     opacity: 1;
     transition: opacity 0.3s ease;
     /* Force light text in settings modal regardless of theme */
@@ -424,7 +427,28 @@ body.zen-mode #zen-btn:hover {
         0 0 1px 0 rgba(255, 215, 0, 0.1),
         inset 0 1px 0 rgba(255, 255, 255, 0.05);
     animation: modalSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-    overflow: hidden;
+    overflow-y: auto;
+    /* Allow scrolling for overflowing content */
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+}
+
+/* Custom Scrollbar for Settings/Modals */
+.settings-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.settings-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.settings-content::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+}
+
+.settings-content::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.2);
 }
 
 @keyframes modalSlideIn {
