@@ -845,6 +845,8 @@ function initAuth() {
         // Speed Badges
         if (wpm >= 120) {
             badges.push({ label: 'Godlike', icon: 'ri-flashlight-fill', class: 'badge-godlike', title: '120+ WPM' });
+        } else if (wpm >= 100) {
+            badges.push({ label: 'Cyber', icon: 'ri-cpu-line', class: 'badge-cyber', title: '100+ WPM' });
         } else if (wpm >= 80) {
             badges.push({ label: 'Rocket', icon: 'ri-rocket-2-fill', class: 'badge-rocket', title: '80+ WPM' });
         } else if (wpm >= 50) {
@@ -852,7 +854,13 @@ function initAuth() {
         }
 
         // Dedication Badges
-        if (tests >= 100) {
+        if (tests >= 1000) {
+            badges.push({ label: 'Titan', icon: 'ri-vip-crown-fill', class: 'badge-titan', title: '1000+ Tests' });
+        } else if (tests >= 500) {
+            badges.push({ label: 'Elite', icon: 'ri-sword-fill', class: 'badge-elite', title: '500+ Tests' });
+        } else if (tests >= 250) {
+            badges.push({ label: 'Grinder', icon: 'ri-hammer-fill', class: 'badge-grinder', title: '250+ Tests' });
+        } else if (tests >= 100) {
             badges.push({ label: 'Master', icon: 'ri-trophy-fill', class: 'badge-master', title: '100+ Tests' });
         } else if (tests >= 50) {
             badges.push({ label: 'Veteran', icon: 'ri-medal-fill', class: 'badge-veteran', title: '50+ Tests' });
