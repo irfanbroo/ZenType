@@ -208,7 +208,7 @@ function initAuth() {
 
         let { data, error } = await supabaseClient
             .from('profiles')
-            .select('tests_completed, best_wpm, time_typed_seconds, username, bio, activity_log, wpm_history')
+            .select('tests_completed, best_wpm, time_typed_seconds, username, bio, activity_log, wpm_history, profile_theme')
             .eq('id', user.id)
             .single();
 
@@ -244,6 +244,14 @@ function initAuth() {
         if (data) {
             // Calculate Streak Dynamically
             data.current_streak = calculateStreak(data.activity_log || {});
+
+            // Apply Saved Theme (Global)
+            if (data.profile_theme && window.applyProfileTheme) {
+                // Update Local Storage to match Cloud (sync)
+                localStorage.setItem('zenType_profileTheme', JSON.stringify(data.profile_theme));
+                window.applyProfileTheme(data.profile_theme);
+            }
+
             renderProfile(data, true);
         }
     }
@@ -356,6 +364,31 @@ function initAuth() {
             console.log("Stats saved successfully!");
             fetchUserStats(); // Refresh UI
         }
+    };
+
+    // Save Theme Publicly
+    window.saveUserTheme = async (themeData) => {
+        console.log("DEBUG: auth.js - saveUserTheme called with:", themeData);
+
+        if (!supabaseClient) {
+            console.error("DEBUG: auth.js - supabaseClient missing.");
+            return;
+        }
+
+        const { data: { user } } = await supabaseClient.auth.getUser();
+        if (!user) {
+            console.error("DEBUG: auth.js - No user logged in.");
+            return;
+        }
+
+        console.log("DEBUG: auth.js - Saving for user:", user.id);
+        const { error } = await supabaseClient
+            .from('profiles')
+            .update({ profile_theme: themeData })
+            .eq('id', user.id);
+
+        if (error) console.error("DEBUG: auth.js - Supabase Error:", error);
+        else console.log("DEBUG: auth.js - Theme saved successfully to DB.");
     };
 
     // --- LEADERBOARD LOGIC ---
@@ -678,6 +711,7 @@ function initAuth() {
 
     // --- HELPER: RENDER PROFILE UI ---
     function renderProfile(data, isOwner) {
+        console.log("DEBUG: renderProfile called. isOwner:", isOwner, "Username:", data.username);
         // Ensure profile is visible (it might have been hidden to prevent flicker)
         if (authUI.userProfile) authUI.userProfile.classList.remove('hidden');
 
@@ -686,6 +720,13 @@ function initAuth() {
         const logoutBtn = document.getElementById('logout-btn');
 
         if (isOwner) {
+            // Reset Container Styles (Remove overrides from public view)
+            const profileContainer = document.getElementById('user-profile');
+            if (profileContainer) {
+                profileContainer.style.removeProperty('--profile-primary');
+                profileContainer.style.removeProperty('--profile-accent');
+            }
+
             if (editBtn) {
                 editBtn.classList.remove('hidden');
                 editBtn.style.display = 'flex'; // Enable flex
@@ -768,13 +809,27 @@ function initAuth() {
         // Fetch User Data
         const { data, error } = await supabaseClient
             .from('profiles')
-            .select('tests_completed, best_wpm, time_typed_seconds, username, bio, activity_log, wpm_history') // Added wpm_history
+            .select('tests_completed, best_wpm, time_typed_seconds, username, bio, activity_log, wpm_history, profile_theme') // Added wpm_history & theme
             .eq('id', userId)
             .single();
 
         if (data) {
             // Calculate Streak Dynamically (same as fetchUserStats)
             data.current_streak = calculateStreak(data.activity_log || {});
+
+            // Apply Public Theme (Scoped to Modal)
+            if (data.profile_theme && window.applyProfileTheme) {
+                const profileContainer = document.getElementById('user-profile');
+                if (profileContainer) {
+                    window.applyProfileTheme(data.profile_theme, profileContainer);
+                }
+            } else {
+                // Reset to default if no theme
+                const profileContainer = document.getElementById('user-profile');
+                if (profileContainer) {
+                    window.applyProfileTheme({ mode: 'default' }, profileContainer);
+                }
+            }
 
             renderProfile(data, false); // isOwner = false
 
