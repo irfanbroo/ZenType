@@ -3967,15 +3967,15 @@ input:checked+.slider::before {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(circle at center, #1a0505 0%, #000000 100%);
+    width: 100vw;
+    height: 100vh;
+    background: radial-gradient(circle at center, #2b0a0a 0%, #000000 100%);
     z-index: 5000;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    color: #fff;
+    color: #e5e5e5;
     font-family: 'JetBrains Mono', monospace;
 }
 
@@ -4008,38 +4008,94 @@ input:checked+.slider::before {
 }
 
 #h-words-container {
-    font-size: 2.5rem;
-    max-width: 900px;
+    font-size: 1.5rem;
+    max-width: 800px;
     text-align: center;
-    line-height: 1.6;
-    color: #444;
-    letter-spacing: 0.05em;
-    /* Cinematic spacing */
-    position: relative;
-    text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-}
-
-.h-caret {
-    position: absolute;
-    width: 4px;
-    height: 3rem;
-    background: #ce1126;
-    box-shadow: 0 0 10px #ce1126;
-    animation: blink 1s step-end infinite;
-    pointer-events: none;
-    transition: all 0.1s ease;
-    z-index: 10;
+    line-height: 1.8;
+    margin: 40px 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
 }
 
 .h-word {
-    margin: 0 10px;
-    display: inline-block;
+    opacity: 0.3;
+    transition: all 0.2s ease;
+    margin: 0 8px;
+    display: flex;
+    /* Flex for letters */
 }
 
 .h-word.active {
-    color: #fff;
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    opacity: 1;
+    color: #e5e5e5;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+    /* No border-right here anymore */
 }
+
+.h-letter {
+    position: relative;
+    transition: color 0.1s;
+}
+
+.h-letter.h-correct {
+    color: #444;
+    /* Dim completed letters */
+}
+
+.h-letter.h-cursor {
+    /* Blinking Sword Caret */
+    border-left: none;
+    /* R.I.P. Line Caret */
+    animation: none;
+    /* Animation handled on pseudo */
+}
+
+.h-letter.h-cursor::before {
+    content: '🗡';
+    /* Sword Icon */
+    position: absolute;
+    left: -0.6em;
+    top: -0.2em;
+    font-size: 1.2em;
+    color: #ce1126;
+    filter: drop-shadow(0 0 5px #ce1126);
+    animation: h-blink-sword 1s ease-in-out infinite;
+    z-index: 10;
+}
+
+.h-word.waiting-space::after {
+    /* Cursor at end of word waiting for space */
+    content: '🗡';
+    display: inline-block;
+    color: #ce1126;
+    margin-left: 5px;
+    font-size: 1.2em;
+    filter: drop-shadow(0 0 5px #ce1126);
+    animation: h-blink-sword 1s ease-in-out infinite;
+    position: relative;
+    top: -0.1em;
+}
+
+@keyframes h-blink-sword {
+
+    0%,
+    100% {
+        opacity: 1;
+        transform: translateY(0) rotate(0deg);
+    }
+
+    50% {
+        opacity: 0.8;
+        transform: translateY(-6px) rotate(-15deg);
+        /* More movement */
+    }
+}
+
+/* Removed redundant explicit timing function as it is now in the shorthand */
+
+
 
 .h-word.error {
     color: #ce1126;
@@ -4058,7 +4114,8 @@ input:checked+.slider::before {
 #h-input {
     position: absolute;
     opacity: 0;
-    pointer-events: none;
+    z-index: 6000;
+    /* Ensure on top */
 }
 
 .h-footer {
