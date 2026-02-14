@@ -18,6 +18,64 @@ const wordPools = [
     "I am a star boy every day a star is born look what you have done I am a legend now coming alive all I wanna hear is the sound of my city burning let the sky fall we are the ones who made it all the way to the top and now we living like a star boy".split(" ")
 ];
 
+const hagakureWords = [
+    "blade", "honor", "death", "glory", "steel", "blood", "spirit", "warrior", "silence", "strike", "swift", "kill", "void", "ghost", "shadow", "ronin", "samurai", "katana", "feudal", "bushido", "focus", "breath", "cherry", "blossom", "peace", "war", "enemy", "defeat", "victory", "master", "legend", "myth", "soul", "mind", "eternal", "night", "darkness", "light", "flash", "thunder", "storm", "calm", "stillness", "meditate", "discipline", "respect", "loyalty", "sacrifice", "bravery", "courage", "fear", "pain", "endure", "survive", "conquer", "rule", "shogun", "emperor", "kingdom", "dynasty", "legacy", "destiny", "fate", "karma", "life", "death", "rebirth", "cycle", "nature", "mountain", "river", "ocean", "sky", "moon", "star", "sun", "fire", "water", "earth", "wind", "metal", "wood", "dragon", "phoenix", "tiger", "wolf", "hawk", "eagle", "snake", "viper", "cobra", "venom", "poison", "cure", "heal", "wound", "scar", "battle", "fight", "war", "combat", "duel", "clash", "strike", "cut", "slash", "pierce", "stab", "thrust", "parry", "block", "dodge", "evade", "counter", "attack", "defend", "guard", "stance", "move", "step", "walk", "run", "sprint", "jump", "leap", "fly", "soar", "dive", "fall", "rise", "stand", "sit", "kneel", "bow", "pray", "chant", "sing", "shout", "scream", "whisper", "talk", "speak", "listen", "hear", "see", "watch", "look", "observe", "perceive", "understand", "knowing", "wise", "fool", "strong", "weak", "fast", "slow", "heavy", "light", "hard", "soft", "sharp", "dull", "cold", "hot", "wet", "dry", "clean", "dirty", "pure", "traint", "evil", "good", "right", "wrong", "true", "false", "real", "fake", "lie", "truth"
+];
+
+const hagakureFailMessages = [
+    "DISHONOR", "UNWORTHY", "FALLEN", "DEFEAT", "SHAME", "BROKEN", "TOO SLOW", "WEAKNESS", "FATAL", "END",
+    "DISGRACE", "FAILURE", "IMPURE", "HESITATION", "SLOPPY", "ERROR", "MISTAKE", "YIELDED", "CRUMBLED", "LOST",
+    "FINISH", "OBLIVION", "VOID", "NULL", "WASTED", "EXPIRED", "CEASED", "GONE", "RUIN", "COLLAPSE"
+];
+
+const hagakureEarlyFailMessages = [
+    "- Your blade remains sheathed.",
+    "- You tripped on the first step.",
+    "- Pathetic start.",
+    "- Not even a single cut?",
+    "- Hesitation is defeat.",
+    "- Return to the academy.",
+    "- Too slow to begin.",
+    "- The enemy laughs.",
+    "- You were not ready."
+];
+
+const hagakureGeneralFailMessages = [
+    "Your focus wavered.",
+    "A moment of weakness.",
+    "Discipline is key.",
+    "Go back to the dojo.",
+    "Steel requires tempering.",
+    "A true warrior never stops.",
+    "Mind and body disconnected.",
+    "Refine your spirit.",
+    "Silence the mind."
+];
+
+const hagakureMiddleFailMessages = [
+    "Halfway is not enough.",
+    "Your endurance failed.",
+    "Fatigue is the mind killer.",
+    "Mediocrity is a sin.",
+    "You lost the rhythm.",
+    "Focus must be absolute.",
+    "Do not stop halfway.",
+    "The path is long.",
+    "Incomplete."
+];
+
+const hagakureLateFailMessages = [
+    "So close to glory.",
+    "You stumbled at the gates.",
+    "The final step is the hardest.",
+    "Victory was in your grasp.",
+    "To fall at the end is tragedy.",
+    "One mistake costs everything.",
+    "Bitter defeat.",
+    "Almost a legend.",
+    "The finish line mocks you."
+];
+
 let currentPool = 0;
 
 // --- 1. WALLPAPER CONFIGURATION ---
@@ -2080,9 +2138,15 @@ function setupSettingsListeners() {
             splash.classList.add('hidden');
 
             // Hide standard UI
-            document.querySelector('.container').style.display = 'none'; // Main UI
-            document.querySelector('header').style.display = 'none';
-            document.querySelector('.site-footer').style.display = 'none';
+            const gameUI = document.getElementById('game-ui');
+            const appHeader = document.getElementById('app-header');
+            const navButtons = document.getElementById('top-nav-buttons');
+            const footer = document.querySelector('footer') || document.querySelector('.site-footer');
+
+            if (gameUI) gameUI.classList.add('hidden');
+            if (appHeader) appHeader.style.display = 'none';
+            if (navButtons) navButtons.style.display = 'none';
+            if (footer) footer.style.display = 'none';
 
             // Show Hagakure UI
             const hUI = document.getElementById('hagakure-ui');
@@ -2090,49 +2154,85 @@ function setupSettingsListeners() {
 
             // Set Game State
             state.gameMode = 'hagakure';
+
+            // Global Shortcuts for Hagakure (Tab to Retry)
+            if (!window.hTabListener) {
+                window.hTabListener = (e) => {
+                    if (state.gameMode === 'hagakure' && e.key === 'Tab') {
+                        e.preventDefault();
+                        initHagakureGame();
+                    }
+                };
+                document.addEventListener('keydown', window.hTabListener);
+            }
+
             initHagakureGame();
         }, 2000);
     }
 
     function initHagakureGame() {
         const hInput = document.getElementById('h-input');
+        if (hInput) {
+            hInput.disabled = false;
+        }
         const hContainer = document.getElementById('h-words-container');
         const hWpm = document.getElementById('h-wpm');
         const hStreak = document.getElementById('h-streak');
 
+        // Clear any existing timer
+        if (state.timerInterval) clearInterval(state.timerInterval);
+
         // Reset State
-        state.words = generateWords(50); // Use existing generator
+        state.words = [];
+        for (let i = 0; i < 50; i++) {
+            state.words.push(hagakureWords[Math.floor(Math.random() * hagakureWords.length)]);
+        }
         state.currWordIndex = 0;
         state.correctChars = 0;
         state.totalCharsTyped = 0;
         state.startTime = null;
         state.isActive = false;
         state.streak = 0;
+        if (hStreak) hStreak.innerText = '0';
+        if (hWpm) hWpm.innerText = '0'; // Fix: Reset UI WPM
 
-        // Render Words
+        // Render Words (Character Level)
         hContainer.innerHTML = '';
-        state.words.forEach(word => {
-            const span = document.createElement('span');
-            span.innerText = word;
-            span.className = 'h-word';
-            hContainer.appendChild(span);
-        });
-        hContainer.firstChild.classList.add('active');
+        state.words.forEach((word, wordIdx) => {
+            const wordSpan = document.createElement('div');
+            wordSpan.className = 'h-word';
 
-        // Focus Input
+            // Create letters
+            word.split('').forEach(char => {
+                const charSpan = document.createElement('span');
+                charSpan.innerText = char;
+                charSpan.className = 'h-letter';
+                wordSpan.appendChild(charSpan);
+            });
+
+            hContainer.appendChild(wordSpan);
+        });
+
+        // Mark first word/letter active
+        updateHagakureVisuals();
+
+        // Focus Input force
         hInput.value = '';
         hInput.focus();
+        hInput.click();
 
         // Auto-focus listener
-        document.addEventListener('click', () => {
-            if (state.gameMode === 'hagakure') hInput.focus();
+        document.addEventListener('click', (e) => {
+            // Only refocus if we are actually in Hagakure mode and clicked HUI
+            if (state.gameMode === 'hagakure' && e.target.closest('#hagakure-ui')) {
+                hInput.focus();
+            }
         });
 
         // Input Handling
         hInput.oninput = (e) => {
             const value = hInput.value;
             const currWord = state.words[state.currWordIndex];
-            const currentWordSpan = hContainer.children[state.currWordIndex];
 
             // Start Timer
             if (!state.isActive && value.length === 1) {
@@ -2141,46 +2241,94 @@ function setupSettingsListeners() {
                 startHagakureTimer();
             }
 
-            // SUDDEN DEATH LOGIC
+            // CHECK INPUT (Character by Character)
+            // CHECK INPUT (Character by Character)
+
+            // 1. Space -> Next Word (only if word is complete)
+            if (value.endsWith(' ')) {
+                if (value.trim() === currWord) {
+                    // Update correct chars for the completed word + space
+                    state.correctChars += currWord.length + 1;
+
+                    state.currWordIndex++;
+                    state.streak++;
+                    hStreak.innerText = state.streak;
+                    hInput.value = '';
+
+                    if (state.currWordIndex >= state.words.length) {
+                        initHagakureGame(); // Win/Reset
+                    } else {
+                        updateHagakureVisuals();
+                    }
+                } else {
+                    // Space pressed but word incomplete/wrong -> Game Over
+                    gameOverHagakure();
+                }
+                return;
+            }
+
+            // 2. Check for Mistake (Standard typing)
             if (!currWord.startsWith(value)) {
-                // MISTAKE DETECTED -> GAME OVER
                 gameOverHagakure();
                 return;
             }
 
-            // Space -> Next Word
-            if (value.endsWith(' ')) {
-                const typedWord = value.trim();
-                if (typedWord === currWord) {
-                    // Correct Word
-                    currentWordSpan.classList.remove('active');
-                    currentWordSpan.classList.add('correct'); // Add styling for completed words if needed
-                    state.currWordIndex++;
-                    state.streak++;
-                    hStreak.innerText = state.streak;
-
-                    hInput.value = '';
-
-                    if (state.currWordIndex >= state.words.length) {
-                        // Win / Refresh
-                        initHagakureGame();
-                    } else {
-                        hContainer.children[state.currWordIndex].classList.add('active');
-                        // Scroll logic if needed
-                    }
-                }
-            }
+            // 3. Update Visuals (Highlight typed letters)
+            updateHagakureVisuals(value.length);
         };
+    }
+
+    function updateHagakureVisuals(typedLength = 0) {
+        const hContainer = document.getElementById('h-words-container');
+        const words = hContainer.children;
+
+        // 1. Reset all words
+        Array.from(words).forEach((w, i) => {
+            w.classList.remove('active', 'correct', 'waiting-space');
+            if (i < state.currWordIndex) w.classList.add('correct');
+        });
+
+        // 2. set Active Word
+        if (state.currWordIndex < words.length) {
+            const activeWord = words[state.currWordIndex];
+            activeWord.classList.add('active');
+
+            // 3. Letter styling (Correct / Cursor)
+            const letters = activeWord.children;
+            Array.from(letters).forEach((l, i) => {
+                l.classList.remove('h-correct', 'h-cursor');
+                if (i < typedLength) {
+                    l.classList.add('h-correct');
+                }
+                // Cursor on the NEXT char to be typed
+                if (i === typedLength) {
+                    l.classList.add('h-cursor');
+                }
+            });
+
+            // If we typed passed the last char (waiting for space), maybe cursor on last char?
+            // Or render an extra "space" cursor. For now simple:
+            if (typedLength === letters.length) {
+                // Maybe add a subtle cursor at the end via CSS on the word
+                activeWord.classList.add('waiting-space');
+            } else {
+                activeWord.classList.remove('waiting-space');
+            }
+        }
     }
 
     function startHagakureTimer() {
         state.timerInterval = setInterval(() => {
             if (!state.isActive) return;
             const elapsed = (Date.now() - state.startTime) / 1000 / 60;
-            const wpm = Math.round((state.correctChars / 5) / elapsed) || 0;
-            // Simple WPM calc for now, can refine
-            // document.getElementById('h-wpm').innerText = wpm; 
-        }, 1000);
+
+            // Calculate total correct chars (completed words + current input)
+            const currentInputLen = document.getElementById('h-input').value.length;
+            const totalChars = state.correctChars + currentInputLen;
+
+            const wpm = Math.round((totalChars / 5) / elapsed) || 0;
+            document.getElementById('h-wpm').innerText = wpm;
+        }, 500); // 500ms update
     }
 
     function gameOverHagakure() {
@@ -2188,7 +2336,41 @@ function setupSettingsListeners() {
         clearInterval(state.timerInterval);
 
         const hContainer = document.getElementById('h-words-container');
-        hContainer.innerHTML = '<div style="color: #ce1126; font-family: Shojumaru; font-size: 4rem;">DISHONOR</div><div style="font-size: 1rem; margin-top: 20px;">CLICK TO RETRY</div>';
+        const failMsg = hagakureFailMessages[Math.floor(Math.random() * hagakureFailMessages.length)];
+
+        let subMsg = "";
+
+        // Progress Logic (50 words total)
+        // Early: < 5 words (10%)
+        // Middle: 5 - 40 words (10% - 80%)
+        // Late: > 40 words (80%+)
+
+        if (state.currWordIndex < 5) {
+            subMsg = hagakureEarlyFailMessages[Math.floor(Math.random() * hagakureEarlyFailMessages.length)];
+        } else if (state.currWordIndex >= 40) {
+            subMsg = hagakureLateFailMessages[Math.floor(Math.random() * hagakureLateFailMessages.length)];
+        } else {
+            // General/Middle
+            const useMiddle = Math.random() > 0.5;
+            if (useMiddle) {
+                subMsg = hagakureMiddleFailMessages[Math.floor(Math.random() * hagakureMiddleFailMessages.length)];
+            } else {
+                subMsg = hagakureGeneralFailMessages[Math.floor(Math.random() * hagakureGeneralFailMessages.length)];
+            }
+        }
+
+        // Disable input to prevent further typing
+        const hInput = document.getElementById('h-input');
+        if (hInput) {
+            hInput.disabled = true;
+            hInput.blur();
+        }
+
+        hContainer.innerHTML = `
+            <div style="width: 100%; text-align: center; color: #ce1126; font-family: Shojumaru; font-size: 4rem; text-shadow: 0 0 10px rgba(206, 17, 38, 0.5);">${failMsg}</div>
+            <div style="width: 100%; text-align: center; font-size: 1.2rem; color: #888; margin-top: 10px; font-style: italic;">${subMsg}</div>
+            <div style="width: 100%; text-align: right; font-size: 0.8rem; margin-top: 10px; opacity: 0.6; letter-spacing: 2px; color: #ce1126;">PRESS TAB TO FACE YOUR DESTINY</div>
+        `;
 
         // Click to restart
         const restartHandler = () => {
@@ -3874,3 +4056,4 @@ window.applyProfileTheme = function (theme, targetElement = null) {
     root.style.setProperty('--profile-accent', accent);
     root.style.setProperty('--profile-glow-primary', glowPrimary);
 };
+
