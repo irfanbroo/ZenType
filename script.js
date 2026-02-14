@@ -3315,10 +3315,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Layout Toggle
     const layoutBtns = document.querySelectorAll('.layout-btn');
+    const customOptions = document.getElementById('profile-custom-options');
+
+    function toggleCustomInputs(isCustom) {
+        if (!customOptions) return;
+        if (isCustom) {
+            customOptions.style.opacity = '1';
+            customOptions.style.pointerEvents = 'auto';
+        } else {
+            customOptions.style.opacity = '0.5';
+            customOptions.style.pointerEvents = 'none';
+        }
+    }
+
     layoutBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             layoutBtns.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
+
+            // Unlock inputs if Custom is selected
+            toggleCustomInputs(btn.id === 'profile-mode-custom');
         });
     });
 
@@ -3344,6 +3360,36 @@ document.addEventListener('DOMContentLoaded', () => {
     const targetId = savedTheme.mode === 'custom' ? 'profile-mode-custom' : 'profile-mode-default';
     const targetBtn = document.getElementById(targetId);
     if (targetBtn) targetBtn.classList.add('active');
+
+    // Quick Palettes
+    const palettePresets = document.querySelectorAll('.palette-preset');
+    if (palettePresets) {
+        palettePresets.forEach(preset => {
+            preset.addEventListener('click', () => {
+                const pColor = preset.getAttribute('data-primary');
+                const aColor = preset.getAttribute('data-accent');
+
+                // Set Inputs
+                if (primaryInput && primaryPicker && primaryPreview) {
+                    primaryInput.value = pColor;
+                    primaryPicker.value = pColor;
+                    primaryPreview.style.background = pColor;
+                    // Trigger live update
+                    if (updateCustomBorder) updateCustomBorder(pColor);
+                }
+
+                if (accentInput && accentPicker && accentPreview) {
+                    accentInput.value = aColor;
+                    accentPicker.value = aColor;
+                    accentPreview.style.background = aColor;
+                }
+
+                // Force Switch to Custom
+                const customBtn = document.getElementById('profile-mode-custom');
+                if (customBtn) customBtn.click();
+            });
+        });
+    }
 
     // Apply CSS
     if (window.applyProfileTheme) {
