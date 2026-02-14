@@ -2544,7 +2544,7 @@ input:checked+.slider::before {
     left: 50%;
     width: 6px;
     height: 6px;
-    background: var(--accent-gold);
+    background: var(--profile-primary);
     border-radius: 50%;
     pointer-events: none;
     transform: translate(-50%, -50%);
@@ -2591,7 +2591,7 @@ input:checked+.slider::before {
 
 .username-input:focus {
     outline: none;
-    border-color: var(--accent-gold);
+    border-color: var(--profile-primary);
 }
 
 .edit-icon {
@@ -2737,7 +2737,7 @@ input:checked+.slider::before {
     width: 80px;
     height: 80px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--accent-gold), #ffb800);
+    background: linear-gradient(135deg, var(--profile-primary), var(--profile-accent));
     display: flex;
     align-items: center;
     justify-content: center;
@@ -2745,7 +2745,7 @@ input:checked+.slider::before {
     font-weight: 700;
     color: #111;
     margin-bottom: 15px;
-    box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
 }
 
 #user-email-display {
@@ -2782,7 +2782,7 @@ input:checked+.slider::before {
 .p-val {
     font-size: 1.2rem;
     font-weight: 700;
-    color: var(--accent-gold);
+    color: var(--profile-primary);
 }
 
 .p-label {
@@ -2816,8 +2816,8 @@ input:checked+.slider::before {
 
 /* User Icon in Header/Login Button */
 #login-btn.logged-in i {
-    color: var(--accent-gold);
-    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    color: var(--profile-primary);
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
 #login-btn {
@@ -3432,4 +3432,130 @@ input:checked+.slider::before {
     text-transform: uppercase;
     letter-spacing: 2px;
     font-weight: 600;
+}
+
+/* ══════════════════════════════════════════════════════════ */
+/* PROFILE TAB STYLES & COLOR PICKERS */
+/* ══════════════════════════════════════════════════════════ */
+
+/* Explicit Tab Visibility */
+.tab-pane {
+    display: none !important;
+    /* Force hide by default */
+    animation: fadeIn 0.3s ease;
+}
+
+.tab-pane.active {
+    display: block !important;
+    /* Force show when active */
+}
+
+/* Color Input Wrapper */
+.color-input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: border-color 0.2s;
+}
+
+.color-input-wrapper:focus-within {
+    border-color: rgba(255, 215, 0, 0.5);
+}
+
+/* Hex Text Input */
+.hex-input {
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.9rem;
+    width: 80px;
+    outline: none;
+    text-transform: uppercase;
+}
+
+/* Color Preview Circle */
+.color-preview {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    cursor: pointer;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s;
+}
+
+.color-preview:hover {
+    transform: scale(1.1);
+    border-color: #fff;
+}
+
+/* Hidden Native Color Picker */
+.color-picker-hidden {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+}
+
+/* ══════════════════════════════════════════════════════════ */
+/* UI POLISH (Selection Indicators) */
+/* ══════════════════════════════════════════════════════════ */
+
+/* Layout Button Animations */
+.layout-btn {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.layout-btn:hover {
+    transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.3) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.layout-btn.active {
+    border-color: var(--accent-gold) !important;
+    background: rgba(255, 215, 0, 0.05) !important;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.1);
+}
+
+/* Selection Indicator (Radio/Checkmark) */
+.selection-indicator {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.selection-indicator i {
+    font-size: 14px;
+    color: #000;
+    opacity: 0;
+    transform: scale(0.5);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.layout-btn.active .selection-indicator {
+    background: var(--accent-gold);
+    border-color: var(--accent-gold);
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+}
+
+.layout-btn.active .selection-indicator i {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.layout-btn:hover .selection-indicator {
+    border-color: rgba(255, 255, 255, 0.5);
 }
