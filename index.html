@@ -148,7 +148,14 @@
                     <i class="ri-volume-up-line"></i>
                     <span>Sound</span>
                 </button>
-                <button class="settings-tab" data-tab="typing">Typing</button>
+                <button class="settings-tab" data-tab="typing">
+                    <i class="ri-keyboard-line"></i>
+                    <span>Typing</span>
+                </button>
+                <button class="settings-tab" data-tab="profile">
+                    <i class="ri-user-settings-line"></i>
+                    <span>Profile</span>
+                </button>
             </div>
 
             <!-- Tab: Wallpaper -->
@@ -534,6 +541,90 @@
                 </div>
 
 
+            </div>
+
+            <!-- PROFILE TAB CONTENT -->
+            <div class="tab-pane" id="tab-profile">
+                <div class="settings-group">
+                    <div class="section-header">
+                        <i class="ri-layout-masonry-line section-icon"></i>
+                        <label class="section-label">UI LAYOUT</label>
+                    </div>
+                    <div class="layout-options" style="display: flex; gap: 15px; margin-top: 15px;">
+                        <button id="profile-mode-default" class="layout-btn active"
+                            style="flex: 1; padding: 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03); cursor: pointer; transition: all 0.3s ease; position: relative; overflow: hidden;">
+                            <div class="layout-preview"
+                                style="height: 60px; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border-radius: 8px; margin-bottom: 10px; position: relative; overflow: hidden;">
+                                <div
+                                    style="position: absolute; top: 10px; left: 10px; width: 20px; height: 20px; background: #ffd700; border-radius: 50%;">
+                                </div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span
+                                    style="font-family: 'Space Mono', monospace; font-size: 0.9rem; color: #fff;">Default</span>
+                                <div class="selection-indicator">
+                                    <i class="ri-check-line"></i>
+                                </div>
+                            </div>
+                        </button>
+
+                        <button id="profile-mode-custom" class="layout-btn"
+                            style="flex: 1; padding: 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03); cursor: pointer; transition: all 0.3s ease; position: relative; overflow: hidden;">
+                            <div class="layout-preview"
+                                style="height: 60px; background: #000; border-radius: 8px; margin-bottom: 10px; position: relative; border: 1px solid #333;">
+                                <div
+                                    style="position: absolute; top: 10px; left: 10px; width: 40px; height: 4px; background: #333;">
+                                </div>
+                                <div
+                                    style="position: absolute; top: 20px; left: 10px; width: 30px; height: 4px; background: #333;">
+                                </div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span
+                                    style="font-family: 'Space Mono', monospace; font-size: 0.9rem; color: #fff;">Custom</span>
+                                <div class="selection-indicator">
+                                    <i class="ri-check-line"></i>
+                                </div>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- COLOR CUSTOMIZATION -->
+                <div class="settings-group"
+                    style="margin-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 2rem;">
+                    <div class="section-header">
+                        <i class="ri-palette-line section-icon"></i>
+                        <label class="section-label">PROFILE APPEARANCE</label>
+                    </div>
+
+                    <div class="control-group" style="margin-top: 15px;">
+                        <label class="section-label" style="font-size: 0.8rem; opacity: 0.7;">PRIMARY COLOR</label>
+                        <div class="color-input-wrapper">
+                            <div class="color-preview" id="profile-primary-preview" style="background: #00ff88;"></div>
+                            <input type="text" id="profile-primary-input" class="hex-input" value="#00ff88"
+                                maxlength="7" placeholder="#00ff88">
+                            <input type="color" id="profile-primary-picker" class="color-picker-hidden" value="#00ff88">
+                        </div>
+                    </div>
+
+                    <div class="control-group" style="margin-top: 15px;">
+                        <label class="section-label" style="font-size: 0.8rem; opacity: 0.7;">ACCENT COLOR</label>
+                        <div class="color-input-wrapper">
+                            <div class="color-preview" id="profile-accent-preview" style="background: #000000;"></div>
+                            <input type="text" id="profile-accent-input" class="hex-input" value="#000000" maxlength="7"
+                                placeholder="#000000">
+                            <input type="color" id="profile-accent-picker" class="color-picker-hidden" value="#000000">
+                        </div>
+                    </div>
+
+                    <div class="control-group" style="margin-top: 25px;">
+                        <button id="save-profile-theme-btn" class="action-btn"
+                            style="width: 100%; padding: 12px; background: var(--accent-gold); color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s;">
+                            <i class="ri-save-line"></i> Save Theme
+                        </button>
+                    </div>
+                </div>
             </div>
 
         </div>

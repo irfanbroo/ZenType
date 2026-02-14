@@ -3174,3 +3174,153 @@ function hexToRgba(hex, alpha) {
 }
 
 window.addEventListener('resize', updateCaretPosition);
+
+// ══════════════════════════════════════════════════════════
+// SETTINGS TAB LOGIC (Explicit Handling)
+// ══════════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. Tab Switching
+    const tabs = document.querySelectorAll('.settings-tab');
+    const panes = document.querySelectorAll('.tab-pane');
+
+    if (tabs.length > 0) {
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Deactivate all
+                tabs.forEach(t => t.classList.remove('active'));
+                panes.forEach(p => p.classList.remove('active'));
+
+                // Activate clicked
+                tab.classList.add('active');
+
+                // Show Pane
+                const targetId = `tab-${tab.dataset.tab}`;
+                const targetPane = document.getElementById(targetId);
+                if (targetPane) {
+                    targetPane.classList.add('active');
+                }
+            });
+        });
+    }
+
+    // 2. Profile Color Logic
+    const primaryInput = document.getElementById('profile-primary-input');
+    const primaryPicker = document.getElementById('profile-primary-picker');
+    const primaryPreview = document.getElementById('profile-primary-preview');
+
+    const accentInput = document.getElementById('profile-accent-input');
+    const accentPicker = document.getElementById('profile-accent-picker');
+    const accentPreview = document.getElementById('profile-accent-preview');
+
+    // Sync Helper
+    function setupColorSync(textInput, picker, preview) {
+        if (!textInput || !picker || !preview) return;
+
+        // Click preview to open picker
+        preview.addEventListener('click', () => picker.click());
+
+        // Picker Change
+        picker.addEventListener('input', (e) => {
+            const val = e.target.value;
+            textInput.value = val;
+            preview.style.background = val;
+        });
+
+        // Text Input Change
+        textInput.addEventListener('input', (e) => {
+            const val = e.target.value;
+            if (val.startsWith('#') && val.length === 7) {
+                picker.value = val;
+                preview.style.background = val;
+            }
+        });
+    }
+
+    setupColorSync(primaryInput, primaryPicker, primaryPreview);
+    setupColorSync(accentInput, accentPicker, accentPreview);
+
+    // Apply Theme Function
+    function applyProfileTheme(theme) {
+        const root = document.documentElement;
+
+        // Default Colors (Gold/Orange)
+        const defPrimary = '#ffd700';
+        const defAccent = '#ffb800';
+
+        if (theme.mode === 'custom') {
+            root.style.setProperty('--profile-primary', theme.primary || defPrimary);
+            root.style.setProperty('--profile-accent', theme.accent || defAccent);
+        } else {
+            // Default Mode: Reset to hardcoded defaults
+            root.style.setProperty('--profile-primary', defPrimary);
+            root.style.setProperty('--profile-accent', defAccent);
+        }
+    }
+
+    // Save Button
+    const saveBtn = document.getElementById('save-profile-theme-btn');
+    if (saveBtn) {
+        saveBtn.addEventListener('click', () => {
+            const primary = primaryInput ? primaryInput.value : '#ffd700';
+            const accent = accentInput ? accentInput.value : '#ffb800';
+
+            // Check active mode
+            const activeBtn = document.querySelector('.layout-btn.active');
+            let mode = 'default';
+            if (activeBtn && activeBtn.id === 'profile-mode-custom') {
+                mode = 'custom';
+            }
+
+            // Save to LocalStorage
+            const themeData = {
+                primary: primary,
+                accent: accent,
+                mode: mode
+            };
+            localStorage.setItem('zenType_profileTheme', JSON.stringify(themeData));
+
+            // Apply Immediately
+            applyProfileTheme(themeData);
+
+            // Visual Feedback
+            saveBtn.innerHTML = '<i class="ri-check-line"></i> Saved!';
+            setTimeout(() => {
+                saveBtn.innerHTML = '<i class="ri-save-line"></i> Save Theme';
+            }, 2000);
+        });
+    }
+
+    // Layout Toggle
+    const layoutBtns = document.querySelectorAll('.layout-btn');
+    layoutBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            layoutBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        });
+    });
+
+    // Load Defaults on Start
+    const savedTheme = JSON.parse(localStorage.getItem('zenType_profileTheme')) || { mode: 'default', primary: '#ffd700', accent: '#ffb800' };
+
+    // Set Inputs
+    if (primaryInput) {
+        primaryInput.value = savedTheme.primary;
+        primaryPicker.value = savedTheme.primary;
+        primaryPreview.style.background = savedTheme.primary;
+    }
+    if (accentInput) {
+        accentInput.value = savedTheme.accent;
+        accentPicker.value = savedTheme.accent;
+        accentPreview.style.background = savedTheme.accent;
+    }
+
+    // Set Active Button
+    layoutBtns.forEach(b => b.classList.remove('active'));
+    const targetId = savedTheme.mode === 'custom' ? 'profile-mode-custom' : 'profile-mode-default';
+    const targetBtn = document.getElementById(targetId);
+    if (targetBtn) targetBtn.classList.add('active');
+
+    // Apply CSS
+    applyProfileTheme(savedTheme);
+
+});
