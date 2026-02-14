@@ -726,7 +726,7 @@ function initAuth() {
                 profileContainer.style.removeProperty('--profile-primary');
                 profileContainer.style.removeProperty('--profile-accent');
                 profileContainer.style.removeProperty('--profile-glow-primary');
-                profileContainer.style.removeProperty('--profile-glow-accent');
+
             }
 
             if (editBtn) {

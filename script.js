@@ -3475,12 +3475,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const glowPrimaryInput = document.getElementById('profile-glow-primary-input');
     const glowPrimaryPicker = document.getElementById('profile-glow-primary-picker');
     const glowPrimaryPreview = document.getElementById('profile-glow-primary-preview');
-    const glowAccentInput = document.getElementById('profile-glow-accent-input');
-    const glowAccentPicker = document.getElementById('profile-glow-accent-picker');
-    const glowAccentPreview = document.getElementById('profile-glow-accent-preview');
+
 
     setupColorSync(glowPrimaryInput, glowPrimaryPicker, glowPrimaryPreview);
-    setupColorSync(glowAccentInput, glowAccentPicker, glowAccentPreview);
+
 
     // Apply Theme Function
     function applyProfileTheme(theme, targetElement = null) {
@@ -3491,19 +3489,19 @@ document.addEventListener('DOMContentLoaded', () => {
         const defPrimary = '#ffd700';
         const defAccent = '#ffb800';
         const defGlowPrimary = 'rgba(255, 215, 0, 0.15)';
-        const defGlowAccent = 'rgba(255, 215, 0, 0.05)';
+
 
         if (theme.mode === 'custom') {
             root.style.setProperty('--profile-primary', theme.primary || defPrimary);
             root.style.setProperty('--profile-accent', theme.accent || defAccent);
             root.style.setProperty('--profile-glow-primary', theme.glowPrimary || defGlowPrimary);
-            root.style.setProperty('--profile-glow-accent', theme.glowAccent || defGlowAccent);
+
         } else {
             // Default Mode
             root.style.setProperty('--profile-primary', defPrimary);
             root.style.setProperty('--profile-accent', defAccent);
             root.style.setProperty('--profile-glow-primary', defGlowPrimary);
-            root.style.setProperty('--profile-glow-accent', defGlowAccent);
+
         }
     }
 
@@ -3514,7 +3512,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const primary = primaryInput ? primaryInput.value : '#ffd700';
             const accent = accentInput ? accentInput.value : '#ffb800';
             const glowPrimary = glowPrimaryInput ? glowPrimaryInput.value : 'rgba(255, 215, 0, 0.15)';
-            const glowAccent = glowAccentInput ? glowAccentInput.value : 'rgba(255, 215, 0, 0.05)';
+
 
             // Check active mode
             const activeBtn = document.querySelector('.layout-btn.active');
@@ -3528,7 +3526,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 primary: primary,
                 accent: accent,
                 glowPrimary: glowPrimary,
-                glowAccent: glowAccent,
+
                 mode: mode
             };
             localStorage.setItem('zenType_profileTheme', JSON.stringify(themeData));
@@ -3602,12 +3600,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (val.startsWith('#')) glowPrimaryPicker.value = val;
         glowPrimaryPreview.style.background = val;
     }
-    if (glowAccentInput) {
-        const val = savedTheme.glowAccent || 'rgba(255, 215, 0, 0.05)';
-        glowAccentInput.value = val;
-        if (val.startsWith('#')) glowAccentPicker.value = val;
-        glowAccentPreview.style.background = val;
-    }
+
 
     // Set Active Button
     layoutBtns.forEach(b => b.classList.remove('active'));
@@ -3666,23 +3659,20 @@ window.applyProfileTheme = function (theme, targetElement = null) {
     const defGlowAccent = 'rgba(255, 215, 0, 0.05)';
 
     // Helper: deciding values
-    let primary, accent, glowPrimary, glowAccent;
+    let primary, accent, glowPrimary;
 
     if (theme && theme.mode === 'custom') {
         primary = theme.primary || defPrimary;
         accent = theme.accent || defAccent;
         glowPrimary = theme.glowPrimary || defGlowPrimary;
-        glowAccent = theme.glowAccent || defGlowAccent;
     } else {
         primary = defPrimary;
         accent = defAccent;
         glowPrimary = defGlowPrimary;
-        glowAccent = defGlowAccent;
     }
 
     // Apply
     root.style.setProperty('--profile-primary', primary);
     root.style.setProperty('--profile-accent', accent);
     root.style.setProperty('--profile-glow-primary', glowPrimary);
-    root.style.setProperty('--profile-glow-accent', glowAccent);
 };
