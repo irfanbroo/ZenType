@@ -15,7 +15,7 @@
     --font-main: var(--font-modern);
     --profile-bg: rgba(20, 20, 30, 0.8);
     --profile-glow-primary: rgba(255, 215, 0, 0.15);
-    --profile-glow-accent: rgba(255, 215, 0, 0.05);
+
 }
 
 body {
@@ -1300,7 +1300,7 @@ body.zen-mode #zen-btn:hover {
     max-width: 500px;
     --profile-bg: rgba(20, 20, 30, 0.8);
     --profile-glow-primary: rgba(255, 215, 0, 0.15);
-    --profile-glow-accent: rgba(255, 215, 0, 0.05);
+
     background: rgba(20, 20, 30, 0.9);
     animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     /* Force light text locally */
