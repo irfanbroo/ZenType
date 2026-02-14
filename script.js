@@ -3293,7 +3293,17 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem('zenType_profileTheme', JSON.stringify(themeData));
 
             // Apply Immediately
-            applyProfileTheme(themeData);
+            if (window.applyProfileTheme) window.applyProfileTheme(themeData);
+
+            // Save to Cloud (Supabase)
+            console.log("DEBUG: script.js - Attempting to save theme:", themeData);
+            if (window.saveUserTheme) {
+                console.log("DEBUG: script.js - Found saveUserTheme, calling it...");
+                window.saveUserTheme(themeData);
+            } else {
+                console.error("DEBUG: script.js - window.saveUserTheme is UNDEFINED!");
+                alert("Error: Could not save to cloud. Refresh and try again.");
+            }
 
             // Visual Feedback
             saveBtn.innerHTML = '<i class="ri-check-line"></i> Saved!';
@@ -3336,6 +3346,35 @@ document.addEventListener('DOMContentLoaded', () => {
     if (targetBtn) targetBtn.classList.add('active');
 
     // Apply CSS
-    applyProfileTheme(savedTheme);
+    if (window.applyProfileTheme) {
+        window.applyProfileTheme(savedTheme);
+    }
 
 });
+
+// ══════════════════════════════════════════════════════════
+// GLOBAL THEME UTILS
+// ══════════════════════════════════════════════════════════
+window.applyProfileTheme = function (theme, targetElement = null) {
+    // If targetElement is provided, we use it. Otherwise, global root.
+    const root = targetElement || document.documentElement;
+
+    // Default Colors (Gold/Orange)
+    const defPrimary = '#ffd700';
+    const defAccent = '#ffb800';
+
+    // Helper: deciding values
+    let primary, accent;
+
+    if (theme && theme.mode === 'custom') {
+        primary = theme.primary || defPrimary;
+        accent = theme.accent || defAccent;
+    } else {
+        primary = defPrimary;
+        accent = defAccent;
+    }
+
+    // Apply
+    root.style.setProperty('--profile-primary', primary);
+    root.style.setProperty('--profile-accent', accent);
+};
