@@ -9,8 +9,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="style.css">
     <link
-        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@400;500;700&family=Pixelify+Sans:wght@400;500;700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&family=Caveat:wght@400..700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Montserrat:wght@400;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;500;600;700&family=Shojumaru&display=swap"
         rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Hagakure&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
     <script>
         window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
@@ -994,11 +995,66 @@
             <a href="privacy.html" class="footer-link-pill">
                 <i class="ri-lock-line"></i> Privacy
             </a>
+            <a href="#" class="footer-link-pill" id="modes-btn">
+                <i class="ri-gamepad-line"></i> Modes
+            </a>
             <a href="#" class="footer-link-pill support-btn">
                 <i class="ri-heart-fill"></i> Support
             </a>
         </div>
     </footer>
+
+    <!-- MODES MODAL -->
+    <div id="modes-modal" class="modal-overlay hidden">
+        <div class="settings-modal" style="max-width: 800px;">
+            <div class="settings-header">
+                <h2><i class="ri-gamepad-line"></i> Game Modes</h2>
+                <button class="close-modal-btn" id="close-modes-btn"><i class="ri-close-line"></i></button>
+            </div>
+            <div class="settings-content">
+                <div class="modes-grid">
+                    <!-- Hagakure Mode -->
+                    <div class="mode-card active">
+                        <div class="mode-icon"><i class="ri-sword-fill"></i></div>
+                        <div class="mode-info">
+                            <h3>Hagakure Mode</h3>
+                            <p>The way of the warrior. One mistake and it's over.</p>
+                        </div>
+                        <div class="mode-status">Active</div>
+                    </div>
+
+                    <!-- Zen Mode (Coming Soon) -->
+                    <div class="mode-card disabled">
+                        <div class="mode-icon"><i class="ri-leaf-line"></i></div>
+                        <div class="mode-info">
+                            <h3>Zen Mode</h3>
+                            <p>Pure focus. No distractions.</p>
+                        </div>
+                        <div class="mode-status">Coming Soon</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HAGAKURE MODE -->
+    <div id="hagakure-splash" class="hidden">
+        <div class="splash-content">
+            <h1 class="hagakure-title">THE WAY OF THE WARRIOR</h1>
+            <p class="hagakure-subtitle">One Mistake. One End.</p>
+        </div>
+    </div>
+
+    <div id="hagakure-ui" class="hidden">
+        <div class="h-header">
+            <div class="h-stat">STREAK: <span id="h-streak">0</span></div>
+            <div class="h-title">HAGAKURE</div>
+            <div class="h-stat">WPM: <span id="h-wpm">0</span></div>
+        </div>
+        <div id="h-words-container"></div>
+        <input type="text" id="h-input" autocomplete="off" spellcheck="false">
+        <div class="h-footer">FOCUS</div>
+    </div>
 
     <!-- Supabase SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
