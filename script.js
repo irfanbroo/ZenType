@@ -3469,23 +3469,41 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     setupColorSync(primaryInput, primaryPicker, primaryPreview, updateCustomBorder);
-    setupColorSync(accentInput, accentPicker, accentPreview); // No callback needed for accent
+    setupColorSync(accentInput, accentPicker, accentPreview);
+
+    // Glow Inputs
+    const glowPrimaryInput = document.getElementById('profile-glow-primary-input');
+    const glowPrimaryPicker = document.getElementById('profile-glow-primary-picker');
+    const glowPrimaryPreview = document.getElementById('profile-glow-primary-preview');
+    const glowAccentInput = document.getElementById('profile-glow-accent-input');
+    const glowAccentPicker = document.getElementById('profile-glow-accent-picker');
+    const glowAccentPreview = document.getElementById('profile-glow-accent-preview');
+
+    setupColorSync(glowPrimaryInput, glowPrimaryPicker, glowPrimaryPreview);
+    setupColorSync(glowAccentInput, glowAccentPicker, glowAccentPreview);
 
     // Apply Theme Function
-    function applyProfileTheme(theme) {
-        const root = document.documentElement;
+    function applyProfileTheme(theme, targetElement = null) {
+        // Fix: Use targetElement if provided (for public profiles), else global root
+        const root = targetElement || document.documentElement;
 
-        // Default Colors (Gold/Orange)
+        // Default Colors
         const defPrimary = '#ffd700';
         const defAccent = '#ffb800';
+        const defGlowPrimary = 'rgba(255, 215, 0, 0.15)';
+        const defGlowAccent = 'rgba(255, 215, 0, 0.05)';
 
         if (theme.mode === 'custom') {
             root.style.setProperty('--profile-primary', theme.primary || defPrimary);
             root.style.setProperty('--profile-accent', theme.accent || defAccent);
+            root.style.setProperty('--profile-glow-primary', theme.glowPrimary || defGlowPrimary);
+            root.style.setProperty('--profile-glow-accent', theme.glowAccent || defGlowAccent);
         } else {
-            // Default Mode: Reset to hardcoded defaults
+            // Default Mode
             root.style.setProperty('--profile-primary', defPrimary);
             root.style.setProperty('--profile-accent', defAccent);
+            root.style.setProperty('--profile-glow-primary', defGlowPrimary);
+            root.style.setProperty('--profile-glow-accent', defGlowAccent);
         }
     }
 
@@ -3495,6 +3513,8 @@ document.addEventListener('DOMContentLoaded', () => {
         saveBtn.addEventListener('click', () => {
             const primary = primaryInput ? primaryInput.value : '#ffd700';
             const accent = accentInput ? accentInput.value : '#ffb800';
+            const glowPrimary = glowPrimaryInput ? glowPrimaryInput.value : 'rgba(255, 215, 0, 0.15)';
+            const glowAccent = glowAccentInput ? glowAccentInput.value : 'rgba(255, 215, 0, 0.05)';
 
             // Check active mode
             const activeBtn = document.querySelector('.layout-btn.active');
@@ -3507,6 +3527,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const themeData = {
                 primary: primary,
                 accent: accent,
+                glowPrimary: glowPrimary,
+                glowAccent: glowAccent,
                 mode: mode
             };
             localStorage.setItem('zenType_profileTheme', JSON.stringify(themeData));
@@ -3573,6 +3595,19 @@ document.addEventListener('DOMContentLoaded', () => {
         accentPicker.value = savedTheme.accent;
         accentPreview.style.background = savedTheme.accent;
     }
+    if (glowPrimaryInput) {
+        const val = savedTheme.glowPrimary || 'rgba(255, 215, 0, 0.15)';
+        glowPrimaryInput.value = val;
+        // Picker only supports hex, so we don't set it if it's rgba
+        if (val.startsWith('#')) glowPrimaryPicker.value = val;
+        glowPrimaryPreview.style.background = val;
+    }
+    if (glowAccentInput) {
+        const val = savedTheme.glowAccent || 'rgba(255, 215, 0, 0.05)';
+        glowAccentInput.value = val;
+        if (val.startsWith('#')) glowAccentPicker.value = val;
+        glowAccentPreview.style.background = val;
+    }
 
     // Set Active Button
     layoutBtns.forEach(b => b.classList.remove('active'));
@@ -3627,19 +3662,27 @@ window.applyProfileTheme = function (theme, targetElement = null) {
     // Default Colors (Gold/Orange)
     const defPrimary = '#ffd700';
     const defAccent = '#ffb800';
+    const defGlowPrimary = 'rgba(255, 215, 0, 0.15)';
+    const defGlowAccent = 'rgba(255, 215, 0, 0.05)';
 
     // Helper: deciding values
-    let primary, accent;
+    let primary, accent, glowPrimary, glowAccent;
 
     if (theme && theme.mode === 'custom') {
         primary = theme.primary || defPrimary;
         accent = theme.accent || defAccent;
+        glowPrimary = theme.glowPrimary || defGlowPrimary;
+        glowAccent = theme.glowAccent || defGlowAccent;
     } else {
         primary = defPrimary;
         accent = defAccent;
+        glowPrimary = defGlowPrimary;
+        glowAccent = defGlowAccent;
     }
 
     // Apply
     root.style.setProperty('--profile-primary', primary);
     root.style.setProperty('--profile-accent', accent);
+    root.style.setProperty('--profile-glow-primary', glowPrimary);
+    root.style.setProperty('--profile-glow-accent', glowAccent);
 };
