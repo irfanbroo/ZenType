@@ -3519,7 +3519,7 @@ input:checked+.slider::before {
 }
 
 .layout-btn.active {
-    border-color: var(--accent-gold) !important;
+    border-color: var(--btn-active-color, var(--accent-gold)) !important;
     background: rgba(255, 215, 0, 0.05) !important;
     box-shadow: 0 0 20px rgba(255, 215, 0, 0.1);
 }

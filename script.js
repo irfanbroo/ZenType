@@ -3213,7 +3213,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const accentPreview = document.getElementById('profile-accent-preview');
 
     // Sync Helper
-    function setupColorSync(textInput, picker, preview) {
+    function setupColorSync(textInput, picker, preview, onChange) {
         if (!textInput || !picker || !preview) return;
 
         // Click preview to open picker
@@ -3224,6 +3224,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const val = e.target.value;
             textInput.value = val;
             preview.style.background = val;
+            if (onChange) onChange(val);
         });
 
         // Text Input Change
@@ -3232,12 +3233,24 @@ document.addEventListener('DOMContentLoaded', () => {
             if (val.startsWith('#') && val.length === 7) {
                 picker.value = val;
                 preview.style.background = val;
+                if (onChange) onChange(val);
             }
         });
     }
 
-    setupColorSync(primaryInput, primaryPicker, primaryPreview);
-    setupColorSync(accentInput, accentPicker, accentPreview);
+    // Update Custom Button Border
+    function updateCustomBorder(color) {
+        const customBtn = document.getElementById('profile-mode-custom');
+        if (customBtn) {
+            customBtn.style.setProperty('--btn-active-color', color);
+            // Optional: Update shadow/background tint too for full effect
+            customBtn.style.boxShadow = `0 0 20px ${hexToRgba(color, 0.2)}`;
+            customBtn.style.background = hexToRgba(color, 0.05);
+        }
+    }
+
+    setupColorSync(primaryInput, primaryPicker, primaryPreview, updateCustomBorder);
+    setupColorSync(accentInput, accentPicker, accentPreview); // No callback needed for accent
 
     // Apply Theme Function
     function applyProfileTheme(theme) {
@@ -3307,6 +3320,8 @@ document.addEventListener('DOMContentLoaded', () => {
         primaryInput.value = savedTheme.primary;
         primaryPicker.value = savedTheme.primary;
         primaryPreview.style.background = savedTheme.primary;
+        // Init Border
+        updateCustomBorder(savedTheme.primary);
     }
     if (accentInput) {
         accentInput.value = savedTheme.accent;
