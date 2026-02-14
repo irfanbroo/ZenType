@@ -673,6 +673,37 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- GLOW APPEARANCE -->
+                    <div class="color-grid"
+                        style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px;">
+
+                        <!-- Glow Primary -->
+                        <div class="input-group">
+                            <label class="section-label">GLOW PRIMARY</label>
+                            <div class="color-input-wrapper">
+                                <div id="profile-glow-primary-preview" class="color-preview"
+                                    style="background: rgba(255, 215, 0, 0.15);"></div>
+                                <input type="text" id="profile-glow-primary-input" class="hex-input" placeholder="RGBA"
+                                    value="rgba(255, 215, 0, 0.15)">
+                                <input type="color" id="profile-glow-primary-picker" class="color-picker-hidden"
+                                    value="#ffd700">
+                            </div>
+                        </div>
+
+                        <!-- Glow Accent -->
+                        <div class="input-group">
+                            <label class="section-label">GLOW ACCENT</label>
+                            <div class="color-input-wrapper">
+                                <div id="profile-glow-accent-preview" class="color-preview"
+                                    style="background: rgba(255, 215, 0, 0.05);"></div>
+                                <input type="text" id="profile-glow-accent-input" class="hex-input" placeholder="RGBA"
+                                    value="rgba(255, 215, 0, 0.05)">
+                                <input type="color" id="profile-glow-accent-picker" class="color-picker-hidden"
+                                    value="#ffb800">
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- SAVE BUTTON (Outside disable wrapper) -->
@@ -759,16 +790,8 @@
     <!-- AUTH MODAL MOVED HERE -->
     <div id="auth-modal" class="hidden">
         <div class="settings-content auth-content">
-            <div class="settings-header">
-                <div class="settings-header-left">
-                    <div class="settings-icon-wrap">
-                        <i class="ri-user-line"></i>
-                    </div>
-                    <div>
-                        <h2 class="settings-title">Account</h2>
-                        <p class="settings-subtitle">Sync your progress</p>
-                    </div>
-                </div>
+            <div class="settings-header"
+                style="background: transparent; border: none; justify-content: flex-end; padding-bottom: 0;">
                 <button id="close-auth" class="close-btn">
                     <i class="ri-close-line"></i>
                 </button>
@@ -860,50 +883,56 @@
                             </div>
                         </div>
 
-                        <!-- Bottom Section: Heatmap (Left) + Streak (Right) -->
-                        <div class="profile-bottom-grid">
-                            <!-- Heatmap -->
-                            <div class="heatmap-section">
-                                <p class="heatmap-title">Activity</p>
-                                <div id="activity-heatmap" class="heatmap-grid"></div>
+                        <!-- Lower Section (Heatmap, Streak, Stats) -->
+                        <div class="profile-lower-section">
+                            <!-- Bottom Section: Heatmap (Left) + Streak (Right) -->
+                            <div class="profile-bottom-grid">
+                                <!-- Heatmap -->
+                                <div class="heatmap-section">
+                                    <p class="heatmap-title">Activity</p>
+                                    <div id="activity-heatmap" class="heatmap-grid"></div>
+                                </div>
+
+                                <!-- Streak Card -->
+                                <div class="streak-section">
+                                    <div class="streak-card">
+                                        <div class="streak-fire">
+                                            <div class="fire-base"></div>
+                                            <div class="fire-flame"></div>
+                                            <div class="fire-flame"></div>
+                                            <div class="fire-flame"></div>
+                                            <div class="fire-spark"></div>
+                                        </div>
+                                        <div class="streak-count" id="streak-display">0</div>
+                                        <div class="streak-label">DAYS</div>
+                                    </div>
+                                </div>
                             </div>
 
-                            <!-- Streak Card -->
-                            <div class="streak-section">
-                                <div class="streak-card">
-                                    <div class="streak-fire">
-                                        <div class="fire-base"></div>
-                                        <div class="fire-flame"></div>
-                                        <div class="fire-flame"></div>
-                                        <div class="fire-flame"></div>
-                                        <div class="fire-spark"></div>
-                                    </div>
-                                    <div class="streak-count" id="streak-display">0</div>
-                                    <div class="streak-label">DAYS</div>
+                            <!-- Divider -->
+                            <div class="profile-divider"></div>
+
+                            <div class="profile-stats">
+                                <div class="p-stat">
+                                    <span class="p-val" id="tests-count">0</span>
+                                    <span class="p-label">TESTS</span>
+                                </div>
+                                <div class="p-stat">
+                                    <span class="p-val" id="best-wpm">0</span>
+                                    <span class="p-label">BEST WPM</span>
+                                </div>
+                                <div class="p-stat">
+                                    <span class="p-val" id="total-time">0h</span>
+                                    <span class="p-label">TIME</span>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="profile-stats">
-                        <div class="p-stat">
-                            <span class="p-val" id="tests-count">0</span>
-                            <span class="p-label">TESTS</span>
-                        </div>
-                        <div class="p-stat">
-                            <span class="p-val" id="best-wpm">0</span>
-                            <span class="p-label">BEST WPM</span>
-                        </div>
-                        <div class="p-stat">
-                            <span class="p-val" id="total-time">0h</span>
-                            <span class="p-label">TIME</span>
-                        </div>
+                        <button id="logout-btn" class="logout-btn">
+                            <i class="ri-logout-box-r-line"></i>
+                            <span>Sign Out</span>
+                        </button>
                     </div>
-
-                    <button id="logout-btn" class="logout-btn">
-                        <i class="ri-logout-box-r-line"></i>
-                        <span>Sign Out</span>
-                    </button>
                 </div>
             </div>
         </div>

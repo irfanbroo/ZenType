@@ -13,6 +13,9 @@
     --font-typewriter: 'Courier Prime', monospace;
     --font-hand: 'Caveat', cursive;
     --font-main: var(--font-modern);
+    --profile-bg: rgba(20, 20, 30, 0.8);
+    --profile-glow-primary: rgba(255, 215, 0, 0.15);
+    --profile-glow-accent: rgba(255, 215, 0, 0.05);
 }
 
 body {
@@ -1295,6 +1298,9 @@ body.zen-mode #zen-btn:hover {
 .results-content {
     text-align: center;
     max-width: 500px;
+    --profile-bg: rgba(20, 20, 30, 0.8);
+    --profile-glow-primary: rgba(255, 215, 0, 0.15);
+    --profile-glow-accent: rgba(255, 215, 0, 0.05);
     background: rgba(20, 20, 30, 0.9);
     animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     /* Force light text locally */
@@ -1859,9 +1865,56 @@ input:checked+.slider::before {
 
 .auth-content {
     width: 480px;
-    /* Widened from 420px for better leaderboard spacing */
     height: auto;
     max-height: 90vh;
+    /* Make container transparent so profile card floats */
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+
+    /* Hide Scrollbar */
+    scrollbar-width: none;
+    /* Firefox */
+    position: relative;
+    /* Context for absolute close button */
+}
+
+/* Hide Scrollbar for Chrome/Safari */
+.settings-content.auth-content::-webkit-scrollbar {
+    display: none;
+}
+
+/* Floating Close Button */
+/* Floating Close Button (Natural) */
+.settings-content.auth-content .close-btn {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    width: auto;
+    height: auto;
+    padding: 8px;
+    /* Hit area without visual box */
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: none;
+    opacity: 0.5;
+    /* Subtle by default */
+    transition: all 0.3s ease;
+    font-size: 1.5rem;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.settings-content.auth-content .close-btn:hover {
+    background: transparent !important;
+    opacity: 1;
+    transform: rotate(90deg) scale(1.1);
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    /* Subtle glow on hover */
 }
 
 .auth-body {
@@ -3659,4 +3712,78 @@ input:checked+.slider::before {
 
 .layout-btn:hover .selection-indicator {
     border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* ══════════════════════════════════════════════════════════ */
+/* PROFILE CARD (Center Radial Glow) */
+/* ══════════════════════════════════════════════════════════ */
+.profile-info {
+    /* Radial Gradient: Center Glow (Primary) -> Dark Edge (BG) */
+    background: radial-gradient(circle at center, var(--profile-glow-primary) 0%, var(--profile-bg) 70%);
+
+    padding: 40px;
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: background 0.3s ease, border-color 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    /* Tightened from 20px */
+    max-width: 450px;
+    margin: 0 auto;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Ensure content sits above overlay */
+.profile-info>* {
+    position: relative;
+    z-index: 2;
+}
+
+/* Remove margins from children to let gap control spacing */
+.profile-info>* {
+    margin-bottom: 0;
+}
+
+.profile-info h3 {
+    margin: 0;
+}
+
+.profile-info p {
+    margin: 0;
+}
+
+.avatar-large {
+    margin-bottom: 0;
+}
+
+.badges-container {
+    margin: 5px 0;
+}
+
+.profile-lower-section {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    /* Tight gap for Activity -> Line -> Stats */
+}
+
+.profile-divider {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    margin: 0;
+}
+
+.profile-stats {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
 }
