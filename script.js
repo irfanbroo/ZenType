@@ -2171,6 +2171,12 @@ function setupSettingsListeners() {
     }
 
     function initHagakureGame() {
+        // CLEANUP EFFECTS
+        const hUI = document.getElementById('hagakure-ui');
+        if (hUI) hUI.classList.remove('shake-screen');
+        const flash = document.querySelector('.red-flash-overlay');
+        if (flash) flash.remove();
+
         const hInput = document.getElementById('h-input');
         if (hInput) {
             hInput.disabled = false;
@@ -2366,8 +2372,20 @@ function setupSettingsListeners() {
             hInput.blur();
         }
 
+        // --- EPIC EFFECTS ---
+        const hUI = document.getElementById('hagakure-ui');
+        hUI.classList.add('shake-screen');
+
+        // Red Flash
+        const flashOverlay = document.createElement('div');
+        flashOverlay.className = 'red-flash-overlay';
+        document.body.appendChild(flashOverlay);
+        // Remove flash after anim
+        setTimeout(() => flashOverlay.remove(), 600);
+
+        // Render
         hContainer.innerHTML = `
-            <div style="width: 100%; text-align: center; color: #ce1126; font-family: Shojumaru; font-size: 4rem; text-shadow: 0 0 10px rgba(206, 17, 38, 0.5);">${failMsg}</div>
+            <div class="text-slam" style="width: 100%; text-align: center; color: #ce1126; font-family: Shojumaru; font-size: 4rem; text-shadow: 0 0 10px rgba(206, 17, 38, 0.5);">${failMsg}</div>
             <div style="width: 100%; text-align: center; font-size: 1.2rem; color: #888; margin-top: 10px; font-style: italic;">${subMsg}</div>
             <div style="width: 100%; text-align: right; font-size: 0.8rem; margin-top: 10px; opacity: 0.6; letter-spacing: 2px; color: #ce1126;">PRESS TAB TO FACE YOUR DESTINY</div>
         `;
