@@ -2000,6 +2000,204 @@ function setupSettingsListeners() {
         });
     });
 
+    // --- MODES MODAL LOGIC ---
+    const modesBtn = document.getElementById('modes-btn');
+    const modesModal = document.getElementById('modes-modal');
+    const closeModesBtn = document.getElementById('close-modes-btn');
+
+    if (modesBtn && modesModal && closeModesBtn) {
+        modesBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            modesModal.classList.remove('hidden');
+        });
+
+        closeModesBtn.addEventListener('click', () => {
+            modesModal.classList.add('hidden');
+        });
+
+        modesModal.addEventListener('click', (e) => {
+            if (e.target === modesModal) {
+                modesModal.classList.add('hidden');
+            }
+        });
+
+        // Hagakure Card Click
+        const hagakureCard = document.querySelector('.mode-card.active'); // Assuming Hagakure is the only active one for now
+        if (hagakureCard) {
+            hagakureCard.addEventListener('click', () => {
+                startHagakureMode();
+                modesModal.classList.add('hidden');
+            });
+        }
+    }
+
+    function startHagakureMode() {
+        const hagakureQuotes = [
+            "THE WAY OF THE WARRIOR",
+            "HESITATION IS DEFEAT",
+            "ONE STRIKE. ONE KILL.",
+            "SILENCE THE MIND",
+            "FOCUS ABSOLUTE",
+            "DEATH BEFORE DISHONOR",
+            "STEEL YOUR SOUL",
+            "EMBRACE THE VOID",
+            "NO SECOND CHANCES",
+            "PERFECTION OR NOTHING",
+            "THE BLADE NEVER LIES",
+            "BREATHE. STRIKE. WIN.",
+            "FEAR IS THE MIND-KILLER",
+            "VICTORY IN STILLNESS",
+            "UNLEASH YOUR DEMON",
+            "A WARRIOR STANDS ALONE",
+            "SHARPEN YOUR SPIRIT",
+            "TOTAL CONCENTRATION",
+            "HONOR THE CODE",
+            "BECOME THE BLADE",
+            "MIND LIKE WATER",
+            "STRIKE TRUE",
+            "NO FEAR. NO MERCY.",
+            "THE PATH IS LONE",
+            "DISCIPLINE IS FREEDOM",
+            "CONQUER YOURSELF",
+            "FLASH OF STEEL",
+            "SILENT VICTORY",
+            "ENDURE AND PREVAIL",
+            "THE SWORD IS THE SOUL"
+        ];
+
+        const randomQuote = hagakureQuotes[Math.floor(Math.random() * hagakureQuotes.length)];
+        const splashTitle = document.querySelector('.hagakure-title');
+        if (splashTitle) splashTitle.innerText = randomQuote;
+
+        // 1. Show Splash
+        const splash = document.getElementById('hagakure-splash');
+        splash.classList.remove('hidden');
+
+        // 2. Play Sound (Optional - can add later)
+
+        // 3. Wait 2 seconds, then transition
+        setTimeout(() => {
+            splash.classList.add('hidden');
+
+            // Hide standard UI
+            document.querySelector('.container').style.display = 'none'; // Main UI
+            document.querySelector('header').style.display = 'none';
+            document.querySelector('.site-footer').style.display = 'none';
+
+            // Show Hagakure UI
+            const hUI = document.getElementById('hagakure-ui');
+            hUI.classList.remove('hidden');
+
+            // Set Game State
+            state.gameMode = 'hagakure';
+            initHagakureGame();
+        }, 2000);
+    }
+
+    function initHagakureGame() {
+        const hInput = document.getElementById('h-input');
+        const hContainer = document.getElementById('h-words-container');
+        const hWpm = document.getElementById('h-wpm');
+        const hStreak = document.getElementById('h-streak');
+
+        // Reset State
+        state.words = generateWords(50); // Use existing generator
+        state.currWordIndex = 0;
+        state.correctChars = 0;
+        state.totalCharsTyped = 0;
+        state.startTime = null;
+        state.isActive = false;
+        state.streak = 0;
+
+        // Render Words
+        hContainer.innerHTML = '';
+        state.words.forEach(word => {
+            const span = document.createElement('span');
+            span.innerText = word;
+            span.className = 'h-word';
+            hContainer.appendChild(span);
+        });
+        hContainer.firstChild.classList.add('active');
+
+        // Focus Input
+        hInput.value = '';
+        hInput.focus();
+
+        // Auto-focus listener
+        document.addEventListener('click', () => {
+            if (state.gameMode === 'hagakure') hInput.focus();
+        });
+
+        // Input Handling
+        hInput.oninput = (e) => {
+            const value = hInput.value;
+            const currWord = state.words[state.currWordIndex];
+            const currentWordSpan = hContainer.children[state.currWordIndex];
+
+            // Start Timer
+            if (!state.isActive && value.length === 1) {
+                state.isActive = true;
+                state.startTime = Date.now();
+                startHagakureTimer();
+            }
+
+            // SUDDEN DEATH LOGIC
+            if (!currWord.startsWith(value)) {
+                // MISTAKE DETECTED -> GAME OVER
+                gameOverHagakure();
+                return;
+            }
+
+            // Space -> Next Word
+            if (value.endsWith(' ')) {
+                const typedWord = value.trim();
+                if (typedWord === currWord) {
+                    // Correct Word
+                    currentWordSpan.classList.remove('active');
+                    currentWordSpan.classList.add('correct'); // Add styling for completed words if needed
+                    state.currWordIndex++;
+                    state.streak++;
+                    hStreak.innerText = state.streak;
+
+                    hInput.value = '';
+
+                    if (state.currWordIndex >= state.words.length) {
+                        // Win / Refresh
+                        initHagakureGame();
+                    } else {
+                        hContainer.children[state.currWordIndex].classList.add('active');
+                        // Scroll logic if needed
+                    }
+                }
+            }
+        };
+    }
+
+    function startHagakureTimer() {
+        state.timerInterval = setInterval(() => {
+            if (!state.isActive) return;
+            const elapsed = (Date.now() - state.startTime) / 1000 / 60;
+            const wpm = Math.round((state.correctChars / 5) / elapsed) || 0;
+            // Simple WPM calc for now, can refine
+            // document.getElementById('h-wpm').innerText = wpm; 
+        }, 1000);
+    }
+
+    function gameOverHagakure() {
+        state.isActive = false;
+        clearInterval(state.timerInterval);
+
+        const hContainer = document.getElementById('h-words-container');
+        hContainer.innerHTML = '<div style="color: #ce1126; font-family: Shojumaru; font-size: 4rem;">DISHONOR</div><div style="font-size: 1rem; margin-top: 20px;">CLICK TO RETRY</div>';
+
+        // Click to restart
+        const restartHandler = () => {
+            document.removeEventListener('click', restartHandler);
+            initHagakureGame();
+        };
+        setTimeout(() => document.addEventListener('click', restartHandler), 500);
+    }
+
     UI.wallpaperGrid.addEventListener('click', (e) => {
         const target = e.target.closest('.wallpaper-thumb');
         if (target) {
