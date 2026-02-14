@@ -3510,18 +3510,20 @@ input:checked+.slider::before {
 /* Layout Button Animations */
 .layout-btn {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
 }
 
 .layout-btn:hover {
     transform: translateY(-2px);
     border-color: rgba(255, 255, 255, 0.3) !important;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
 }
 
 .layout-btn.active {
     border-color: var(--btn-active-color, var(--accent-gold)) !important;
-    background: rgba(255, 215, 0, 0.05) !important;
-    box-shadow: 0 0 20px rgba(255, 215, 0, 0.1);
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(0, 0, 0, 0)) !important;
+    box-shadow: 0 0 25px rgba(255, 215, 0, 0.15), inset 0 0 10px rgba(255, 255, 255, 0.05);
 }
 
 /* Selection Indicator (Radio/Checkmark) */
@@ -3536,6 +3538,77 @@ input:checked+.slider::before {
     transition: all 0.3s ease;
     background: rgba(0, 0, 0, 0.3);
 }
+
+.layout-btn.active .selection-indicator {
+    background: var(--btn-active-color, var(--accent-gold));
+    border-color: #fff;
+    transform: scale(1.1);
+    box-shadow: 0 0 10px var(--btn-active-color, var(--accent-gold));
+}
+
+.selection-indicator i {
+    opacity: 0;
+    transform: scale(0.5);
+    transition: all 0.3s ease;
+    color: #000;
+    font-weight: bold;
+}
+
+.layout-btn.active .selection-indicator i {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* Palette Presets */
+.palette-preset:hover {
+    transform: scale(1.2) !important;
+    z-index: 10;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+}
+
+/* Palette Grid Scrollbar Hiding */
+.palette-grid::-webkit-scrollbar {
+    display: none;
+}
+
+/* Section Headers */
+/* Section Headers */
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 15px;
+    padding-left: 8px;
+    /* Nudge icons right */
+}
+
+.section-icon {
+    font-size: 1.1rem;
+    color: var(--accent-gold);
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+    line-height: 1;
+    /* reset line height for precision */
+    display: flex;
+}
+
+/* Section Labels */
+.section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.85);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    margin: 0;
+    /* Remove margins when in header */
+    line-height: 1;
+    /* align baseline */
+    padding-top: 2px;
+    /* Optical adjustment for Space Mono font */
+}
+
+
 
 .selection-indicator i {
     font-size: 14px;

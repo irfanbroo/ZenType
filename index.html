@@ -545,7 +545,7 @@
 
             <!-- PROFILE TAB CONTENT -->
             <div class="tab-pane" id="tab-profile">
-                <div class="settings-group">
+                <div class="settings-group" style="margin-top: 20px;">
                     <div class="section-header">
                         <i class="ri-layout-masonry-line section-icon"></i>
                         <label class="section-label">UI LAYOUT</label>
@@ -590,40 +590,107 @@
                     </div>
                 </div>
 
+                <!-- QUICK PALETTES -->
+                <div style="margin-top: 25px; margin-bottom: 20px;">
+                    <div class="section-header">
+                        <i class="ri-drop-line section-icon"></i>
+                        <label class="section-label" style="margin: 0;">QUICK PALETTES</label>
+                    </div>
+                    <div class="palette-grid"
+                        style="display: flex; gap: 12px; overflow-x: auto; padding: 10px 5px; scrollbar-width: none; -ms-overflow-style: none;">
+
+                        <!-- NEON & VIBRANT -->
+                        <div class="palette-preset" data-primary="#00e5ff" data-accent="#ff00ff" title="Neon Cyber"
+                            style="flex-shrink: 0; width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, #00e5ff, #ff00ff); cursor: pointer; border: 2px solid rgba(255,255,255,0.15); transition: transform 0.2s;">
+                        </div>
+                        <div class="palette-preset" data-primary="#ff4d4d" data-accent="#ff9f43" title="Sunset"
+                            style="flex-shrink: 0; width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, #ff4d4d, #ff9f43); cursor: pointer; border: 2px solid rgba(255,255,255,0.15); transition: transform 0.2s;">
+                        </div>
+                        <div class="palette-preset" data-primary="#00ff00" data-accent="#003300" title="Matrix"
+                            style="flex-shrink: 0; width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, #00ff00, #003300); cursor: pointer; border: 2px solid rgba(255,255,255,0.15); transition: transform 0.2s;">
+                        </div>
+                        <div class="palette-preset" data-primary="#e17055" data-accent="#d63031" title="Lava"
+                            style="flex-shrink: 0; width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, #e17055, #d63031); cursor: pointer; border: 2px solid rgba(255,255,255,0.15); transition: transform 0.2s;">
+                        </div>
+                        <div class="palette-preset" data-primary="#f1c40f" data-accent="#8e44ad" title="Lakers"
+                            style="flex-shrink: 0; width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, #f1c40f, #8e44ad); cursor: pointer; border: 2px solid rgba(255,255,255,0.15); transition: transform 0.2s;">
+                        </div>
+
+                        <!-- PASTEL & SOFT -->
+                        <div class="palette-preset" data-primary="#ff9ff3" data-accent="#54a0ff" title="Cotton Candy"
+                            style="flex-shrink: 0; width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, #ff9ff3, #54a0ff); cursor: pointer; border: 2px solid rgba(255,255,255,0.15); transition: transform 0.2s;">
+                        </div>
+                        <div class="palette-preset" data-primary="#55efc4" data-accent="#81ecec" title="Mint"
+                            style="flex-shrink: 0; width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, #55efc4, #81ecec); cursor: pointer; border: 2px solid rgba(255,255,255,0.15); transition: transform 0.2s;">
+                        </div>
+                        <div class="palette-preset" data-primary="#a29bfe" data-accent="#6c5ce7" title="Lavender"
+                            style="flex-shrink: 0; width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, #a29bfe, #6c5ce7); cursor: pointer; border: 2px solid rgba(255,255,255,0.15); transition: transform 0.2s;">
+                        </div>
+                        <div class="palette-preset" data-primary="#fab1a0" data-accent="#ff7675" title="Peach"
+                            style="flex-shrink: 0; width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, #fab1a0, #ff7675); cursor: pointer; border: 2px solid rgba(255,255,255,0.15); transition: transform 0.2s;">
+                        </div>
+
+                        <!-- DARK & MOODY -->
+                        <div class="palette-preset" data-primary="#192a56" data-accent="#c23616" title="Midnight"
+                            style="flex-shrink: 0; width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, #192a56, #c23616); cursor: pointer; border: 2px solid rgba(255,255,255,0.15); transition: transform 0.2s;">
+                        </div>
+                        <div class="palette-preset" data-primary="#95a5a6" data-accent="#2c3e50" title="Stealth"
+                            style="flex-shrink: 0; width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, #95a5a6, #2c3e50); cursor: pointer; border: 2px solid rgba(255,255,255,0.15); transition: transform 0.2s;">
+                        </div>
+                        <div class="palette-preset" data-primary="#dff9fb" data-accent="#ffffff" title="Frost"
+                            style="flex-shrink: 0; width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, #dff9fb, #ffffff); cursor: pointer; border: 2px solid rgba(255,255,255,0.15); transition: transform 0.2s;">
+                        </div>
+                        <div class="palette-preset" data-primary="#2c3e50" data-accent="#e74c3c" title="Vampire"
+                            style="flex-shrink: 0; width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, #2c3e50, #e74c3c); cursor: pointer; border: 2px solid rgba(255,255,255,0.15); transition: transform 0.2s;">
+                        </div>
+                        <div class="palette-preset" data-primary="#f39c12" data-accent="#d35400" title="Pumpkin"
+                            style="flex-shrink: 0; width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, #f39c12, #d35400); cursor: pointer; border: 2px solid rgba(255,255,255,0.15); transition: transform 0.2s;">
+                        </div>
+                    </div>
+                </div>
+
                 <!-- COLOR CUSTOMIZATION -->
-                <div class="settings-group"
-                    style="margin-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 2rem;">
+                <div id="profile-custom-options" style="transition: all 0.3s ease; opacity: 0.5; pointer-events: none;">
+                    <input type="hidden" id="profile-custom-options-check">
                     <div class="section-header">
                         <i class="ri-palette-line section-icon"></i>
                         <label class="section-label">PROFILE APPEARANCE</label>
                     </div>
 
-                    <div class="control-group" style="margin-top: 15px;">
-                        <label class="section-label" style="font-size: 0.8rem; opacity: 0.7;">PRIMARY COLOR</label>
-                        <div class="color-input-wrapper">
-                            <div class="color-preview" id="profile-primary-preview" style="background: #00ff88;"></div>
-                            <input type="text" id="profile-primary-input" class="hex-input" value="#00ff88"
-                                maxlength="7" placeholder="#00ff88">
-                            <input type="color" id="profile-primary-picker" class="color-picker-hidden" value="#00ff88">
+                    <!-- Color Inputs Grid -->
+                    <div class="color-grid"
+                        style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px;">
+
+                        <!-- Primary Color -->
+                        <div class="input-group">
+                            <label class="section-label">PRIMARY COLOR</label>
+                            <div class="color-input-wrapper">
+                                <div id="profile-primary-preview" class="color-preview"></div>
+                                <input type="text" id="profile-primary-input" class="hex-input" placeholder="#RRGGBB"
+                                    maxlength="7">
+                                <input type="color" id="profile-primary-picker" class="color-picker-hidden">
+                            </div>
+                        </div>
+
+                        <!-- Accent Color -->
+                        <div class="input-group">
+                            <label class="section-label">ACCENT COLOR</label>
+                            <div class="color-input-wrapper">
+                                <div id="profile-accent-preview" class="color-preview"></div>
+                                <input type="text" id="profile-accent-input" class="hex-input" placeholder="#RRGGBB"
+                                    maxlength="7">
+                                <input type="color" id="profile-accent-picker" class="color-picker-hidden">
+                            </div>
                         </div>
                     </div>
+                </div>
 
-                    <div class="control-group" style="margin-top: 15px;">
-                        <label class="section-label" style="font-size: 0.8rem; opacity: 0.7;">ACCENT COLOR</label>
-                        <div class="color-input-wrapper">
-                            <div class="color-preview" id="profile-accent-preview" style="background: #000000;"></div>
-                            <input type="text" id="profile-accent-input" class="hex-input" value="#000000" maxlength="7"
-                                placeholder="#000000">
-                            <input type="color" id="profile-accent-picker" class="color-picker-hidden" value="#000000">
-                        </div>
-                    </div>
-
-                    <div class="control-group" style="margin-top: 25px;">
-                        <button id="save-profile-theme-btn" class="action-btn"
-                            style="width: 100%; padding: 12px; background: var(--accent-gold); color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s;">
-                            <i class="ri-save-line"></i> Save Theme
-                        </button>
-                    </div>
+                <!-- SAVE BUTTON (Outside disable wrapper) -->
+                <div class="control-group" style="margin-top: 25px;">
+                    <button id="save-profile-theme-btn" class="action-btn"
+                        style="width: 100%; padding: 12px; background: var(--accent-gold); color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);">
+                        <i class="ri-save-line"></i> SAVE THEME
+                    </button>
                 </div>
             </div>
 
