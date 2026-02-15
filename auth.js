@@ -533,7 +533,10 @@ function initAuth() {
             const footerTxt = document.querySelector('#hagakure-leaderboard-modal .bushido-footer p');
             if (footerTxt && bushidoWisdom.length > 0) {
                 const randomIdx = Math.floor(Math.random() * bushidoWisdom.length);
+                footerTxt.classList.remove('ink-bleed');
+                void footerTxt.offsetWidth; // Trigger reflow
                 footerTxt.innerText = bushidoWisdom[randomIdx];
+                footerTxt.classList.add('ink-bleed');
             }
         }
 

@@ -2108,13 +2108,73 @@ input:checked+.slider::before {
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: radial-gradient(circle at center, rgba(40, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.95) 100%);
-    backdrop-filter: blur(20px);
+    background: radial-gradient(circle at center, rgba(60, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.98) 100%);
+    backdrop-filter: blur(25px);
     z-index: 5000;
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
+}
+
+.bushido-vignette {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, transparent 40%, rgba(206, 17, 38, 0.15) 100%);
+    pointer-events: none;
+    z-index: 5001;
+    animation: bushidoHeartbeat 4s infinite ease-in-out;
+}
+
+@keyframes bushidoHeartbeat {
+
+    0%,
+    100% {
+        opacity: 0.3;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.6;
+        transform: scale(1.05);
+    }
+}
+
+.katana-slash {
+    position: absolute;
+    top: 50%;
+    left: -100%;
+    width: 300%;
+    height: 4px;
+    background: linear-gradient(90deg, transparent, #fff, #ce1126, #fff, transparent);
+    transform: rotate(-35deg);
+    z-index: 5010;
+    box-shadow: 0 0 30px #ce1126;
+    pointer-events: none;
+    opacity: 0;
+}
+
+#hagakure-leaderboard-modal:not(.hidden) .katana-slash {
+    animation: katanaSlash 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+
+@keyframes katanaSlash {
+    0% {
+        left: -150%;
+        opacity: 0;
+    }
+
+    30% {
+        opacity: 1;
+    }
+
+    100% {
+        left: 150%;
+        opacity: 0;
+    }
 }
 
 #hagakure-leaderboard-modal.hidden {
@@ -2135,7 +2195,7 @@ input:checked+.slider::before {
     flex-direction: column;
     position: relative;
     overflow: hidden;
-    animation: bushidoEntry 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    animation: bushidoEntry 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.3s backwards;
 }
 
 @keyframes bushidoEntry {
@@ -2270,6 +2330,36 @@ input:checked+.slider::before {
     width: 100%;
 }
 
+.bushido-item::after {
+    content: '';
+    position: absolute;
+    top: -100%;
+    left: -100%;
+    width: 50%;
+    height: 300%;
+    background: linear-gradient(90deg, transparent, rgba(206, 17, 38, 0.4), transparent);
+    transform: rotate(45deg);
+    transition: none;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.bushido-item:hover::after {
+    animation: itemSlice 0.5s ease-out forwards;
+}
+
+@keyframes itemSlice {
+    0% {
+        top: -100%;
+        left: -100%;
+    }
+
+    100% {
+        top: 100%;
+        left: 100%;
+    }
+}
+
 .bushido-item .s-rank {
     font-family: 'Shojumaru', cursive;
     font-size: 1.4rem;
@@ -2327,6 +2417,24 @@ input:checked+.slider::before {
     color: rgba(206, 17, 38, 0.4);
     letter-spacing: 4px;
     background: linear-gradient(to top, rgba(206, 17, 38, 0.05), transparent);
+}
+
+.bushido-footer p.ink-bleed {
+    animation: inkBleed 1.5s ease-out forwards;
+}
+
+@keyframes inkBleed {
+    0% {
+        filter: blur(10px);
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    100% {
+        filter: blur(0);
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
 .bushido-loading {
