@@ -231,103 +231,48 @@
 }
 
 .s-splash-quote {
-    color: #888;
-    font-style: italic;
-    font-size: 1.4rem;
-    letter-spacing: 4px;
+    color: #fff;
+    font-size: 1.2rem;
+    letter-spacing: 8px;
     opacity: 0;
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Space Mono', monospace;
     margin-top: 40px;
+    text-transform: uppercase;
+    text-shadow: 0 0 20px rgba(188, 19, 254, 0.4);
+    position: relative;
 }
 
 #shadow-splash:not(.hidden) .s-splash-quote {
-    animation: quoteRitual 2.5s ease-out forwards 1.2s;
-    /* Faster timing now that glitch text is gone */
-}
-
-@keyframes cinematicZoom {
-    from {
-        transform: scale(0.92);
-        opacity: 0;
-    }
-
-    to {
-        transform: scale(1);
-        opacity: 1;
-    }
-}
-
-@keyframes titleGlowPulse {
-
-    0%,
-    100% {
-        text-shadow: 0 0 30px rgba(188, 19, 254, 0.3);
-        transform: scale(1);
-    }
-
-    50% {
-        text-shadow: 0 0 60px rgba(188, 19, 254, 0.6);
-        transform: scale(1.02);
-    }
-}
-
-@keyframes ghostFlicker {
-
-    0%,
-    100% {
-        opacity: 1;
-        filter: contrast(1);
-    }
-
-    50% {
-        opacity: 0.95;
-        filter: contrast(1.2) brightness(1.2);
-    }
-
-    70% {
-        opacity: 1;
-    }
-
-    80% {
-        opacity: 0.8;
-    }
-}
-
-@keyframes flickerOut {
-    to {
-        opacity: 0;
-        filter: blur(10px);
-    }
-}
-
-@keyframes flickerDissolve {
-    0% {
-        opacity: 1;
-        filter: blur(0);
-    }
-
-    50% {
-        opacity: 0.5;
-        filter: blur(4px) contrast(2);
-    }
-
-    100% {
-        opacity: 0;
-        filter: blur(15px);
-    }
+    animation: quoteRitual 3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards 1s,
+        quoteFloat 4s ease-in-out infinite alternate 4s;
 }
 
 @keyframes quoteRitual {
     0% {
         opacity: 0;
-        letter-spacing: 2px;
-        transform: translateY(15px);
+        letter-spacing: 20px;
+        transform: translateY(20px);
+        filter: blur(10px);
     }
 
     100% {
-        opacity: 1;
+        opacity: 0.8;
         letter-spacing: 6px;
         transform: translateY(0);
+        filter: blur(0);
+    }
+}
+
+@keyframes quoteFloat {
+    0% {
+        text-shadow: 0 0 20px rgba(188, 19, 254, 0.4);
+        transform: translateY(0);
+    }
+
+    100% {
+        text-shadow: 0 0 30px var(--shadow-gold), 0 0 10px rgba(255, 255, 255, 0.8);
+        transform: translateY(-5px);
+        opacity: 1;
     }
 }
 
