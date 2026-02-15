@@ -4353,27 +4353,103 @@ input:checked+.slider::before {
 }
 
 /* ... existing styles ... */
-.h-header {
-    position: absolute;
-    top: 40px;
-    width: 100%;
-    max-width: 1000px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 20px;
-}
+
 
 .h-title {
-    font-family: 'Shojumaru', system-ui;
-    font-size: 2rem;
-    color: #333;
+    font-family: 'Shojumaru', cursive;
+    font-size: 1.8rem;
+    font-weight: bold;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    position: relative;
+    white-space: nowrap;
+    z-index: 10;
+
+    /* Metallic / Blood-Red Gradient */
+    background: linear-gradient(135deg, #fff 20%, #ff4d4d 50%, #800000 80%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+
+    /* Spectral Glow */
+    filter: drop-shadow(0 0 8px rgba(255, 77, 77, 0.4));
+
+    /* Animation: Light Sweep & Subtle Pulse */
+    animation: hTitleSweep 4s linear infinite;
+}
+
+@keyframes hTitleSweep {
+    0% {
+        background-position: 0% center;
+        transform: scale(1);
+        filter: drop-shadow(0 0 8px rgba(255, 77, 77, 0.4));
+    }
+
+    50% {
+        background-position: 100% center;
+        transform: scale(1.02);
+        filter: drop-shadow(0 0 15px rgba(255, 77, 77, 0.7));
+    }
+
+    100% {
+        background-position: 200% center;
+        transform: scale(1);
+        filter: drop-shadow(0 0 8px rgba(255, 77, 77, 0.4));
+    }
+}
+
+/* Blade Slash Effect Overlay (Optional pseudo-element for extra "awesome") */
+.h-title::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: -10%;
+    width: 120%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+    transform: rotate(-15deg) translateY(-50%) scaleX(0);
+    opacity: 0;
+    pointer-events: none;
+    animation: bladeSlashMove 6s ease-in-out infinite;
+}
+
+@keyframes bladeSlashMove {
+
+    0%,
+    80% {
+        transform: rotate(-15deg) translateY(-50%) scaleX(0);
+        opacity: 0;
+    }
+
+    85% {
+        transform: rotate(-15deg) translateY(-50%) scaleX(1);
+        opacity: 1;
+    }
+
+    90%,
+    100% {
+        transform: rotate(-15deg) translateY(-50%) scaleX(1);
+        opacity: 0;
+    }
 }
 
 .h-stat {
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     color: #ce1126;
     font-weight: bold;
+    min-width: 120px;
+    white-space: nowrap;
+}
+
+.h-stat:first-child {
+    justify-self: start;
+    text-align: left;
+}
+
+.h-stat:last-child {
+    justify-self: end;
+    text-align: right;
 }
 
 #h-words-container {
