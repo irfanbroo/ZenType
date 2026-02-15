@@ -231,20 +231,40 @@
 }
 
 .s-splash-quote {
-    color: #fff;
-    font-size: 1.2rem;
+    font-size: 1.4rem;
     letter-spacing: 8px;
     opacity: 0;
     font-family: 'Space Mono', monospace;
     margin-top: 40px;
     text-transform: uppercase;
-    text-shadow: 0 0 20px rgba(188, 19, 254, 0.4);
+
+    /* Clean, Ghostly White */
+    color: #e0e0e0;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+
     position: relative;
+    font-weight: normal;
+    /* Keep it thin and sharp */
+    mix-blend-mode: screen;
 }
 
 #shadow-splash:not(.hidden) .s-splash-quote {
     animation: quoteRitual 3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards 1s,
-        quoteFloat 4s ease-in-out infinite alternate 4s;
+        quotePulse 4s ease-in-out infinite alternate 4s;
+}
+
+@keyframes quotePulse {
+    0% {
+        color: #888;
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+        transform: scale(1);
+    }
+
+    100% {
+        color: #fff;
+        text-shadow: 0 0 20px rgba(255, 255, 255, 0.4), 0 0 40px var(--shadow-gold);
+        transform: scale(1.02);
+    }
 }
 
 @keyframes quoteRitual {
@@ -252,14 +272,14 @@
         opacity: 0;
         letter-spacing: 20px;
         transform: translateY(20px);
-        filter: blur(10px);
+        filter: blur(10px) drop-shadow(0 0 0 transparent);
     }
 
     100% {
-        opacity: 0.8;
+        opacity: 1;
         letter-spacing: 6px;
         transform: translateY(0);
-        filter: blur(0);
+        filter: blur(0) drop-shadow(0 0 15px rgba(188, 19, 254, 0.5));
     }
 }
 
