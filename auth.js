@@ -326,11 +326,21 @@ function initAuth() {
         // 2. Calculate new values
         const newTests = (current.tests_completed || 0) + 1;
         const newTime = (current.time_typed_seconds || 0) + Math.round(timeElapsedSeconds);
-        const newBest = Math.max(current.best_wpm || 0, wpm);
 
+        // CLASSIC BEST (Unchanged if in Hagakure mode)
+        let newBest = current.best_wpm || 0;
+        if (mode !== 'hagakure') {
+            newBest = Math.max(newBest, wpm);
+            console.log(`[SCORE SAVE] Classic Mode: Comparing ${wpm} with current best ${current.best_wpm || 0}. Result: ${newBest}`);
+        } else {
+            console.log(`[SCORE SAVE] Hagakure Mode: Skipping Classic best_wpm update. current best remains ${newBest}`);
+        }
+
+        // HAGAKURE BEST
         let newHagakureBest = current.best_hagakure_wpm || 0;
         if (mode === 'hagakure') {
             newHagakureBest = Math.max(newHagakureBest, wpm);
+            console.log(`[SCORE SAVE] Hagakure Mode: Comparing ${wpm} with current best ${current.best_hagakure_wpm || 0}. Result: ${newHagakureBest}`);
         }
 
         // Heatmap & History
@@ -357,8 +367,9 @@ function initAuth() {
 
         if (mode === 'hagakure') {
             updates.best_hagakure_wpm = newHagakureBest;
-            console.log(`[HAGAKURE SAVE] Updating best_hagakure_wpm to: ${newHagakureBest}`);
         }
+
+        console.log("[SCORE SAVE] Updates object constructed:", updates);
 
         const { error: updateError } = await supabaseClient
             .from('profiles')
@@ -366,9 +377,9 @@ function initAuth() {
             .eq('id', user.id);
 
         if (updateError) {
-            console.error("Failed to save stats:", updateError);
+            console.error("[SCORE SAVE] Failed to save stats:", updateError);
         } else {
-            console.log("Stats saved successfully!");
+            console.log("[SCORE SAVE] Stats saved successfully!");
             fetchUserStats(); // Refresh UI
         }
     };
