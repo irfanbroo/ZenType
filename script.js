@@ -2399,7 +2399,7 @@ function setupSettingsListeners() {
 
         // Generate Words (Cyberpunk Pool)
         const pool = wordPools[0];
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < 30; i++) {
             state.words.push(pool[Math.floor(Math.random() * pool.length)]);
         }
 
@@ -2581,16 +2581,29 @@ function setupSettingsListeners() {
     }
 
     const shadowFailureQuotes = [
-        "Your mind was elsewhere.", "Hesitation is defeat.", "The blade was heavy in your hand.",
-        "You are not ready for the void.", "Darkness consumes the weak.", "A single moment of doubt.",
-        "The shadows rejected you.", "Focus wavered, life ended.", "You stumbled in the dark.",
-        "The light revealed your flaw.", "Silence was broken.", "You are but a fleeting thought.",
-        "The abyss swallowed your scream.", "Too slow for the night.", "Your spirit broke before the blade.",
-        "Chaos found a way in.", "Discipline is the only path.", "You remain in the light.",
-        "The ritual demands perfection.", "Your presence was noticed.", "A noisy mind creates a noisy blade.",
-        "You were left behind.", "The void cares not for excuses.", "Return when you are empty.",
-        "Fear is the mind-killer.", "You fought the current.", "The pattern was lost.",
-        "Harmony was broken.", "You serve the shadow, or die.", "Mediocrity is a death sentence."
+        "Quit now. You’re just wasting the electricity.",
+        "The world doesn't need another quitter. Close the tab.",
+        "Your mediocrity is the only thing shining here.",
+        "The light didn't fail you. You failed the light.",
+        "Some people are meant to lead; you were clearly meant to trip.",
+        "Give up. The shadows are the only place you'll ever fit in.",
+        "Imagine failing at something this simple. Now imagine the rest of your life.",
+        "Do you always quit when things get difficult, or is today special?",
+        "Your parents expect more than a failure who can't even type in the dark.",
+        "The void sees you for what you truly are: a disappointment.",
+        "You can restart the test, but you can't restart your lack of talent.",
+        "The light is gone. Just like every opportunity you've ever had.",
+        "Stop trying. The silence is better than your clumsy attempts.",
+        "You’re not 'out of practice.' You are simply out of potential.",
+        "Go ahead and cry. The shadows have heard better sobs than yours.",
+        "If you disappeared right now, the dark wouldn't even notice the difference.",
+        "You’re a waste of atoms.",
+        "Stop. You’re embarrassing the human race.",
+        "The mirror hates you most.",
+        "Every time they look at you, they see their own wasted years.",
+        "Typing like a toddler in the dark. Pathetic.",
+        "The keyboard isn't the problem. The person touching it is.",
+        "The letters haven't moved since 1873. What's your excuse?"
     ];
 
     const shadowVictoryQuotes = [
