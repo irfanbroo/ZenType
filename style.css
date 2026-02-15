@@ -2101,15 +2101,15 @@ input:checked+.slider::before {
     animation: slideUpFade 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
 
-/* --- SAKURA CHAMPION VAULT --- */
+/* --- BUSHIDO CHAMPION VAULT (Samurai Blood Redesign) --- */
 #hagakure-leaderboard-modal {
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: radial-gradient(circle at center, rgba(30, 0, 30, 0.4) 0%, rgba(0, 0, 0, 0.9) 100%);
-    backdrop-filter: blur(15px);
+    background: radial-gradient(circle at center, rgba(40, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.95) 100%);
+    backdrop-filter: blur(20px);
     z-index: 5000;
     display: flex;
     align-items: center;
@@ -2121,27 +2121,28 @@ input:checked+.slider::before {
     display: none !important;
 }
 
-.sakura-pane {
+.bushido-pane {
     width: 580px;
     height: 80vh;
-    background: rgba(255, 230, 240, 0.05);
+    background: rgba(10, 0, 0, 0.8);
     backdrop-filter: blur(25px);
-    border: 1px solid rgba(255, 182, 193, 0.2);
-    border-radius: 24px;
-    box-shadow: 0 0 80px rgba(255, 182, 193, 0.1),
-        inset 0 0 40px rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(206, 17, 38, 0.3);
+    border-radius: 12px;
+    /* Sharper corners for a more aggressive look */
+    box-shadow: 0 0 100px rgba(0, 0, 0, 0.8),
+        inset 0 0 60px rgba(206, 17, 38, 0.1);
     display: flex;
     flex-direction: column;
     position: relative;
     overflow: hidden;
-    animation: sakuraEntry 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+    animation: bushidoEntry 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-@keyframes sakuraEntry {
+@keyframes bushidoEntry {
     0% {
         opacity: 0;
-        transform: scale(0.9) translateY(30px);
-        filter: blur(10px);
+        transform: scale(1.05) translateY(20px);
+        filter: blur(20px);
     }
 
     100% {
@@ -2151,8 +2152,8 @@ input:checked+.slider::before {
     }
 }
 
-/* Petal Animations */
-.sakura-petals {
+/* Particle Animations (Blood/Embers) */
+.bushido-particles {
     position: absolute;
     top: 0;
     left: 0;
@@ -2162,39 +2163,42 @@ input:checked+.slider::before {
     z-index: 0;
 }
 
-.sakura-header {
+.bushido-header {
     padding: 35px 40px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid rgba(255, 182, 193, 0.1);
+    border-bottom: 2px solid rgba(206, 17, 38, 0.2);
     position: relative;
     z-index: 2;
+    background: linear-gradient(to bottom, rgba(206, 17, 38, 0.05), transparent);
 }
 
-.sakura-title {
+.bushido-title {
     font-family: 'Shojumaru', cursive;
-    font-size: 1.6rem;
-    color: #ffb6c1;
-    letter-spacing: 4px;
-    text-shadow: 0 0 15px rgba(255, 182, 193, 0.5);
+    font-size: 1.8rem;
+    color: #ce1126;
+    /* Blood Red */
+    letter-spacing: 6px;
+    text-shadow: 0 0 20px rgba(206, 17, 38, 0.6), 0 0 40px rgba(0, 0, 0, 0.8);
 }
 
-.sakura-close {
+.bushido-close {
     background: transparent;
     border: none;
-    color: rgba(255, 182, 193, 0.4);
+    color: rgba(206, 17, 38, 0.5);
     font-size: 2rem;
     cursor: pointer;
-    transition: all 0.4s;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.sakura-close:hover {
-    color: #ffb6c1;
-    transform: rotate(90deg) scale(1.1);
+.bushido-close:hover {
+    color: #ce1126;
+    transform: rotate(180deg) scale(1.2);
+    filter: drop-shadow(0 0 10px #ce1126);
 }
 
-.sakura-body {
+.bushido-body {
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -2203,148 +2207,182 @@ input:checked+.slider::before {
     z-index: 2;
 }
 
-.sakura-list-header {
+.bushido-list-header {
     display: grid;
     grid-template-columns: 80px 1fr 100px;
     padding: 20px 40px;
     font-family: 'Shojumaru', cursive;
     font-size: 0.8rem;
-    color: rgba(255, 182, 193, 0.4);
+    color: rgba(255, 255, 255, 0.2);
     letter-spacing: 2px;
 }
 
-.sakura-list {
+.bushido-list {
     flex: 1;
     overflow-y: overlay;
     padding-bottom: 20px;
 }
 
-.sakura-list::-webkit-scrollbar {
-    width: 3px;
+.bushido-list::-webkit-scrollbar {
+    width: 4px;
 }
 
-.sakura-list::-webkit-scrollbar-thumb {
-    background: rgba(255, 182, 193, 0.2);
-    border-radius: 10px;
+.bushido-list::-webkit-scrollbar-thumb {
+    background: rgba(206, 17, 38, 0.4);
+    border-radius: 0;
 }
 
-.sakura-item {
+.bushido-item {
     display: grid;
     grid-template-columns: 80px 1fr 100px;
     align-items: center;
     padding: 20px 40px;
-    margin-bottom: 8px;
-    background: rgba(255, 255, 255, 0.02);
-    border-radius: 16px;
-    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    margin-bottom: 10px;
+    background: rgba(20, 20, 20, 0.4);
+    border-radius: 4px;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     cursor: pointer;
-    border: 1px solid transparent;
+    border: 1px solid rgba(255, 255, 255, 0.02);
+    position: relative;
+    overflow: hidden;
 }
 
-.sakura-item:hover {
-    background: rgba(255, 182, 193, 0.08);
-    border-color: rgba(255, 182, 193, 0.2);
-    transform: translateX(10px) scale(1.02);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+.bushido-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 100%;
+    background: linear-gradient(90deg, rgba(206, 17, 38, 0.2), transparent);
+    transition: width 0.4s ease;
+    z-index: 0;
 }
 
-.sakura-item .s-rank {
+.bushido-item:hover {
+    border-color: rgba(206, 17, 38, 0.4);
+    transform: translateX(10px);
+    background: rgba(30, 0, 0, 0.4);
+}
+
+.bushido-item:hover::before {
+    width: 100%;
+}
+
+.bushido-item .s-rank {
     font-family: 'Shojumaru', cursive;
     font-size: 1.4rem;
-    color: rgba(255, 182, 193, 0.6);
+    color: rgba(255, 255, 255, 0.4);
+    position: relative;
+    z-index: 1;
 }
 
-.sakura-item .s-name {
-    color: #eee;
+.bushido-item .s-name {
+    color: #fff;
     font-size: 1.1rem;
     letter-spacing: 1px;
+    font-family: 'Outfit', sans-serif;
+    position: relative;
+    z-index: 1;
 }
 
-.sakura-item .s-flow {
+.bushido-item .s-flow {
     font-family: 'Shojumaru', cursive;
     font-size: 1.8rem;
-    color: #ffb6c1;
+    color: #ce1126;
     text-align: right;
-    text-shadow: 0 0 10px rgba(255, 182, 193, 0.3);
+    text-shadow: 0 0 15px rgba(206, 17, 38, 0.5);
+    position: relative;
+    z-index: 1;
 }
 
-/* Champion Tiers */
-.sakura-item.gold .s-rank,
-.sakura-item.gold .s-flow {
+/* Champion Tiers (Blood Variations) */
+.bushido-item.gold {
+    border-color: rgba(255, 215, 0, 0.4);
+}
+
+.bushido-item.gold .s-rank,
+.bushido-item.gold .s-flow {
     color: #ffd700 !important;
-    text-shadow: 0 0 20px rgba(255, 215, 0, 0.4) !important;
+    text-shadow: 0 0 25px rgba(255, 215, 0, 0.6) !important;
 }
 
-.sakura-item.silver .s-rank,
-.sakura-item.silver .s-flow {
+.bushido-item.silver .s-rank,
+.bushido-item.silver .s-flow {
     color: #e0e0e0 !important;
-    text-shadow: 0 0 20px rgba(224, 224, 224, 0.3) !important;
 }
 
-.sakura-item.bronze .s-rank,
-.sakura-item.bronze .s-flow {
+.bushido-item.bronze .s-rank,
+.bushido-item.bronze .s-flow {
     color: #cd7f32 !important;
-    text-shadow: 0 0 20px rgba(205, 127, 50, 0.3) !important;
 }
 
-.sakura-footer {
+.bushido-footer {
     padding: 25px;
     text-align: center;
-    border-top: 1px solid rgba(255, 182, 193, 0.1);
+    border-top: 1px solid rgba(206, 17, 38, 0.1);
     font-family: 'Shojumaru', cursive;
-    font-size: 0.75rem;
-    color: rgba(255, 182, 193, 0.3);
-    letter-spacing: 2px;
+    font-size: 0.8rem;
+    color: rgba(206, 17, 38, 0.4);
+    letter-spacing: 4px;
+    background: linear-gradient(to top, rgba(206, 17, 38, 0.05), transparent);
 }
 
-.sakura-loading {
+.bushido-loading {
     text-align: center;
     padding: 60px;
     font-family: 'Shojumaru', cursive;
-    color: rgba(255, 182, 193, 0.2);
-    letter-spacing: 4px;
-    animation: sakuraPulse 2s infinite ease-in-out;
+    color: #ce1126;
+    letter-spacing: 6px;
+    animation: bushidoPulse 2s infinite ease-in-out;
+    opacity: 0.6;
 }
 
-@keyframes sakuraPulse {
+@keyframes bushidoPulse {
 
     0%,
     100% {
-        opacity: 0.3;
+        opacity: 0.4;
         transform: scale(1);
     }
 
     50% {
-        opacity: 0.6;
-        transform: scale(1.02);
+        opacity: 0.8;
+        transform: scale(1.05);
+        filter: drop-shadow(0 0 10px #ce1126);
     }
 }
 
-/* Falling Petal Component */
-.petal {
+/* Blood Drop / Ember Particle */
+.blood-particle {
     position: absolute;
-    background: #ffb6c1;
-    border-radius: 150% 0 150% 0;
-    opacity: 0.3;
-    animation: petalFall linear infinite;
+    background: #ce1126;
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    /* Slightly egg-shaped / drip-like */
+    filter: blur(1px);
+    opacity: 0.6;
+    pointer-events: none;
+    animation: bloodFall linear infinite;
+    box-shadow: 0 0 8px #ce1126;
 }
 
-@keyframes petalFall {
+@keyframes bloodFall {
     0% {
-        transform: translate(0, -10%) rotate(0deg);
+        transform: translateY(-20px) scaleY(1.2);
         opacity: 0;
     }
 
     10% {
-        opacity: 0.6;
+        opacity: 0.8;
     }
 
     90% {
-        opacity: 0.6;
+        opacity: 0.4;
     }
 
     100% {
-        transform: translate(100px, 110%) rotate(720deg);
+        transform: translateY(90vh) scaleY(0.8);
         opacity: 0;
     }
 }
@@ -4887,258 +4925,4 @@ input:checked+.slider::before {
     }
 }
 
-/* --- SAKURA CHAMPION VAULT --- */
-#hagakure-leaderboard-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: radial-gradient(circle at center, rgba(30, 0, 30, 0.4) 0%, rgba(0, 0, 0, 0.9) 100%);
-    backdrop-filter: blur(15px);
-    z-index: 5000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-}
-
-#hagakure-leaderboard-modal.hidden {
-    display: none !important;
-}
-
-.sakura-pane {
-    width: 580px;
-    height: auto;
-    max-height: 85vh;
-    min-height: 500px;
-    background: rgba(255, 230, 240, 0.05);
-    backdrop-filter: blur(25px);
-    border: 1px solid rgba(255, 182, 193, 0.2);
-    border-radius: 24px;
-    box-shadow: 0 0 80px rgba(255, 182, 193, 0.1),
-        inset 0 0 40px rgba(255, 255, 255, 0.02);
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    overflow: hidden;
-    animation: sakuraEntry 1.2s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-@keyframes sakuraEntry {
-    0% {
-        opacity: 0;
-        transform: scale(0.9) translateY(30px);
-        filter: blur(10px);
-    }
-
-    100% {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-        filter: blur(0);
-    }
-}
-
-/* Petal Animations */
-.sakura-petals {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 0;
-}
-
-.sakura-header {
-    padding: 35px 40px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid rgba(255, 182, 193, 0.1);
-    position: relative;
-    z-index: 2;
-}
-
-.sakura-title {
-    font-family: 'Shojumaru', cursive;
-    font-size: 1.6rem;
-    color: #ffb6c1;
-    letter-spacing: 4px;
-    text-shadow: 0 0 15px rgba(255, 182, 193, 0.5);
-}
-
-.sakura-close {
-    background: transparent;
-    border: none;
-    color: rgba(255, 182, 193, 0.4);
-    font-size: 2rem;
-    cursor: pointer;
-    transition: all 0.4s;
-}
-
-.sakura-close:hover {
-    color: #ffb6c1;
-    transform: rotate(90deg) scale(1.1);
-}
-
-.sakura-body {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    padding: 10px 20px;
-    position: relative;
-    z-index: 2;
-    min-height: 380px;
-}
-
-.sakura-list-header {
-    display: grid;
-    grid-template-columns: 80px 1fr 100px;
-    padding: 20px 40px;
-    font-family: 'Shojumaru', cursive;
-    font-size: 0.8rem;
-    color: rgba(255, 182, 193, 0.4);
-    letter-spacing: 2px;
-}
-
-.sakura-list-header span:last-child {
-    text-align: right;
-}
-
-.sakura-list {
-    flex: 1;
-    overflow-y: overlay;
-    padding-bottom: 20px;
-}
-
-.sakura-list::-webkit-scrollbar {
-    width: 3px;
-}
-
-.sakura-list::-webkit-scrollbar-thumb {
-    background: rgba(255, 182, 193, 0.2);
-    border-radius: 10px;
-}
-
-.sakura-item {
-    display: grid;
-    grid-template-columns: 80px 1fr 100px;
-    align-items: center;
-    padding: 20px 40px;
-    margin-bottom: 8px;
-    background: rgba(255, 255, 255, 0.02);
-    border-radius: 16px;
-    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-    cursor: pointer;
-    border: 1px solid transparent;
-}
-
-.sakura-item:hover {
-    background: rgba(255, 182, 193, 0.08);
-    border-color: rgba(255, 182, 193, 0.2);
-    transform: translateX(10px) scale(1.02);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-}
-
-.sakura-item .s-rank {
-    font-family: 'Shojumaru', cursive;
-    font-size: 1.4rem;
-    color: rgba(255, 182, 193, 0.6);
-}
-
-.sakura-item .s-name {
-    color: #eee;
-    font-size: 1.1rem;
-    letter-spacing: 1px;
-}
-
-.sakura-item .s-flow {
-    font-family: 'Shojumaru', cursive;
-    font-size: 1.8rem;
-    color: #ffb6c1;
-    text-align: right;
-    text-shadow: 0 0 10px rgba(255, 182, 193, 0.3);
-}
-
-/* Champion Tiers */
-.sakura-item.gold .s-rank,
-.sakura-item.gold .s-flow {
-    color: #ffd700 !important;
-    text-shadow: 0 0 20px rgba(255, 215, 0, 0.4) !important;
-}
-
-.sakura-item.silver .s-rank,
-.sakura-item.silver .s-flow {
-    color: #e0e0e0 !important;
-    text-shadow: 0 0 20px rgba(224, 224, 224, 0.3) !important;
-}
-
-.sakura-item.bronze .s-rank,
-.sakura-item.bronze .s-flow {
-    color: #cd7f32 !important;
-    text-shadow: 0 0 20px rgba(205, 127, 50, 0.3) !important;
-}
-
-.sakura-footer {
-    padding: 30px 40px 60px;
-    text-align: center;
-    border-top: 1px solid rgba(255, 182, 193, 0.1);
-    font-family: 'Shojumaru', cursive;
-    font-size: 0.9rem;
-    color: rgba(255, 182, 193, 0.6);
-    letter-spacing: 3px;
-    text-shadow: 0 0 10px rgba(255, 182, 193, 0.2);
-}
-
-.sakura-loading {
-    text-align: center;
-    padding: 60px;
-    font-family: 'Shojumaru', cursive;
-    color: rgba(255, 182, 193, 0.2);
-    letter-spacing: 4px;
-    animation: sakuraPulse 2s infinite ease-in-out;
-}
-
-@keyframes sakuraPulse {
-
-    0%,
-    100% {
-        opacity: 0.3;
-        transform: scale(1);
-    }
-
-    50% {
-        opacity: 0.6;
-        transform: scale(1.02);
-    }
-}
-
-/* Falling Petal Component */
-.petal {
-    position: absolute;
-    background: #ffb6c1;
-    border-radius: 150% 0 150% 0;
-    opacity: 0.3;
-    animation: petalFall linear infinite;
-}
-
-@keyframes petalFall {
-    0% {
-        transform: translate(0, -10%) rotate(0deg);
-        opacity: 0;
-    }
-
-    10% {
-        opacity: 0.6;
-    }
-
-    90% {
-        opacity: 0.6;
-    }
-
-    100% {
-        transform: translate(100px, 110%) rotate(720deg);
-        opacity: 0;
-    }
-}
+/* --- END OF STYLES --- */
