@@ -4926,6 +4926,10 @@ input:checked+.slider::before {
     letter-spacing: 2px;
 }
 
+.sakura-list-header span:last-child {
+    text-align: right;
+}
+
 .sakura-list {
     flex: 1;
     overflow-y: overlay;
