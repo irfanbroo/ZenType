@@ -2342,6 +2342,12 @@ function setupSettingsListeners() {
         if (setup) setup.classList.remove('hidden');
         if (board) board.classList.add('hidden');
 
+        // Exit Button Listener
+        const exitBtn = document.getElementById('h-exit-path-btn');
+        if (exitBtn) {
+            exitBtn.onclick = exitHagakureMode;
+        }
+
         // Reset any previous listeners to avoid duplicates (smarter way is to do once, but this is safe)
         const opts = document.querySelectorAll('.h-opt-btn');
         opts.forEach(btn => {
@@ -2361,6 +2367,30 @@ function setupSettingsListeners() {
                 initHagakureGame();
             };
         });
+    }
+
+    function exitHagakureMode() {
+        const hUI = document.getElementById('hagakure-ui');
+        if (hUI) hUI.classList.add('hidden');
+
+        // Show Standard UI
+        const gameUI = document.getElementById('game-ui');
+        const appHeader = document.getElementById('app-header');
+        const navButtons = document.getElementById('top-nav-buttons');
+        const footer = document.querySelector('footer') || document.querySelector('.site-footer');
+
+        if (gameUI) gameUI.classList.remove('hidden');
+        if (appHeader) appHeader.style.display = ''; // Reset to default CSS
+        if (navButtons) navButtons.style.display = ''; // Reset to default CSS
+        if (footer) footer.style.display = ''; // Reset to default CSS
+
+        state.gameMode = 'time'; // Default back to time or previous
+
+        // Clear Hagakure specific state
+        if (state.timerInterval) clearInterval(state.timerInterval);
+
+        // Re-init standard game
+        newGame();
     }
 
     function initHagakureGame() {
