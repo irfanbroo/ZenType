@@ -2223,6 +2223,20 @@ input:checked+.slider::before {
     z-index: 0;
 }
 
+.bushido-watermark {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-45deg);
+    font-size: 400px;
+    color: rgba(206, 17, 38, 0.03);
+    pointer-events: none;
+    z-index: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .bushido-header {
     padding: 35px 40px;
     display: flex;
@@ -2241,6 +2255,35 @@ input:checked+.slider::before {
     /* Blood Red */
     letter-spacing: 6px;
     text-shadow: 0 0 20px rgba(206, 17, 38, 0.6), 0 0 40px rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.katana-icon {
+    font-size: 2.2rem;
+    position: relative;
+    color: #ce1126;
+    animation: bladeGlint 4s infinite ease-in-out;
+}
+
+@keyframes bladeGlint {
+
+    0%,
+    80%,
+    100% {
+        filter: drop-shadow(0 0 5px #ce1126);
+    }
+
+    85% {
+        filter: drop-shadow(0 0 20px #fff);
+        transform: rotate(-5deg) scale(1.1);
+    }
+
+    90% {
+        filter: drop-shadow(0 0 5px #ce1126);
+        transform: rotate(0) scale(1);
+    }
 }
 
 .bushido-close {
