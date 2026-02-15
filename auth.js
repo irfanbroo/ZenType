@@ -73,7 +73,12 @@ function initAuth() {
         leaderboardBtn: document.getElementById('leaderboard-btn'),
         leaderboardModal: document.getElementById('leaderboard-modal'),
         closeLeaderboardBtn: document.getElementById('close-leaderboard'),
-        leaderboardList: document.getElementById('leaderboard-list')
+        leaderboardList: document.getElementById('leaderboard-list'),
+
+        // Sakura Vault
+        hLeaderboardBtn: document.getElementById('hagakure-leaderboard-btn'),
+        hLeaderboardModal: document.getElementById('hagakure-leaderboard-modal'),
+        hLeaderboardList: document.getElementById('hagakure-leaderboard-list')
     };
 
     console.log("Auth.js: UI Elements found:", authUI);
@@ -416,14 +421,22 @@ function initAuth() {
             };
         });
 
-        // Hagakure Button (Sword Icon)
-        const hagakureBtn = document.getElementById('hagakure-leaderboard-btn');
-        if (hagakureBtn) {
-            hagakureBtn.onclick = () => {
-                authUI.leaderboardModal.classList.remove('hidden');
-                // Switch to hagakure tab
-                const hTab = authUI.leaderboardModal.querySelector('[data-l-tab="hagakure"]');
-                if (hTab) hTab.click();
+        // Hagakure Button (Sword Icon) - Redirect to Sakura Vault
+        if (authUI.hLeaderboardBtn) {
+            authUI.hLeaderboardBtn.onclick = () => {
+                if (authUI.hLeaderboardModal) {
+                    authUI.hLeaderboardModal.classList.remove('hidden');
+                    createPetals();
+                    fetchLeaderboard('hagakure');
+                }
+            };
+        }
+
+        // Sakura Close
+        const closeSakura = document.getElementById('close-h-leaderboard');
+        if (closeSakura) {
+            closeSakura.onclick = () => {
+                if (authUI.hLeaderboardModal) authUI.hLeaderboardModal.classList.add('hidden');
             };
         }
 
@@ -432,63 +445,69 @@ function initAuth() {
             if (e.target === authUI.leaderboardModal) {
                 authUI.leaderboardModal.classList.add('hidden');
             }
+            if (e.target === authUI.hLeaderboardModal) {
+                authUI.hLeaderboardModal.classList.add('hidden');
+            }
         });
     }
 
+    // Sakura Petal Generation
+    function createPetals() {
+        const container = document.getElementById('petal-container');
+        if (!container) return;
+        container.innerHTML = '';
+        for (let i = 0; i < 20; i++) {
+            const petal = document.createElement('div');
+            petal.className = 'petal';
+            const size = Math.random() * 10 + 5;
+            petal.style.width = `${size}px`;
+            petal.style.height = `${size}px`;
+            petal.style.left = `${Math.random() * 100}%`;
+            petal.style.animationDuration = `${Math.random() * 5 + 5}s`;
+            petal.style.animationDelay = `${Math.random() * 5}s`;
+            container.appendChild(petal);
+        }
+    }
+
     async function fetchLeaderboard(mode = 'classic') {
-        if (!authUI.leaderboardList) return;
+        const listEl = mode === 'hagakure' ? authUI.hLeaderboardList : authUI.leaderboardList;
+        if (!listEl) return;
         const startFetch = Date.now();
 
-        // CUSTOM LOADING FOR HAGAKURE
+        // LOADING STATE
         if (mode === 'hagakure') {
-            authUI.leaderboardList.innerHTML = `
-                <div class="warrior-loading">
-                    <div class="warrior-clash">
-                        <i class="ri-sword-fill sword-l"></i>
-                        <i class="ri-sword-fill sword-r"></i>
-                        <div class="clash-spark"></div>
-                    </div>
-                    <div class="warrior-msg">GATHERING WARRIORS...</div>
-                </div>
-            `;
+            listEl.innerHTML = '<div class="sakura-loading">DRAPING PETALS...</div>';
         } else {
-            authUI.leaderboardList.innerHTML = '<div class="loading-spinner"></div>';
+            listEl.innerHTML = '<div class="loading-spinner"></div>';
         }
 
         const column = mode === 'hagakure' ? 'best_hagakure_wpm' : 'best_wpm';
+
+        const limitCount = mode === 'hagakure' ? 4 : 10;
 
         const { data, error } = await supabaseClient
             .from('profiles')
             .select(`id, username, ${column}, time_typed_seconds`)
             .gt(column, 0)
             .order(column, { ascending: false })
-            .limit(10);
+            .limit(limitCount);
 
         if (error) {
             console.error("Error fetching leaderboard:", error);
-            authUI.leaderboardList.innerHTML = '<p class="param-label" style="text-align:center">Failed to load leaderboard.</p>';
+            listEl.innerHTML = '<p class="param-label" style="text-align:center">Failed to load leaderboard.</p>';
             return;
         }
 
-        // MINIMUM DELAY FOR HAGAKURE (So the cool animation is seen)
+        // Elegant Delay
         if (mode === 'hagakure') {
+            const minTime = 800;
             const elapsed = Date.now() - startFetch;
-            const minTime = 1200; // 1.2s
-            if (elapsed < minTime) {
-                await new Promise(r => setTimeout(r, minTime - elapsed));
-            }
-
-            // FADE OUT TRANSITION
-            const loader = authUI.leaderboardList.querySelector('.warrior-loading');
-            if (loader) {
-                loader.classList.add('fade-out');
-                await new Promise(r => setTimeout(r, 200)); // Match CSS transition
-            }
+            if (elapsed < minTime) await new Promise(r => setTimeout(r, minTime - elapsed));
         }
 
-        authUI.leaderboardList.innerHTML = '';
+        listEl.innerHTML = '';
         if (data.length === 0) {
-            authUI.leaderboardList.innerHTML = '<p class="param-label" style="text-align:center; padding: 20px;">No scores yet. Be the first!</p>';
+            listEl.innerHTML = '<p class="param-label" style="text-align:center; padding: 20px; color: rgba(255,182,193,0.3)">No champions yet.</p>';
             return;
         }
 
@@ -500,36 +519,46 @@ function initAuth() {
             else if (rank === 3) rankClass = 'bronze';
 
             const item = document.createElement('div');
-            item.className = `leaderboard-item ${rankClass} ${mode === 'hagakure' ? 'hagakure-item' : ''}`;
 
-            item.onclick = () => openPublicProfile(player.id);
+            if (mode === 'hagakure') {
+                item.className = `sakura-item ${rankClass}`;
+                item.onclick = () => {
+                    if (authUI.hLeaderboardModal) authUI.hLeaderboardModal.classList.add('hidden');
+                    openPublicProfile(player.id);
+                };
 
-            const hrs = Math.floor(player.time_typed_seconds / 3600);
-            const mins = Math.floor((player.time_typed_seconds % 3600) / 60);
-            const timeStr = hrs > 0 ? `${hrs}h ${mins}m` : `${mins}m`;
-            const initial = (player.username || 'Z').charAt(0).toUpperCase();
+                const score = player[column] || 0;
+                item.innerHTML = `
+                    <div class="s-rank">#${rank}</div>
+                    <div class="s-name">${player.username || 'ZEN WARRIOR'}</div>
+                    <div class="s-flow">${score}</div>
+                `;
+            } else {
+                item.className = `leaderboard-item ${rankClass}`;
+                item.onclick = () => openPublicProfile(player.id);
 
-            const score = player[column] || 0;
+                const hrs = Math.floor(player.time_typed_seconds / 3600);
+                const mins = Math.floor((player.time_typed_seconds % 3600) / 60);
+                const timeStr = hrs > 0 ? `${hrs}h ${mins}m` : `${mins}m`;
+                const initial = (player.username || 'Z').charAt(0).toUpperCase();
+                const score = player[column] || 0;
 
-            item.innerHTML = `
-                <div class="l-left">
-                    <div class="l-rank">#${rank}</div>
-                    <div class="l-avatar">${initial}</div>
-                </div>
-                
-                <div class="l-info">
-                    <div class="l-name">${player.username || 'ZenTyper'} ${mode === 'hagakure' ? '<i class="ri-sword-fill" style="color: #ff4444; font-size: 0.8rem; margin-left: 5px;"></i>' : ''}</div>
-                    <div class="l-stats">
-                        <span class="l-stat-pill"><i class="ri-time-line"></i> ${timeStr}</span>
+                item.innerHTML = `
+                    <div class="l-left">
+                        <div class="l-rank">#${rank}</div>
+                        <div class="l-avatar">${initial}</div>
                     </div>
-                </div>
-
-                <div class="l-right">
-                    <div class="l-wpm">${score}</div>
-                    <div class="l-label">WPM</div>
-                </div>
-            `;
-            authUI.leaderboardList.appendChild(item);
+                    <div class="l-info">
+                        <div class="l-name">${player.username || 'ZenTyper'}</div>
+                        <div class="l-stats"><span class="l-stat-pill"><i class="ri-time-line"></i> ${timeStr}</span></div>
+                    </div>
+                    <div class="l-right">
+                        <div class="l-wpm">${score}</div>
+                        <div class="l-label">WPM</div>
+                    </div>
+                `;
+            }
+            listEl.appendChild(item);
         });
     }
 
