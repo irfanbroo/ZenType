@@ -469,6 +469,36 @@ function initAuth() {
         }
     }
 
+    const sakuraWisdom = [
+        "The Master has Finished. The Bench is Warm. Your Turn.",
+        "They Have Set the Pace. Will You Be the One to Break It?",
+        "The Wind is Faster Today. Can You Catch the Petal?",
+        "The Gate is Open. The Petals are Waiting. Prove You Belong.",
+        "The Master Tends the Garden. You Simply Rake the Sand.",
+        "The Sakura Does Not Compete; It Simply Blooms.",
+        "They are the Blossom. You are the Mud.",
+        "The Garden is Full. Try Again in Another Life.",
+        "The Finest Garden Requires the Sharpest Blade.",
+        "Mastery is the Art of Moving Without Disturbance.",
+        "The Garden is Quiet. Your Noise is Not Welcome.",
+        "Many Walk the Path; Few Reach the Blossom.",
+        "A Garden Tended by Masters Has No Room for the Slow.",
+        "They Are Not Typing. They are Raking the Clouds.",
+        "A Perfect Blossom is Rare. You are Witnessing Four",
+        "The Wind Bows to the Blade; The Blade Bows to Them.",
+        "Mastery is a Garden Tended in Falling Blossoms.",
+        "The Sakura Blooms in Silence. The Weak Fade in Noise.",
+        "A Zen Warrior Leaves No Ripples on the Still Water.",
+        "The Wind Whispers Their Names. It Has Forgotten Yours.",
+        "The Path to the Vault is Paved with Fallen Petals and Shattered Dreams.",
+        "The Master Does Not Race. The Master Simply Is.",
+        "One Mistake in the Garden is an Eternity of Regret.",
+        "The Sun Sets on the Slow. The Moon Rises for the Elite.",
+        "The Blade is an Extension of the Soul. Your Soul is Lagging.",
+        "The Garden is Eternal. Your Legacy is Yet to Bloom.",
+        "Four Flowers in the Vault. A Thousand Weeds in the Field."
+    ];
+
     async function fetchLeaderboard(mode = 'classic') {
         const listEl = mode === 'hagakure' ? authUI.hLeaderboardList : authUI.leaderboardList;
         if (!listEl) return;
@@ -503,6 +533,13 @@ function initAuth() {
             const minTime = 800;
             const elapsed = Date.now() - startFetch;
             if (elapsed < minTime) await new Promise(r => setTimeout(r, minTime - elapsed));
+
+            // Random Wisdom Update
+            const footerTxt = document.querySelector('#hagakure-leaderboard-modal .sakura-footer p');
+            if (footerTxt && sakuraWisdom.length > 0) {
+                const randomIdx = Math.floor(Math.random() * sakuraWisdom.length);
+                footerTxt.innerText = sakuraWisdom[randomIdx];
+            }
         }
 
         listEl.innerHTML = '';
