@@ -285,17 +285,17 @@ function initAuth() {
 
 
     // Expose update function globally for script.js
-    window.updateUserStats = async (wpm, timeElapsedSeconds) => {
+    window.updateUserStats = async (wpm, timeElapsedSeconds, mode = 'standard') => {
         if (!supabaseClient) return;
         const { data: { user } } = await supabaseClient.auth.getUser();
         if (!user) return;
 
-        console.log(`Saving Stats: WPM=${wpm}, Time=${timeElapsedSeconds}s`);
+        console.log(`Saving Stats: WPM=${wpm}, Time=${timeElapsedSeconds}s, Mode=${mode}`);
 
-        // 1. Get current stats (or create if missing)
+        // 1. Get current stats
         let { data: current, error: fetchError } = await supabaseClient
             .from('profiles')
-            .select('tests_completed, best_wpm, time_typed_seconds, activity_log, wpm_history')
+            .select('tests_completed, best_wpm, best_hagakure_wpm, time_typed_seconds, activity_log, wpm_history')
             .eq('id', user.id)
             .single();
 
@@ -308,15 +308,14 @@ function initAuth() {
                     bio: 'Just started typing...',
                     tests_completed: 0,
                     best_wpm: 0,
+                    best_hagakure_wpm: 0,
                     time_typed_seconds: 0,
                     activity_log: {},
                     wpm_history: []
                 }
             ]);
 
-            if (insertError) console.error("Error creating profile in update:", insertError);
-
-            current = { tests_completed: 0, best_wpm: 0, time_typed_seconds: 0, activity_log: {}, wpm_history: [] };
+            current = { tests_completed: 0, best_wpm: 0, best_hagakure_wpm: 0, time_typed_seconds: 0, activity_log: {}, wpm_history: [] };
         }
 
         // 2. Calculate new values
@@ -324,38 +323,41 @@ function initAuth() {
         const newTime = (current.time_typed_seconds || 0) + Math.round(timeElapsedSeconds);
         const newBest = Math.max(current.best_wpm || 0, wpm);
 
-        // Heatmap Update
+        let newHagakureBest = current.best_hagakure_wpm || 0;
+        if (mode === 'hagakure') {
+            newHagakureBest = Math.max(newHagakureBest, wpm);
+        }
+
+        // Heatmap & History
         const today = new Date().toISOString().split('T')[0];
         const activity = current.activity_log || {};
         activity[today] = (activity[today] || 0) + 1;
 
-        // History Update (Graph)
         let history = current.wpm_history;
-
-        // DEBUG: Log history state
-        console.log("DEBUG: Current wpm_history before update:", history, "Type:", typeof history);
-
         if (!Array.isArray(history)) {
-            console.warn("DEBUG: wpm_history is not an array! Resetting to empty array.");
             history = [];
         }
-
         history.push(wpm);
         if (history.length > 20) history = history.slice(history.length - 20);
 
-        console.log("DEBUG: New history to save:", history);
-
         // 3. Update Supabase
+        const updates = {
+            tests_completed: newTests,
+            time_typed_seconds: newTime,
+            best_wpm: newBest,
+            activity_log: activity,
+            wpm_history: history,
+            last_updated: new Date().toISOString()
+        };
+
+        if (mode === 'hagakure') {
+            updates.best_hagakure_wpm = newHagakureBest;
+            console.log(`[HAGAKURE SAVE] Updating best_hagakure_wpm to: ${newHagakureBest}`);
+        }
+
         const { error: updateError } = await supabaseClient
             .from('profiles')
-            .update({
-                tests_completed: newTests,
-                time_typed_seconds: newTime,
-                best_wpm: newBest,
-                activity_log: activity,
-                wpm_history: history,
-                last_updated: new Date().toISOString()
-            })
+            .update(updates)
             .eq('id', user.id);
 
         if (updateError) {
@@ -404,6 +406,27 @@ function initAuth() {
             };
         }
 
+        // Tab Switching
+        const lTabs = authUI.leaderboardModal.querySelectorAll('[data-l-tab]');
+        lTabs.forEach(tab => {
+            tab.onclick = () => {
+                lTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                fetchLeaderboard(tab.dataset.lTab);
+            };
+        });
+
+        // Hagakure Button (Sword Icon)
+        const hagakureBtn = document.getElementById('hagakure-leaderboard-btn');
+        if (hagakureBtn) {
+            hagakureBtn.onclick = () => {
+                authUI.leaderboardModal.classList.remove('hidden');
+                // Switch to hagakure tab
+                const hTab = authUI.leaderboardModal.querySelector('[data-l-tab="hagakure"]');
+                if (hTab) hTab.click();
+            };
+        }
+
         // Close on outside click
         window.addEventListener('click', (e) => {
             if (e.target === authUI.leaderboardModal) {
@@ -412,14 +435,17 @@ function initAuth() {
         });
     }
 
-    async function fetchLeaderboard() {
+    async function fetchLeaderboard(mode = 'classic') {
         if (!authUI.leaderboardList) return;
         authUI.leaderboardList.innerHTML = '<div class="loading-spinner"></div>';
 
+        const column = mode === 'hagakure' ? 'best_hagakure_wpm' : 'best_wpm';
+
         const { data, error } = await supabaseClient
             .from('profiles')
-            .select('id, username, best_wpm, time_typed_seconds') // Helper: Added ID
-            .order('best_wpm', { ascending: false })
+            .select(`id, username, ${column}, time_typed_seconds`)
+            .gt(column, 0)
+            .order(column, { ascending: false })
             .limit(10);
 
         if (error) {
@@ -429,6 +455,11 @@ function initAuth() {
         }
 
         authUI.leaderboardList.innerHTML = '';
+        if (data.length === 0) {
+            authUI.leaderboardList.innerHTML = '<p class="param-label" style="text-align:center; padding: 20px;">No scores yet. Be the first!</p>';
+            return;
+        }
+
         data.forEach((player, index) => {
             const rank = index + 1;
             let rankClass = '';
@@ -437,19 +468,16 @@ function initAuth() {
             else if (rank === 3) rankClass = 'bronze';
 
             const item = document.createElement('div');
-            item.className = `leaderboard-item ${rankClass}`;
-            // Cursor pointer handled in CSS now
+            item.className = `leaderboard-item ${rankClass} ${mode === 'hagakure' ? 'hagakure-item' : ''}`;
 
-            // CLICK TO VIEW PROFILE
             item.onclick = () => openPublicProfile(player.id);
 
-            // Format time
             const hrs = Math.floor(player.time_typed_seconds / 3600);
             const mins = Math.floor((player.time_typed_seconds % 3600) / 60);
             const timeStr = hrs > 0 ? `${hrs}h ${mins}m` : `${mins}m`;
-
-            // Avatar Letter
             const initial = (player.username || 'Z').charAt(0).toUpperCase();
+
+            const score = player[column] || 0;
 
             item.innerHTML = `
                 <div class="l-left">
@@ -458,20 +486,22 @@ function initAuth() {
                 </div>
                 
                 <div class="l-info">
-                    <div class="l-name">${player.username || 'ZenTyper'}</div>
+                    <div class="l-name">${player.username || 'ZenTyper'} ${mode === 'hagakure' ? '<i class="ri-sword-fill" style="color: #ff4444; font-size: 0.8rem; margin-left: 5px;"></i>' : ''}</div>
                     <div class="l-stats">
                         <span class="l-stat-pill"><i class="ri-time-line"></i> ${timeStr}</span>
                     </div>
                 </div>
 
                 <div class="l-right">
-                    <div class="l-wpm">${player.best_wpm}</div>
+                    <div class="l-wpm">${score}</div>
                     <div class="l-label">WPM</div>
                 </div>
             `;
             authUI.leaderboardList.appendChild(item);
         });
     }
+
+
 
     // --- UNIFIED PROFILE EDITING ---
     function setupProfileEditing(currentUsername, currentBio) {
@@ -951,6 +981,8 @@ function initAuth() {
             if (authUI.openBtn) authUI.openBtn.classList.remove('logged-in');
         }
     }
+
+
 
     // Check Logic
     if (supabaseClient) {

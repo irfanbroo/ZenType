@@ -1575,19 +1575,21 @@ function runStarfieldEffect(canvas) {
             }
             const sx = (s.x / s.z) * 300 + cx;
             const sy = (s.y / s.z) * 300 + cy;
-            const size = (1 - s.z / canvas.width) * 3;
+            const size = Math.max(0, (1 - s.z / canvas.width) * 3);
             const opacity = (1 - s.z / canvas.width) * Math.min(intensity, 1.3);
 
-            const trailZ = s.z + 20;
-            const prevSx = (s.x / trailZ) * 300 + cx;
-            const prevSy = (s.y / trailZ) * 300 + cy;
-            ctx.beginPath(); ctx.moveTo(prevSx, prevSy); ctx.lineTo(sx, sy);
-            ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${opacity * 0.5})`;
-            ctx.lineWidth = size * 0.6; ctx.stroke();
+            if (size > 0) {
+                const trailZ = s.z + 20;
+                const prevSx = (s.x / trailZ) * 300 + cx;
+                const prevSy = (s.y / trailZ) * 300 + cy;
+                ctx.beginPath(); ctx.moveTo(prevSx, prevSy); ctx.lineTo(sx, sy);
+                ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${opacity * 0.5})`;
+                ctx.lineWidth = size * 0.6; ctx.stroke();
 
-            ctx.beginPath(); ctx.arc(sx, sy, size, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${opacity})`;
-            ctx.fill();
+                ctx.beginPath(); ctx.arc(sx, sy, size, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${opacity})`;
+                ctx.fill();
+            }
         });
         effectAnimId = requestAnimationFrame(frame);
     }
@@ -2597,6 +2599,12 @@ function setupSettingsListeners() {
         // Calculate Final WPM
         const elapsed = (Date.now() - state.startTime) / 1000 / 60;
         const wpm = Math.round((state.correctChars / 5) / elapsed) || 0;
+
+        // SAVE STATS (HAGAKURE MODE)
+        if (window.updateUserStats) {
+            const timeSeconds = (Date.now() - state.startTime) / 1000;
+            window.updateUserStats(wpm, timeSeconds, 'hagakure');
+        }
 
         let rank = "RONIN";
         let msg = "Your blade is heavy. Train harder.";
