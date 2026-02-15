@@ -1073,13 +1073,17 @@
         <!-- GAME BOARD (Normally hidden until setup complete) -->
         <div id="h-game-board" class="hidden">
             <div class="h-header">
-                <div class="h-stat">STREAK: <span id="h-streak">0</span></div>
+                <div class="h-stat">SLASH: <span id="h-streak">0</span></div>
                 <div class="h-title">HAGAKURE</div>
-                <div class="h-stat">WPM: <span id="h-wpm">0</span></div>
+                <div class="h-stat">FLOW: <span id="h-wpm">0</span></div>
             </div>
             <div id="h-words-container"></div>
             <input type="text" id="h-input" autocomplete="off" spellcheck="false">
-            <div class="h-footer">FOCUS</div>
+            <div class="h-footer"><i class="ri-crosshair-2-line"
+                    style="margin-right: 10px; vertical-align: middle;"></i> FOCUS</div>
+            <div class="h-footer-controls">
+                <button id="h-exit-path-btn" class="h-control-btn">EXIT PATH</button>
+            </div>
         </div>
     </div>
 
