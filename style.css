@@ -2101,6 +2101,127 @@ input:checked+.slider::before {
     animation: slideUpFade 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
 
+/* --- HAGAKURE LEADERBOARD THEME --- */
+.hagakure-item {
+    border-left: 3px solid #ff4444 !important;
+    background: linear-gradient(90deg, rgba(80, 0, 0, 0.2) 0%, rgba(20, 20, 30, 0.6) 100%) !important;
+}
+
+.hagakure-item.gold {
+    box-shadow: 0 4px 20px rgba(255, 68, 68, 0.25), inset 0 0 15px rgba(255, 10, 10, 0.15);
+    border-color: #ff4444 !important;
+}
+
+.hagakure-item .l-wpm {
+    color: #ff4444;
+    text-shadow: 0 0 12px rgba(255, 68, 68, 0.5);
+    font-size: 1.3rem;
+}
+
+.leaderboard-tabs .settings-tab.active[data-l-tab="hagakure"] {
+    color: #ff4444;
+    border-bottom-color: #ff4444;
+    background: rgba(80, 0, 0, 0.1);
+}
+
+.leaderboard-tabs .settings-tab.active[data-l-tab="hagakure"] i {
+    filter: drop-shadow(0 0 8px rgba(255, 68, 68, 0.7));
+}
+
+/* Warrior Loading Animation */
+.warrior-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    height: 100%;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.warrior-loading.fade-out {
+    opacity: 0;
+    transform: scale(1.05);
+    pointer-events: none;
+}
+
+.warrior-clash {
+    position: relative;
+    width: 80px;
+    height: 60px;
+    margin-bottom: 30px;
+}
+
+.warrior-clash i {
+    position: absolute;
+    font-size: 3rem;
+    color: #ff4444;
+}
+
+.sword-l {
+    left: 0;
+    animation: hSwordL 1s infinite ease-in-out;
+}
+
+.sword-r {
+    right: 0;
+    transform: scaleX(-1);
+    animation: hSwordR 1s infinite ease-in-out;
+}
+
+@keyframes hSwordL {
+
+    0%,
+    100% {
+        transform: translateX(-15px) rotate(-45deg);
+        opacity: 0.4;
+    }
+
+    50% {
+        transform: translateX(10px) rotate(0deg);
+        opacity: 1;
+        filter: drop-shadow(0 0 15px #ff4444);
+    }
+}
+
+@keyframes hSwordR {
+
+    0%,
+    100% {
+        transform: translateX(15px) scaleX(-1) rotate(-45deg);
+        opacity: 0.4;
+    }
+
+    50% {
+        transform: translateX(-10px) scaleX(-1) rotate(0deg);
+        opacity: 1;
+        filter: drop-shadow(0 0 15px #ff4444);
+    }
+}
+
+.warrior-msg {
+    font-family: 'Shojumaru', cursive;
+    color: #ff4444;
+    font-size: 1.1rem;
+    letter-spacing: 0.15em;
+    text-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+    animation: hPulse 1s infinite;
+}
+
+@keyframes hPulse {
+
+    0%,
+    100% {
+        opacity: 0.5;
+        transform: scale(0.95);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1.05);
+    }
+}
+
 @keyframes slideUpFade {
     to {
         opacity: 1;
