@@ -1759,6 +1759,7 @@ function loopKeypressParticles() {
         const p = keyParticles[i];
         p.x += p.vx;
         p.y += p.vy;
+        p.vy += p.gravity || 0; // Support for gravity
         p.life -= p.decay;
         p.size *= 0.94;
 
@@ -1793,6 +1794,46 @@ function spawnKeypressParticles(x, y) {
             decay: 0.03 + Math.random() * 0.05,
             size: 2 + Math.random() * 3,
             color: color
+        });
+    }
+}
+
+function spawnHagakureParticles(x, y) {
+    if (!userConfig.particle) return;
+
+    // 1. Blood Spray
+    const bloodCount = 8 + Math.random() * 8;
+    for (let i = 0; i < bloodCount; i++) {
+        const angle = (Math.random() * Math.PI) + Math.PI; // Upward-ish arc
+        const speed = 2 + Math.random() * 5;
+        keyParticles.push({
+            x: x,
+            y: y,
+            vx: Math.cos(angle) * speed,
+            vy: Math.sin(angle) * speed - 1,
+            life: 1.0,
+            decay: 0.015 + Math.random() * 0.025,
+            size: 1.5 + Math.random() * 2.5,
+            color: '#ce1126',
+            gravity: 0.18
+        });
+    }
+
+    // 2. Steel Sparks
+    const sparkCount = 4 + Math.random() * 4;
+    for (let i = 0; i < sparkCount; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = 4 + Math.random() * 6;
+        keyParticles.push({
+            x: x,
+            y: y,
+            vx: Math.cos(angle) * speed,
+            vy: Math.sin(angle) * speed,
+            life: 0.8,
+            decay: 0.05 + Math.random() * 0.1,
+            size: 1 + Math.random() * 1.5,
+            color: '#ffffff',
+            gravity: 0.05
         });
     }
 }
@@ -2491,10 +2532,18 @@ function setupSettingsListeners() {
             }
 
             // CHECK INPUT (Character by Character)
-            // CHECK INPUT (Character by Character)
 
             // 1a. Check for Last Word Completion (No Space Needed)
             if (state.currWordIndex === state.words.length - 1 && value === currWord) {
+                // Particles for last character
+                const hWordsContainer = document.getElementById('h-words-container');
+                const lastWordEl = hWordsContainer.children[state.currWordIndex];
+                if (lastWordEl && lastWordEl.children.length > 0) {
+                    const lastLetterEl = lastWordEl.children[lastWordEl.children.length - 1];
+                    const rect = lastLetterEl.getBoundingClientRect();
+                    spawnHagakureParticles(rect.left + rect.width / 2, rect.top + rect.height / 2);
+                }
+
                 state.correctChars += currWord.length;
                 state.currWordIndex++;
                 state.streak++;
@@ -2531,6 +2580,20 @@ function setupSettingsListeners() {
             if (!currWord.startsWith(value)) {
                 gameOverHagakure();
                 return;
+            }
+
+            // Particles for character just typed
+            if (value.length > 0) {
+                const hWordsContainer = document.getElementById('h-words-container');
+                const activeWordEl = hWordsContainer.children[state.currWordIndex];
+                if (activeWordEl) {
+                    const letterIndex = value.length - 1;
+                    const letterEl = activeWordEl.children[letterIndex];
+                    if (letterEl) {
+                        const rect = letterEl.getBoundingClientRect();
+                        spawnHagakureParticles(rect.left + rect.width / 2, rect.top + rect.height / 2);
+                    }
+                }
             }
 
             // 3. Update Visuals (Highlight typed letters)
