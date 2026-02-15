@@ -411,15 +411,7 @@ function initAuth() {
             };
         }
 
-        // Tab Switching
-        const lTabs = authUI.leaderboardModal.querySelectorAll('[data-l-tab]');
-        lTabs.forEach(tab => {
-            tab.onclick = () => {
-                lTabs.forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-                fetchLeaderboard(tab.dataset.lTab);
-            };
-        });
+
 
         // Hagakure Button (Sword Icon) - Redirect to Sakura Vault
         if (authUI.hLeaderboardBtn) {
