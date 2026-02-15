@@ -75,7 +75,7 @@ function initAuth() {
         closeLeaderboardBtn: document.getElementById('close-leaderboard'),
         leaderboardList: document.getElementById('leaderboard-list'),
 
-        // Sakura Vault
+        // Bushido Champion Vault (Redesign)
         hLeaderboardBtn: document.getElementById('hagakure-leaderboard-btn'),
         hLeaderboardModal: document.getElementById('hagakure-leaderboard-modal'),
         hLeaderboardList: document.getElementById('hagakure-leaderboard-list')
@@ -424,21 +424,21 @@ function initAuth() {
 
 
 
-        // Hagakure Button (Sword Icon) - Redirect to Sakura Vault
+        // Hagakure Button (Sword Icon) - Redirect to Shroud Vault
         if (authUI.hLeaderboardBtn) {
             authUI.hLeaderboardBtn.onclick = () => {
                 if (authUI.hLeaderboardModal) {
                     authUI.hLeaderboardModal.classList.remove('hidden');
-                    createPetals();
+                    createBloodParticles();
                     fetchLeaderboard('hagakure');
                 }
             };
         }
 
-        // Sakura Close
-        const closeSakura = document.getElementById('close-h-leaderboard');
-        if (closeSakura) {
-            closeSakura.onclick = () => {
+        // Shroud Close
+        const closeHagakure = document.getElementById('close-h-leaderboard');
+        if (closeHagakure) {
+            closeHagakure.onclick = () => {
                 if (authUI.hLeaderboardModal) authUI.hLeaderboardModal.classList.add('hidden');
             };
         }
@@ -454,52 +454,44 @@ function initAuth() {
         });
     }
 
-    // Sakura Petal Generation
-    function createPetals() {
-        const container = document.getElementById('petal-container');
+    // Blood Particle Generation
+    function createBloodParticles() {
+        const container = document.getElementById('particle-container');
         if (!container) return;
         container.innerHTML = '';
-        for (let i = 0; i < 20; i++) {
-            const petal = document.createElement('div');
-            petal.className = 'petal';
-            const size = Math.random() * 10 + 5;
-            petal.style.width = `${size}px`;
-            petal.style.height = `${size}px`;
-            petal.style.left = `${Math.random() * 100}%`;
-            petal.style.animationDuration = `${Math.random() * 5 + 5}s`;
-            petal.style.animationDelay = `${Math.random() * 5}s`;
-            container.appendChild(petal);
+        const count = 50;
+        for (let i = 0; i < count; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'blood-particle';
+            const width = Math.random() * 2 + 1; // Thinner
+            const height = Math.random() * 10 + 5; // Longer drips
+            particle.style.width = `${width}px`;
+            particle.style.height = `${height}px`;
+            particle.style.left = `${Math.random() * 100}%`;
+            particle.style.top = `-20px`;
+            particle.style.animationDuration = `${Math.random() * 3 + 2}s`;
+            particle.style.animationDelay = `${Math.random() * 5}s`;
+            container.appendChild(particle);
         }
     }
 
-    const sakuraWisdom = [
-        "The Master has Finished. The Bench is Warm. Your Turn.",
-        "They Have Set the Pace. Will You Be the One to Break It?",
-        "The Wind is Faster Today. Can You Catch the Petal?",
-        "The Gate is Open. The Petals are Waiting. Prove You Belong.",
-        "The Master Tends the Garden. You Simply Rake the Sand.",
-        "The Sakura Does Not Compete; It Simply Blooms.",
-        "They are the Blossom. You are the Mud.",
-        "The Garden is Full. Try Again in Another Life.",
-        "The Finest Garden Requires the Sharpest Blade.",
-        "Mastery is the Art of Moving Without Disturbance.",
-        "The Garden is Quiet. Your Noise is Not Welcome.",
-        "Many Walk the Path; Few Reach the Blossom.",
-        "A Garden Tended by Masters Has No Room for the Slow.",
-        "They Are Not Typing. They are Raking the Clouds.",
-        "A Perfect Blossom is Rare. You are Witnessing Four",
-        "The Wind Bows to the Blade; The Blade Bows to Them.",
-        "Mastery is a Garden Tended in Falling Blossoms.",
-        "The Sakura Blooms in Silence. The Weak Fade in Noise.",
-        "A Zen Warrior Leaves No Ripples on the Still Water.",
-        "The Wind Whispers Their Names. It Has Forgotten Yours.",
-        "The Path to the Vault is Paved with Fallen Petals and Shattered Dreams.",
-        "The Master Does Not Race. The Master Simply Is.",
-        "One Mistake in the Garden is an Eternity of Regret.",
-        "The Sun Sets on the Slow. The Moon Rises for the Elite.",
-        "The Blade is an Extension of the Soul. Your Soul is Lagging.",
-        "The Garden is Eternal. Your Legacy is Yet to Bloom.",
-        "Four Flowers in the Vault. A Thousand Weeds in the Field."
+    const bushidoWisdom = [
+        "The Blade is Sharp. The Blood is Warm. Your Turn.",
+        "They Have Carved the Path. Can You Follow the Crimson?",
+        "A Samurai Does Not Compete; They Execute.",
+        "The Sword is an Extension of the Soul. Yours is Dull.",
+        "Mastery is the Art of Slaying Without Hesitation.",
+        "The Shroud is Open. The Blood is Waiting. Prove Your Steel.",
+        "They are the Katana. You are the Scabbard.",
+        "The Vault is Guarded by Masters. You are a Ghost.",
+        "Four Warriors in the Vault. A Thousand Souls in the Abyss.",
+        "The Path to Glory is Paved with Shattered Steel.",
+        "The Wind Whispers Their Names. It Screams Yours in Fear.",
+        "One Mistake is All it Takes to Feed the Blade.",
+        "They Are Not Typing. They are Drawing Blood.",
+        "A Perfect Strike is Rare. You are Witnessing Four.",
+        "Mastery is a Garden Tended in Blood and Fire.",
+        "The Shroud Blooms in Silence. The Weak Die in Noise."
     ];
 
     async function fetchLeaderboard(mode = 'classic') {
@@ -509,7 +501,7 @@ function initAuth() {
 
         // LOADING STATE
         if (mode === 'hagakure') {
-            listEl.innerHTML = '<div class="sakura-loading">DRAPING PETALS...</div>';
+            listEl.innerHTML = '<div class="bushido-loading">SHARPENING BLADES...</div>';
         } else {
             listEl.innerHTML = '<div class="loading-spinner"></div>';
         }
@@ -538,16 +530,16 @@ function initAuth() {
             if (elapsed < minTime) await new Promise(r => setTimeout(r, minTime - elapsed));
 
             // Random Wisdom Update
-            const footerTxt = document.querySelector('#hagakure-leaderboard-modal .sakura-footer p');
-            if (footerTxt && sakuraWisdom.length > 0) {
-                const randomIdx = Math.floor(Math.random() * sakuraWisdom.length);
-                footerTxt.innerText = sakuraWisdom[randomIdx];
+            const footerTxt = document.querySelector('#hagakure-leaderboard-modal .bushido-footer p');
+            if (footerTxt && bushidoWisdom.length > 0) {
+                const randomIdx = Math.floor(Math.random() * bushidoWisdom.length);
+                footerTxt.innerText = bushidoWisdom[randomIdx];
             }
         }
 
         listEl.innerHTML = '';
         if (data.length === 0) {
-            listEl.innerHTML = '<p class="param-label" style="text-align:center; padding: 20px; color: rgba(255,182,193,0.3)">No champions yet.</p>';
+            listEl.innerHTML = '<p class="param-label" style="text-align:center; padding: 20px; color: rgba(206,17,38,0.3)">No warriors yet.</p>';
             return;
         }
 
@@ -561,7 +553,7 @@ function initAuth() {
             const item = document.createElement('div');
 
             if (mode === 'hagakure') {
-                item.className = `sakura-item ${rankClass}`;
+                item.className = `bushido-item ${rankClass}`;
                 item.onclick = () => {
                     if (authUI.hLeaderboardModal) authUI.hLeaderboardModal.classList.add('hidden');
                     openPublicProfile(player.id);
