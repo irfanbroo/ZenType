@@ -1,4 +1,4 @@
-:root {
+﻿:root {
     --panel-bg: 20, 20, 30;
     --panel-opacity: 0.6;
     --text-main: rgba(255, 255, 255, 0.9);
@@ -4236,4 +4236,169 @@ input:checked+.slider::before {
 
 .text-slam {
     animation: text-slam-anim 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+@keyframes gold-flash-anim {
+    0% {
+        opacity: 0.8;
+        background: #ffd700;
+    }
+
+    100% {
+        opacity: 0;
+        background: transparent;
+    }
+}
+
+.gold-flash-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 9000;
+    animation: gold-flash-anim 1.5s ease-out forwards;
+    mix-blend-mode: screen;
+}
+
+@keyframes victory-rise-anim {
+    0% {
+        opacity: 0;
+        transform: translateY(40px) scale(0.9);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.victory-rise {
+    animation: victory-rise-anim 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    opacity: 0;
+    /* Star invisible */
+/* --- HAGAKURE SETUP --- */
+#h-setup {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    width: 100vw;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 5000;
+    background: #14141e;
+    animation: fadeIn 0.5s ease;
+}
+
+.h-setup-title {
+    font-family: 'Shojumaru', sans-serif;
+    font-size: 3rem;
+    color: #ce1126;
+    /* Blood Red */
+    margin-bottom: 3rem;
+    letter-spacing: 0.2em;
+    text-shadow: 0 0 20px rgba(206, 17, 38, 0.4);
+    text-align: center;
+}
+
+.h-options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    width: 90%;
+    max-width: 800px;
+}
+
+.h-opt-btn {
+    background: rgba(20, 20, 30, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 2rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    min-height: 150px;
+}
+
+.h-opt-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: #444;
+    transition: all 0.3s ease;
+}
+
+.h-opt-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.h-opt-btn:hover::before {
+    background: #ce1126;
+}
+
+.opt-label {
+    font-family: 'Shojumaru', serif;
+    font-size: 1.5rem;
+    color: #fff;
+    margin-bottom: 0.8rem;
+    letter-spacing: 0.1em;
+    transition: color 0.3s ease;
+}
+
+.opt-desc {
+    font-family: 'JetBrains Mono', sans-serif;
+    font-size: 0.85rem;
+    color: #888;
+    font-style: italic;
+    transition: color 0.3s ease;
+}
+
+/* 1 LINE SPECIAL STYLE */
+.h-opt-btn[data-mode="1"]:hover .opt-label {
+    color: #ff8888;
+}
+
+.h-opt-btn[data-mode="1"]:hover .opt-desc {
+    color: #ff5f5f;
+    text-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+}
+
+/* 5 LINES / ORIGINAL (Epic) */
+.h-opt-btn[data-mode="5"]:hover::before,
+.h-opt-btn[data-mode="original"]:hover::before {
+    background: #ffd700;
+}
+
+.h-opt-btn[data-mode="5"]:hover .opt-label,
+.h-opt-btn[data-mode="original"]:hover .opt-label {
+    color: #ffd700;
+}
+
+.h-opt-btn[data-mode="original"] {
+    grid-column: 1 / -1;
+    /* Full width */
+}
+
+#h-game-board.hidden {
+    display: none !important;
+}
+
+#h-setup.hidden {
+    display: none !important;
 }

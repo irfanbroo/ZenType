@@ -1424,6 +1424,82 @@ function runDustEffect(canvas) {
     frame();
 }
 
+// --- VICTORY SOUNDS ---
+function playSoundSheath(ctx, vol) {
+    if (!ctx) return;
+    const t = ctx.currentTime;
+
+    // Metallic Slide (Noise + Bandpass)
+    const noiseBuffer = ctx.createBuffer(1, ctx.sampleRate * 0.5, ctx.sampleRate);
+    const output = noiseBuffer.getChannelData(0);
+    for (let i = 0; i < output.length; i++) {
+        output[i] = Math.random() * 2 - 1;
+    }
+    const noise = ctx.createBufferSource();
+    noise.buffer = noiseBuffer;
+
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.setValueAtTime(1000, t);
+    filter.frequency.linearRampToValueAtTime(4000, t + 0.3); // Slide up
+    filter.Q.value = 5;
+
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(vol * 0.8, t);
+    gain.gain.exponentialRampToValueAtTime(0.01, t + 0.3);
+
+    noise.connect(filter);
+    filter.connect(gain);
+    gain.connect(ctx.destination);
+    noise.start(t);
+    noise.stop(t + 0.4);
+
+    // Sharp "Click" (Sine burst)
+    const osc = ctx.createOscillator();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(800, t + 0.25);
+    const clickGain = ctx.createGain();
+    clickGain.gain.setValueAtTime(0, t);
+    clickGain.gain.setValueAtTime(vol, t + 0.25);
+    clickGain.gain.exponentialRampToValueAtTime(0.01, t + 0.35);
+    osc.connect(clickGain);
+    clickGain.connect(ctx.destination);
+    osc.start(t);
+    osc.stop(t + 0.4);
+}
+
+function playSoundGong(ctx, vol) {
+    if (!ctx) return;
+    const t = ctx.currentTime;
+
+    // Fundamental Tone (Deep Sine)
+    const osc = ctx.createOscillator();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(100, t);
+    osc.frequency.exponentialRampToValueAtTime(80, t + 2); // Pitch drop slightly
+
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(vol * 1.5, t);
+    gain.gain.exponentialRampToValueAtTime(0.01, t + 4); // Long decay
+
+    // Metallic Overtones (FM Synthesis / Multiple Osc)
+    const osc2 = ctx.createOscillator();
+    osc2.type = 'square';
+    osc2.frequency.setValueAtTime(150, t);
+    const gain2 = ctx.createGain();
+    gain2.gain.setValueAtTime(vol * 0.3, t);
+    gain2.gain.exponentialRampToValueAtTime(0.01, t + 2);
+
+    osc.start(t);
+    osc2.start(t);
+    osc.connect(gain);
+    osc2.connect(gain2);
+    gain.connect(ctx.destination);
+    gain2.connect(ctx.destination);
+    osc.stop(t + 4.5);
+    osc2.stop(t + 4.5);
+}
+
 // ── EFFECT 2: MATRIX RAIN ──
 function runMatrixEffect(canvas) {
     const ctx = canvas.getContext('2d');
@@ -2089,6 +2165,88 @@ function setupSettingsListeners() {
         }
     }
 
+    // --- VICTORY PARTICLES ---
+    let victoryAnimId = null;
+
+    function runVictoryParticles(color, type = 'falling') {
+        const canvas = document.createElement('canvas');
+        canvas.id = 'victory-particles';
+        canvas.style.position = 'fixed';
+        canvas.style.top = '0';
+        canvas.style.left = '0';
+        canvas.style.width = '100%';
+        canvas.style.height = '100%';
+        canvas.style.pointerEvents = 'none';
+        canvas.style.zIndex = '8000'; // Behind text (9999) but above BG
+        document.body.appendChild(canvas);
+
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const particles = [];
+        const particleCount = 150;
+
+        for (let i = 0; i < particleCount; i++) {
+            particles.push(createVictoryParticle(canvas, color, type));
+        }
+
+        function frame() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            particles.forEach((p, i) => {
+                // Update Position
+                if (type === 'rising') {
+                    p.y -= p.speedY;
+                    p.x += Math.sin(p.wobble) * 0.5;
+                } else { // falling
+                    p.y += p.speedY;
+                    p.x += Math.sin(p.wobble) * 1;
+                }
+                p.wobble += p.wobbleSpeed;
+
+                // Reset if out of bounds
+                if (type === 'rising' && p.y < -10) {
+                    particles[i] = createVictoryParticle(canvas, color, type, true);
+                } else if (type === 'falling' && p.y > canvas.height + 10) {
+                    particles[i] = createVictoryParticle(canvas, color, type, true);
+                }
+
+                // Draw
+                ctx.globalAlpha = p.opacity;
+                ctx.fillStyle = p.color;
+                ctx.beginPath();
+                if (type === 'falling') {
+                    // Petal shape (oval-ish)
+                    ctx.ellipse(p.x, p.y, p.size, p.size * 1.5, p.tilt, 0, Math.PI * 2);
+                } else {
+                    // Spark/Ember (Circle)
+                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                }
+                ctx.fill();
+            });
+
+            victoryAnimId = requestAnimationFrame(frame);
+        }
+        frame();
+    }
+
+    function createVictoryParticle(canvas, color, type, reset = false) {
+        const x = Math.random() * canvas.width;
+        const y = reset ? (type === 'rising' ? canvas.height + 10 : -10) : Math.random() * canvas.height;
+        return {
+            x: x,
+            y: y,
+            size: Math.random() * 3 + 1,
+            speedY: Math.random() * 1.5 + 0.5,
+            color: color,
+            opacity: Math.random() * 0.6 + 0.4,
+            wobble: Math.random() * Math.PI * 2,
+            wobbleSpeed: Math.random() * 0.05,
+            tilt: Math.random() * Math.PI // For petals
+        };
+    }
+
     function startHagakureMode() {
         const hagakureQuotes = [
             "THE WAY OF THE WARRIOR",
@@ -2160,22 +2318,74 @@ function setupSettingsListeners() {
                 window.hTabListener = (e) => {
                     if (state.gameMode === 'hagakure' && e.key === 'Tab') {
                         e.preventDefault();
-                        initHagakureGame();
+                        // If we are in setup screen, do nothing or restart setup? 
+                        // If we are in game, restart game with current settings
+                        const setupInfo = document.getElementById('h-setup');
+                        if (setupInfo && !setupInfo.classList.contains('hidden')) {
+                            // Do nothing in setup
+                        } else {
+                            initHagakureGame(); // Restart with current settings
+                        }
                     }
                 };
                 document.addEventListener('keydown', window.hTabListener);
             }
 
-            initHagakureGame();
+            initHagakureSetup();
         }, 2000);
     }
 
+    function initHagakureSetup() {
+        // Show Setup, Hide Board
+        const setup = document.getElementById('h-setup');
+        const board = document.getElementById('h-game-board');
+        if (setup) setup.classList.remove('hidden');
+        if (board) board.classList.add('hidden');
+
+        // Reset any previous listeners to avoid duplicates (smarter way is to do once, but this is safe)
+        const opts = document.querySelectorAll('.h-opt-btn');
+        opts.forEach(btn => {
+            btn.onclick = () => {
+                const mode = btn.dataset.mode;
+                let wordCount = 50; // Default Original
+
+                if (mode === '1') wordCount = 10;
+                if (mode === '3') wordCount = 25; // Adjusted to ~3 visual lines
+                if (mode === '5') wordCount = 40; // Adjusted to ~5 visual lines
+                if (mode === 'original') wordCount = 60; // Epic length
+
+                // Save config for restart
+                state.hagakureMode = mode;
+                state.hagakureWordCount = wordCount;
+
+                initHagakureGame();
+            };
+        });
+    }
+
     function initHagakureGame() {
+        // Hide Setup, Show Board
+        const setup = document.getElementById('h-setup');
+        const board = document.getElementById('h-game-board');
+        if (setup) setup.classList.add('hidden');
+        if (board) board.classList.remove('hidden');
+
+        // Show Header
+        const hHeader = document.querySelector('.h-header');
+        if (hHeader) hHeader.style.display = 'flex';
+
         // CLEANUP EFFECTS
         const hUI = document.getElementById('hagakure-ui');
         if (hUI) hUI.classList.remove('shake-screen');
         const flash = document.querySelector('.red-flash-overlay');
         if (flash) flash.remove();
+        const goldFlash = document.querySelector('.gold-flash-overlay');
+        if (goldFlash) goldFlash.remove();
+
+        // Cleanup Victory Particles
+        if (victoryAnimId) cancelAnimationFrame(victoryAnimId);
+        const vParticles = document.getElementById('victory-particles');
+        if (vParticles) vParticles.remove();
 
         const hInput = document.getElementById('h-input');
         if (hInput) {
@@ -2190,7 +2400,8 @@ function setupSettingsListeners() {
 
         // Reset State
         state.words = [];
-        for (let i = 0; i < 50; i++) {
+        const count = state.hagakureWordCount || 50;
+        for (let i = 0; i < count; i++) {
             state.words.push(hagakureWords[Math.floor(Math.random() * hagakureWords.length)]);
         }
         state.currWordIndex = 0;
@@ -2250,7 +2461,17 @@ function setupSettingsListeners() {
             // CHECK INPUT (Character by Character)
             // CHECK INPUT (Character by Character)
 
-            // 1. Space -> Next Word (only if word is complete)
+            // 1a. Check for Last Word Completion (No Space Needed)
+            if (state.currWordIndex === state.words.length - 1 && value === currWord) {
+                state.correctChars += currWord.length;
+                state.currWordIndex++;
+                state.streak++;
+                hInput.value = '';
+                showHagakureVictory();
+                return;
+            }
+
+            // 1b. Space -> Next Word (only if word is complete)
             if (value.endsWith(' ')) {
                 if (value.trim() === currWord) {
                     // Update correct chars for the completed word + space
@@ -2258,11 +2479,12 @@ function setupSettingsListeners() {
 
                     state.currWordIndex++;
                     state.streak++;
-                    hStreak.innerText = state.streak;
+                    const hStreak = document.getElementById('h-streak');
+                    if (hStreak) hStreak.innerText = state.streak;
                     hInput.value = '';
 
                     if (state.currWordIndex >= state.words.length) {
-                        initHagakureGame(); // Win/Reset
+                        showHagakureVictory(); // Win
                     } else {
                         updateHagakureVisuals();
                     }
@@ -2333,8 +2555,80 @@ function setupSettingsListeners() {
             const totalChars = state.correctChars + currentInputLen;
 
             const wpm = Math.round((totalChars / 5) / elapsed) || 0;
-            document.getElementById('h-wpm').innerText = wpm;
+            const hWpm = document.getElementById('h-wpm');
+            if (hWpm) hWpm.innerText = wpm;
         }, 500); // 500ms update
+    }
+
+    function showHagakureVictory() {
+        state.isActive = false;
+        clearInterval(state.timerInterval);
+
+        // Calculate Final WPM
+        const elapsed = (Date.now() - state.startTime) / 1000 / 60;
+        const wpm = Math.round((state.correctChars / 5) / elapsed) || 0;
+
+        let rank = "RONIN";
+        let msg = "Your blade is heavy. Train harder.";
+        let color = "#9e9e9e"; // Grey (Ronin - Unmastered)
+
+        if (wpm >= 100) {
+            rank = "KENSEI";
+            msg = "Sword Saint. You are the storm.";
+            color = "#00e5ff"; // Cyan/Diamond (Kensei - Godlike)
+        } else if (wpm >= 80) {
+            rank = "SHOGUN";
+            msg = "A master of the unseen blade.";
+            color = "#ffd700"; // Gold (Shogun - Ruler)
+        } else if (wpm >= 60) {
+            rank = "DAIMYO";
+            msg = "You command the flow of battle.";
+            color = "#d32f2f"; // Crimson (Daimyo - Warlord) -- Changed from Silver to thematic Warlord Red
+        } else if (wpm >= 40) {
+            rank = "SAMURAI";
+            msg = "Sharp. Precise. Honorable.";
+            color = "#ff4444"; // Red (Samurai - Blood)
+        }
+
+        const hContainer = document.getElementById('h-words-container');
+
+        // Hide Header
+        const hHeader = document.querySelector('.h-header');
+        if (hHeader) hHeader.style.display = 'none';
+
+        // Disable input
+        const hInput = document.getElementById('h-input');
+        if (hInput) {
+            hInput.disabled = true;
+            hInput.blur();
+        }
+
+        // Epic Dynamic Flash
+        const flashOverlay = document.createElement('div');
+        flashOverlay.className = 'gold-flash-overlay';
+        flashOverlay.style.background = color; // Apply Rank Color
+        document.body.appendChild(flashOverlay);
+        setTimeout(() => flashOverlay.remove(), 2000);
+
+        // Visual Feast (Particles)
+        // High ranks = Rising Sparks (Ascension)
+        // Low ranks = Falling Petals (Melancholy)
+        const particleType = (rank === 'DAIMYO' || rank === 'SHOGUN' || rank === 'KENSEI') ? 'rising' : 'falling';
+        runVictoryParticles(color, particleType);
+
+        hContainer.innerHTML = `
+            <div class="victory-rise" style="width: 100%; text-align: center; color: ${color}; font-family: Shojumaru; font-size: 4rem; text-shadow: 0 0 20px ${color}80; animation-delay: 0.2s;">VICTORY</div>
+            <div class="victory-rise" style="width: 100%; text-align: center; font-size: 2rem; color: #fff; margin-top: 10px; font-weight: bold; letter-spacing: 4px; animation-delay: 0.5s;">${rank}</div>
+            <div class="victory-rise" style="width: 100%; text-align: center; font-size: 1.2rem; color: #aaa; margin-top: 20px; font-style: italic; animation-delay: 0.8s;">"${msg}"</div>
+            <div class="victory-rise" style="width: 100%; text-align: center; font-size: 1.5rem; color: ${color}; margin-top: 20px; animation-delay: 1.1s;">WPM: ${wpm}</div>
+        `;
+
+        // Click to restart
+        const restartHandler = () => {
+            document.removeEventListener('click', restartHandler);
+            initHagakureGame();
+        };
+        setTimeout(() => document.addEventListener('click', restartHandler), 500);
     }
 
     function gameOverHagakure() {
@@ -2346,14 +2640,13 @@ function setupSettingsListeners() {
 
         let subMsg = "";
 
-        // Progress Logic (50 words total)
-        // Early: < 5 words (10%)
-        // Middle: 5 - 40 words (10% - 80%)
-        // Late: > 40 words (80%+)
+        // Progress Logic (Dynamic)
+        const total = state.hagakureWordCount || 50;
+        const p = state.currWordIndex / total;
 
-        if (state.currWordIndex < 5) {
+        if (p < 0.1) {
             subMsg = hagakureEarlyFailMessages[Math.floor(Math.random() * hagakureEarlyFailMessages.length)];
-        } else if (state.currWordIndex >= 40) {
+        } else if (p >= 0.8) {
             subMsg = hagakureLateFailMessages[Math.floor(Math.random() * hagakureLateFailMessages.length)];
         } else {
             // General/Middle
