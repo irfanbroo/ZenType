@@ -437,7 +437,23 @@ function initAuth() {
 
     async function fetchLeaderboard(mode = 'classic') {
         if (!authUI.leaderboardList) return;
-        authUI.leaderboardList.innerHTML = '<div class="loading-spinner"></div>';
+        const startFetch = Date.now();
+
+        // CUSTOM LOADING FOR HAGAKURE
+        if (mode === 'hagakure') {
+            authUI.leaderboardList.innerHTML = `
+                <div class="warrior-loading">
+                    <div class="warrior-clash">
+                        <i class="ri-sword-fill sword-l"></i>
+                        <i class="ri-sword-fill sword-r"></i>
+                        <div class="clash-spark"></div>
+                    </div>
+                    <div class="warrior-msg">GATHERING WARRIORS...</div>
+                </div>
+            `;
+        } else {
+            authUI.leaderboardList.innerHTML = '<div class="loading-spinner"></div>';
+        }
 
         const column = mode === 'hagakure' ? 'best_hagakure_wpm' : 'best_wpm';
 
@@ -452,6 +468,22 @@ function initAuth() {
             console.error("Error fetching leaderboard:", error);
             authUI.leaderboardList.innerHTML = '<p class="param-label" style="text-align:center">Failed to load leaderboard.</p>';
             return;
+        }
+
+        // MINIMUM DELAY FOR HAGAKURE (So the cool animation is seen)
+        if (mode === 'hagakure') {
+            const elapsed = Date.now() - startFetch;
+            const minTime = 1200; // 1.2s
+            if (elapsed < minTime) {
+                await new Promise(r => setTimeout(r, minTime - elapsed));
+            }
+
+            // FADE OUT TRANSITION
+            const loader = authUI.leaderboardList.querySelector('.warrior-loading');
+            if (loader) {
+                loader.classList.add('fade-out');
+                await new Promise(r => setTimeout(r, 200)); // Match CSS transition
+            }
         }
 
         authUI.leaderboardList.innerHTML = '';
