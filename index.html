@@ -8,6 +8,7 @@
     <title>ZenType - Professional Typing Practice</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="style.css?v=hagakure_fix">
+    <link rel="stylesheet" href="shadow.css?v=2">
     <link rel="stylesheet" href="hagakure.css">
     <link
         href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Montserrat:wght@400;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;500;600;700&family=Shojumaru&display=swap"
@@ -1031,6 +1032,16 @@
                         <div class="mode-status">Active</div>
                     </div>
 
+                    <!-- Shadow Mode -->
+                    <div class="mode-card active" id="shadow-mode-card">
+                        <div class="mode-icon"><i class="ri-ghost-line"></i></div>
+                        <div class="mode-info">
+                            <h3>Shadow Mode</h3>
+                            <p>Rhythm of the Void. Hesitation is Defeat.</p>
+                        </div>
+                        <div class="mode-status">Active</div>
+                    </div>
+
                     <!-- Zen Mode (Coming Soon) -->
                     <div class="mode-card disabled">
                         <div class="mode-icon"><i class="ri-leaf-line"></i></div>
@@ -1128,6 +1139,54 @@
     <script src="script.js"></script>
 
     <script src="auth.js"></script>
+    <!-- Shadow Mode UI -->
+    <div id="shadow-splash" class="hidden">
+        <div class="s-splash-content">
+            <h1 class="s-splash-title">SHADOW RITUAL</h1>
+            <p class="s-splash-quote">"The eye sees little; the spirit sees all."</p>
+        </div>
+    </div>
+
+    <div id="shadow-ui" class="hidden">
+        <div id="s-setup">
+            <h1 class="s-title">SHADOW MODE</h1>
+            <p class="s-subtitle">MIND AND HAND AS ONE</p>
+            <div class="s-difficulty">
+                <button class="s-opt-btn" data-bloom="1500">GHOST</button>
+                <button class="s-opt-btn" data-bloom="1000">WRAITH</button>
+                <button class="s-opt-btn" data-bloom="700">VOID</button>
+            </div>
+            <button id="s-exit-btn">EXIT THE VOID</button>
+        </div>
+
+        <div id="s-game-board" class="hidden">
+            <div class="s-header">
+                <div class="s-meta">
+                    <span class="s-hud-label">WPM</span>
+                    <span id="s-hud-wpm">0</span>
+                </div>
+                <div class="s-meta">
+                    <span class="s-hud-label">SANITY</span>
+                    <span id="s-hud-sanity">100%</span>
+                </div>
+            </div>
+            <div id="s-words-container">
+                <!-- Words injected here -->
+            </div>
+
+            <input type="text" id="s-input" autocomplete="off">
+
+            <!-- RESULT OVERLAY -->
+            <div id="s-result-overlay" class="hidden">
+                <h1 id="s-result-title">SHADOW CONSUMED</h1>
+                <p id="s-result-reason">YOU WERE TOO SLOW</p>
+                <div class="s-result-actions">
+                    <button id="s-retry-btn">RETRY RITUAL</button>
+                    <button id="s-leave-btn">EXIT VOID</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>

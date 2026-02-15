@@ -2206,6 +2206,15 @@ function setupSettingsListeners() {
                 modesModal.classList.add('hidden');
             });
         }
+
+        // Shadow Mode Card Click
+        const shadowCard = document.getElementById('shadow-mode-card');
+        if (shadowCard) {
+            shadowCard.addEventListener('click', () => {
+                startShadowMode();
+                modesModal.classList.add('hidden');
+            });
+        }
     }
 
     // --- VICTORY PARTICLES ---
@@ -2288,6 +2297,497 @@ function setupSettingsListeners() {
             wobbleSpeed: Math.random() * 0.05,
             tilt: Math.random() * Math.PI // For petals
         };
+    }
+
+    function startShadowMode() {
+        const shadowSplash = document.getElementById('shadow-splash');
+        if (shadowSplash) {
+            shadowSplash.classList.remove('hidden');
+
+            // Hide Main UI Elements
+            const elementsToHide = [
+                'landing-page', 'game-ui', 'test-config',
+                'words-container', 'results-screen', 'modes-modal'
+            ];
+
+            elementsToHide.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.add('hidden');
+            });
+
+            // Transition to Shadow Setup after ritual
+            setTimeout(() => {
+                shadowSplash.classList.add('hidden');
+
+                const shadowUI = document.getElementById('shadow-ui');
+                if (shadowUI) {
+                    shadowUI.classList.remove('hidden');
+                    initShadowSetup(); // Initialize listeners
+                }
+            }, 3000);
+        }
+    }
+    window.startShadowMode = startShadowMode; // Expose for testing
+
+    function initShadowSetup() {
+        // Exit Button
+        const exitBtn = document.getElementById('s-exit-btn');
+        if (exitBtn) {
+            exitBtn.addEventListener('click', () => {
+                exitShadowMode();
+            });
+        }
+
+        // Difficulty Buttons
+        const opts = document.querySelectorAll('.s-opt-btn');
+        opts.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const label = btn.innerText;
+                let msPerWord = 2000; // Ghost (2s per word)
+
+                if (label === 'WRAITH') msPerWord = 1400; // 1.4s
+                if (label === 'VOID') msPerWord = 900; // 0.9s - Very Fast
+
+                // Fallback / Specific overrides from previous logic
+                if (btn.id === 's-wraith-btn') msPerWord = 1400;
+                if (btn.id === 's-void-btn') msPerWord = 60000 / 70; // ~857ms
+
+                state.shadowBloomDuration = msPerWord;
+                initShadowGame();
+            });
+        });
+
+        // Shadow Result Buttons (Result Overlay)
+        const retryBtn = document.getElementById('s-retry-btn');
+        if (retryBtn) {
+            // Remove old listeners to be safe (clone node tactic or just simple add)
+            // Since this runs once on init, simple add is fine.
+            retryBtn.onclick = () => initShadowGame();
+        }
+
+        const leaveBtn = document.getElementById('s-leave-btn');
+        if (leaveBtn) {
+            leaveBtn.onclick = () => exitShadowMode();
+        }
+    }
+
+    function initShadowGame() {
+        // STRICT CLEANUP
+        if (torchIntervalID) {
+            clearInterval(torchIntervalID);
+            torchIntervalID = null;
+        }
+        document.getElementById('s-result-overlay').classList.add('hidden');
+
+        document.getElementById('s-setup').classList.add('hidden');
+        const board = document.getElementById('s-game-board');
+        board.classList.remove('hidden');
+
+        state.isActive = true;
+        state.gameMode = 'shadow';
+        state.words = [];
+        state.currWordIndex = 0;
+        state.currCharIndex = 0;
+        state.correctChars = 0;
+        state.correctChars = 0;
+        state.startTime = null;
+        state.shadowStreak = 0; // Sanity Meter
+        startShadowStatsUpdater();
+
+        // Torch State
+        state.torchWordIndex = 0; // Starts at 0
+
+        // Generate Words (Cyberpunk Pool)
+        const pool = wordPools[0];
+        for (let i = 0; i < 5; i++) {
+            state.words.push(pool[Math.floor(Math.random() * pool.length)]);
+        }
+
+        renderShadowWords();
+
+        // Focus Input
+        const input = document.getElementById('s-input');
+        input.value = '';
+        input.focus();
+        input.onblur = () => input.focus();
+
+        // Input Listener
+        input.oninput = (e) => {
+            if (!state.isActive) return;
+            const val = e.target.value;
+
+            // Start Torch on first input
+            if (!state.startTime && val.length > 0) {
+                state.startTime = Date.now();
+                startTorchTimer();
+            }
+
+            handleShadowInput(val);
+            e.target.value = '';
+        };
+
+        updateTorchVisuals();
+    }
+
+    function startShadowStatsUpdater() {
+        if (state.shadowStatsInterval) clearInterval(state.shadowStatsInterval);
+        state.shadowStatsInterval = setInterval(updateShadowHUD, 200);
+    }
+
+    function updateShadowHUD() {
+        if (!state.isActive) return;
+
+        // SANITY (Progress %)
+        const sanityEl = document.getElementById('s-hud-sanity');
+        if (sanityEl) {
+            const total = state.words.length;
+            const current = state.currWordIndex;
+            const percent = Math.floor((current / total) * 100);
+            sanityEl.innerText = percent + '%';
+        }
+
+        // WPM
+        const wpmEl = document.getElementById('s-hud-wpm');
+        if (wpmEl) {
+            if (!state.startTime) {
+                wpmEl.innerText = '0';
+            } else {
+                const timeInMinutes = (Date.now() - state.startTime) / 60000;
+                const wpm = Math.round((state.correctChars / 5) / timeInMinutes) || 0;
+                wpmEl.innerText = wpm;
+            }
+        }
+    }
+
+    let torchIntervalID = null;
+
+    function startTorchTimer() {
+        if (torchIntervalID) clearInterval(torchIntervalID);
+
+        const speed = state.shadowBloomDuration;
+
+        torchIntervalID = setInterval(() => {
+            if (!state.isActive) {
+                clearInterval(torchIntervalID);
+                return;
+            }
+            moveTorchForward();
+        }, speed);
+    }
+
+    function moveTorchForward() {
+        // The Torch moves blindly. It does not care about the user.
+        // It shines light. If you are behind, you are in darkness.
+
+        // Advance Torch
+        state.torchWordIndex++;
+
+        if (state.torchWordIndex >= state.words.length) {
+            console.log("Torch Reached End - Darkness Consumes All");
+            clearInterval(torchIntervalID);
+            // Torch goes out. User must finish in pitch black if they are behind.
+        }
+
+        updateTorchVisuals();
+    }
+
+    function updateTorchVisuals() {
+        // Clear all lit
+        document.querySelectorAll('.s-word.torch-lit').forEach(el => el.classList.remove('torch-lit'));
+
+        // Light up Torch Position
+        const wordEls = document.querySelectorAll('.s-word');
+        const tWord = wordEls[state.torchWordIndex];
+
+        if (tWord) {
+            tWord.classList.add('torch-lit');
+            tWord.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+        }
+    }
+
+    function renderShadowWords() {
+        const container = document.getElementById('s-words-container');
+        container.innerHTML = '';
+        state.words.forEach((word) => {
+            const wordEl = document.createElement('div');
+            wordEl.className = 's-word'; // No 'active' class used now, only torch
+            word.split('').forEach(char => {
+                const charSpan = document.createElement('span');
+                charSpan.innerText = char;
+                wordEl.appendChild(charSpan);
+            });
+            container.appendChild(wordEl);
+        });
+    }
+
+    function handleShadowInput(char) {
+        if (!state.isActive) return;
+
+        const currentWord = state.words[state.currWordIndex];
+
+        // CASE 1: Word Completed, Waiting for Space
+        if (state.currCharIndex === currentWord.length) {
+            if (char === ' ') {
+                // Space typed -> Advance to next word
+                state.currWordIndex++;
+                state.currCharIndex = 0;
+                return;
+            } else {
+                // User typed a letter instead of space -> Mistake
+                handleShadowFail("MISTAKE (EXPECTED SPACE)");
+                return;
+            }
+        }
+
+        // CASE 2: Typing Characters
+        const targetChar = currentWord[state.currCharIndex];
+
+        if (char === targetChar) {
+            state.currCharIndex++;
+            state.correctChars++;
+
+            // Visual: Mark Correct
+            const wordEls = document.querySelectorAll('.s-word');
+            const currEl = wordEls[state.currWordIndex];
+            const charSpan = currEl.querySelectorAll('span')[state.currCharIndex - 1];
+            charSpan.classList.add('correct');
+
+            // Update Sanity (Streak)
+            state.shadowStreak++;
+            updateShadowHUD();
+
+            // --- JUICE: SPLASH PARTICLE ---
+            const rect = charSpan.getBoundingClientRect();
+            spawnShadowSlash(rect.left + rect.width / 2, rect.top + rect.height / 2);
+
+            // Check if Word is now Finished
+            if (state.currCharIndex === currentWord.length) {
+                // If it's the LAST word, we win immediately (no space needed)
+                if (state.currWordIndex === state.words.length - 1) {
+                    // VICTORY
+                    handleShadowVictory();
+                } else {
+                    // Visual cue that we are waiting for space
+                    currEl.classList.add('correct');
+                }
+            }
+        } else {
+            // --- JUICE: GLITCH EFFECT ---
+            triggerShadowGlitch();
+            state.shadowStreak = 0; // Sanity Lost
+            updateShadowHUD();
+            handleShadowFail("MISTAKE");
+        }
+    }
+
+    const shadowFailureQuotes = [
+        "Your mind was elsewhere.", "Hesitation is defeat.", "The blade was heavy in your hand.",
+        "You are not ready for the void.", "Darkness consumes the weak.", "A single moment of doubt.",
+        "The shadows rejected you.", "Focus wavered, life ended.", "You stumbled in the dark.",
+        "The light revealed your flaw.", "Silence was broken.", "You are but a fleeting thought.",
+        "The abyss swallowed your scream.", "Too slow for the night.", "Your spirit broke before the blade.",
+        "Chaos found a way in.", "Discipline is the only path.", "You remain in the light.",
+        "The ritual demands perfection.", "Your presence was noticed.", "A noisy mind creates a noisy blade.",
+        "You were left behind.", "The void cares not for excuses.", "Return when you are empty.",
+        "Fear is the mind-killer.", "You fought the current.", "The pattern was lost.",
+        "Harmony was broken.", "You serve the shadow, or die.", "Mediocrity is a death sentence."
+    ];
+
+    const shadowVictoryQuotes = [
+        "The void gazes back, and blinks.", "You have become the absence of light.", "Perfect stillness in motion.",
+        "The blade and the spirit are one.", "Darkness is your ally.", "You walk where others fear to tread.",
+        "Silence is the loudest sound.", "A master of the unseen arts.", "The shadows whisper your name.",
+        "Reality bends to your will.", "No footprint, no sound, no mercy.", "You are the storm that makes no noise.",
+        "The night embraces its own.", "Beyond the edge of the blade.", "Your focus cuts through time.",
+        "Eternity in a single stroke.", "The abyss finds no flaw in you.", "Pure intent, pure execution.",
+        "You have ascended beyond the light.", "The ritual is complete.", "Shadows do not bleed.",
+        "The world is an illusion; you are real.", "Faster than the falling dark.", "You are the ghost in the machine.",
+        "Nothing remains but your victory.", "The perfect cut leaves no seam.", "You strike from everywhere at once.",
+        "Blindness is no obstacle to true sight.", "The void accepts your offering.", "Legend requires no witness."
+    ];
+
+    function handleShadowFail(reason) {
+        state.isActive = false;
+        if (torchIntervalID) clearInterval(torchIntervalID);
+        if (state.shadowStatsInterval) clearInterval(state.shadowStatsInterval);
+
+        // Show Overlay
+        const overlay = document.getElementById('s-result-overlay');
+        overlay.classList.remove('hidden');
+        overlay.classList.remove('victory');
+        overlay.classList.add('failure');
+
+        const title = document.getElementById('s-result-title');
+        const rText = document.getElementById('s-result-reason');
+
+        title.innerText = "CONSUMED";
+
+        // Flavor Text Logic
+        const randomQuote = shadowFailureQuotes[Math.floor(Math.random() * shadowFailureQuotes.length)];
+        rText.innerText = randomQuote;
+
+        // --- VISUALS ---
+        title.classList.remove('failure-title-enter');
+        void title.offsetWidth;
+        title.classList.add('failure-title-enter');
+
+        spawnResultParticles(30);
+        triggerVoidEruption();
+    }
+
+    function handleShadowVictory() {
+        state.isActive = false;
+        if (torchIntervalID) clearInterval(torchIntervalID);
+        if (state.shadowStatsInterval) clearInterval(state.shadowStatsInterval);
+
+        const overlay = document.getElementById('s-result-overlay');
+        overlay.classList.remove('hidden');
+        overlay.classList.remove('failure');
+        overlay.classList.add('victory');
+
+        const title = document.getElementById('s-result-title');
+        const rText = document.getElementById('s-result-reason');
+
+        title.innerText = "ASCENDED";
+
+        const randomQuote = shadowVictoryQuotes[Math.floor(Math.random() * shadowVictoryQuotes.length)];
+        rText.innerText = randomQuote;
+
+        playSound('gong');
+        playSound('sheath');
+
+        // --- VISUALS ---
+        title.classList.remove('victory-title-enter');
+        void title.offsetWidth;
+        title.classList.add('victory-title-enter');
+
+        spawnResultParticles(60);
+        triggerVoidEruption();
+    }
+
+    // --- SHADOW JUICE FUNCTIONS ---
+    function spawnShadowSlash(x, y) {
+        // Create a fast, sharp "cut" line
+        const el = document.createElement('div');
+        el.className = 's-slash-particle';
+        document.body.appendChild(el);
+
+        // Random stylized slash properties
+        const angle = Math.random() * 360 + 'deg';
+        const length = 40 + Math.random() * 60 + 'px';
+        const width = 2 + Math.random() * 2 + 'px';
+
+        el.style.left = x + 'px';
+        el.style.top = y + 'px';
+        el.style.width = width;
+        el.style.height = length;
+        el.style.setProperty('--angle', angle);
+        el.style.setProperty('--tx', (Math.random() - 0.5) * 50 + 'px');
+        el.style.setProperty('--ty', (Math.random() - 0.5) * 50 + 'px');
+
+        // Animate
+        el.style.animation = 'slashAnim 0.3s ease-out forwards';
+
+        setTimeout(() => el.remove(), 300);
+    }
+
+    function triggerShadowGlitch() {
+        if (!state.isActive) return;
+        const ui = document.getElementById('shadow-ui');
+        ui.classList.add('shadow-glitch-active');
+
+        // Intense screen shake
+        document.body.style.transform = `translate(${Math.random() * 10 - 5}px, ${Math.random() * 10 - 5}px)`;
+
+        setTimeout(() => {
+            ui.classList.remove('shadow-glitch-active');
+            document.body.style.transform = 'none';
+        }, 200);
+    }
+
+    function spawnResultParticles(count) {
+        const overlay = document.getElementById('s-result-overlay');
+
+        for (let i = 0; i < count; i++) {
+            const el = document.createElement('div');
+            el.className = 's-result-particle';
+
+            // Random physics
+            const angle = Math.random() * Math.PI * 2;
+            const velocity = 100 + Math.random() * 200;
+            const tx = Math.cos(angle) * (velocity + Math.random() * 100) + 'px';
+            const ty = Math.sin(angle) * (velocity + Math.random() * 100) + 'px';
+
+            // Random size
+            const size = 4 + Math.random() * 6 + 'px';
+            el.style.width = size;
+            el.style.height = size;
+
+            // Set styles relative to center (50% 50% in CSS)
+            el.style.left = '50%';
+            el.style.top = '50%';
+            el.style.setProperty('--tx', tx);
+            el.style.setProperty('--ty', ty);
+
+            // Random delay
+            el.style.animation = `particleFly ${0.8 + Math.random() * 0.5}s cubic-bezier(0.1, 0.9, 0.2, 1) forwards`;
+
+            overlay.appendChild(el);
+
+            // Cleanup
+            setTimeout(() => el.remove(), 1500);
+        }
+    }
+
+    function triggerVoidEruption() {
+        const ui = document.getElementById('shadow-ui');
+        ui.classList.remove('void-eruption');
+        void ui.offsetWidth;
+        ui.classList.add('void-eruption');
+    }
+
+
+
+    function exitShadowMode() {
+        state.isActive = false;
+        if (torchIntervalID) {
+            clearInterval(torchIntervalID);
+            torchIntervalID = null;
+        }
+
+        // Cleanup Visuals
+        const ui = document.getElementById('shadow-ui');
+        ui.classList.remove('void-eruption');
+
+        const title = document.getElementById('s-result-title');
+        if (title) title.classList.remove('victory-title-enter');
+
+        // Hide Shadow UI completely
+        document.getElementById('shadow-ui').classList.add('hidden');
+
+        // Reset internal Shadow states
+        document.getElementById('s-game-board').classList.add('hidden');
+        document.getElementById('s-result-overlay').classList.add('hidden');
+        document.getElementById('s-setup').classList.remove('hidden'); // Reset for next time
+
+        // Restore Main UI Elements
+        // We explicitly unhide everything that startShadowMode hid to ensure full restoration
+        const elementsToRestore = ['landing-page', 'game-ui', 'test-config', 'words-container'];
+        elementsToRestore.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.classList.remove('hidden');
+        });
+
+        // Ensure Results Screen and Modal are closed/hidden to start fresh
+        const elementsToKeepHidden = ['results-screen', 'modes-modal'];
+        elementsToKeepHidden.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.classList.add('hidden');
+        });
+
+        // Trigger a refresh of the words if possible, or just focus input
+        const mainInput = document.getElementById('words-input');
+        if (mainInput) mainInput.focus();
     }
 
     function startHagakureMode() {
