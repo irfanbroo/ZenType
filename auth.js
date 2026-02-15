@@ -459,18 +459,34 @@ function initAuth() {
         const container = document.getElementById('particle-container');
         if (!container) return;
         container.innerHTML = '';
-        const count = 50;
+        const count = 60; // Slightly more for depth
+        const hues = ['#ce1126', '#a00000', '#800000', '#ff0000', '#b22222'];
+
         for (let i = 0; i < count; i++) {
             const particle = document.createElement('div');
             particle.className = 'blood-particle';
-            const width = Math.random() * 2 + 1; // Thinner
-            const height = Math.random() * 10 + 5; // Longer drips
+
+            // Randomize deep vs shallow (depth)
+            const isBackground = Math.random() > 0.5;
+            const width = isBackground ? (Math.random() * 1.5 + 0.5) : (Math.random() * 2 + 1.5);
+            const height = isBackground ? (Math.random() * 8 + 4) : (Math.random() * 15 + 8);
+            const blur = isBackground ? (Math.random() * 2 + 1) : (Math.random() * 0.5);
+            const opacity = isBackground ? (Math.random() * 0.3 + 0.2) : (Math.random() * 0.4 + 0.4);
+            const speed = isBackground ? (Math.random() * 4 + 4) : (Math.random() * 2 + 2);
+
             particle.style.width = `${width}px`;
             particle.style.height = `${height}px`;
             particle.style.left = `${Math.random() * 100}%`;
             particle.style.top = `-20px`;
-            particle.style.animationDuration = `${Math.random() * 3 + 2}s`;
-            particle.style.animationDelay = `${Math.random() * 5}s`;
+            particle.style.background = hues[Math.floor(Math.random() * hues.length)];
+
+            // Set CSS variables for physics customization
+            particle.style.setProperty('--p-blur', `${blur}px`);
+            particle.style.setProperty('--p-opacity', opacity);
+            particle.style.setProperty('--p-duration', `${speed}s`);
+            particle.style.setProperty('--p-delay', `${Math.random() * 6}s`);
+            particle.style.setProperty('--p-sway', `${Math.random() * 30 - 15}px`);
+
             container.appendChild(particle);
         }
     }
