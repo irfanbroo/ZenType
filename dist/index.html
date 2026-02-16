@@ -1,0 +1,1207 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google-site-verification" content="BWW0hMMw7Y84Myib4JPiUWQOsNLHf9sGvL9Ad4H39FQ" />
+    <title>ZenType - Professional Typing Practice</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Montserrat:wght@400;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;500;600;700&family=Shojumaru&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Hagakure&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <script>
+        window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+    </script>
+    <script defer src="/_vercel/insights/script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script type="module" crossorigin src="/assets/index-BdYT-VpF.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-C_-amc9N.css">
+</head>
+
+<body>
+
+    <!-- Custom Titlebar / Window Controls -->
+    <div data-tauri-drag-region class="titlebar">
+        <div class="titlebar-button" id="titlebar-minimize">
+            <i class="ri-subtract-line"></i>
+        </div>
+        <div class="titlebar-button" id="titlebar-maximize">
+            <i class="ri-checkbox-blank-line"></i>
+        </div>
+        <div class="titlebar-button" id="titlebar-close">
+            <i class="ri-close-line"></i>
+        </div>
+    </div>
+
+    <!-- SoundCloud Widget (Hidden) -->
+    <iframe id="sc-widget"
+        src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/user-722231447/20250204_184406191-m4r&auto_play=false&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false&visual=false"
+        width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay" style="display: none;"></iframe>
+    <script src="https://w.soundcloud.com/player/api.js"></script>
+
+    <video id="bg-video" autoplay loop muted playsinline class="fade-out"></video>
+    <canvas id="particles"></canvas>
+    <canvas id="keypress-canvas"></canvas>
+
+    <input type="text" id="hidden-input" autocomplete="off" spellcheck="false">
+
+    <!-- App Logo / H1 -->
+    <a href="/" id="app-header" style="text-decoration: none;">
+        <div class="logo-icon">
+            <i class="ri-sword-line"></i>
+        </div>
+        <div class="logo-text">
+            <span class="logo-sub">samurai focus</span>
+            <h1 class="logo-main">ZenType</h1>
+        </div>
+    </a>
+
+    <div id="top-nav-buttons">
+        <!-- Track Selector (Moved here for Flexbox Alignment) -->
+        <div id="track-selector" class="hidden">
+            <div class="current-track">
+                <i class="ri-music-2-line"></i>
+                <span id="current-track-name">Track 1</span>
+                <i class="ri-arrow-down-s-line"></i>
+            </div>
+            <div class="track-list" id="track-list">
+                <!-- Items added by JS -->
+            </div>
+        </div>
+
+        <!-- Buttons are reversed in HTML for Flexbox (Row-Reverse) or standard Row? Let's use Standard Row and Right Alignment -->
+        <!-- Order: Zen, Sound, Login, Leaderboard, Settings (Left to Right) -->
+
+        <button id="zen-btn" class="glass-icon" aria-label="Zen Mode" title="Zen Mode">
+            <i class="ri-eye-off-line text-xl"></i>
+        </button>
+
+        <button id="sound-btn" class="glass-icon" aria-label="Toggle Sound">
+            <i class="ri-volume-up-line text-xl"></i>
+        </button>
+
+        <button id="login-btn" class="glass-icon" aria-label="Login"
+            onclick="document.getElementById('auth-modal').classList.remove('hidden')">
+            <i class="ri-user-line text-xl"></i>
+        </button>
+
+        <button id="wallpaper-sound-btn" class="glass-icon hidden" aria-label="Toggle Wallpaper Audio"
+            title="Mute Wallpaper Audio">
+            <i class="ri-volume-up-line text-xl"></i>
+        </button>
+
+        <button id="hagakure-leaderboard-btn" class="glass-icon" aria-label="Hagakure Leaderboard"
+            title="Hagakure Rankings">
+            <i class="ri-sword-fill text-xl"></i>
+        </button>
+
+        <!-- Leaderboard (Added here) -->
+        <button id="leaderboard-btn" class="glass-icon" aria-label="Leaderboard">
+            <i class="ri-trophy-line text-xl"></i>
+        </button>
+
+        <button id="settings-btn" class="glass-icon" aria-label="Settings">
+            <i class="ri-settings-4-line text-xl"></i>
+        </button>
+    </div>
+
+    <div class="glass-panel" id="game-ui">
+
+        <div class="stats-bar">
+            <div id="timer">30s</div>
+            <div class="time-modes" id="time-modes">
+                <button class="time-btn" data-time="15">15</button>
+                <button class="time-btn active" data-time="30">30</button>
+                <button class="time-btn" data-time="60">60</button>
+                <button class="time-btn" data-time="120">120</button>
+            </div>
+            <div id="wpm">0 WPM</div>
+        </div>
+
+        <div id="combo-display" class="combo-hidden">
+            <span id="combo-count">0</span>
+            <span id="combo-label">COMBO</span>
+        </div>
+
+        <div id="words-wrapper">
+            <div id="words-container"></div>
+        </div>
+
+        <div class="footer-hint">
+            <span class="key">TAB</span> TO RESTART
+        </div>
+    </div>
+
+    <div id="settings-modal" class="hidden">
+        <div class="settings-content">
+            <!-- Premium Header -->
+            <div class="settings-header">
+                <div class="settings-header-left">
+                    <div class="settings-icon-wrap">
+                        <i class="ri-palette-line"></i>
+                    </div>
+                    <div>
+                        <h2 class="settings-title">Theme Studio</h2>
+                        <p class="settings-subtitle">Personalize your experience</p>
+                    </div>
+                </div>
+
+                <button id="close-settings" class="close-btn">
+                    <i class="ri-close-line"></i>
+                </button>
+            </div>
+
+            <!-- Settings Tab Navigation -->
+            <div class="settings-tabs">
+                <button class="settings-tab active" data-tab="wallpaper">
+                    <i class="ri-image-2-line"></i>
+                    <span>Wallpaper</span>
+                </button>
+                <button class="settings-tab" data-tab="effects">
+                    <i class="ri-sparkle-line"></i>
+                    <span>Effects</span>
+                </button>
+                <button class="settings-tab" data-tab="sound">
+                    <i class="ri-volume-up-line"></i>
+                    <span>Sound</span>
+                </button>
+                <button class="settings-tab" data-tab="typing">
+                    <i class="ri-keyboard-line"></i>
+                    <span>Typing</span>
+                </button>
+                <button class="settings-tab" data-tab="profile">
+                    <i class="ri-user-settings-line"></i>
+                    <span>Avatar</span>
+                </button>
+            </div>
+
+            <!-- Tab: Wallpaper -->
+            <div class="tab-pane active" id="tab-wallpaper">
+                <div class="wallpaper-section">
+                    <div class="section-header">
+                        <i class="ri-image-2-line section-icon"></i>
+                        <label class="section-label">WALLPAPER</label>
+                    </div>
+                    <div class="wallpaper-tabs" id="wallpaper-tabs"></div>
+                    <div class="wallpaper-grid" id="wallpaper-grid"></div>
+                </div>
+
+                <!-- Controls Footer -->
+                <div class="settings-controls">
+                    <!-- Opacity -->
+                    <div class="control-group">
+                        <div class="control-header">
+                            <div class="control-label-wrap">
+                                <i class="ri-contrast-2-line section-icon"></i>
+                                <label class="section-label">PANEL OPACITY</label>
+                            </div>
+                            <span id="opacity-value" class="control-value">15%</span>
+                        </div>
+                        <div class="slider-track">
+                            <input type="range" id="opacity-slider" min="0" max="100" value="15" class="styled-slider">
+                        </div>
+                    </div>
+
+                    <!-- Tint -->
+                    <div class="control-group">
+                        <div class="control-header">
+                            <div class="control-label-wrap">
+                                <i class="ri-drop-line section-icon"></i>
+                                <label class="section-label">PANEL TINT</label>
+                            </div>
+                        </div>
+                        <div class="tint-options">
+                            <button class="tint-btn active" data-tint="dark">
+                                <span class="tint-preview" style="background: #14141e;"></span>
+                                <span class="tint-name">Dark</span>
+                            </button>
+                            <button class="tint-btn" data-tint="light">
+                                <span class="tint-preview" style="background: #eef;"></span>
+                                <span class="tint-name">Light</span>
+                            </button>
+                            <button class="tint-btn" data-tint="glass">
+                                <span class="tint-preview"
+                                    style="background: linear-gradient(135deg, #555, #999);"></span>
+                                <span class="tint-name">Glass</span>
+                            </button>
+                            <button class="tint-btn" data-tint="midnight">
+                                <span class="tint-preview"
+                                    style="background: linear-gradient(135deg, #0a0a2e, #1a1a4e);"></span>
+                                <span class="tint-name">Midnight</span>
+                            </button>
+                            <button class="tint-btn" data-tint="warm">
+                                <span class="tint-preview"
+                                    style="background: linear-gradient(135deg, #2a1a0a, #3d2b1a);"></span>
+                                <span class="tint-name">Warm</span>
+                            </button>
+                            <button class="tint-btn" data-tint="transparent">
+                                <span class="tint-preview"
+                                    style="background: repeating-conic-gradient(rgba(255,255,255,0.1) 0% 25%, transparent 0% 50%) 0 0 / 10px 10px;"></span>
+                                <span class="tint-name">None</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: Effects -->
+            <div class="tab-pane" id="tab-effects">
+                <div class="effects-section">
+                    <div class="section-header">
+                        <i class="ri-sparkle-line section-icon"></i>
+                        <label class="section-label">BACKGROUND EFFECT</label>
+                    </div>
+                    <div class="effect-options" id="effect-options">
+                        <button class="effect-btn active" data-effect="dust">
+                            <i class="ri-sparkling-2-line"></i>
+                            <span>Dust</span>
+                        </button>
+                        <button class="effect-btn" data-effect="matrix">
+                            <i class="ri-code-s-slash-line"></i>
+                            <span>Matrix</span>
+                        </button>
+                        <button class="effect-btn" data-effect="starfield">
+                            <i class="ri-rocket-line"></i>
+                            <span>Starfield</span>
+                        </button>
+                        <button class="effect-btn" data-effect="fireflies">
+                            <i class="ri-fire-line"></i>
+                            <span>Fireflies</span>
+                        </button>
+                        <button class="effect-btn" data-effect="snow">
+                            <i class="ri-snowy-line"></i>
+                            <span>Snow</span>
+                        </button>
+                        <button class="effect-btn" data-effect="rain">
+                            <i class="ri-rainy-line"></i>
+                            <span>Rain</span>
+                        </button>
+                    </div>
+
+                    <div class="section-header" style="margin-top: 20px;">
+                        <i class="ri-palette-line section-icon"></i>
+                        <label class="section-label">EFFECT COLOR</label>
+                    </div>
+                    <div class="color-presets" id="color-presets">
+                        <button class="color-dot active" data-color="#ffd700" style="--dot-color: #ffd700;"
+                            title="Gold"></button>
+                        <button class="color-dot" data-color="#00d4ff" style="--dot-color: #00d4ff;"
+                            title="Cyan"></button>
+                        <button class="color-dot" data-color="#ff6bca" style="--dot-color: #ff6bca;"
+                            title="Pink"></button>
+                        <button class="color-dot" data-color="#39ff14" style="--dot-color: #39ff14;"
+                            title="Green"></button>
+                        <button class="color-dot" data-color="#bf5fff" style="--dot-color: #bf5fff;"
+                            title="Purple"></button>
+                        <button class="color-dot" data-color="#ff4444" style="--dot-color: #ff4444;"
+                            title="Red"></button>
+                        <button class="color-dot" data-color="#ffffff" style="--dot-color: #ffffff;"
+                            title="White"></button>
+                        <div class="color-picker-wrap">
+                            <input type="color" id="custom-color-picker" value="#ffd700" title="Custom Color">
+                            <i class="ri-add-line"></i>
+                        </div>
+                    </div>
+
+                    <!-- Intensity Slider -->
+                    <div class="control-group" style="margin-top: 20px;">
+                        <div class="control-header">
+                            <div class="control-label-wrap">
+                                <i class="ri-speed-line section-icon"></i>
+                                <label class="section-label">INTENSITY</label>
+                            </div>
+                            <span id="intensity-value" class="control-value">50%</span>
+                        </div>
+                        <div class="slider-track">
+                            <input type="range" id="intensity-slider" min="10" max="100" value="50"
+                                class="styled-slider">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: Sound -->
+            <div class="tab-pane" id="tab-sound">
+                <div class="sound-section">
+                    <div class="section-header">
+                        <i class="ri-keyboard-box-line section-icon"></i>
+                        <label class="section-label">KEY SOUND</label>
+                    </div>
+                    <div class="sound-options" id="sound-options">
+                        <button class="sound-btn active" data-sound="typewriter">
+                            <i class="ri-keyboard-line"></i>
+                            <span>Typewriter</span>
+                        </button>
+                        <button class="sound-btn" data-sound="blue">
+                            <i class="ri-circle-fill" style="color: #4fc3f7;"></i>
+                            <span>Blue</span>
+                        </button>
+                        <button class="sound-btn" data-sound="red">
+                            <i class="ri-circle-fill" style="color: #ff5252;"></i>
+                            <span>Red</span>
+                        </button>
+                        <button class="sound-btn" data-sound="creamy">
+                            <i class="ri-drop-fill" style="color: #e6cba5;"></i>
+                            <span>Creamy</span>
+                        </button>
+                        <button class="sound-btn" data-sound="bubble">
+                            <i class="ri-bubble-chart-line"></i>
+                            <span>Bubble</span>
+                        </button>
+                        <button class="sound-btn" data-sound="laser">
+                            <i class="ri-flashlight-line"></i>
+                            <span>Laser</span>
+                        </button>
+                        <button class="sound-btn" data-sound="tactile">
+                            <i class="ri-circle-fill" style="color: #a1887f;"></i>
+                            <span>Tactile</span>
+                        </button>
+                        <button class="sound-btn" data-sound="membrane">
+                            <i class="ri-checkbox-blank-fill" style="color: #90a4ae;"></i>
+                            <span>Membrane</span>
+                        </button>
+                        <button class="sound-btn" data-sound="neon">
+                            <i class="ri-lightbulb-flash-line" style="color: #b388ff;"></i>
+                            <span>Neon</span>
+                        </button>
+                        <button class="sound-btn" data-sound="retro">
+                            <i class="ri-gamepad-line" style="color: #ffab40;"></i>
+                            <span>Retro</span>
+                        </button>
+                        <button class="sound-btn" data-sound="space">
+                            <i class="ri-rocket-line" style="color: #80deea;"></i>
+                            <span>Space</span>
+                        </button>
+                        <button class="sound-btn" data-sound="bullet">
+                            <i class="ri-crosshair-2-line" style="color: #ef5350;"></i>
+                            <span>Bullet</span>
+                        </button>
+                    </div>
+
+                    <!-- Volume Slider -->
+                    <!-- Key Volume Slider -->
+                    <div class="control-group" style="margin-top: 20px;">
+                        <div class="control-header">
+                            <div class="control-label-wrap">
+                                <i class="ri-volume-up-line section-icon"></i>
+                                <label class="section-label">KEY VOLUME</label>
+                            </div>
+                            <span id="volume-value" class="control-value">70%</span>
+                        </div>
+                        <div class="slider-track">
+                            <input type="range" id="volume-slider" min="0" max="100" value="70" class="styled-slider">
+                        </div>
+                    </div>
+
+                    <!-- Music Volume Slider -->
+                    <div class="control-group" style="margin-top: 20px;">
+                        <div class="control-header">
+                            <div class="control-label-wrap">
+                                <i class="ri-music-2-line section-icon"></i>
+                                <label class="section-label">MUSIC VOLUME</label>
+                            </div>
+                            <span id="bg-volume-value" class="control-value">50%</span>
+                        </div>
+                        <div class="slider-track">
+                            <input type="range" id="bg-volume-slider" min="0" max="100" value="50"
+                                class="styled-slider">
+                        </div>
+                    </div>
+
+                    <!-- Combo Sound Section -->
+                    <div class="settings-group"
+                        style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1);">
+                        <div class="group-header"
+                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <label class="group-title" style="margin: 0;">COMBO SOUND</label>
+                            <label class="switch">
+                                <input type="checkbox" id="combo-sound-toggle" checked>
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+
+                        <div class="control-group" id="pitch-shift-control">
+                            <div class="control-header">
+                                <div class="control-label-wrap">
+                                    <label class="section-label">PITCH SHIFT</label>
+                                </div>
+                                <label class="switch" style="transform: scale(0.8);">
+                                    <input type="checkbox" id="pitch-shift-toggle" checked>
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TYPING TAB -->
+            <div class="tab-pane" id="tab-typing">
+                <div class="settings-group">
+                    <label class="group-title">CURSOR</label>
+                    <div class="control-group">
+                        <label class="section-label">STYLE</label>
+                        <div class="caret-options">
+                            <button class="caret-btn active" data-caret="line">
+                                <span class="btn-icon" style="font-family: inherit;">|</span>
+                                <span class="btn-label">Line</span>
+                            </button>
+                            <button class="caret-btn" data-caret="block">
+                                <span class="btn-icon">█</span>
+                                <span class="btn-label">Block</span>
+                            </button>
+                            <button class="caret-btn" data-caret="underline">
+                                <span class="btn-icon">_</span>
+                                <span class="btn-label">Underline</span>
+                            </button>
+                            <button class="caret-btn" data-caret="outline">
+                                <span class="btn-icon"
+                                    style="border: 1px solid currentColor; width: 12px; height: 16px; display: inline-block; vertical-align: middle;"></span>
+                                <span class="btn-label">Outline</span>
+                            </button>
+                            <button class="caret-btn" data-caret="blade">
+                                <span class="btn-icon" style="transform: skewX(-15deg); font-weight: bold;">|</span>
+                                <span class="btn-label">Blade</span>
+                            </button>
+                            <button class="caret-btn" data-caret="glow">
+                                <span class="btn-icon" style="text-shadow: 0 0 5px currentColor;">|</span>
+                                <span class="btn-label">Glow</span>
+                            </button>
+                            <button class="caret-btn" data-caret="beam">
+                                <span class="btn-icon">I</span>
+                                <span class="btn-label">Beam</span>
+                            </button>
+                            <button class="caret-btn" data-caret="off">
+                                <span class="btn-icon">×</span>
+                                <span class="btn-label">Off</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="control-group" style="margin-top: 30px;">
+                        <label class="section-label">FONT</label>
+                        <div class="font-options">
+                            <button class="font-btn active" data-font="modern">
+                                <span class="btn-icon" style="font-family: 'JetBrains Mono', monospace;">Aa</span>
+                                <span class="btn-label">Modern</span>
+                            </button>
+                            <button class="font-btn" data-font="retro">
+                                <span class="btn-icon" style="font-family: 'Pixelify Sans', monospace;">Aa</span>
+                                <span class="btn-label">Retro</span>
+                            </button>
+                            <button class="font-btn" data-font="clean">
+                                <span class="btn-icon" style="font-family: 'Outfit', sans-serif;">Aa</span>
+                                <span class="btn-label">Clean</span>
+                            </button>
+                            <button class="font-btn" data-font="serif">
+                                <span class="btn-icon" style="font-family: 'Playfair Display', serif;">Aa</span>
+                                <span class="btn-label">Serif</span>
+                            </button>
+                            <button class="font-btn" data-font="typewriter">
+                                <span class="btn-icon" style="font-family: 'Courier Prime', monospace;">Aa</span>
+                                <span class="btn-label">Type</span>
+                            </button>
+                            <button class="font-btn" data-font="hand">
+                                <span class="btn-icon"
+                                    style="font-family: 'Caveat', cursive; font-size: 1.4rem;">Aa</span>
+                                <span class="btn-label">Hand</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="control-group" style="margin-top: 30px;">
+                        <label class="section-label">CARET COLOR</label>
+                        <div class="color-presets" id="caret-color-presets">
+                            <button class="color-dot caret-color-dot active" data-caret-color="#ffd700"
+                                style="--dot-color: #ffd700;" title="Gold"></button>
+                            <button class="color-dot caret-color-dot" data-caret-color="#00d4ff"
+                                style="--dot-color: #00d4ff;" title="Cyan"></button>
+                            <button class="color-dot caret-color-dot" data-caret-color="#ff00ff"
+                                style="--dot-color: #ff00ff;" title="Magenta"></button>
+                            <button class="color-dot caret-color-dot" data-caret-color="#ffffff"
+                                style="--dot-color: #ffffff;" title="White"></button>
+                            <button class="color-dot caret-color-dot" data-caret-color="#ff4444"
+                                style="--dot-color: #ff4444;" title="Red"></button>
+                            <div class="color-picker-wrap">
+                                <input type="color" id="caret-custom-color" value="#ffd700" title="Custom Caret Color">
+                                <i class="ri-add-line"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="settings-group"
+                        style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1);">
+                        <div class="group-header"
+                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <label class="group-title" style="margin: 0;">PARTICLES</label>
+                            <label class="switch">
+                                <input type="checkbox" id="particle-toggle" checked>
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="section-label">COLOR</label>
+                            <div class="color-options">
+                                <button class="color-btn active" data-color="gold"
+                                    style="background: #ffd700; box-shadow: 0 0 10px #ffd700;"></button>
+                                <button class="color-btn" data-color="cyan"
+                                    style="background: #00d4ff; box-shadow: 0 0 10px #00d4ff;"></button>
+                                <button class="color-btn" data-color="magenta"
+                                    style="background: #ff00ff; box-shadow: 0 0 10px #ff00ff;"></button>
+                                <button class="color-btn" data-color="white"
+                                    style="background: #ffffff; box-shadow: 0 0 10px #ffffff;"></button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+
+            </div>
+
+            <!-- PROFILE TAB CONTENT -->
+            <div class="tab-pane" id="tab-profile">
+                <div class="settings-group" style="margin-top: 20px;">
+                    <div class="section-header">
+                        <i class="ri-layout-masonry-line section-icon"></i>
+                        <label class="section-label">UI LAYOUT</label>
+                    </div>
+                    <div class="layout-options" style="display: flex; gap: 15px; margin-top: 15px;">
+                        <button id="profile-mode-default" class="layout-btn active"
+                            style="flex: 1; padding: 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03); cursor: pointer; transition: all 0.3s ease; position: relative; overflow: hidden;">
+                            <div class="layout-preview"
+                                style="height: 60px; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border-radius: 8px; margin-bottom: 10px; position: relative; overflow: hidden;">
+                                <div
+                                    style="position: absolute; top: 10px; left: 10px; width: 20px; height: 20px; background: #ffd700; border-radius: 50%;">
+                                </div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span
+                                    style="font-family: 'Space Mono', monospace; font-size: 0.9rem; color: #fff;">Default</span>
+                                <div class="selection-indicator">
+                                    <i class="ri-check-line"></i>
+                                </div>
+                            </div>
+                        </button>
+
+                        <button id="profile-mode-custom" class="layout-btn"
+                            style="flex: 1; padding: 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03); cursor: pointer; transition: all 0.3s ease; position: relative; overflow: hidden;">
+                            <div class="layout-preview"
+                                style="height: 60px; background: #000; border-radius: 8px; margin-bottom: 10px; position: relative; border: 1px solid #333;">
+                                <div
+                                    style="position: absolute; top: 10px; left: 10px; width: 40px; height: 4px; background: #333;">
+                                </div>
+                                <div
+                                    style="position: absolute; top: 20px; left: 10px; width: 30px; height: 4px; background: #333;">
+                                </div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span
+                                    style="font-family: 'Space Mono', monospace; font-size: 0.9rem; color: #fff;">Custom</span>
+                                <div class="selection-indicator">
+                                    <i class="ri-check-line"></i>
+                                </div>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- QUICK PALETTES -->
+                <div style="margin-top: 25px; margin-bottom: 20px;">
+                    <div class="section-header">
+                        <i class="ri-drop-line section-icon"></i>
+                        <label class="section-label" style="margin: 0;">QUICK PALETTES</label>
+                    </div>
+                    <div class="palette-grid"
+                        style="display: flex; gap: 12px; overflow-x: auto; padding: 10px 5px; scrollbar-width: none; -ms-overflow-style: none;">
+
+                        <!-- NEON & VIBRANT -->
+
+                        <div class="palette-preset" data-primary="#ff4d4d" data-accent="#ff9f43" title="Sunset"
+                            style="flex-shrink: 0; width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, #ff4d4d, #ff9f43); cursor: pointer; border: 2px solid rgba(255,255,255,0.15); transition: transform 0.2s;">
+                        </div>
+
+                        <div class="palette-preset" data-primary="#e17055" data-accent="#d63031" title="Lava"
+                            style="flex-shrink: 0; width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, #e17055, #d63031); cursor: pointer; border: 2px solid rgba(255,255,255,0.15); transition: transform 0.2s;">
+                        </div>
+
+
+                        <!-- PASTEL & SOFT -->
+                        <div class="palette-preset" data-primary="#ff9ff3" data-accent="#54a0ff" title="Cotton Candy"
+                            style="flex-shrink: 0; width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, #ff9ff3, #54a0ff); cursor: pointer; border: 2px solid rgba(255,255,255,0.15); transition: transform 0.2s;">
+                        </div>
+                        <div class="palette-preset" data-primary="#55efc4" data-accent="#81ecec" title="Mint"
+                            style="flex-shrink: 0; width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, #55efc4, #81ecec); cursor: pointer; border: 2px solid rgba(255,255,255,0.15); transition: transform 0.2s;">
+                        </div>
+                        <div class="palette-preset" data-primary="#a29bfe" data-accent="#6c5ce7" title="Lavender"
+                            style="flex-shrink: 0; width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, #a29bfe, #6c5ce7); cursor: pointer; border: 2px solid rgba(255,255,255,0.15); transition: transform 0.2s;">
+                        </div>
+                        <div class="palette-preset" data-primary="#fab1a0" data-accent="#ff7675" title="Peach"
+                            style="flex-shrink: 0; width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, #fab1a0, #ff7675); cursor: pointer; border: 2px solid rgba(255,255,255,0.15); transition: transform 0.2s;">
+                        </div>
+
+                        <!-- DARK & MOODY -->
+
+                        <div class="palette-preset" data-primary="#95a5a6" data-accent="#2c3e50" title="Stealth"
+                            style="flex-shrink: 0; width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, #95a5a6, #2c3e50); cursor: pointer; border: 2px solid rgba(255,255,255,0.15); transition: transform 0.2s;">
+                        </div>
+                        <div class="palette-preset" data-primary="#dff9fb" data-accent="#ffffff" title="Frost"
+                            style="flex-shrink: 0; width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, #dff9fb, #ffffff); cursor: pointer; border: 2px solid rgba(255,255,255,0.15); transition: transform 0.2s;">
+                        </div>
+
+                        <div class="palette-preset" data-primary="#f39c12" data-accent="#d35400" title="Pumpkin"
+                            style="flex-shrink: 0; width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, #f39c12, #d35400); cursor: pointer; border: 2px solid rgba(255,255,255,0.15); transition: transform 0.2s;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- COLOR CUSTOMIZATION -->
+                <div id="profile-custom-options" style="transition: all 0.3s ease; opacity: 0.5; pointer-events: none;">
+                    <input type="hidden" id="profile-custom-options-check">
+                    <div class="section-header">
+                        <i class="ri-palette-line section-icon"></i>
+                        <label class="section-label">PROFILE APPEARANCE</label>
+                    </div>
+
+                    <!-- Color Inputs Grid -->
+                    <div class="color-grid"
+                        style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px;">
+
+                        <!-- Primary Color -->
+                        <div class="input-group">
+                            <label class="section-label">PRIMARY COLOR</label>
+                            <div class="color-input-wrapper">
+                                <div id="profile-primary-preview" class="color-preview"></div>
+                                <input type="text" id="profile-primary-input" class="hex-input" placeholder="#RRGGBB"
+                                    maxlength="7">
+                                <input type="color" id="profile-primary-picker" class="color-picker-hidden">
+                            </div>
+                        </div>
+
+                        <!-- Accent Color -->
+                        <div class="input-group">
+                            <label class="section-label">ACCENT COLOR</label>
+                            <div class="color-input-wrapper">
+                                <div id="profile-accent-preview" class="color-preview"></div>
+                                <input type="text" id="profile-accent-input" class="hex-input" placeholder="#RRGGBB"
+                                    maxlength="7">
+                                <input type="color" id="profile-accent-picker" class="color-picker-hidden">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- GLOW APPEARANCE -->
+                    <div class="color-grid"
+                        style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px;">
+
+                        <!-- Glow Primary -->
+                        <div class="input-group">
+                            <label class="section-label">GLOW PRIMARY</label>
+                            <div class="color-input-wrapper">
+                                <div id="profile-glow-primary-preview" class="color-preview"
+                                    style="background: rgba(255, 215, 0, 0.15);"></div>
+                                <input type="text" id="profile-glow-primary-input" class="hex-input" placeholder="RGBA"
+                                    value="rgba(255, 215, 0, 0.15)">
+                                <input type="color" id="profile-glow-primary-picker" class="color-picker-hidden"
+                                    value="#ffd700">
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+
+                <!-- SAVE BUTTON (Outside disable wrapper) -->
+                <div class="control-group" style="margin-top: 25px;">
+                    <button id="save-profile-theme-btn" class="action-btn"
+                        style="width: 100%; padding: 12px; background: var(--accent-gold); color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);">
+                        <i class="ri-save-line"></i> SAVE THEME
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="loading-overlay" class="hidden">
+        <div class="loader-spinner"></div>
+        <div class="loader-text">APPLYING THEME...</div>
+    </div>
+
+    <div id="results-overlay" class="hidden">
+
+        <div class="glass-panel results-content">
+            <h1 class="text-3xl font-bold mb-2">Session Complete</h1>
+            <div id="rank-title" class="text-xl font-bold mb-4"
+                style="min-height: 2rem; letter-spacing: 0.2em; text-transform: uppercase; filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.3));">
+            </div>
+            <div id="rank-desc" class="text-lg text-gray-300 mb-8 font-light"
+                style="min-height: 1.5rem; letter-spacing: 0.05em; text-shadow: 0 2px 4px rgba(0,0,0,0.5);"></div>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="label">WPM</span>
+                    <span class="value" id="final-wpm">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="label">Accuracy</span>
+                    <span class="value" id="final-acc">0%</span>
+                </div>
+            </div>
+
+            <!-- WPM Graph -->
+            <div class="wpm-chart-container"
+                style="margin-top: 2rem; width: 100%; height: 120px; overflow: hidden; border-radius: 12px; background: rgba(0,0,0,0.2);">
+                <canvas id="results-chart" width="600" height="150"
+                    style="width: 100%; height: 100%; display: block;"></canvas>
+            </div>
+
+            <div class="footer-hint mt-8">PRESS <span class="key">TAB</span> TO TRY AGAIN</div>
+        </div>
+    </div>
+
+    <!-- Supabase SDK -->
+    <!-- LEADERBOARD MODAL -->
+    <div id="leaderboard-modal" class="hidden">
+        <div class="settings-content auth-content">
+            <div class="settings-header">
+                <div class="settings-header-left">
+                    <div class="settings-icon-wrap" style="background: rgba(255, 215, 0, 0.2); color: #ffd700;">
+                        <i class="ri-trophy-fill"></i>
+                    </div>
+                    <div>
+                        <h2 class="settings-title">Leaderboard</h2>
+                        <p class="settings-subtitle">Top ZenTypers</p>
+                    </div>
+                </div>
+                <button id="close-leaderboard" class="close-btn">
+                    <i class="ri-close-line"></i>
+                </button>
+            </div>
+
+
+
+            <div class="leaderboard-body">
+                <div class="leaderboard-header">
+                    <span class="lh-rank">Rank</span>
+                    <span class="lh-user">User</span>
+                    <span class="lh-wpm">WPM</span>
+                </div>
+                <div class="leaderboard-list" id="leaderboard-list">
+                    <!-- Items injected by JS -->
+                    <div class="loading-spinner">Loading...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AUTH MODAL MOVED HERE -->
+    <div id="auth-modal" class="hidden">
+        <div class="settings-content auth-content">
+            <div class="settings-header"
+                style="background: transparent; border: none; justify-content: flex-end; padding-bottom: 0;">
+                <button id="close-auth" class="close-btn">
+                    <i class="ri-close-line"></i>
+                </button>
+            </div>
+
+            <div class="auth-body">
+                <div id="auth-forms">
+                    <!-- Login Form -->
+                    <div id="login-form-container">
+                        <h3 class="auth-heading">Welcome Back</h3>
+                        <p class="auth-sub">Sign in to continue your journey</p>
+
+                        <button id="google-btn" class="social-btn">
+                            <i class="ri-google-fill"></i>
+                            <span>Continue with Google</span>
+                        </button>
+
+                        <div class="divider">
+                            <span>OR</span>
+                        </div>
+
+                        <form id="login-form">
+                            <div class="input-group">
+                                <i class="ri-mail-line input-icon"></i>
+                                <input type="email" id="login-email" placeholder="Email address" required>
+                            </div>
+                            <div class="input-group">
+                                <i class="ri-lock-line input-icon"></i>
+                                <input type="password" id="login-password" placeholder="Password" required>
+                            </div>
+                            <button type="submit" class="submit-btn">Sign In</button>
+                        </form>
+
+                        <p class="auth-footer">
+                            Don't have an account? <a href="#" id="switch-to-signup">Sign up</a>
+                        </p>
+                    </div>
+
+                    <!-- Signup Form -->
+                    <div id="signup-form-container" class="hidden">
+                        <h3 class="auth-heading">Create Account</h3>
+                        <p class="auth-sub">Join the ZenType community</p>
+
+                        <button id="google-signup-btn" class="social-btn">
+                            <i class="ri-google-fill"></i>
+                            <span>Sign up with Google</span>
+                        </button>
+
+                        <div class="divider">
+                            <span>OR</span>
+                        </div>
+
+                        <form id="signup-form">
+                            <div class="input-group">
+                                <i class="ri-mail-line input-icon"></i>
+                                <input type="email" id="signup-email" placeholder="Email address" required>
+                            </div>
+                            <div class="input-group">
+                                <i class="ri-lock-line input-icon"></i>
+                                <input type="password" id="signup-password" placeholder="Password" required>
+                            </div>
+                            <button type="submit" class="submit-btn">Create Account</button>
+                        </form>
+
+                        <p class="auth-footer">
+                            Already have an account? <a href="#" id="switch-to-login">Log in</a>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- User Profile View (Hidden by default) -->
+                <div id="user-profile" class="hidden">
+                    <div class="profile-info">
+                        <div class="avatar-large" style="position: relative;">
+                            <span id="user-initial">U</span>
+                            <button id="profile-edit-btn" class="avatar-edit-btn" title="Edit Profile">
+                                <i class="ri-pencil-fill"></i>
+                            </button>
+                        </div>
+                        <h3 id="user-email-display">user@example.com</h3>
+                        <p class="member-since" id="user-bio-display">ZenTyper</p>
+                        <div id="profile-badges" class="badges-container"></div>
+
+                        <!-- Progress Graph -->
+                        <div class="progress-section">
+                            <p class="heatmap-title">Progress (Last 20 Tests)</p>
+                            <div class="graph-container">
+                                <canvas id="wpm-chart" width="300" height="100"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Lower Section (Heatmap, Streak, Stats) -->
+                        <div class="profile-lower-section">
+                            <!-- Bottom Section: Heatmap (Left) + Streak (Right) -->
+                            <div class="profile-bottom-grid">
+                                <!-- Heatmap -->
+                                <div class="heatmap-section">
+                                    <p class="heatmap-title">Activity</p>
+                                    <div id="activity-heatmap" class="heatmap-grid"></div>
+                                </div>
+
+                                <!-- Streak Card -->
+                                <div class="streak-section">
+                                    <div class="streak-card">
+                                        <div class="streak-fire">
+                                            <div class="fire-base"></div>
+                                            <div class="fire-flame"></div>
+                                            <div class="fire-flame"></div>
+                                            <div class="fire-flame"></div>
+                                            <div class="fire-spark"></div>
+                                        </div>
+                                        <div class="streak-count" id="streak-display">0</div>
+                                        <div class="streak-label">DAYS</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Divider -->
+                            <div class="profile-divider"></div>
+
+                            <div class="profile-stats">
+                                <div class="p-stat">
+                                    <span class="p-val" id="tests-count">0</span>
+                                    <span class="p-label">TESTS</span>
+                                </div>
+                                <div class="p-stat">
+                                    <span class="p-val" id="best-wpm">0</span>
+                                    <span class="p-label">BEST WPM</span>
+                                </div>
+                                <div class="p-stat">
+                                    <span class="p-val" id="total-time">0h</span>
+                                    <span class="p-label">TIME</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button id="logout-btn" class="logout-btn">
+                            <i class="ri-logout-box-r-line"></i>
+                            <span>Sign Out</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SUPPORT MODAL -->
+    <div id="support-modal" class="hidden">
+        <div class="settings-content support-content">
+            <div class="settings-header">
+                <div class="settings-header-left">
+                    <div class="settings-icon-wrap"
+                        style="background: rgba(255, 69, 58, 0.15); color: #ff453a; border-color: rgba(255, 69, 58, 0.3);">
+                        <i class="ri-heart-3-fill"></i>
+                    </div>
+                    <div>
+                        <h2 class="settings-title">Support ZenType</h2>
+                        <p class="settings-subtitle">Fuel the development</p>
+                    </div>
+                </div>
+                <button id="close-support" class="close-btn">
+                    <i class="ri-close-line"></i>
+                </button>
+            </div>
+
+            <div class="support-body" style="padding: 24px 28px;">
+                <p class="support-message">
+                    <strong>Hey, it's the creator here <span>&lt;3</span></strong>
+                    As a solo dev, I’ve spent days and nights working nonstop to make ZenType look and feel exactly
+                    right. My goal was simple: a completely free, relaxing typing experience without any annoying ads or
+                    distractions.
+                    <br><br>
+                    If you're enjoying the site, any form of support—no matter how small—is a huge motivation for me to
+                    keep building and improving this project. Thanks for being part of the journey! 🖤
+                </p>
+
+                <a href="https://buymeacoffee.com/ir7fan" target="_blank" class="bmc-btn">
+                    <i class="ri-cup-line"></i>
+                    <span>Buy Me a Coffee</span>
+                </a>
+
+                <div class="divider">
+                    <span>Coming Soon</span>
+                </div>
+
+                <div class="support-grid">
+                    <div class="support-option disabled">
+                        <i class="ri-patreon-line"></i>
+                        <span>Patreon</span>
+                    </div>
+                    <div class="support-option disabled">
+                        <i class="ri-t-shirt-2-line"></i>
+                        <span>Merch</span>
+                    </div>
+                    <div class="support-option disabled">
+                        <i class="ri-github-fill"></i>
+                        <span>Sponsor</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="site-footer">
+        <div class="footer-info">
+            <span class="copyright">© 2026 ZenType</span>
+            <span class="separator">•</span>
+            <span class="app-desc">Minimalist typing practice tool designed to improve speed and accuracy.</span>
+        </div>
+        <div class="footer-links">
+            <a href="privacy.html" class="footer-link-pill">
+                <i class="ri-lock-line"></i> Privacy
+            </a>
+            <a href="#" class="footer-link-pill" id="modes-btn">
+                <i class="ri-gamepad-line"></i> Modes
+            </a>
+            <a href="#" class="footer-link-pill support-btn">
+                <i class="ri-heart-fill"></i> Support
+            </a>
+        </div>
+    </footer>
+
+    <!-- MODES MODAL -->
+    <div id="modes-modal" class="modal-overlay hidden">
+        <div class="settings-modal" style="max-width: 800px;">
+            <div class="settings-header">
+                <h2><i class="ri-gamepad-line"></i> Game Modes</h2>
+                <button class="close-modal-btn" id="close-modes-btn"><i class="ri-close-line"></i></button>
+            </div>
+            <div class="settings-content">
+                <div class="modes-grid">
+                    <!-- Hagakure Mode -->
+                    <div class="mode-card active">
+                        <div class="mode-icon"><i class="ri-sword-fill"></i></div>
+                        <div class="mode-info">
+                            <h3>Hagakure Mode</h3>
+                            <p>The way of the warrior. One mistake and it's over.</p>
+                        </div>
+                        <div class="mode-status">Active</div>
+                    </div>
+
+                    <!-- Shadow Mode -->
+                    <div class="mode-card active" id="shadow-mode-card">
+                        <div class="mode-icon"><i class="ri-ghost-line"></i></div>
+                        <div class="mode-info">
+                            <h3>Shadow Mode</h3>
+                            <p>Rhythm of the Void. Hesitation is Defeat.</p>
+                        </div>
+                        <div class="mode-status">Active</div>
+                    </div>
+
+                    <!-- Zen Mode (Coming Soon) -->
+                    <div class="mode-card disabled">
+                        <div class="mode-icon"><i class="ri-leaf-line"></i></div>
+                        <div class="mode-info">
+                            <h3>Zen Mode</h3>
+                            <p>Pure focus. No distractions.</p>
+                        </div>
+                        <div class="mode-status">Coming Soon</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HAGAKURE MODE -->
+    <div id="hagakure-splash" class="hidden">
+        <div class="splash-content">
+            <h1 class="hagakure-title">THE WAY OF THE WARRIOR</h1>
+            <p class="hagakure-subtitle">One Mistake. One End.</p>
+        </div>
+    </div>
+
+    <div id="hagakure-ui" class="hidden">
+        <!-- SETUP SCREEN -->
+        <div id="h-setup">
+            <h2 class="h-setup-title">CHOOSE YOUR PATH</h2>
+            <div class="h-options">
+                <button class="h-opt-btn" data-mode="1">
+                    <span class="opt-label">1 LINE</span>
+                    <span class="opt-desc">Weakness Disgusts Me.</span>
+                </button>
+                <button class="h-opt-btn" data-mode="3">
+                    <span class="opt-label">3 LINES</span>
+                    <span class="opt-desc">The warrior's discipline.</span>
+                </button>
+                <button class="h-opt-btn" data-mode="5">
+                    <span class="opt-label">5 LINES</span>
+                    <span class="opt-desc">The master's burden.</span>
+                </button>
+                <button class="h-opt-btn" data-mode="original">
+                    <span class="opt-label">ORIGINAL</span>
+                    <span class="opt-desc">The full journey. Destiny awaits.</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- GAME BOARD (Normally hidden until setup complete) -->
+        <div id="h-game-board" class="hidden">
+            <div class="h-header">
+                <div class="h-stat">SLASH: <span id="h-streak">0</span></div>
+                <div class="h-title">THE WAY OF THE BLADE</div>
+                <div class="h-stat">FLOW: <span id="h-wpm">0</span></div>
+            </div>
+            <div id="h-words-container"></div>
+            <input type="text" id="h-input" autocomplete="off" spellcheck="false">
+            <div class="h-footer"><i class="ri-crosshair-2-line"
+                    style="margin-right: 10px; vertical-align: middle;"></i> FOCUS</div>
+            <div class="h-footer-controls">
+                <button id="h-exit-path-btn" class="h-control-btn">EXIT PATH</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="hagakure-leaderboard-modal" class="hidden">
+        <div class="bushido-vignette"></div>
+        <div class="katana-slash"></div>
+        <div class="bushido-pane">
+            <div class="bushido-watermark"><i class="ri-sword-fill"></i></div>
+            <div class="bushido-particles" id="particle-container"></div>
+
+            <div class="bushido-header">
+                <div class="bushido-title">
+                    <i class="ri-sword-line katana-icon"></i>
+                    CHAMPIONS OF HAGAKURE
+                </div>
+                <button id="close-h-leaderboard" class="bushido-close" title="Close Shroud">
+                    <i class="ri-close-line"></i>
+                </button>
+            </div>
+
+            <div class="bushido-body">
+                <div class="bushido-list-header">
+                    <span class="s-rank">RANK</span>
+                    <span class="s-name">ZEN WARRIOR</span>
+                    <span class="s-flow">FLOW</span>
+                </div>
+                <div class="bushido-list" id="hagakure-leaderboard-list">
+                    <div class="bushido-loading">SHARPENING BLADES...</div>
+                </div>
+            </div>
+
+            <div class="bushido-footer">
+                <p>The Path is Paved in Crimson.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Shadow Mode UI -->
+    <div id="shadow-splash" class="hidden">
+        <div class="s-splash-content">
+            <h1 class="s-splash-title">SHADOW RITUAL</h1>
+            <p class="s-splash-quote">"Your mind is the blade. Sharpen it."</p>
+        </div>
+    </div>
+
+    <div id="shadow-ui" class="hidden">
+        <div id="s-setup">
+            <h1 class="s-title">SHADOW MODE</h1>
+            <p class="s-subtitle">MIND AND HAND AS ONE</p>
+            <div class="s-difficulty">
+                <button class="s-opt-btn" data-bloom="1500">GHOST</button>
+                <button class="s-opt-btn" data-bloom="1000">WRAITH</button>
+                <button class="s-opt-btn" data-bloom="700">VOID</button>
+            </div>
+            <button id="s-exit-btn">EXIT THE VOID</button>
+        </div>
+
+        <div id="s-game-board" class="hidden">
+            <div class="s-header">
+                <div class="s-meta">
+                    <span class="s-hud-label">WPM</span>
+                    <span id="s-hud-wpm">0</span>
+                </div>
+                <div class="s-meta">
+                    <span class="s-hud-label">SANITY</span>
+                    <span id="s-hud-sanity">100%</span>
+                </div>
+            </div>
+            <div id="s-words-container">
+                <!-- Words injected here -->
+            </div>
+
+            <input type="text" id="s-input" autocomplete="off">
+
+            <!-- RESULT OVERLAY -->
+            <div id="s-result-overlay" class="hidden">
+                <h1 id="s-result-title">SHADOW CONSUMED</h1>
+                <p id="s-result-reason">YOU WERE TOO SLOW</p>
+                <div class="s-result-actions">
+                    <button id="s-retry-btn">RETRY RITUAL</button>
+                    <button id="s-leave-btn">EXIT VOID</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

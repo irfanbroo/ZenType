@@ -1,0 +1,76 @@
+
+> tauri
+> tauri build
+
+    Running beforeBuildCommand `npm run build`
+
+> build
+> vite build
+
+[36mvite v6.4.1 [32mbuilding for production...[36m[39m
+<script src="/_vercel/insights/script.js"> in "/index.html" can't be bundled without type="module" attribute
+transforming...
+[32m✓[39m 14 modules transformed.
+rendering chunks...
+computing gzip size...
+[2mdist/[22m[32mindex.html                 [39m[1m[2m 64.08 kB[22m[1m[22m[2m │ gzip: 10.52 kB[22m
+[2mdist/[22m[35massets/index-C_-amc9N.css  [39m[1m[2m 88.51 kB[22m[1m[22m[2m │ gzip: 16.60 kB[22m
+[2mdist/[22m[36massets/index-BdYT-VpF.js   [39m[1m[2m144.85 kB[22m[1m[22m[2m │ gzip: 41.60 kB[22m
+[32m✓ built in 625ms[39m
+   Compiling serde v1.0.228
+   Compiling indexmap v1.9.3
+   Compiling serde_derive_internals v0.29.1
+   Compiling match_token v0.1.0
+   Compiling fxhash v0.2.1
+   Compiling unic-ucd-version v0.9.0
+   Compiling derive_more v0.99.20
+   Compiling winapi-util v0.1.11
+   Compiling erased-serde v0.4.9
+   Compiling thiserror v1.0.69
+   Compiling phf v0.8.0
+   Compiling equivalent v1.0.2
+   Compiling shlex v1.3.0
+   Compiling hashbrown v0.16.1
+   Compiling schemars v0.8.22
+   Compiling hashbrown v0.12.3
+   Compiling find-msvc-tools v0.1.9
+   Compiling cssparser v0.29.6
+   Compiling selectors v0.24.0
+   Compiling tinystr v0.8.2
+   Compiling regex v1.12.3
+   Compiling markup5ever v0.14.1
+   Compiling camino v1.2.2
+   Compiling url v2.5.8
+   Compiling unic-ucd-ident v0.9.0
+   Compiling brotli-decompressor v5.0.0
+   Compiling cargo-platform v0.1.9
+   Compiling jsonptr v0.6.3
+   Compiling same-file v1.0.6
+   Compiling cfb v0.7.3
+   Compiling windows_x86_64_msvc v0.52.6
+   Compiling anyhow v1.0.101
+   Compiling litemap v0.8.1
+   Compiling writeable v0.6.2
+   Compiling bytes v1.11.1
+   Compiling dyn-clone v1.0.20
+   Compiling dunce v1.0.5
+   Compiling cargo_metadata v0.19.2
+   Compiling cc v1.2.56
+   Compiling indexmap v2.13.0
+   Compiling serde-untagged v0.1.9
+   Compiling json-patch v3.0.1
+   Compiling icu_locale_core v2.1.1
+   Compiling walkdir v2.5.0
+   Compiling potential_utf v0.1.4
+   Compiling serde_with v3.16.1
+   Compiling zerotrie v0.2.3
+   Compiling windows-result v0.3.4
+error: failed to remove C:\Users\irfan\OneDrive\Desktop\Shizuka\src-tauri\target\release\deps\match_token-c9abdcf695d516ea.match_token.1a828bb34aa160c1-cgu.2.rcgu.o: The process cannot access the file because it is being used by another process. (os error 32)
+
+error: could not compile `match_token` (lib) due to 1 previous error
+warning: build failed, waiting for other jobs to finish...
+error: failed to remove C:\Users\irfan\OneDrive\Desktop\Shizuka\src-tauri\target\release\deps\derive_more-00e864373da71a0b.derive_more.b105cd41da53ce14-cgu.02.rcgu.o: The process cannot access the file because it is being used by another process. (os error 32)
+
+error: could not compile `derive_more` (lib) due to 1 previous error
+failed to build app: failed to build app
+    Error failed to build app: failed to build app
