@@ -372,17 +372,6 @@ function autoInitAudio() {
     // Remove listeners once initialized
     window.removeEventListener('click', autoInitAudio);
     window.removeEventListener('keydown', autoInitAudio);
-
-    // Force HTML5 Fullscreen (Works reliably in Tauri)
-    try {
-        if (!document.fullscreenElement) {
-            document.documentElement.requestFullscreen().catch(e => {
-                console.log("Fullscreen request failed:", e);
-            });
-        }
-    } catch (e) {
-        console.log("Fullscreen error:", e);
-    }
 }
 
 window.addEventListener('click', autoInitAudio);
@@ -5039,4 +5028,17 @@ window.applyProfileTheme = function (theme, targetElement = null) {
     root.style.setProperty('--profile-accent', accent);
     root.style.setProperty('--profile-glow-primary', glowPrimary);
 };
+
+// --- DISABLE DEV TOOLS & CONTEXT MENU ---
+document.addEventListener('contextmenu', event => event.preventDefault());
+
+document.addEventListener('keydown', event => {
+    if (
+        event.key === 'F12' ||
+        (event.ctrlKey && event.shiftKey && (event.key === 'I' || event.key === 'J' || event.key === 'C')) ||
+        (event.ctrlKey && event.key === 'U')
+    ) {
+        event.preventDefault();
+    }
+});
 
