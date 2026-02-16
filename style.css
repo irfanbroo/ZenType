@@ -2183,7 +2183,8 @@ input:checked+.slider::before {
 
 .bushido-pane {
     width: 580px;
-    height: 80vh;
+    height: auto;
+    max-height: 85vh;
     background: rgba(10, 0, 0, 0.8);
     backdrop-filter: blur(25px);
     border: 1px solid rgba(206, 17, 38, 0.3);
@@ -2308,6 +2309,7 @@ input:checked+.slider::before {
     padding: 0 20px;
     position: relative;
     z-index: 2;
+    min-height: 0;
 }
 
 .bushido-list-header {
@@ -2322,8 +2324,9 @@ input:checked+.slider::before {
 
 .bushido-list {
     flex: 1;
-    overflow-y: overlay;
+    overflow-y: auto;
     padding-bottom: 20px;
+    min-height: 0;
 }
 
 .bushido-list::-webkit-scrollbar {
@@ -5080,6 +5083,51 @@ input:checked+.slider::before {
     50% {
         opacity: 0.7;
         transform: scale(0.95);
+    }
+}
+
+
+/* --- HEIGHT-BASED RESPONSIVENESS FOR BUSHIDO MODAL --- */
+@media (max-height: 750px) {
+    .bushido-header {
+        padding: 20px 30px;
+    }
+
+    .bushido-title {
+        font-size: 1.4rem;
+    }
+
+    .katana-icon {
+        font-size: 1.8rem;
+    }
+
+    .bushido-list-header {
+        padding: 10px 30px;
+    }
+
+    .bushido-item {
+        padding: 12px 30px;
+        margin-bottom: 8px;
+    }
+
+    .bushido-footer {
+        padding: 15px;
+        font-size: 0.7rem;
+    }
+}
+
+@media (max-height: 600px) {
+    .bushido-pane {
+        width: 90%;
+        height: 90vh;
+    }
+
+    .bushido-item .s-rank {
+        font-size: 1.1rem;
+    }
+
+    .bushido-item .s-flow {
+        font-size: 1.4rem;
     }
 }
 
