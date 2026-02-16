@@ -1,0 +1,405 @@
+/* --- HAGAKURE MODE STYLES --- */
+
+/* SETUP SCREEN */
+#h-setup {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    width: 100vw;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 5000;
+    background: radial-gradient(circle at center, #1a0505 0%, #000000 100%);
+    animation: fadeIn 0.5s ease;
+}
+
+/* Subtle background pulse */
+#h-setup::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circleAt 50% 50%, rgba(206, 17, 38, 0.05), transparent 70%);
+    animation: bgPulse 4s infinite ease-in-out;
+    pointer-events: none;
+    z-index: -1;
+}
+
+@keyframes bgPulse {
+
+    0%,
+    100% {
+        opacity: 0.5;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.8;
+        transform: scale(1.1);
+    }
+}
+
+.h-setup-title {
+    font-family: 'Shojumaru', sans-serif;
+    font-size: 3.5rem;
+    color: #ce1126;
+    /* Blood Red */
+    margin-bottom: 3.5rem;
+    letter-spacing: 0.2em;
+    text-shadow: 0 0 20px rgba(206, 17, 38, 0.6), 0 0 40px rgba(206, 17, 38, 0.3);
+    text-align: center;
+    animation: titlePulse 3s infinite ease-in-out;
+}
+
+@keyframes titlePulse {
+
+    0%,
+    100% {
+        text-shadow: 0 0 20px rgba(206, 17, 38, 0.6);
+    }
+
+    50% {
+        text-shadow: 0 0 35px rgba(206, 17, 38, 0.9), 0 0 10px rgba(255, 255, 255, 0.2);
+    }
+}
+
+.h-options {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+    width: 90%;
+    max-width: 1200px;
+}
+
+/* Responsive Layout */
+@media (max-width: 1000px) {
+    .h-options {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .h-options {
+        grid-template-columns: 1fr;
+    }
+}
+
+.h-opt-btn {
+    background: rgba(10, 10, 10, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 2.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    min-height: 180px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+/* Side accent bar */
+.h-opt-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 6px;
+    height: 100%;
+    background: #333;
+    transition: all 0.3s ease;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.h-opt-btn:hover {
+    background: linear-gradient(135deg, rgba(206, 17, 38, 0.1) 0%, rgba(10, 10, 10, 0.9) 100%);
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7), 0 0 20px rgba(206, 17, 38, 0.1);
+    border-color: rgba(206, 17, 38, 0.4);
+}
+
+.h-opt-btn:hover::before {
+    background: #ce1126;
+    box-shadow: 0 0 15px #ce1126;
+}
+
+.opt-label {
+    font-family: 'Shojumaru', serif;
+    font-size: 1.8rem;
+    color: #e0e0e0;
+    margin-bottom: 1rem;
+    letter-spacing: 0.15em;
+    transition: all 0.3s ease;
+    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.8);
+}
+
+.opt-desc {
+    font-family: 'JetBrains Mono', sans-serif;
+    font-size: 0.9rem;
+    color: #666;
+    font-style: italic;
+    transition: all 0.3s ease;
+    opacity: 0.7;
+}
+
+/* 1 LINE SPECIAL STYLE */
+.h-opt-btn[data-mode="1"]:hover .opt-label {
+    color: #ff5f5f;
+    text-shadow: 0 0 10px rgba(255, 80, 80, 0.6);
+}
+
+.h-opt-btn[data-mode="1"]:hover .opt-desc {
+    color: #ff9999;
+    opacity: 1;
+    text-shadow: 0 0 8px rgba(255, 0, 0, 0.4);
+}
+
+/* 3 LINES STYLE */
+.h-opt-btn[data-mode="3"]:hover .opt-label {
+    color: #fff;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+/* 5 LINES / ORIGINAL (Epic Gold) */
+.h-opt-btn[data-mode="5"]:hover::before,
+.h-opt-btn[data-mode="original"]:hover::before {
+    background: #ffd700;
+    box-shadow: 0 0 15px #ffd700;
+}
+
+.h-opt-btn[data-mode="5"]:hover,
+.h-opt-btn[data-mode="original"]:hover {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.05) 0%, rgba(10, 10, 10, 0.9) 100%);
+    border-color: rgba(255, 215, 0, 0.3);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7), 0 0 20px rgba(255, 215, 0, 0.1);
+}
+
+.h-opt-btn[data-mode="5"]:hover .opt-label,
+.h-opt-btn[data-mode="original"]:hover .opt-label {
+    color: #ffd700;
+    text-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+}
+
+.h-opt-btn[data-mode="original"] {
+    grid-column: 1 / -1;
+    /* Full width */
+}
+
+/* UTILITIES */
+#h-game-board.hidden {
+    display: none !important;
+}
+
+#h-setup.hidden {
+    display: none !important;
+}
+
+/* GAME BOARD CONTAINER */
+#h-game-board {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+}
+
+/* GAME BOARD STYLES */
+.h-header {
+    position: absolute;
+    top: 40px;
+    width: 90%;
+    max-width: 1400px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 40px;
+}
+
+.h-title {
+    font-family: 'Shojumaru', system-ui;
+    font-size: 2.5rem;
+    color: #222;
+    text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.h-stat {
+    font-family: 'Shojumaru', serif;
+    font-size: 1.8rem;
+    color: #ce1126;
+    text-shadow: 0 0 10px rgba(206, 17, 38, 0.5);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.h-stat span {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.6rem;
+    color: #fff;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+#h-words-container {
+    font-size: 1.6rem;
+    max-width: 900px;
+    text-align: center;
+    line-height: 1.8;
+    margin: 40px 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 14px;
+}
+
+.h-word {
+    opacity: 0.25;
+    transition: all 0.2s ease;
+    margin: 0 8px;
+    display: flex;
+}
+
+.h-word.active {
+    opacity: 1;
+    color: #e5e5e5;
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+    transform: scale(1.05);
+}
+
+.h-letter {
+    position: relative;
+    transition: color 0.1s;
+}
+
+.h-letter.h-correct {
+    color: #555;
+    /* Dim completed letters */
+    text-shadow: none;
+}
+
+.h-letter.h-cursor {
+    border-left: none;
+    animation: none;
+}
+
+.h-letter.h-cursor::before {
+    content: '🗡';
+    position: absolute;
+    left: -0.6em;
+    top: -0.25em;
+    font-size: 1.4em;
+    color: #ce1126;
+    filter: drop-shadow(0 0 8px #ce1126);
+    animation: h-blink-sword 1s ease-in-out infinite;
+    z-index: 10;
+}
+
+.h-word.waiting-space::after {
+    content: '🗡';
+    display: inline-block;
+    color: #ce1126;
+    margin-left: 5px;
+    font-size: 1.4em;
+    filter: drop-shadow(0 0 8px #ce1126);
+    animation: h-blink-sword 1s ease-in-out infinite;
+    position: relative;
+    top: -0.15em;
+}
+
+@keyframes h-blink-sword {
+
+    0%,
+    100% {
+        opacity: 1;
+        transform: translateY(0) rotate(0deg) scale(1);
+    }
+
+    50% {
+        opacity: 0.8;
+        transform: translateY(-4px) rotate(-10deg) scale(1.1);
+    }
+}
+
+.h-word.error {
+    color: #ff3333;
+    text-shadow: 0 0 10px #ff0000;
+    text-decoration: line-through;
+}
+
+.h-letter.correct {
+    color: #fff;
+}
+
+.h-letter.incorrect {
+    color: #ff3333;
+    background: rgba(255, 0, 0, 0.15);
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.2);
+}
+
+/* FOOTER */
+.h-footer {
+    position: absolute;
+    bottom: 30px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    /* Changed from Shojumaru */
+    font-size: 1rem;
+    /* Slightly smaller for elegance */
+    letter-spacing: 0.5em;
+    /* W i d e   s p a c i n g */
+    color: #555;
+    /* Subtle color */
+    pointer-events: none;
+    z-index: 0;
+    text-transform: uppercase;
+    opacity: 0.8;
+}
+
+/* FOOTER CONTROLS */
+.h-footer-controls {
+    position: absolute;
+    bottom: 30px;
+    right: 30px;
+    display: flex;
+    gap: 20px;
+    z-index: 10;
+}
+
+.h-control-btn {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.5);
+    padding: 10px 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    pointer-events: auto;
+    /* Ensure clickable */
+}
+
+.h-control-btn:hover {
+    color: #ce1126;
+    border-color: #ce1126;
+    box-shadow: 0 0 10px rgba(206, 17, 38, 0.3);
+    text-shadow: 0 0 5px rgba(206, 17, 38, 0.5);
+}

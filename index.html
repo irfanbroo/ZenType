@@ -7,9 +7,9 @@
     <meta name="google-site-verification" content="BWW0hMMw7Y84Myib4JPiUWQOsNLHf9sGvL9Ad4H39FQ" />
     <title>ZenType - Professional Typing Practice</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="style.css?v=samurai_v2">
-    <link rel="stylesheet" href="shadow.css?v=2">
-    <link rel="stylesheet" href="hagakure.css">
+    <link rel="stylesheet" href="/src/style.css">
+    <link rel="stylesheet" href="/src/shadow.css">
+    <link rel="stylesheet" href="/src/hagakure.css">
     <link
         href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Montserrat:wght@400;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;500;600;700&family=Shojumaru&display=swap"
         rel="stylesheet">
@@ -23,6 +23,20 @@
 </head>
 
 <body>
+
+    <!-- Custom Titlebar / Window Controls -->
+    <div data-tauri-drag-region class="titlebar">
+        <div class="titlebar-button" id="titlebar-minimize">
+            <i class="ri-subtract-line"></i>
+        </div>
+        <div class="titlebar-button" id="titlebar-maximize">
+            <i class="ri-checkbox-blank-line"></i>
+        </div>
+        <div class="titlebar-button" id="titlebar-close">
+            <i class="ri-close-line"></i>
+        </div>
+    </div>
+    <script type="module" src="/src/window-controls.js"></script>
 
     <!-- SoundCloud Widget (Hidden) -->
     <iframe id="sc-widget"
@@ -1105,7 +1119,6 @@
         </div>
     </div>
 
-    <!-- Separate Hagakure Leaderboard Modal (Samurai Blood Redesign) -->
     <div id="hagakure-leaderboard-modal" class="hidden">
         <div class="bushido-vignette"></div>
         <div class="katana-slash"></div>
@@ -1142,9 +1155,9 @@
 
     <!-- Supabase SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="script.js"></script>
+    <script type="module" src="/src/script.js"></script>
 
-    <script src="auth.js?v=samurai_v2"></script>
+    <script type="module" src="/src/auth.js"></script>
     <!-- Shadow Mode UI -->
     <div id="shadow-splash" class="hidden">
         <div class="s-splash-content">
