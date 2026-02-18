@@ -1234,6 +1234,7 @@
                         <div class="dojo-level-desc">Balance Points — learn to hold the blade (F & J)</div>
                     </div>
                     <div class="dojo-level-keys">F J</div>
+                    <button class="dojo-info-trigger" data-level="1"><i class="ri-information-line"></i></button>
                 </div>
 
                 <div class="dojo-level-card" data-level="2">
@@ -1243,6 +1244,7 @@
                         <div class="dojo-level-desc">The foundation of all combat — Home Row</div>
                     </div>
                     <div class="dojo-level-keys">A S D F G H J K L</div>
+                    <button class="dojo-info-trigger" data-level="2"><i class="ri-information-line"></i></button>
                 </div>
 
                 <div class="dojo-level-card" data-level="3">
@@ -1252,6 +1254,7 @@
                         <div class="dojo-level-desc">Strike from above — Top Row</div>
                     </div>
                     <div class="dojo-level-keys">Q W E R T Y U I O P</div>
+                    <button class="dojo-info-trigger" data-level="3"><i class="ri-information-line"></i></button>
                 </div>
 
                 <div class="dojo-level-card" data-level="4">
@@ -1261,6 +1264,7 @@
                         <div class="dojo-level-desc">Root yourself to the earth — Bottom Row</div>
                     </div>
                     <div class="dojo-level-keys">Z X C V B N M</div>
+                    <button class="dojo-info-trigger" data-level="4"><i class="ri-information-line"></i></button>
                 </div>
 
                 <div class="dojo-level-card" data-level="5">
@@ -1270,6 +1274,7 @@
                         <div class="dojo-level-desc">Blend all stances seamlessly — All Keys</div>
                     </div>
                     <div class="dojo-level-keys">A — Z</div>
+                    <button class="dojo-info-trigger" data-level="5"><i class="ri-information-line"></i></button>
                 </div>
 
                 <div class="dojo-level-card" data-level="6">
@@ -1279,6 +1284,7 @@
                         <div class="dojo-level-desc">Channel your strikes into words</div>
                     </div>
                     <div class="dojo-level-keys">WORDS</div>
+                    <button class="dojo-info-trigger" data-level="6"><i class="ri-information-line"></i></button>
                 </div>
 
                 <div class="dojo-level-card" data-level="7">
@@ -1288,6 +1294,7 @@
                         <div class="dojo-level-desc">True mastery — flow like the wind</div>
                     </div>
                     <div class="dojo-level-keys">速い</div>
+                    <button class="dojo-info-trigger" data-level="7"><i class="ri-information-line"></i></button>
                 </div>
             </div>
 
@@ -1365,6 +1372,26 @@
                 </div>
                 <div class="dojo-l-list" id="dojo-leaderboard-list">
                     <!-- Injected by JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DOJO LEVEL INFO MODAL -->
+    <div id="dojo-level-info-modal" class="hidden">
+        <div class="dojo-info-overlay"></div>
+        <div class="dojo-info-content">
+            <div class="dojo-info-header">
+                <h2 id="d-info-title">LEVEL TITLE</h2>
+                <button id="close-dojo-info" class="dojo-info-close">
+                    <i class="ri-close-line"></i>
+                </button>
+            </div>
+            <div class="dojo-info-body">
+                <p id="d-info-desc" class="d-info-p"></p>
+                <div class="d-info-benefits">
+                    <h3>MASTERY BENEFITS</h3>
+                    <ul id="d-info-list" class="d-info-ul"></ul>
                 </div>
             </div>
         </div>

@@ -1085,6 +1085,206 @@
     background: transparent;
 }
 
+/* ─── DOJO LEVEL INFO MODAL ─── */
+.dojo-level-card {
+    position: relative;
+    /* Ensure absolute positioning works */
+}
+
+/* Info Trigger Button */
+.dojo-info-trigger {
+    position: absolute;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.2);
+    font-size: 1.4rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 5;
+    padding: 8px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dojo-info-trigger:hover {
+    color: #ffd700;
+    background: radial-gradient(circle, rgba(255, 215, 0, 0.15) 0%, transparent 70%);
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    transform: translateY(-50%) scale(1.2);
+}
+
+/* Key Container Adjustment to avoid overlap */
+.dojo-level-keys {
+    padding-right: 40px;
+    /* Make space for the button */
+}
+
+/* Modal Styles */
+#dojo-level-info-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10000;
+    /* Increased to ensure visibility */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+    pointer-events: auto;
+}
+
+#dojo-level-info-modal.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.dojo-info-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(5px);
+}
+
+.dojo-info-content {
+    background: linear-gradient(135deg, rgba(20, 20, 25, 0.95), rgba(10, 10, 15, 0.98));
+    border: 1px solid rgba(201, 168, 76, 0.3);
+    border-radius: 16px;
+    width: 550px;
+    max-width: 90%;
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.8), inset 0 0 30px rgba(201, 168, 76, 0.05);
+    overflow: hidden;
+    animation: modalPopIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    z-index: 10;
+}
+
+@keyframes modalPopIn {
+    from {
+        transform: scale(0.9) translateY(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+    }
+}
+
+.dojo-info-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 30px;
+    border-bottom: 1px solid rgba(201, 168, 76, 0.15);
+    background: linear-gradient(90deg, rgba(201, 168, 76, 0.1), transparent);
+}
+
+#d-info-title {
+    font-family: 'Shojumaru', cursive;
+    color: #ffd700;
+    margin: 0;
+    font-size: 1.5rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    letter-spacing: 1px;
+}
+
+.dojo-info-close {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+}
+
+.dojo-info-close:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.1);
+    transform: rotate(90deg);
+}
+
+.dojo-info-body {
+    padding: 30px;
+    color: #e0e0e0;
+    font-family: 'Space Mono', monospace;
+}
+
+.d-info-p {
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 30px;
+    color: rgba(255, 255, 255, 0.9);
+    border-left: 2px solid rgba(201, 168, 76, 0.3);
+    padding-left: 15px;
+}
+
+.d-info-benefits h3 {
+    font-size: 0.85rem;
+    color: #c9a84c;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.d-info-benefits h3::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(201, 168, 76, 0.3), transparent);
+}
+
+.d-info-ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.d-info-ul li {
+    margin-bottom: 12px;
+    padding-left: 25px;
+    /* Space for custom bullet */
+    position: relative;
+    font-size: 0.95rem;
+    color: #bbb;
+    transition: 0.2s;
+}
+
+.d-info-ul li:hover {
+    color: #fff;
+    transform: translateX(5px);
+}
+
+/* Custom Gold Bullet */
+.d-info-ul li::before {
+    content: "✦";
+    color: #ffd700;
+    position: absolute;
+    left: 0;
+    top: 1px;
+    font-size: 0.8rem;
+    text-shadow: 0 0 5px rgba(255, 215, 0, 0.4);
+}
+
 .dojo-l-body::-webkit-scrollbar-thumb {
     background: rgba(201, 168, 76, 0.2);
     border-radius: 3px;

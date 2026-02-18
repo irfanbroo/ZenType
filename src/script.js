@@ -2319,6 +2319,72 @@ function setupSettingsListeners() {
         }, 2500);
     }
 
+    const dojoLevelInfo = {
+        1: {
+            title: "KATANA POSITION",
+            desc: "The foundation of all swordplay begins with the grip. In typing, this is the Home Row position for your index fingers (F & J). Mastering this anchors your hands, allowing you to strike any key without looking.",
+            benefits: [
+                "Establishes core muscle memory",
+                "Eliminates the need to look at the keyboard",
+                "foundation for all future speed"
+            ]
+        },
+        2: {
+            title: "FIRST STRIKES",
+            desc: "The Home Row (A-S-D-F-G-H-J-K-L) is your center of gravity. These keys are the most accessible and frequently used. Mastery here means you never lose your balance.",
+            benefits: [
+                "Covers 70% of common typing strokes",
+                "Maximum speed with minimal movement",
+                "Reduces finger fatigue significantly"
+            ]
+        },
+        3: {
+            title: "RISING BLADE",
+            desc: "The Top Row contains many of the most dominant letters (E, R, T, O, I). Reaching up without lifting your palms is the mark of a disciplined warrior.",
+            benefits: [
+                "Access to high-frequency vowels (E, I, O)",
+                "Develops vertical finger independence",
+                "Essential for fluid sentence structure"
+            ]
+        },
+        4: {
+            title: "GROUNDING STANCE",
+            desc: "The Bottom Row is often the most neglected. Striking downwards requires a shift in weight and intent. Mastery ensures no weakness in your defense.",
+            benefits: [
+                "Conquers the hardest-to-reach keys",
+                "Prevents rhythm breaks on common letters (N, M, C)",
+                "Completes full keyboard control"
+            ]
+        },
+        5: {
+            title: "FLOWING WATER",
+            desc: "Now you must blend all stances. There are no rows anymore, only the flow of characters. Your fingers should move like water, adapting to any letter instantly.",
+            benefits: [
+                "Seamless transitions between rows",
+                "Unified mental map of the keyboard",
+                "Preparation for real-world typing"
+            ]
+        },
+        6: {
+            title: "WORDS OF POWER",
+            desc: "Individual strikes mean nothing if they do not form meaning. Here you channel your technique into actual words, learning the rhythm of language itself.",
+            benefits: [
+                "Transition from letters to patterns",
+                "Recognize common word shapes",
+                "Increases Words Per Minute (WPM) drastically"
+            ]
+        },
+        7: {
+            title: "WAY OF THE WIND",
+            desc: "Attributes: Speed, Reflexes, Instinct. You have the technique; now you need the speed. This level pushes you to your absolute limit. Hesitation is defeat.",
+            benefits: [
+                "Raw reaction time training",
+                "Stress-testing your muscle memory",
+                "The path to becoming a Grandmaster"
+            ]
+        }
+    };
+
     function initDojoSetup() {
         // Show setup, hide game board
         const setup = document.getElementById('dojo-setup');
@@ -2333,6 +2399,31 @@ function setupSettingsListeners() {
         // Back btn — returns from game to level select
         const backBtn = document.getElementById('dojo-back-btn');
         if (backBtn) backBtn.onclick = backToDojoSetup;
+
+        // Info Modal Elements
+        const infoModal = document.getElementById('dojo-level-info-modal');
+        const closeInfoBtn = document.getElementById('close-dojo-info');
+        const infoOverlay = document.querySelector('.dojo-info-overlay');
+
+        if (closeInfoBtn) closeInfoBtn.onclick = () => infoModal.classList.add('hidden');
+        if (infoOverlay) infoOverlay.onclick = () => infoModal.classList.add('hidden');
+
+        // Info Triggers
+        document.querySelectorAll('.dojo-info-trigger').forEach(btn => {
+            btn.onclick = (e) => {
+                e.stopPropagation(); // Prevent level launch
+                const level = btn.dataset.level;
+                const data = dojoLevelInfo[level];
+
+                if (data && infoModal) {
+                    document.getElementById('d-info-title').textContent = data.title;
+                    document.getElementById('d-info-desc').textContent = data.desc;
+                    const list = document.getElementById('d-info-list');
+                    list.innerHTML = data.benefits.map(b => `<li>${b}</li>`).join('');
+                    infoModal.classList.remove('hidden');
+                }
+            };
+        });
 
         // Level card click handlers
         const cards = document.querySelectorAll('.dojo-level-card');
