@@ -1221,6 +1221,9 @@
             <div class="dojo-header">
                 <div class="dojo-header-title">THE DOJO</div>
                 <div class="dojo-header-level">CHOOSE YOUR PATH</div>
+                <button id="dojo-leaderboard-btn" class="dojo-trophy-btn" title="The Sensei's Inner Circle">
+                    <i class="ri-trophy-line"></i>
+                </button>
             </div>
 
             <div class="dojo-levels-list">
@@ -1296,6 +1299,10 @@
             <div class="dojo-header">
                 <div class="dojo-header-title" id="dojo-board-title">THE DOJO</div>
                 <div class="dojo-header-level" id="dojo-board-level">LEVEL 1 — KATANA POSITION</div>
+                <div class="dojo-global-timer hidden" id="dojo-global-timer">
+                    <span class="dojo-global-timer-label">TIME REMAINING</span>
+                    <span class="dojo-global-timer-value" id="dojo-global-timer-value">30:00</span>
+                </div>
             </div>
 
             <div class="dojo-prompt-area">
@@ -1338,6 +1345,30 @@
     </div>
 
     <div class="dojo-feedback" id="dojo-feedback"></div>
+
+    <!-- DOJO LEADERBOARD MODAL -->
+    <div id="dojo-leaderboard-modal" class="hidden">
+        <div class="dojo-l-overlay"></div>
+        <div class="dojo-l-content">
+            <div class="dojo-l-header">
+                <i class="ri-trophy-fill dojo-l-icon"></i>
+                <div class="dojo-l-title">THE SENSEI’S INNER CIRCLE</div>
+                <button id="close-dojo-leaderboard" class="dojo-l-close">
+                    <i class="ri-close-line"></i>
+                </button>
+            </div>
+            <div class="dojo-l-body">
+                <div class="dojo-l-list-header">
+                    <span class="d-rank">RANK</span>
+                    <span class="d-name">WARRIOR</span>
+                    <span class="d-wins">CONQUESTS</span>
+                </div>
+                <div class="dojo-l-list" id="dojo-leaderboard-list">
+                    <!-- Injected by JS -->
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script type="module" src="/src/window-controls.js"></script>
 </body>

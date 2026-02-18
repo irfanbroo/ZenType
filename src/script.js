@@ -2411,6 +2411,25 @@ function setupSettingsListeners() {
         if (titleEl) titleEl.textContent = 'THE DOJO';
         if (levelEl) levelEl.textContent = `LEVEL ${level} \u2014 ${config.name}`;
 
+        // Show/hide global timer for Level 7
+        const globalTimer = document.getElementById('dojo-global-timer');
+        const globalTimerValue = document.getElementById('dojo-global-timer-value');
+        if (dojoState.timedMode) {
+            if (globalTimer) globalTimer.classList.remove('hidden');
+            if (globalTimerValue) {
+                globalTimerValue.textContent = '00:05';
+                globalTimerValue.classList.remove('danger');
+            }
+            dojoState.globalTimeLeft = 5; // 5 seconds (Debug)
+            dojoState.globalTimerInterval = null;
+        } else {
+            if (globalTimer) globalTimer.classList.add('hidden');
+            if (dojoState.globalTimerInterval) {
+                clearInterval(dojoState.globalTimerInterval);
+                dojoState.globalTimerInterval = null;
+            }
+        }
+
         renderDojoKeyboard();
         initDojoLevel1();
     }
@@ -2424,6 +2443,10 @@ function setupSettingsListeners() {
         if (dojoState.timerInterval) {
             clearInterval(dojoState.timerInterval);
             dojoState.timerInterval = null;
+        }
+        if (dojoState.globalTimerInterval) {
+            clearInterval(dojoState.globalTimerInterval);
+            dojoState.globalTimerInterval = null;
         }
         dojoState.active = false;
 
@@ -2440,6 +2463,10 @@ function setupSettingsListeners() {
         if (dojoState.timerInterval) {
             clearInterval(dojoState.timerInterval);
             dojoState.timerInterval = null;
+        }
+        if (dojoState.globalTimerInterval) {
+            clearInterval(dojoState.globalTimerInterval);
+            dojoState.globalTimerInterval = null;
         }
         dojoState.active = false;
 
@@ -2513,6 +2540,32 @@ function setupSettingsListeners() {
 
         updateDojoStats();
         nextDojoPrompt();
+
+        // Start global 30-min countdown for Level 7
+        if (dojoState.timedMode && dojoState.globalTimeLeft > 0) {
+            if (dojoState.globalTimerInterval) clearInterval(dojoState.globalTimerInterval);
+
+            dojoState.globalTimerInterval = setInterval(() => {
+                if (!dojoState.active) return;
+
+                dojoState.globalTimeLeft--;
+                const mins = Math.floor(dojoState.globalTimeLeft / 60);
+                const secs = dojoState.globalTimeLeft % 60;
+                const timerEl = document.getElementById('dojo-global-timer-value');
+                if (timerEl) {
+                    timerEl.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+                    if (dojoState.globalTimeLeft <= 60) {
+                        timerEl.classList.add('danger');
+                    }
+                }
+
+                if (dojoState.globalTimeLeft <= 0) {
+                    clearInterval(dojoState.globalTimerInterval);
+                    dojoState.globalTimerInterval = null;
+                    dojoLevel7Victory();
+                }
+            }, 1000);
+        }
 
         // Remove old listener if any
         if (dojoState.listener) {
@@ -2681,12 +2734,93 @@ function setupSettingsListeners() {
         }
     }
 
+    function dojoLevel7Victory() {
+        // Stop everything
+        dojoState.active = false;
+        if (dojoState.listener) {
+            document.removeEventListener('keydown', dojoState.listener);
+            dojoState.listener = null;
+        }
+        if (dojoState.timerInterval) {
+            clearInterval(dojoState.timerInterval);
+            dojoState.timerInterval = null;
+        }
+        if (dojoState.globalTimerInterval) {
+            clearInterval(dojoState.globalTimerInterval);
+            dojoState.globalTimerInterval = null;
+        }
+
+        // Increment win count in localStorage
+        let wins = parseInt(localStorage.getItem('dojo_level7_wins') || '0', 10);
+        wins++;
+        localStorage.setItem('dojo_level7_wins', wins.toString());
+
+        // Record in Supabase (Global Leaderboard)
+        if (window.recordDojoWin) {
+            window.recordDojoWin();
+        }
+
+        // Play slice sound for victory
+        playDojoSliceSound();
+        showDojoSliceEffect();
+
+        // Random praise text
+        const praises = [
+            { main: 'TRUE WARRIOR.', sub: 'THE WIND BOWS TO YOUR SPEED' },
+            { main: 'MASTERY ACHIEVED.', sub: 'THE BLADE AND YOU ARE ONE' },
+            { main: 'LEGENDARY.', sub: 'YOUR NAME ECHOES THROUGH THE DOJO' },
+            { main: 'PERFECTION.', sub: 'EVEN THE MASTERS APPLAUD' },
+            { main: 'UNSTOPPABLE.', sub: 'NO WORD CAN OUTRUN YOU' },
+            { main: 'HONORED SAMURAI.', sub: 'YOU HAVE EARNED YOUR PLACE' },
+            { main: 'THE WIND OBEYS.', sub: 'YOUR FINGERS MOVE LIKE LIGHTNING' },
+            { main: 'FLAWLESS VICTORY.', sub: 'FIVE SECONDS OF PURE DISCIPLINE' },
+            { main: 'ABSOLUTE FOCUS.', sub: 'THE PATH OF THE WARRIOR IS YOURS' },
+            { main: 'TRANSCENDENT.', sub: 'YOU HAVE SURPASSED ALL LIMITS' },
+            { main: 'A LIVING BLADE.', sub: 'SPEED AND PRECISION IN HARMONY' },
+            { main: 'SENSEI MATERIAL.', sub: 'SOON YOU WILL TEACH THE DOJO' },
+            { main: 'IMMORTAL HANDS.', sub: 'THEY WILL WRITE SONGS ABOUT THIS' },
+            { main: 'MASTER OF THE WIND.', sub: 'THE STORM ITSELF YIELDS TO YOU' },
+            { main: 'BEYOND MORTAL.', sub: 'YOUR DISCIPLINE IS UNMATCHED' },
+            { main: 'SACRED SPEED.', sub: 'THE ANCESTORS SMILE UPON YOU' },
+            { main: 'UNTOUCHABLE.', sub: 'NO ERROR COULD FIND YOU' },
+            { main: 'CHAMPION.', sub: 'THE DOJO BOWS IN YOUR PRESENCE' },
+            { main: 'IRON WILL.', sub: 'FIVE SECONDS WITHOUT FALTERING' },
+            { main: 'ENLIGHTENED.', sub: 'THE WAY OF THE WIND IS YOURS FOREVER' }
+        ];
+
+        const praise = praises[Math.floor(Math.random() * praises.length)];
+
+        // Create victory overlay
+        const overlay = document.createElement('div');
+        overlay.className = 'dojo-victory-overlay';
+        overlay.innerHTML = `
+            <div class="dojo-victory-kanji">勝</div>
+            <div class="dojo-victory-text">${praise.main}</div>
+            <div class="dojo-victory-sub">${praise.sub}</div>
+            <div class="dojo-victory-wins">WIND CONQUESTS: ${wins}</div>
+        `;
+        document.body.appendChild(overlay);
+
+        // Fade out and return to dojo setup
+        setTimeout(() => {
+            overlay.classList.add('fade-out');
+            setTimeout(() => {
+                overlay.remove();
+                initDojoSetup();
+            }, 500);
+        }, 3500);
+    }
+
     function dojoLevel7Fail() {
         // Stop the game
         dojoState.active = false;
         if (dojoState.listener) {
             document.removeEventListener('keydown', dojoState.listener);
             dojoState.listener = null;
+        }
+        if (dojoState.globalTimerInterval) {
+            clearInterval(dojoState.globalTimerInterval);
+            dojoState.globalTimerInterval = null;
         }
 
         playDojoClashSound();

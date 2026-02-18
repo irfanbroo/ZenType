@@ -78,7 +78,13 @@ function initAuth() {
         // Bushido Champion Vault (Redesign)
         hLeaderboardBtn: document.getElementById('hagakure-leaderboard-btn'),
         hLeaderboardModal: document.getElementById('hagakure-leaderboard-modal'),
-        hLeaderboardList: document.getElementById('hagakure-leaderboard-list')
+        hLeaderboardList: document.getElementById('hagakure-leaderboard-list'),
+
+        // Dojo Leaderboard (Global)
+        dojoLeaderboardBtn: document.getElementById('dojo-leaderboard-btn'),
+        dojoLeaderboardModal: document.getElementById('dojo-leaderboard-modal'),
+        dojoLeaderboardList: document.getElementById('dojo-leaderboard-list'),
+        closeDojoLeaderboardBtn: document.getElementById('close-dojo-leaderboard')
     };
 
     console.log("Auth.js: UI Elements found:", authUI);
@@ -443,6 +449,23 @@ function initAuth() {
             };
         }
 
+        // Dojo Leaderboard Button
+        if (authUI.dojoLeaderboardBtn) {
+            authUI.dojoLeaderboardBtn.onclick = () => {
+                if (authUI.dojoLeaderboardModal) {
+                    authUI.dojoLeaderboardModal.classList.remove('hidden');
+                    fetchLeaderboard('dojo');
+                }
+            };
+        }
+
+        // Dojo Close
+        if (authUI.closeDojoLeaderboardBtn) {
+            authUI.closeDojoLeaderboardBtn.onclick = () => {
+                if (authUI.dojoLeaderboardModal) authUI.dojoLeaderboardModal.classList.add('hidden');
+            };
+        }
+
         // Close on outside click
         window.addEventListener('click', (e) => {
             if (e.target === authUI.leaderboardModal) {
@@ -450,6 +473,9 @@ function initAuth() {
             }
             if (e.target === authUI.hLeaderboardModal) {
                 authUI.hLeaderboardModal.classList.add('hidden');
+            }
+            if (e.target === authUI.dojoLeaderboardModal) {
+                authUI.dojoLeaderboardModal.classList.add('hidden');
             }
         });
     }
@@ -511,20 +537,28 @@ function initAuth() {
     ];
 
     async function fetchLeaderboard(mode = 'classic') {
-        const listEl = mode === 'hagakure' ? authUI.hLeaderboardList : authUI.leaderboardList;
+        let listEl;
+        if (mode === 'hagakure') listEl = authUI.hLeaderboardList;
+        else if (mode === 'dojo') listEl = authUI.dojoLeaderboardList;
+        else listEl = authUI.leaderboardList;
+
         if (!listEl) return;
         const startFetch = Date.now();
 
         // LOADING STATE
         if (mode === 'hagakure') {
             listEl.innerHTML = '<div class="bushido-loading">SHARPENING BLADES...</div>';
+        } else if (mode === 'dojo') {
+            listEl.innerHTML = '<div class="bushido-loading" style="color:#c9a84c;">OPENING THE CIRCLE...</div>';
         } else {
             listEl.innerHTML = '<div class="loading-spinner"></div>';
         }
 
-        const column = mode === 'hagakure' ? 'best_hagakure_wpm' : 'best_wpm';
+        let column = 'best_wpm';
+        if (mode === 'hagakure') column = 'best_hagakure_wpm';
+        if (mode === 'dojo') column = 'dojo_wins';
 
-        const limitCount = mode === 'hagakure' ? 4 : 10;
+        const limitCount = (mode === 'hagakure' || mode === 'dojo') ? 10 : 10;
 
         const { data, error } = await supabaseClient
             .from('profiles')
@@ -584,6 +618,19 @@ function initAuth() {
                     <div class="s-name">${player.username || 'ZEN WARRIOR'}</div>
                     <div class="s-flow">${score}</div>
                 `;
+            } else if (mode === 'dojo') {
+                item.className = `dojo-l-item ${rankClass}`;
+                item.onclick = () => {
+                    if (authUI.dojoLeaderboardModal) authUI.dojoLeaderboardModal.classList.add('hidden');
+                    openPublicProfile(player.id);
+                };
+
+                const score = player[column] || 0;
+                item.innerHTML = `
+                    <div class="d-rank">#${rank}</div>
+                    <div class="d-name">${player.username || 'ZEN WARRIOR'}</div>
+                    <div class="d-wins">${score}</div>
+                `;
             } else {
                 item.className = `leaderboard-item ${rankClass}`;
                 item.onclick = () => openPublicProfile(player.id);
@@ -613,6 +660,42 @@ function initAuth() {
         });
     }
 
+
+
+    // --- DOJO WIN RECORDING ---
+    window.recordDojoWin = async () => {
+        if (!supabaseClient) return;
+        const { data: { user } } = await supabaseClient.auth.getUser();
+        if (!user) return;
+
+        console.log("Recording Dojo Win for:", user.id);
+
+        // 1. Get current wins
+        const { data: current, error: fetchError } = await supabaseClient
+            .from('profiles')
+            .select('dojo_wins')
+            .eq('id', user.id)
+            .single();
+
+        if (fetchError) {
+            console.error("Error fetching dojo wins:", fetchError);
+            return;
+        }
+
+        const newWins = (current.dojo_wins || 0) + 1;
+
+        // 2. Update
+        const { error: updateError } = await supabaseClient
+            .from('profiles')
+            .update({ dojo_wins: newWins })
+            .eq('id', user.id);
+
+        if (updateError) {
+            console.error("Error updating dojo wins:", updateError);
+        } else {
+            console.log("Dojo Win Recorded! Total:", newWins);
+        }
+    };
 
 
     // --- UNIFIED PROFILE EDITING ---
