@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="/src/style.css">
     <link rel="stylesheet" href="/src/shadow.css">
     <link rel="stylesheet" href="/src/hagakure.css">
+    <link rel="stylesheet" href="/src/dojo.css">
     <link
         href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Montserrat:wght@400;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;500;600;700&family=Shojumaru&display=swap"
         rel="stylesheet">
@@ -1056,14 +1057,14 @@
                         <div class="mode-status">Active</div>
                     </div>
 
-                    <!-- Zen Mode (Coming Soon) -->
-                    <div class="mode-card disabled">
-                        <div class="mode-icon"><i class="ri-leaf-line"></i></div>
+                    <!-- Dojo Mode -->
+                    <div class="mode-card active" id="dojo-mode-card">
+                        <div class="mode-icon"><i class="ri-graduation-cap-line"></i></div>
                         <div class="mode-info">
-                            <h3>Zen Mode</h3>
-                            <p>Pure focus. No distractions.</p>
+                            <h3>Dojo Mode</h3>
+                            <p>Master the blade. Train your fingers.</p>
                         </div>
-                        <div class="mode-status">Coming Soon</div>
+                        <div class="mode-status">Active</div>
                     </div>
                 </div>
             </div>
@@ -1206,6 +1207,138 @@
             </div>
         </div>
     </div>
+    <!-- DOJO MODE UI -->
+    <div id="dojo-splash" class="hidden">
+        <div class="dojo-splash-content">
+            <h1 class="dojo-splash-title">ENTER THE DOJO</h1>
+            <p class="dojo-splash-quote">"Where the blade learns to sing."</p>
+        </div>
+    </div>
+
+    <div id="dojo-ui" class="hidden">
+        <!-- LEVEL SELECTION -->
+        <div id="dojo-setup" class="dojo-setup">
+            <div class="dojo-header">
+                <div class="dojo-header-title">THE DOJO</div>
+                <div class="dojo-header-level">CHOOSE YOUR PATH</div>
+            </div>
+
+            <div class="dojo-levels-list">
+                <div class="dojo-level-card" data-level="1">
+                    <div class="dojo-level-number">I</div>
+                    <div class="dojo-level-info">
+                        <div class="dojo-level-name">Katana Position</div>
+                        <div class="dojo-level-desc">Balance Points — learn to hold the blade (F & J)</div>
+                    </div>
+                    <div class="dojo-level-keys">F J</div>
+                </div>
+
+                <div class="dojo-level-card" data-level="2">
+                    <div class="dojo-level-number">II</div>
+                    <div class="dojo-level-info">
+                        <div class="dojo-level-name">First Strikes</div>
+                        <div class="dojo-level-desc">The foundation of all combat — Home Row</div>
+                    </div>
+                    <div class="dojo-level-keys">A S D F G H J K L</div>
+                </div>
+
+                <div class="dojo-level-card" data-level="3">
+                    <div class="dojo-level-number">III</div>
+                    <div class="dojo-level-info">
+                        <div class="dojo-level-name">Rising Blade</div>
+                        <div class="dojo-level-desc">Strike from above — Top Row</div>
+                    </div>
+                    <div class="dojo-level-keys">Q W E R T Y U I O P</div>
+                </div>
+
+                <div class="dojo-level-card" data-level="4">
+                    <div class="dojo-level-number">IV</div>
+                    <div class="dojo-level-info">
+                        <div class="dojo-level-name">Grounding Stance</div>
+                        <div class="dojo-level-desc">Root yourself to the earth — Bottom Row</div>
+                    </div>
+                    <div class="dojo-level-keys">Z X C V B N M</div>
+                </div>
+
+                <div class="dojo-level-card" data-level="5">
+                    <div class="dojo-level-number">V</div>
+                    <div class="dojo-level-info">
+                        <div class="dojo-level-name">Flowing Water</div>
+                        <div class="dojo-level-desc">Blend all stances seamlessly — All Keys</div>
+                    </div>
+                    <div class="dojo-level-keys">A — Z</div>
+                </div>
+
+                <div class="dojo-level-card" data-level="6">
+                    <div class="dojo-level-number">VI</div>
+                    <div class="dojo-level-info">
+                        <div class="dojo-level-name">Words of Power</div>
+                        <div class="dojo-level-desc">Channel your strikes into words</div>
+                    </div>
+                    <div class="dojo-level-keys">WORDS</div>
+                </div>
+
+                <div class="dojo-level-card" data-level="7">
+                    <div class="dojo-level-number">VII</div>
+                    <div class="dojo-level-info">
+                        <div class="dojo-level-name">Way of the Wind</div>
+                        <div class="dojo-level-desc">True mastery — flow like the wind</div>
+                    </div>
+                    <div class="dojo-level-keys">速い</div>
+                </div>
+            </div>
+
+            <button class="dojo-exit-btn" id="dojo-exit-btn">LEAVE DOJO</button>
+        </div>
+
+        <!-- GAME BOARD (hidden until a level is selected) -->
+        <div id="dojo-game-board" class="hidden">
+            <div class="dojo-header">
+                <div class="dojo-header-title" id="dojo-board-title">THE DOJO</div>
+                <div class="dojo-header-level" id="dojo-board-level">LEVEL 1 — KATANA POSITION</div>
+            </div>
+
+            <div class="dojo-prompt-area">
+                <span class="dojo-prompt-label">STRIKE THE KEY</span>
+                <span class="dojo-prompt-key" id="dojo-prompt">F</span>
+                <span class="dojo-stance-label" id="dojo-stance">HOME STANCE — LEFT HAND</span>
+            </div>
+
+            <!-- Word display for levels 6-7 -->
+            <div class="dojo-word-display hidden" id="dojo-word-display">
+                <span class="dojo-word-label">TYPE THE WORD</span>
+                <div class="dojo-word-chars" id="dojo-word-chars"></div>
+                <!-- Timer bar for Level 7 -->
+                <div class="dojo-timer-bar hidden" id="dojo-timer-bar">
+                    <div class="dojo-timer-fill" id="dojo-timer-fill"></div>
+                </div>
+            </div>
+
+            <div class="dojo-keyboard-container" id="dojo-keyboard-container">
+                <!-- SVG keyboard injected by JS -->
+            </div>
+
+            <div class="dojo-stats">
+                <div class="dojo-stat">
+                    <span class="dojo-stat-value" id="dojo-streak">0</span>
+                    <span class="dojo-stat-label">STREAK</span>
+                </div>
+                <div class="dojo-stat">
+                    <span class="dojo-stat-value" id="dojo-accuracy">100%</span>
+                    <span class="dojo-stat-label">ACCURACY</span>
+                </div>
+                <div class="dojo-stat">
+                    <span class="dojo-stat-value" id="dojo-total">0</span>
+                    <span class="dojo-stat-label">STRIKES</span>
+                </div>
+            </div>
+
+            <button class="dojo-exit-btn" id="dojo-back-btn">RETURN TO DOJO</button>
+        </div>
+    </div>
+
+    <div class="dojo-feedback" id="dojo-feedback"></div>
+
     <script type="module" src="/src/window-controls.js"></script>
 </body>
 

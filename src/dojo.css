@@ -1,0 +1,758 @@
+/* ═══════════════════════════════════════════════════════ */
+/*                   DOJO MODE — CSS                      */
+/*        "The Dojo is where the blade learns to sing."   */
+/* ═══════════════════════════════════════════════════════ */
+
+/* ─── SPLASH SCREEN ─── */
+#dojo-splash {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(ellipse at center, rgba(10, 10, 15, 0.95) 0%, rgba(0, 0, 0, 0.99) 100%);
+    opacity: 1;
+    transition: opacity 0.6s ease;
+}
+
+#dojo-splash.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.dojo-splash-content {
+    text-align: center;
+    animation: dojoSplashIn 0.8s ease-out both;
+}
+
+.dojo-splash-title {
+    font-family: 'Shojumaru', 'Georgia', serif;
+    font-size: 3.5rem;
+    color: #c9a84c;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    text-shadow:
+        0 0 20px rgba(201, 168, 76, 0.4),
+        0 0 60px rgba(201, 168, 76, 0.15);
+    margin-bottom: 1rem;
+}
+
+.dojo-splash-quote {
+    font-family: 'Space Mono', monospace;
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.4);
+    letter-spacing: 0.2em;
+    font-style: italic;
+}
+
+@keyframes dojoSplashIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.92) translateY(20px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* ─── MAIN DOJO UI ─── */
+#dojo-ui {
+    position: fixed;
+    inset: 0;
+    z-index: 5000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    opacity: 1;
+    transition: opacity 0.5s ease;
+    padding: 2rem;
+    /* Dedicated Dojo background — blocks wallpaper */
+    background:
+        radial-gradient(ellipse at 50% 40%, rgba(30, 25, 18, 0.95) 0%, rgba(8, 8, 12, 0.99) 70%),
+        linear-gradient(180deg, #0a0a0f 0%, #12100e 50%, #0a0a0f 100%);
+    background-color: #0a0a0f;
+    /* Vignette overlay */
+    box-shadow: inset 0 0 150px 60px rgba(0, 0, 0, 0.6);
+}
+
+#dojo-ui.hidden {
+    opacity: 0;
+    pointer-events: none;
+    display: none;
+}
+
+/* ─── HEADER ─── */
+.dojo-header {
+    text-align: center;
+    margin-bottom: 0.5rem;
+}
+
+.dojo-header-title {
+    font-family: 'Shojumaru', 'Georgia', serif;
+    font-size: 1.6rem;
+    color: #c9a84c;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    text-shadow: 0 0 15px rgba(201, 168, 76, 0.3);
+    margin-bottom: 0.4rem;
+}
+
+.dojo-header-level {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.35);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+}
+
+/* ─── PROMPT ─── */
+.dojo-prompt-area {
+    text-align: center;
+    min-height: 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.dojo-prompt-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.3);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+}
+
+.dojo-prompt-key {
+    font-family: 'Shojumaru', 'Georgia', serif;
+    font-size: 6rem;
+    color: #fff;
+    text-shadow:
+        0 0 25px rgba(201, 168, 76, 0.5),
+        0 0 50px rgba(201, 168, 76, 0.2);
+    letter-spacing: 0.1em;
+    transition: all 0.15s ease;
+    animation: dojoPromptPulse 2s ease-in-out infinite;
+}
+
+@keyframes dojoPromptPulse {
+
+    0%,
+    100% {
+        text-shadow: 0 0 25px rgba(201, 168, 76, 0.5), 0 0 50px rgba(201, 168, 76, 0.2);
+    }
+
+    50% {
+        text-shadow: 0 0 35px rgba(201, 168, 76, 0.7), 0 0 70px rgba(201, 168, 76, 0.3);
+    }
+}
+
+.dojo-stance-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.8rem;
+    color: rgba(201, 168, 76, 0.5);
+    letter-spacing: 0.2em;
+    margin-top: 0.5rem;
+}
+
+/* ─── SVG KEYBOARD ─── */
+.dojo-keyboard-container {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    transition: transform 0.1s ease;
+}
+
+.dojo-keyboard-container.shake {
+    animation: dojoShake 0.3s ease;
+}
+
+@keyframes dojoShake {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    20% {
+        transform: translateX(-6px);
+    }
+
+    40% {
+        transform: translateX(6px);
+    }
+
+    60% {
+        transform: translateX(-4px);
+    }
+
+    80% {
+        transform: translateX(4px);
+    }
+}
+
+#dojo-keyboard {
+    max-width: 1000px;
+    width: 65vw;
+    height: auto;
+}
+
+/* Key base style */
+#dojo-keyboard .key-bg {
+    fill: rgba(30, 30, 40, 0.8);
+    stroke: rgba(255, 255, 255, 0.08);
+    stroke-width: 1;
+    rx: 6;
+    ry: 6;
+    transition: all 0.15s ease;
+}
+
+#dojo-keyboard .key-label {
+    fill: rgba(255, 255, 255, 0.35);
+    font-family: 'Space Mono', monospace;
+    font-size: 18px;
+    text-anchor: middle;
+    dominant-baseline: central;
+    pointer-events: none;
+    transition: fill 0.15s ease;
+    user-select: none;
+}
+
+/* Balance Point (F and J) */
+#dojo-keyboard .balance-point .key-bg {
+    fill: rgba(201, 168, 76, 0.12);
+    stroke: rgba(201, 168, 76, 0.4);
+    stroke-width: 1.5;
+}
+
+#dojo-keyboard .balance-point .key-label {
+    fill: #c9a84c;
+    font-weight: bold;
+}
+
+/* Balance marker (bump line) */
+#dojo-keyboard .balance-marker {
+    stroke: #c9a84c;
+    stroke-width: 2;
+    stroke-linecap: round;
+    opacity: 0.6;
+}
+
+/* Active key (currently prompted) */
+#dojo-keyboard .key-active .key-bg {
+    fill: rgba(201, 168, 76, 0.25);
+    stroke: #c9a84c;
+    stroke-width: 2;
+    filter: drop-shadow(0 0 10px rgba(201, 168, 76, 0.4));
+    animation: dojoKeyGlow 1.5s ease-in-out infinite;
+}
+
+#dojo-keyboard .key-active .key-label {
+    fill: #ffd700;
+}
+
+@keyframes dojoKeyGlow {
+
+    0%,
+    100% {
+        filter: drop-shadow(0 0 8px rgba(201, 168, 76, 0.3));
+    }
+
+    50% {
+        filter: drop-shadow(0 0 18px rgba(201, 168, 76, 0.6));
+    }
+}
+
+/* ─── CORRECT (Slice) ─── */
+#dojo-keyboard .key-correct .key-bg {
+    fill: rgba(76, 201, 120, 0.3);
+    stroke: #4cc978;
+    stroke-width: 2;
+    filter: drop-shadow(0 0 12px rgba(76, 201, 120, 0.5));
+}
+
+#dojo-keyboard .key-correct .key-label {
+    fill: #4cc978;
+}
+
+/* ─── WRONG (Clash / Blood Splatter) ─── */
+#dojo-keyboard .key-wrong .key-bg {
+    fill: rgba(206, 17, 38, 0.3);
+    stroke: #ce1126;
+    stroke-width: 2;
+    filter: drop-shadow(0 0 12px rgba(206, 17, 38, 0.5));
+}
+
+#dojo-keyboard .key-wrong .key-label {
+    fill: #ce1126;
+}
+
+/* ─── FEEDBACK OVERLAY ─── */
+.dojo-feedback {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 5500;
+}
+
+/* Slice effect — correct */
+.dojo-slice-effect {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 300px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #c9a84c, #ffd700, #c9a84c, transparent);
+    transform: translate(-50%, -50%) rotate(-30deg) scaleX(0);
+    animation: dojoSlice 0.4s ease-out forwards;
+    pointer-events: none;
+    z-index: 5550;
+    box-shadow: 0 0 20px rgba(201, 168, 76, 0.6);
+}
+
+@keyframes dojoSlice {
+    0% {
+        transform: translate(-50%, -50%) rotate(-30deg) scaleX(0);
+        opacity: 1;
+    }
+
+    50% {
+        transform: translate(-50%, -50%) rotate(-30deg) scaleX(1.2);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translate(-50%, -50%) rotate(-30deg) scaleX(1.5);
+        opacity: 0;
+    }
+}
+
+/* Clash effect — wrong */
+.dojo-clash-effect {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 200px;
+    height: 200px;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(206, 17, 38, 0.4) 0%, rgba(206, 17, 38, 0.1) 40%, transparent 70%);
+    animation: dojoClash 0.4s ease-out forwards;
+    pointer-events: none;
+    z-index: 5550;
+}
+
+@keyframes dojoClash {
+    0% {
+        transform: translate(-50%, -50%) scale(0.3);
+        opacity: 1;
+    }
+
+    60% {
+        transform: translate(-50%, -50%) scale(1.2);
+        opacity: 0.7;
+    }
+
+    100% {
+        transform: translate(-50%, -50%) scale(1.6);
+        opacity: 0;
+    }
+}
+
+/* Red vignette flash on wrong key */
+.dojo-vignette-flash {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 5500;
+    background: radial-gradient(ellipse at center, transparent 50%, rgba(206, 17, 38, 0.25) 100%);
+    animation: dojoVignetteFlash 0.35s ease-out forwards;
+}
+
+@keyframes dojoVignetteFlash {
+    0% {
+        opacity: 0;
+    }
+
+    30% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+/* ─── STATS BAR ─── */
+.dojo-stats {
+    display: flex;
+    gap: 3rem;
+    justify-content: center;
+    align-items: center;
+}
+
+.dojo-stat {
+    text-align: center;
+}
+
+.dojo-stat-value {
+    font-family: 'Shojumaru', 'Georgia', serif;
+    font-size: 2.8rem;
+    color: #c9a84c;
+    text-shadow: 0 0 10px rgba(201, 168, 76, 0.3);
+    display: block;
+}
+
+.dojo-stat-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.3);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    margin-top: 0.2rem;
+    display: block;
+}
+
+/* ─── EXIT BUTTON ─── */
+.dojo-exit-btn {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.85rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.3);
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 12px 36px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 0.5rem;
+}
+
+/* ─── LEVEL SELECTION SETUP ─── */
+.dojo-setup {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    width: 100%;
+    max-width: 650px;
+    margin: 0 auto;
+}
+
+.dojo-levels-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    width: 100%;
+    max-height: 60vh;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+.dojo-levels-list::-webkit-scrollbar {
+    width: 3px;
+}
+
+.dojo-levels-list::-webkit-scrollbar-thumb {
+    background: rgba(201, 168, 76, 0.2);
+    border-radius: 3px;
+}
+
+.dojo-level-card {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    padding: 1rem 1.4rem;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.dojo-level-card:hover:not(.locked) {
+    background: rgba(201, 168, 76, 0.06);
+    border-color: rgba(201, 168, 76, 0.25);
+    transform: translateX(4px);
+    box-shadow: 0 0 20px rgba(201, 168, 76, 0.08);
+}
+
+.dojo-level-card.locked {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+.dojo-level-number {
+    font-family: 'Shojumaru', 'Georgia', serif;
+    font-size: 1.4rem;
+    color: #c9a84c;
+    min-width: 50px;
+    text-align: center;
+    text-shadow: 0 0 10px rgba(201, 168, 76, 0.2);
+}
+
+.dojo-level-info {
+    flex: 1;
+}
+
+.dojo-level-name {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.85);
+    letter-spacing: 0.08em;
+    margin-bottom: 0.2rem;
+}
+
+.dojo-level-desc {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.3);
+    letter-spacing: 0.05em;
+}
+
+.dojo-level-keys {
+    font-family: 'Shojumaru', 'Georgia', serif;
+    font-size: 0.85rem;
+    color: #c9a84c;
+    letter-spacing: 0.15em;
+    opacity: 0.6;
+}
+
+.dojo-level-lock {
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.2);
+}
+
+/* Game board inside dojo-ui */
+#dojo-game-board {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    width: 100%;
+    height: 100%;
+}
+
+#dojo-game-board.hidden {
+    display: none;
+}
+
+/* ─── WORD DISPLAY (Levels 6-7) ─── */
+.dojo-word-display {
+    text-align: center;
+    min-height: 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.dojo-word-display.hidden {
+    display: none;
+}
+
+.dojo-word-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.3);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    margin-bottom: 0.8rem;
+}
+
+.dojo-word-chars {
+    display: flex;
+    gap: 3px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.dojo-word-char {
+    font-family: 'Space Mono', monospace;
+    font-size: 2.6rem;
+    padding: 2px 4px;
+    color: rgba(255, 255, 255, 0.2);
+    transition: all 0.15s ease;
+    letter-spacing: 0.05em;
+}
+
+.dojo-word-char.typed {
+    color: #4cc978;
+    text-shadow: 0 0 8px rgba(76, 201, 120, 0.4);
+}
+
+.dojo-word-char.active {
+    color: #c9a84c;
+    text-shadow: 0 0 15px rgba(201, 168, 76, 0.5);
+    animation: dojoPromptPulse 2s ease-in-out infinite;
+}
+
+.dojo-word-char.wrong {
+    color: #ce1126;
+    text-shadow: 0 0 10px rgba(206, 17, 38, 0.5);
+}
+
+/* ─── TIMER BAR (Level 7) ─── */
+.dojo-timer-bar {
+    width: 100%;
+    max-width: 400px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 2px;
+    margin-top: 1.2rem;
+    overflow: hidden;
+}
+
+.dojo-timer-bar.hidden {
+    display: none;
+}
+
+.dojo-timer-fill {
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(90deg, #c9a84c, #e8c84a);
+    border-radius: 2px;
+    transition: width 0.1s linear;
+    box-shadow: 0 0 8px rgba(201, 168, 76, 0.3);
+}
+
+.dojo-timer-fill.danger {
+    background: linear-gradient(90deg, #ce1126, #ff4444);
+    box-shadow: 0 0 12px rgba(206, 17, 38, 0.5);
+}
+
+.dojo-exit-btn:hover {
+    color: #ce1126;
+    border-color: rgba(206, 17, 38, 0.3);
+    background: rgba(206, 17, 38, 0.05);
+    text-shadow: 0 0 10px rgba(206, 17, 38, 0.3);
+}
+
+/* ─── LEVEL 7 FAIL OVERLAY ─── */
+.dojo-fail-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, rgba(30, 5, 5, 1), rgba(0, 0, 0, 1));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    animation: dojoFailFadeIn 0.3s ease-out;
+}
+
+.dojo-fail-text {
+    font-family: 'Shojumaru', 'Georgia', serif;
+    font-size: 3.5rem;
+    color: #ce1126;
+    text-shadow: 0 0 30px rgba(206, 17, 38, 0.6), 0 0 60px rgba(206, 17, 38, 0.3);
+    text-align: center;
+    animation: dojoFailSlam 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    letter-spacing: 0.05em;
+}
+
+.dojo-fail-sub {
+    font-family: 'Space Mono', monospace;
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.4);
+    margin-top: 1rem;
+    letter-spacing: 0.2em;
+    animation: dojoFailSubFade 0.6s ease-out 0.3s both;
+}
+
+@keyframes dojoFailFadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes dojoFailSlam {
+    0% {
+        transform: scale(3);
+        opacity: 0;
+    }
+
+    60% {
+        transform: scale(0.9);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes dojoFailSubFade {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.dojo-fail-overlay.fade-out {
+    animation: dojoFailFadeOut 0.5s ease-in forwards;
+}
+
+@keyframes dojoFailFadeOut {
+    to {
+        opacity: 0;
+    }
+}
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 768px) {
+    .dojo-splash-title {
+        font-size: 2.2rem;
+    }
+
+    .dojo-prompt-key {
+        font-size: 3rem;
+    }
+
+    #dojo-keyboard {
+        max-width: 95vw;
+    }
+
+    .dojo-stats {
+        gap: 1.5rem;
+    }
+
+    .dojo-stat-value {
+        font-size: 1.4rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .dojo-splash-title {
+        font-size: 1.6rem;
+    }
+
+    .dojo-prompt-key {
+        font-size: 2.2rem;
+    }
+
+    .dojo-stats {
+        gap: 1rem;
+    }
+}

@@ -2262,6 +2262,663 @@ function setupSettingsListeners() {
                 modesModal.classList.add('hidden');
             });
         }
+
+        // Dojo Mode Card Click
+        const dojoCard = document.getElementById('dojo-mode-card');
+        if (dojoCard) {
+            dojoCard.addEventListener('click', () => {
+                startDojoMode();
+                modesModal.classList.add('hidden');
+            });
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════
+    //                    DOJO MODE
+    //     "The Dojo is where the blade learns to sing."
+    // ═══════════════════════════════════════════════════════
+
+    let dojoState = {
+        active: false,
+        target: null,
+        streak: 0,
+        maxStreak: 0,
+        total: 0,
+        correct: 0,
+        listener: null
+    };
+
+    function startDojoMode() {
+        const splash = document.getElementById('dojo-splash');
+        if (!splash) return;
+
+        splash.classList.remove('hidden');
+
+        setTimeout(() => {
+            splash.classList.add('hidden');
+
+            // Hide main UI
+            const gameUI = document.getElementById('game-ui');
+            const appHeader = document.getElementById('app-header');
+            const navButtons = document.getElementById('top-nav-buttons');
+            const footer = document.querySelector('footer') || document.querySelector('.site-footer');
+
+            if (gameUI) gameUI.classList.add('hidden');
+            if (appHeader) appHeader.style.display = 'none';
+            if (navButtons) navButtons.style.display = 'none';
+            if (footer) footer.style.display = 'none';
+
+            // Show Dojo UI with setup screen
+            const dojoUI = document.getElementById('dojo-ui');
+            if (dojoUI) dojoUI.classList.remove('hidden');
+
+            state.gameMode = 'dojo';
+
+            initDojoSetup();
+
+        }, 2500);
+    }
+
+    function initDojoSetup() {
+        // Show setup, hide game board
+        const setup = document.getElementById('dojo-setup');
+        const board = document.getElementById('dojo-game-board');
+        if (setup) setup.style.display = '';
+        if (board) board.classList.add('hidden');
+
+        // Exit btn — leaves dojo entirely
+        const exitBtn = document.getElementById('dojo-exit-btn');
+        if (exitBtn) exitBtn.onclick = exitDojoMode;
+
+        // Back btn — returns from game to level select
+        const backBtn = document.getElementById('dojo-back-btn');
+        if (backBtn) backBtn.onclick = backToDojoSetup;
+
+        // Level card click handlers
+        const cards = document.querySelectorAll('.dojo-level-card');
+        cards.forEach(card => {
+            card.onclick = () => {
+                if (card.classList.contains('locked')) return;
+                const level = parseInt(card.dataset.level);
+                launchDojoLevel(level);
+            };
+        });
+    }
+
+    function launchDojoLevel(level) {
+        // Hide setup, show game board
+        const setup = document.getElementById('dojo-setup');
+        const board = document.getElementById('dojo-game-board');
+        if (setup) setup.style.display = 'none';
+        if (board) board.classList.remove('hidden');
+
+        // Level config
+        const levelConfig = {
+            1: { name: 'KATANA POSITION', keys: ['f', 'j'], mode: 'key' },
+            2: { name: 'FIRST STRIKES', keys: 'asdfghjkl'.split(''), mode: 'key' },
+            3: { name: 'RISING BLADE', keys: 'qwertyuiop'.split(''), mode: 'key' },
+            4: { name: 'GROUNDING STANCE', keys: 'zxcvbnm'.split(''), mode: 'key' },
+            5: { name: 'FLOWING WATER', keys: 'abcdefghijklmnopqrstuvwxyz'.split(''), mode: 'key' },
+            6: {
+                name: 'WORDS OF POWER', mode: 'word', words: [
+                    'blade', 'steel', 'flame', 'storm', 'blood', 'honor', 'death', 'swift',
+                    'strike', 'power', 'focus', 'spirit', 'shadow', 'light', 'brave',
+                    'wrath', 'forge', 'might', 'clash', 'guard', 'slash', 'force',
+                    'wind', 'fury', 'oath', 'doom', 'edge', 'iron', 'soul', 'dark',
+                    'shield', 'valor', 'reign', 'dread', 'stone', 'blaze', 'frost'
+                ]
+            },
+            7: {
+                name: 'WAY OF THE WIND', mode: 'word', words: [
+                    'warrior', 'katana', 'samurai', 'destiny', 'victory', 'silence',
+                    'thunder', 'resolve', 'courage', 'balance', 'mastery', 'tornado',
+                    'phantom', 'eclipse', 'ancient', 'diamond', 'harmony', 'inferno',
+                    'justice', 'kingdom', 'legends', 'tempest', 'unleash', 'volatile',
+                    'whisper', 'zealous', 'ascend', 'conquer', 'defend', 'empower',
+                    'immortal', 'invincible', 'relentless', 'unstoppable', 'discipline',
+                    'perseverance', 'enlightenment', 'transcendence'
+                ]
+            }
+        };
+
+        const config = levelConfig[level] || levelConfig[1];
+        dojoState.currentLevel = level;
+        dojoState.keyPool = config.keys || [];
+        dojoState.wordMode = config.mode === 'word';
+        dojoState.timedMode = (level === 7);
+        dojoState.wordPool = config.words || [];
+        dojoState.currentWord = null;
+        dojoState.wordCharIndex = 0;
+        dojoState.timerInterval = null;
+
+        // Toggle key prompt vs word display
+        const promptArea = document.querySelector('#dojo-game-board .dojo-prompt-area');
+        const wordDisplay = document.getElementById('dojo-word-display');
+        const timerBar = document.getElementById('dojo-timer-bar');
+        if (dojoState.wordMode) {
+            if (promptArea) promptArea.style.display = 'none';
+            if (wordDisplay) wordDisplay.classList.remove('hidden');
+            if (timerBar) timerBar.classList.toggle('hidden', !dojoState.timedMode);
+        } else {
+            if (promptArea) promptArea.style.display = '';
+            if (wordDisplay) wordDisplay.classList.add('hidden');
+            if (timerBar) timerBar.classList.add('hidden');
+        }
+
+        // Update header
+        const titleEl = document.getElementById('dojo-board-title');
+        const levelEl = document.getElementById('dojo-board-level');
+        if (titleEl) titleEl.textContent = 'THE DOJO';
+        if (levelEl) levelEl.textContent = `LEVEL ${level} \u2014 ${config.name}`;
+
+        renderDojoKeyboard();
+        initDojoLevel1();
+    }
+
+    function backToDojoSetup() {
+        // Cleanup listener
+        if (dojoState.listener) {
+            document.removeEventListener('keydown', dojoState.listener);
+            dojoState.listener = null;
+        }
+        if (dojoState.timerInterval) {
+            clearInterval(dojoState.timerInterval);
+            dojoState.timerInterval = null;
+        }
+        dojoState.active = false;
+
+        initDojoSetup();
+    }
+
+
+    function exitDojoMode() {
+        // Cleanup listener
+        if (dojoState.listener) {
+            document.removeEventListener('keydown', dojoState.listener);
+            dojoState.listener = null;
+        }
+        if (dojoState.timerInterval) {
+            clearInterval(dojoState.timerInterval);
+            dojoState.timerInterval = null;
+        }
+        dojoState.active = false;
+
+        // Hide Dojo UI
+        const dojoUI = document.getElementById('dojo-ui');
+        if (dojoUI) dojoUI.classList.add('hidden');
+
+        // Restore main UI
+        const gameUI = document.getElementById('game-ui');
+        const appHeader = document.getElementById('app-header');
+        const navButtons = document.getElementById('top-nav-buttons');
+        const footer = document.querySelector('footer') || document.querySelector('.site-footer');
+
+        if (gameUI) gameUI.classList.remove('hidden');
+        if (appHeader) appHeader.style.display = '';
+        if (navButtons) navButtons.style.display = '';
+        if (footer) footer.style.display = '';
+
+        state.gameMode = 'time';
+        newGame();
+    }
+
+    function renderDojoKeyboard() {
+        const container = document.getElementById('dojo-keyboard-container');
+        if (!container) return;
+
+        const keyW = 60, keyH = 60, gap = 5;
+        const rows = [
+            { keys: 'QWERTYUIOP'.split(''), offsetX: 20 },
+            { keys: 'ASDFGHJKL'.split(''), offsetX: 40 },
+            { keys: 'ZXCVBNM'.split(''), offsetX: 72 }
+        ];
+
+        const svgW = 10 * (keyW + gap) + 80;
+        const svgH = 3 * (keyH + gap) + 30;
+
+        let svg = `<svg id="dojo-keyboard" viewBox="0 0 ${svgW} ${svgH}" xmlns="http://www.w3.org/2000/svg">`;
+
+        rows.forEach((row, ri) => {
+            const y = 15 + ri * (keyH + gap);
+            row.keys.forEach((key, ki) => {
+                const x = row.offsetX + ki * (keyW + gap);
+                const isBalance = (key === 'F' || key === 'J');
+                const groupClass = isBalance ? 'balance-point' : '';
+
+                svg += `<g class="dojo-key ${groupClass}" data-key="${key.toLowerCase()}">`;
+                svg += `<rect class="key-bg" x="${x}" y="${y}" width="${keyW}" height="${keyH}" rx="6" ry="6"/>`;
+                svg += `<text class="key-label" x="${x + keyW / 2}" y="${y + keyH / 2}">${key}</text>`;
+
+                // Balance point bump indicator
+                if (isBalance) {
+                    svg += `<line class="balance-marker" x1="${x + keyW / 2 - 6}" y1="${y + keyH - 8}" x2="${x + keyW / 2 + 6}" y2="${y + keyH - 8}"/>`;
+                }
+
+                svg += `</g>`;
+            });
+        });
+
+        svg += `</svg>`;
+        container.innerHTML = svg;
+    }
+
+    function initDojoLevel1() {
+        // Reset state
+        dojoState.active = true;
+        dojoState.streak = 0;
+        dojoState.maxStreak = 0;
+        dojoState.total = 0;
+        dojoState.correct = 0;
+        dojoState.wordCharIndex = 0;
+
+        updateDojoStats();
+        nextDojoPrompt();
+
+        // Remove old listener if any
+        if (dojoState.listener) {
+            document.removeEventListener('keydown', dojoState.listener);
+        }
+
+        dojoState.listener = (e) => {
+            if (!dojoState.active) return;
+            if (state.gameMode !== 'dojo') return;
+
+            const pressed = e.key.toLowerCase();
+            if (pressed.length !== 1 || pressed < 'a' || pressed > 'z') return;
+
+            e.preventDefault();
+
+            if (dojoState.wordMode) {
+                // === WORD MODE ===
+                handleDojoWordInput(pressed);
+            } else {
+                // === KEY MODE ===
+                handleDojoKeyInput(pressed);
+            }
+
+            updateDojoStats();
+        };
+
+        document.addEventListener('keydown', dojoState.listener);
+    }
+
+    function handleDojoKeyInput(pressed) {
+        dojoState.total++;
+
+        if (pressed === dojoState.target) {
+            dojoState.correct++;
+            dojoState.streak++;
+            if (dojoState.streak > dojoState.maxStreak) dojoState.maxStreak = dojoState.streak;
+
+            const keyEl = document.querySelector(`#dojo-keyboard .dojo-key[data-key="${pressed}"]`);
+            if (keyEl) {
+                keyEl.classList.remove('key-active');
+                keyEl.classList.add('key-correct');
+                setTimeout(() => keyEl.classList.remove('key-correct'), 300);
+            }
+
+            showDojoSliceEffect();
+            playDojoSliceSound();
+
+            setTimeout(() => {
+                if (dojoState.active) nextDojoPrompt();
+            }, 300);
+        } else {
+            dojoState.streak = 0;
+
+            const keyEl = document.querySelector(`#dojo-keyboard .dojo-key[data-key="${pressed}"]`);
+            if (keyEl) {
+                keyEl.classList.add('key-wrong');
+                setTimeout(() => keyEl.classList.remove('key-wrong'), 400);
+            }
+
+            showDojoClashEffect();
+            playDojoClashSound();
+
+            const container = document.getElementById('dojo-keyboard-container');
+            if (container) {
+                container.classList.add('shake');
+                setTimeout(() => container.classList.remove('shake'), 300);
+            }
+        }
+    }
+
+    function handleDojoWordInput(pressed) {
+        const word = dojoState.currentWord;
+        if (!word) return;
+
+        const expected = word[dojoState.wordCharIndex];
+        const charSpans = document.querySelectorAll('#dojo-word-chars .dojo-word-char');
+        dojoState.total++;
+
+        // Highlight pressed key on keyboard
+        const keyEl = document.querySelector(`#dojo-keyboard .dojo-key[data-key="${pressed}"]`);
+
+        if (pressed === expected) {
+            // Correct character
+            dojoState.correct++;
+            dojoState.streak++;
+            if (dojoState.streak > dojoState.maxStreak) dojoState.maxStreak = dojoState.streak;
+
+            // Mark char as typed
+            if (charSpans[dojoState.wordCharIndex]) {
+                charSpans[dojoState.wordCharIndex].classList.remove('active');
+                charSpans[dojoState.wordCharIndex].classList.add('typed');
+            }
+
+            // Flash key green
+            if (keyEl) {
+                keyEl.classList.add('key-correct');
+                setTimeout(() => keyEl.classList.remove('key-correct'), 300);
+            }
+
+            dojoState.wordCharIndex++;
+
+            // Check if word is complete
+            if (dojoState.wordCharIndex >= word.length) {
+                // Clear timer if timed mode
+                if (dojoState.timerInterval) {
+                    clearInterval(dojoState.timerInterval);
+                    dojoState.timerInterval = null;
+                }
+
+                // Word done — slice effect!
+                showDojoSliceEffect();
+                playDojoSliceSound();
+
+                setTimeout(() => {
+                    if (dojoState.active) nextDojoPrompt();
+                }, 400);
+            } else {
+                // Highlight next char
+                if (charSpans[dojoState.wordCharIndex]) {
+                    charSpans[dojoState.wordCharIndex].classList.add('active');
+                }
+                // Highlight next key on keyboard
+                const nextKey = word[dojoState.wordCharIndex];
+                document.querySelectorAll('#dojo-keyboard .key-active').forEach(el => el.classList.remove('key-active'));
+                const nextKeyEl = document.querySelector(`#dojo-keyboard .dojo-key[data-key="${nextKey}"]`);
+                if (nextKeyEl) nextKeyEl.classList.add('key-active');
+            }
+        } else {
+            // Wrong character
+            dojoState.streak = 0;
+
+            // Level 7: instant kick on mistake
+            if (dojoState.timedMode) {
+                if (dojoState.timerInterval) {
+                    clearInterval(dojoState.timerInterval);
+                    dojoState.timerInterval = null;
+                }
+                dojoLevel7Fail();
+                return;
+            }
+
+            // Flash current char red
+            if (charSpans[dojoState.wordCharIndex]) {
+                charSpans[dojoState.wordCharIndex].classList.add('wrong');
+                setTimeout(() => {
+                    if (charSpans[dojoState.wordCharIndex]) {
+                        charSpans[dojoState.wordCharIndex].classList.remove('wrong');
+                    }
+                }, 400);
+            }
+
+            // Flash wrong key red
+            if (keyEl) {
+                keyEl.classList.add('key-wrong');
+                setTimeout(() => keyEl.classList.remove('key-wrong'), 400);
+            }
+
+            showDojoClashEffect();
+            playDojoClashSound();
+
+            const container = document.getElementById('dojo-keyboard-container');
+            if (container) {
+                container.classList.add('shake');
+                setTimeout(() => container.classList.remove('shake'), 300);
+            }
+        }
+    }
+
+    function dojoLevel7Fail() {
+        // Stop the game
+        dojoState.active = false;
+        if (dojoState.listener) {
+            document.removeEventListener('keydown', dojoState.listener);
+            dojoState.listener = null;
+        }
+
+        playDojoClashSound();
+        showDojoClashEffect();
+
+        // Random roast text
+        const roasts = [
+            { main: 'WHO LET YOU IN HERE?', sub: 'BACK TO THE BASICS, NOVICE' },
+            { main: 'GET OUT.', sub: 'YOU ARE NOT READY' },
+            { main: 'YOU DON\'T BELONG HERE', sub: 'RETURN WHEN YOU ARE WORTHY' },
+            { main: 'PATHETIC.', sub: 'A TRUE WARRIOR DOES NOT FALTER' },
+            { main: 'DISGRACEFUL', sub: 'THE BLADE WEEPS FOR YOU' },
+            { main: 'TOO SLOW.', sub: 'THE WIND DOES NOT WAIT' },
+            { main: 'UNWORTHY', sub: 'MASTER THE BASICS FIRST' },
+            { main: 'LAUGHABLE.', sub: 'EVEN THE WOODEN SWORD MOCKS YOU' },
+            { main: 'SHAMEFUL DISPLAY', sub: 'YOUR SENSEI WOULD BE DISAPPOINTED' },
+            { main: 'FAILURE.', sub: 'BEGIN AGAIN FROM NOTHING' },
+            { main: 'ABSOLUTE AMATEUR.', sub: 'YOUR ANCESTORS ARE WEEPING' },
+            { main: 'BEGONE.', sub: 'THE DOJO IS FOR THE DISCIPLINED' },
+            { main: 'A SWORDSMAN?', sub: 'YOU ARE BARELY A PEASANT' },
+            { main: 'STICK TO TEA.', sub: 'THE KATANA IS FOR WARRIORS' },
+            { main: 'PITIFUL STANCE.', sub: 'YOU TRIP OVER YOUR OWN SHADOW' },
+            { main: 'LOST IN THE FOG.', sub: 'SEARCH FOR YOUR SOUL AT LEVEL 1' },
+            { main: 'THE VOID CALLS.', sub: 'AND YOU HAVE NO ANSWER' },
+            { main: 'BROKEN SPIRIT.', sub: 'REFORGE YOURSELF FROM THE BOTTOM' },
+            { main: 'CLUMSY.', sub: 'THE MOUNTAIN DOES NOT SHAKE, BUT YOU DO' },
+            { main: 'DULL BLADE.', sub: 'YOU CANNOT EVEN CUT THE AIR' },
+            { main: 'YOU THINK YOU BELONG HERE?', sub: 'NOT WITH THAT REFLEX' },
+            { main: 'DREAMING OF MASTERY?', sub: 'WAKE UP IN LEVEL 1' },
+            { main: 'A FOOL\'S ERRAND.', sub: 'DO NOT WASTE THE MASTER\'S TIME' },
+            { main: 'IS THAT ALL?', sub: 'MY GRANDMOTHER TYPES FASTER WITH ONE CHOPSTICK' },
+            { main: 'SIMPLY UNBALANCED.', sub: 'FIND YOUR CENTER AT THE START' },
+            { main: 'GO BACK TO SCHOOL.', sub: 'YOU HAVE MUCH TO LEARN, CHILD' },
+            { main: 'GET OUT OF MY SIGHT.', sub: 'YOU ARE AN EMBARRASSMENT' },
+            { main: 'IS THIS A JOKE?', sub: 'MY CAT TYPES BEYOND YOUR SKILL' },
+            { main: 'STICK TO COLORING BOOKS.', sub: 'THE WAY OF THE BLADE IS NOT FOR YOU' },
+            { main: 'MOCKERY OF A WARRIOR.', sub: 'YOUR HANDS ARE MADE OF BUTTER' },
+            { main: 'GO HOME.', sub: 'YOU ARE NOT WELCOME IN THIS DOJO' }
+        ];
+
+        const roast = roasts[Math.floor(Math.random() * roasts.length)];
+
+        // Create overlay
+        const overlay = document.createElement('div');
+        overlay.className = 'dojo-fail-overlay';
+        overlay.innerHTML = `
+            <div class="dojo-fail-text">${roast.main}</div>
+            <div class="dojo-fail-sub">${roast.sub}</div>
+        `;
+        document.body.appendChild(overlay);
+
+        // Fade out and kick to Level 1
+        setTimeout(() => {
+            overlay.classList.add('fade-out');
+            setTimeout(() => {
+                overlay.remove();
+                launchDojoLevel(1);
+            }, 500);
+        }, 2000);
+    }
+
+    function nextDojoPrompt() {
+        // Clear old active states
+        document.querySelectorAll('#dojo-keyboard .key-active').forEach(el => el.classList.remove('key-active'));
+
+        if (dojoState.wordMode) {
+            // === WORD MODE ===
+            const pool = dojoState.wordPool;
+            dojoState.currentWord = pool[Math.floor(Math.random() * pool.length)];
+            dojoState.wordCharIndex = 0;
+
+            // Render word as character spans
+            const charsContainer = document.getElementById('dojo-word-chars');
+            if (charsContainer) {
+                charsContainer.innerHTML = dojoState.currentWord.split('').map((ch, i) =>
+                    `<span class="dojo-word-char ${i === 0 ? 'active' : ''}">${ch.toUpperCase()}</span>`
+                ).join('');
+            }
+
+            // Highlight first key on keyboard
+            const firstKey = dojoState.currentWord[0];
+            const keyEl = document.querySelector(`#dojo-keyboard .dojo-key[data-key="${firstKey}"]`);
+            if (keyEl) keyEl.classList.add('key-active');
+
+            // Update word label based on timed mode
+            const wordLabel = document.querySelector('.dojo-word-label');
+            if (wordLabel) {
+                wordLabel.textContent = dojoState.timedMode ? 'TYPE BEFORE TIME RUNS OUT' : 'TYPE THE WORD';
+            }
+
+            // Start timer for Level 7
+            if (dojoState.timerInterval) {
+                clearInterval(dojoState.timerInterval);
+                dojoState.timerInterval = null;
+            }
+            if (dojoState.timedMode) {
+                const timerFill = document.getElementById('dojo-timer-fill');
+                const timeLimit = Math.max(1200, dojoState.currentWord.length * 250); // 250ms per char, min 1.2s
+                const startTime = Date.now();
+
+                if (timerFill) {
+                    timerFill.style.width = '100%';
+                    timerFill.classList.remove('danger');
+                }
+
+                dojoState.timerInterval = setInterval(() => {
+                    const elapsed = Date.now() - startTime;
+                    const remaining = Math.max(0, 1 - elapsed / timeLimit);
+
+                    if (timerFill) {
+                        timerFill.style.width = `${remaining * 100}%`;
+                        if (remaining < 0.3) {
+                            timerFill.classList.add('danger');
+                        }
+                    }
+
+                    if (remaining <= 0) {
+                        // Time's up!
+                        clearInterval(dojoState.timerInterval);
+                        dojoState.timerInterval = null;
+                        dojoState.streak = 0;
+
+                        dojoLevel7Fail();
+                    }
+                }, 50);
+            }
+
+        } else {
+            // === KEY MODE ===
+            const pool = dojoState.keyPool && dojoState.keyPool.length > 0
+                ? dojoState.keyPool
+                : ['f', 'j'];
+            dojoState.target = pool[Math.floor(Math.random() * pool.length)];
+
+            const promptEl = document.getElementById('dojo-prompt');
+            if (promptEl) promptEl.textContent = dojoState.target.toUpperCase();
+
+            const leftKeys = 'qwertasdfgzxcvb';
+            const stanceEl = document.getElementById('dojo-stance');
+            if (stanceEl) {
+                stanceEl.textContent = leftKeys.includes(dojoState.target)
+                    ? 'HOME STANCE \u2014 LEFT HAND'
+                    : 'HOME STANCE \u2014 RIGHT HAND';
+            }
+
+            const keyEl = document.querySelector(`#dojo-keyboard .dojo-key[data-key="${dojoState.target}"]`);
+            if (keyEl) keyEl.classList.add('key-active');
+        }
+    }
+
+    function updateDojoStats() {
+        const streakEl = document.getElementById('dojo-streak');
+        const accEl = document.getElementById('dojo-accuracy');
+        const totalEl = document.getElementById('dojo-total');
+
+        if (streakEl) streakEl.textContent = dojoState.streak;
+        if (totalEl) totalEl.textContent = dojoState.total;
+        if (accEl) {
+            const acc = dojoState.total > 0
+                ? Math.round((dojoState.correct / dojoState.total) * 100)
+                : 100;
+            accEl.textContent = acc + '%';
+        }
+    }
+
+    function showDojoSliceEffect() {
+        const el = document.createElement('div');
+        el.className = 'dojo-slice-effect';
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 500);
+    }
+
+    function showDojoClashEffect() {
+        // Radial clash
+        const clash = document.createElement('div');
+        clash.className = 'dojo-clash-effect';
+        document.body.appendChild(clash);
+        setTimeout(() => clash.remove(), 500);
+
+        // Vignette flash
+        const vig = document.createElement('div');
+        vig.className = 'dojo-vignette-flash';
+        document.body.appendChild(vig);
+        setTimeout(() => vig.remove(), 400);
+    }
+
+    function playDojoSliceSound() {
+        if (!audioCtx || !soundEnabled) return;
+        const t = audioCtx.currentTime;
+        const vol = (userConfig.soundVolume || 70) / 100;
+
+        // Metallic shing — high freq sweep down
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(4000, t);
+        osc.frequency.exponentialRampToValueAtTime(1200, t + 0.08);
+        gain.gain.setValueAtTime(0.12 * vol, t);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(t);
+        osc.stop(t + 0.15);
+
+        // Air whoosh
+        if (noiseBuffer) {
+            createNoiseBurst(t, 0.06, 0.06 * vol, 3000, 1.5, 'highpass');
+        }
+    }
+
+    function playDojoClashSound() {
+        if (!audioCtx || !soundEnabled) return;
+        const t = audioCtx.currentTime;
+        const vol = (userConfig.soundVolume || 70) / 100;
+
+        // Low rumble
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(200, t);
+        osc.frequency.exponentialRampToValueAtTime(80, t + 0.1);
+        gain.gain.setValueAtTime(0.1 * vol, t);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(t);
+        osc.stop(t + 0.2);
+
+        // Harsh impact noise
+        if (noiseBuffer) {
+            createNoiseBurst(t, 0.05, 0.12 * vol, 1500, 1, 'bandpass');
+        }
     }
 
     // --- VICTORY PARTICLES ---
