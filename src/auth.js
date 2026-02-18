@@ -692,8 +692,10 @@ function initAuth() {
 
         if (updateError) {
             console.error("Error updating dojo wins:", updateError);
+            return null;
         } else {
             console.log("Dojo Win Recorded! Total:", newWins);
+            return newWins;
         }
     };
 

@@ -2417,10 +2417,10 @@ function setupSettingsListeners() {
         if (dojoState.timedMode) {
             if (globalTimer) globalTimer.classList.remove('hidden');
             if (globalTimerValue) {
-                globalTimerValue.textContent = '00:05';
+                globalTimerValue.textContent = '00:15';
                 globalTimerValue.classList.remove('danger');
             }
-            dojoState.globalTimeLeft = 5; // 5 seconds (Debug)
+            dojoState.globalTimeLeft = 15; // 15 seconds (Final)
             dojoState.globalTimerInterval = null;
         } else {
             if (globalTimer) globalTimer.classList.add('hidden');
@@ -2734,7 +2734,7 @@ function setupSettingsListeners() {
         }
     }
 
-    function dojoLevel7Victory() {
+    async function dojoLevel7Victory() {
         // Stop everything
         dojoState.active = false;
         if (dojoState.listener) {
@@ -2757,7 +2757,12 @@ function setupSettingsListeners() {
 
         // Record in Supabase (Global Leaderboard)
         if (window.recordDojoWin) {
-            window.recordDojoWin();
+            const dbWins = await window.recordDojoWin();
+            if (dbWins !== null) {
+                wins = dbWins;
+                // Sync local storage to match DB
+                localStorage.setItem('dojo_level7_wins', wins.toString());
+            }
         }
 
         // Play slice sound for victory
@@ -2773,7 +2778,7 @@ function setupSettingsListeners() {
             { main: 'UNSTOPPABLE.', sub: 'NO WORD CAN OUTRUN YOU' },
             { main: 'HONORED SAMURAI.', sub: 'YOU HAVE EARNED YOUR PLACE' },
             { main: 'THE WIND OBEYS.', sub: 'YOUR FINGERS MOVE LIKE LIGHTNING' },
-            { main: 'FLAWLESS VICTORY.', sub: 'FIVE SECONDS OF PURE DISCIPLINE' },
+            { main: 'FLAWLESS VICTORY.', sub: 'FIFTEEN SECONDS OF PURE DISCIPLINE' },
             { main: 'ABSOLUTE FOCUS.', sub: 'THE PATH OF THE WARRIOR IS YOURS' },
             { main: 'TRANSCENDENT.', sub: 'YOU HAVE SURPASSED ALL LIMITS' },
             { main: 'A LIVING BLADE.', sub: 'SPEED AND PRECISION IN HARMONY' },
@@ -2784,7 +2789,7 @@ function setupSettingsListeners() {
             { main: 'SACRED SPEED.', sub: 'THE ANCESTORS SMILE UPON YOU' },
             { main: 'UNTOUCHABLE.', sub: 'NO ERROR COULD FIND YOU' },
             { main: 'CHAMPION.', sub: 'THE DOJO BOWS IN YOUR PRESENCE' },
-            { main: 'IRON WILL.', sub: 'FIVE SECONDS WITHOUT FALTERING' },
+            { main: 'IRON WILL.', sub: 'FIFTEEN SECONDS WITHOUT FALTERING' },
             { main: 'ENLIGHTENED.', sub: 'THE WAY OF THE WIND IS YOURS FOREVER' }
         ];
 

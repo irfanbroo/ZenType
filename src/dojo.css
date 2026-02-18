@@ -860,30 +860,56 @@
 /* ─── DOJO LEADERBOARD (Level 7) ─── */
 .dojo-trophy-btn {
     position: absolute;
-    top: 2rem;
+    top: 3rem;
+    /* Adjusted down from 2rem */
     right: 3rem;
-    background: rgba(201, 168, 76, 0.1);
-    border: 1px solid rgba(201, 168, 76, 0.3);
-    color: #c9a84c;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
+    /* Majestic Floating Trophy */
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    color: #ffd700;
+    width: 60px;
+    height: 60px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     z-index: 10;
+    /* Remove circle pulse, just text-shadow/filter */
+    animation: floatingPulse 3s infinite ease-in-out;
 }
 
 .dojo-trophy-btn:hover {
-    background: rgba(201, 168, 76, 0.2);
-    box-shadow: 0 0 15px rgba(201, 168, 76, 0.4);
-    transform: scale(1.1);
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    transform: scale(1.15) rotate(5deg);
+    color: #fff;
+    filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.8));
 }
 
 .dojo-trophy-btn i {
-    font-size: 1.2rem;
+    font-size: 2rem;
+    /* Larger icon to compensate */
+    filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.5));
+}
+
+@keyframes floatingPulse {
+    0% {
+        transform: translateY(0);
+        filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.3));
+    }
+
+    50% {
+        transform: translateY(-5px);
+        filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.6));
+    }
+
+    100% {
+        transform: translateY(0);
+        filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.3));
+    }
 }
 
 #dojo-leaderboard-modal {
