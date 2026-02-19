@@ -248,15 +248,174 @@
 }
 
 /* Active finger highlight */
-.guide-finger-group {
+.guide-finger-position {
     transition: transform 0.2s ease;
 }
 
-.guide-finger-group .guide-finger.finger-active {
+.guide-finger-position .guide-finger.finger-active {
     fill: rgba(206, 17, 38, 0.18);
     stroke: rgba(206, 17, 38, 0.7);
     stroke-width: 1.8;
     filter: drop-shadow(0 0 8px rgba(206, 17, 38, 0.5));
+}
+
+.guide-finger-position .guide-finger.finger-wrong {
+    fill: rgba(255, 50, 50, 0.4) !important;
+    stroke: rgba(255, 50, 50, 1) !important;
+    filter: drop-shadow(0 0 15px rgba(255, 0, 0, 0.8));
+    animation: guideWrongShake 0.3s ease-in-out;
+}
+
+@keyframes guideWrongShake {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-3px);
+    }
+
+    75% {
+        transform: translateX(3px);
+    }
+}
+
+/* Elemental Finger Colors */
+/* Index (Fire) - Default Red */
+.guide-finger-position[data-finger*="index"] .guide-finger.finger-active {
+    stroke: rgba(206, 17, 38, 0.9);
+    fill: rgba(206, 17, 38, 0.2);
+    filter: drop-shadow(0 0 10px rgba(206, 17, 38, 0.6));
+}
+
+/* Middle (Earth) - Amber/Gold */
+.guide-finger-position[data-finger*="mid"] .guide-finger.finger-active {
+    stroke: rgba(255, 170, 0, 0.9);
+    fill: rgba(255, 170, 0, 0.2);
+    filter: drop-shadow(0 0 10px rgba(255, 170, 0, 0.6));
+}
+
+/* Ring (Water) - Cyan/Blue */
+.guide-finger-position[data-finger*="ring"] .guide-finger.finger-active {
+    stroke: rgba(0, 255, 255, 0.9);
+    fill: rgba(0, 255, 255, 0.2);
+    filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.6));
+}
+
+/* Pinky (Void) - Purple */
+.guide-finger-position[data-finger*="pinky"] .guide-finger.finger-active {
+    stroke: rgba(180, 0, 255, 0.9);
+    fill: rgba(180, 0, 255, 0.2);
+    filter: drop-shadow(0 0 10px rgba(180, 0, 255, 0.6));
+}
+
+.guide-finger-squish.guide-finger-pressing {
+    animation: guideFingerPress 0.15s ease-out;
+    transform-origin: 50% 20%;
+    /* Pivot near top/knuckle to look like a press */
+}
+
+@keyframes guideFingerPress {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(0.9);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Ghost Trail */
+.guide-ghost {
+    pointer-events: none;
+    opacity: 0.4;
+    animation: guideGhostFade 0.3s ease-out forwards;
+}
+
+.guide-ghost .guide-finger {
+    stroke-opacity: 0.5;
+    fill-opacity: 0.2;
+}
+
+@keyframes guideGhostFade {
+    0% {
+        opacity: 0.4;
+        transform: scale(1);
+    }
+
+    100% {
+        opacity: 0;
+        transform: scale(0.85);
+    }
+}
+
+@keyframes guideGhostFade {
+    0% {
+        opacity: 0.4;
+        transform: scale(1);
+    }
+
+    100% {
+        opacity: 0;
+        transform: scale(0.85);
+    }
+}
+
+/* Ripple Effect */
+.guide-ripple {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.4);
+    stroke-width: 1;
+    animation: guideRippleExpand 0.4s ease-out forwards;
+    pointer-events: none;
+}
+
+@keyframes guideRippleExpand {
+    0% {
+        r: 5;
+        opacity: 0.6;
+        stroke-width: 2;
+    }
+
+    100% {
+        r: 35;
+        opacity: 0;
+        stroke-width: 0;
+    }
+}
+
+/* Speed Glow Levels */
+.glow-low .guide-finger {
+    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.1));
+}
+
+.glow-med .guide-finger {
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.25));
+    stroke: rgba(255, 255, 255, 0.35);
+}
+
+.glow-high .guide-finger {
+    filter: drop-shadow(0 0 15px rgba(206, 17, 38, 0.5));
+    stroke: rgba(206, 17, 38, 0.5);
+    animation: dojoPulse 0.8s infinite alternate;
+}
+
+@keyframes dojoPulse {
+    0% {
+        stroke-width: 1.2;
+        filter: drop-shadow(0 0 12px rgba(206, 17, 38, 0.5));
+    }
+
+    100% {
+        stroke-width: 2.2;
+        filter: drop-shadow(0 0 20px rgba(206, 17, 38, 0.8));
+    }
 }
 
 /* Bottom controls layout */

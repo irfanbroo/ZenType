@@ -2666,7 +2666,8 @@ function setupSettingsListeners() {
             d += ` Q ${cx + th} ${tipY - 1}, ${cx + th} ${tipY + th}`;
             d += ` C ${cx + midW + 0.5} ${k1Y + 8}, ${cx + bh} ${k2Y + 5}, ${cx + bh} ${palmY}`;
 
-            let g = `<g class="guide-finger-group" data-finger="${name}">`;
+            let g = `<g class="guide-finger-position" data-finger="${name}">`;
+            g += `<g class="guide-finger-squish">`; // Inner group for squish animation
             g += `<path d="${d}" class="guide-finger"/>`;
 
             const nailW = th * 0.75;
@@ -2678,7 +2679,11 @@ function setupSettingsListeners() {
             g += `<line x1="${cx - crW1}" y1="${k1Y}" x2="${cx + crW1}" y2="${k1Y}" class="guide-crease"/>`;
             g += `<line x1="${cx - crW2}" y1="${k2Y}" x2="${cx + crW2}" y2="${k2Y}" class="guide-crease"/>`;
 
-            g += `</g>`;
+            // Marker for ripple effect origin
+            g += `<circle cx="${cx}" cy="${tipY}" r="0" class="guide-tip-marker" style="display:none;"/>`;
+
+            g += `</g>`; // End squish group
+            g += `</g>`; // End position group
             return g;
         }
 
@@ -2812,30 +2817,105 @@ function setupSettingsListeners() {
         if (!dojoState.handGuideOn) return;
 
         // Reset ALL fingers to home position and remove active class
-        document.querySelectorAll('.guide-finger-group').forEach(g => {
+        document.querySelectorAll('.guide-finger-position').forEach(g => {
             g.style.transform = '';
             g.querySelector('.guide-finger')?.classList.remove('finger-active');
         });
 
         if (!key) return;
-        const k = key.toLowerCase();
-        const fingerName = keyFingerMap[k];
+        const info = keyFingerMap[key.toLowerCase()];
+        const fingerName = typeof info === 'string' ? info : (info ? info.finger : null);
         if (!fingerName) return;
 
+        const k = key.toLowerCase();
         const target = keyCenters[k];
         const home = fingerHomes[fingerName];
         if (!target || !home) return;
 
-        const group = document.querySelector(`.guide-finger-group[data-finger="${fingerName}"]`);
+        const group = document.querySelector(`.guide-finger-position[data-finger="${fingerName}"]`);
         if (!group) return;
 
         // Calculate delta from home to target key
         const dx = target.x - home.x;
         const dy = target.y - home.y;
 
-        // Move the finger group
+        // Create ghost trail if moving significantly
+        const currentDx = parseFloat(group.style.getPropertyValue('--finger-dx') || 0);
+        const currentDy = parseFloat(group.style.getPropertyValue('--finger-dy') || 0);
+        const dist = Math.hypot(dx - currentDx, dy - currentDy);
+
+        if (dist > 10) {
+            const ghost = group.cloneNode(true);
+            ghost.classList.add('guide-ghost');
+            // Ensure ghost stays at old position
+            ghost.style.transform = `translate(${currentDx}px, ${currentDy}px)`;
+            // Remove ID if any to avoid duplicates
+            ghost.removeAttribute('id');
+            // Insert before the active group so it appears behind
+            group.parentNode.insertBefore(ghost, group);
+
+            // Remove after animation
+            setTimeout(() => ghost.remove(), 300);
+        }
+
+        // Move the finger position group
+        // We set vars on the *position* group, but they are inherited if needed
+        group.style.setProperty('--finger-dx', `${dx}px`);
+        group.style.setProperty('--finger-dy', `${dy}px`);
         group.style.transform = `translate(${dx}px, ${dy}px)`;
         group.querySelector('.guide-finger')?.classList.add('finger-active');
+    }
+
+    function animateFingerPress(key) {
+        if (!dojoState.handGuideOn || !key) return;
+        const k = key.toLowerCase();
+        const info = keyFingerMap[k];
+        const fingerName = typeof info === 'string' ? info : (info ? info.finger : null);
+        if (!fingerName) return;
+
+        const posGroup = document.querySelector(`.guide-finger-position[data-finger="${fingerName}"]`);
+        if (posGroup) {
+            const squishGroup = posGroup.querySelector('.guide-finger-squish');
+            if (squishGroup) {
+                squishGroup.classList.remove('guide-finger-pressing');
+                void squishGroup.offsetWidth; // Force reflow
+                squishGroup.classList.add('guide-finger-pressing');
+
+                // Create Ripple at fingertip
+                const marker = squishGroup.querySelector('.guide-tip-marker');
+                if (marker) {
+                    const cx = parseFloat(marker.getAttribute('cx'));
+                    const cy = parseFloat(marker.getAttribute('cy'));
+                    const dx = parseFloat(posGroup.style.getPropertyValue('--finger-dx') || 0);
+                    const dy = parseFloat(posGroup.style.getPropertyValue('--finger-dy') || 0);
+
+                    const ripple = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                    ripple.setAttribute("cx", cx + dx);
+                    ripple.setAttribute("cy", cy + dy);
+                    ripple.setAttribute("r", "5");
+                    ripple.setAttribute("class", "guide-ripple");
+
+                    // Match ripple color to finger color? 
+                    // Let's just use the white/default for now as it looks clean on dark bg
+
+                    const svg = document.querySelector('.hand-guide-svg');
+                    if (svg) {
+                        svg.appendChild(ripple);
+                        setTimeout(() => ripple.remove(), 400);
+                    }
+                }
+            }
+        }
+    }
+
+    function flashCorrectFinger() {
+        if (!dojoState.handGuideOn) return;
+        // Find the currently active finger (the one the user SHOULD use)
+        const activeFinger = document.querySelector('.guide-finger.finger-active');
+        if (activeFinger) {
+            activeFinger.classList.add('finger-wrong');
+            setTimeout(() => activeFinger.classList.remove('finger-wrong'), 300);
+        }
     }
 
     function toggleHandGuide() {
@@ -2941,12 +3021,14 @@ function setupSettingsListeners() {
 
             showDojoSliceEffect();
             playDojoSliceSound();
+            animateFingerPress(pressed);
 
             setTimeout(() => {
                 if (dojoState.active) nextDojoPrompt();
             }, 300);
         } else {
             dojoState.streak = 0;
+            flashCorrectFinger();
 
             const keyEl = document.querySelector(`#dojo-keyboard .dojo-key[data-key="${pressed}"]`);
             if (keyEl) {
@@ -3007,6 +3089,7 @@ function setupSettingsListeners() {
                 // Word done — slice effect!
                 showDojoSliceEffect();
                 playDojoSliceSound();
+                animateFingerPress(pressed); // Animate last char press
 
                 setTimeout(() => {
                     if (dojoState.active) nextDojoPrompt();
@@ -3016,6 +3099,10 @@ function setupSettingsListeners() {
                 if (charSpans[dojoState.wordCharIndex]) {
                     charSpans[dojoState.wordCharIndex].classList.add('active');
                 }
+
+                // Animate press for current char (before moving to next)
+                animateFingerPress(pressed);
+
                 // Highlight next key on keyboard
                 const nextKey = word[dojoState.wordCharIndex];
                 document.querySelectorAll('#dojo-keyboard .key-active').forEach(el => el.classList.remove('key-active'));
@@ -3026,6 +3113,7 @@ function setupSettingsListeners() {
         } else {
             // Wrong character
             dojoState.streak = 0;
+            flashCorrectFinger();
 
             // Level 7: instant kick on mistake
             if (dojoState.timedMode) {
@@ -3080,20 +3168,10 @@ function setupSettingsListeners() {
             dojoState.globalTimerInterval = null;
         }
 
-        // Increment win count in localStorage
+        // Increment win count in localStorage immediately
         let wins = parseInt(localStorage.getItem('dojo_level7_wins') || '0', 10);
         wins++;
         localStorage.setItem('dojo_level7_wins', wins.toString());
-
-        // Record in Supabase (Global Leaderboard)
-        if (window.recordDojoWin) {
-            const dbWins = await window.recordDojoWin();
-            if (dbWins !== null) {
-                wins = dbWins;
-                // Sync local storage to match DB
-                localStorage.setItem('dojo_level7_wins', wins.toString());
-            }
-        }
 
         // Play slice sound for victory
         playDojoSliceSound();
@@ -3135,6 +3213,18 @@ function setupSettingsListeners() {
             <div class="dojo-victory-wins">WIND CONQUESTS: ${wins}</div>
         `;
         document.body.appendChild(overlay);
+
+        // Record in Supabase (Global Leaderboard) in BACKGROUND
+        if (window.recordDojoWin) {
+            window.recordDojoWin().then(dbWins => {
+                if (dbWins !== null) {
+                    // Sync local storage to match DB
+                    localStorage.setItem('dojo_level7_wins', dbWins.toString());
+                    // Update overlay if still visible? 
+                    // No need to be distracting, just store it for next time.
+                }
+            });
+        }
 
         // Fade out and return to dojo setup
         setTimeout(() => {
@@ -3320,6 +3410,14 @@ function setupSettingsListeners() {
                 ? Math.round((dojoState.correct / dojoState.total) * 100)
                 : 100;
             accEl.textContent = acc + '%';
+        }
+
+        const overlay = document.getElementById('hand-guide-overlay');
+        if (overlay) {
+            overlay.classList.remove('glow-low', 'glow-med', 'glow-high');
+            if (dojoState.streak > 50) overlay.classList.add('glow-high');
+            else if (dojoState.streak > 25) overlay.classList.add('glow-med');
+            else if (dojoState.streak > 10) overlay.classList.add('glow-low');
         }
     }
 
@@ -4130,6 +4228,13 @@ function setupSettingsListeners() {
         const board = document.getElementById('h-game-board');
         if (setup) setup.classList.add('hidden');
         if (board) board.classList.remove('hidden');
+        const overlay = document.getElementById('hand-guide-overlay');
+        if (overlay) {
+            overlay.classList.remove('glow-low', 'glow-med', 'glow-high');
+            if (dojoState.streak > 50) overlay.classList.add('glow-high');
+            else if (dojoState.streak > 25) overlay.classList.add('glow-med');
+            else if (dojoState.streak > 10) overlay.classList.add('glow-low');
+        }
 
         // Show Header
         const hHeader = document.querySelector('.h-header');
