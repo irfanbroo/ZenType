@@ -71,6 +71,11 @@
     opacity: 1;
     transition: opacity 0.5s ease;
     padding: 2rem;
+    overflow-y: auto;
+    scrollbar-width: none;
+    /* Firefox */
+    -ms-overflow-style: none;
+    /* IE/Edge */
     /* Dedicated Dojo background — blocks wallpaper */
     background:
         radial-gradient(ellipse at 50% 40%, rgba(30, 25, 18, 0.95) 0%, rgba(8, 8, 12, 0.99) 70%),
@@ -83,6 +88,10 @@
 #dojo-ui.hidden {
     opacity: 0;
     pointer-events: none;
+    display: none;
+}
+
+#dojo-ui::-webkit-scrollbar {
     display: none;
 }
 
@@ -224,24 +233,152 @@
     user-select: none;
 }
 
-/* Balance Point (F and J) */
+/* Balance Point (F and J) — Always stand out */
 #dojo-keyboard .balance-point .key-bg {
-    fill: rgba(201, 168, 76, 0.12);
-    stroke: rgba(201, 168, 76, 0.4);
-    stroke-width: 1.5;
+    fill: rgba(220, 38, 38, 0.18);
+    stroke: rgba(220, 38, 38, 0.6);
+    stroke-width: 2;
+    filter: drop-shadow(0 0 8px rgba(220, 38, 38, 0.35));
+    animation: balancePointGlow 3s ease-in-out infinite;
 }
 
 #dojo-keyboard .balance-point .key-label {
-    fill: #c9a84c;
+    fill: #ef4444;
     font-weight: bold;
+    filter: drop-shadow(0 0 4px rgba(220, 38, 38, 0.5));
+    animation: balanceLabelPulse 3s ease-in-out infinite;
 }
 
 /* Balance marker (bump line) */
 #dojo-keyboard .balance-marker {
-    stroke: #c9a84c;
-    stroke-width: 2;
+    stroke: #ef4444;
+    stroke-width: 2.5;
     stroke-linecap: round;
-    opacity: 0.6;
+    opacity: 0.8;
+    animation: balanceMarkerPulse 3s ease-in-out infinite;
+}
+
+/* Multi-stage breathing glow — key background */
+@keyframes balancePointGlow {
+    0% {
+        fill: rgba(220, 38, 38, 0.14);
+        stroke: rgba(220, 38, 38, 0.5);
+        filter: drop-shadow(0 0 5px rgba(220, 38, 38, 0.2));
+    }
+
+    25% {
+        fill: rgba(248, 80, 80, 0.25);
+        stroke: rgba(248, 80, 80, 0.8);
+        filter: drop-shadow(0 0 16px rgba(220, 38, 38, 0.6));
+    }
+
+    50% {
+        fill: rgba(220, 38, 38, 0.20);
+        stroke: rgba(220, 38, 38, 0.65);
+        filter: drop-shadow(0 0 10px rgba(220, 38, 38, 0.35));
+    }
+
+    75% {
+        fill: rgba(248, 80, 80, 0.28);
+        stroke: rgba(248, 80, 80, 0.85);
+        filter: drop-shadow(0 0 20px rgba(220, 38, 38, 0.7));
+    }
+
+    100% {
+        fill: rgba(220, 38, 38, 0.14);
+        stroke: rgba(220, 38, 38, 0.5);
+        filter: drop-shadow(0 0 5px rgba(220, 38, 38, 0.2));
+    }
+}
+
+/* Label text glow */
+@keyframes balanceLabelPulse {
+
+    0%,
+    100% {
+        fill: #ef4444;
+        filter: drop-shadow(0 0 3px rgba(220, 38, 38, 0.3));
+    }
+
+    25%,
+    75% {
+        fill: #f87171;
+        filter: drop-shadow(0 0 8px rgba(220, 38, 38, 0.7));
+    }
+
+    50% {
+        fill: #ef4444;
+        filter: drop-shadow(0 0 5px rgba(220, 38, 38, 0.4));
+    }
+}
+
+/* Bump marker breathe */
+@keyframes balanceMarkerPulse {
+
+    0%,
+    100% {
+        opacity: 0.6;
+    }
+
+    25%,
+    75% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.7;
+    }
+}
+
+/* ─── BLOOD DRIP FROM F & J ─── */
+.blood-drip {
+    animation: bloodDripCycle 3.5s ease-in infinite;
+}
+
+.blood-drop {
+    fill: #ce1126;
+    filter: drop-shadow(0 0 3px rgba(206, 17, 38, 0.6));
+}
+
+.blood-trail {
+    fill: rgba(206, 17, 38, 0.7);
+    filter: drop-shadow(0 0 2px rgba(206, 17, 38, 0.4));
+}
+
+@keyframes bloodDripCycle {
+    0% {
+        opacity: 0;
+        transform: translateY(0);
+    }
+
+    /* Drop forms */
+    8% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    /* Drop hangs, stretching */
+    20% {
+        opacity: 1;
+        transform: translateY(4px);
+    }
+
+    /* Drop falls */
+    50% {
+        opacity: 0.8;
+        transform: translateY(35px);
+    }
+
+    /* Drop fades out at bottom */
+    70% {
+        opacity: 0;
+        transform: translateY(50px);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(50px);
+    }
 }
 
 /* Active key (currently prompted) */
@@ -536,9 +673,10 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 2rem;
+    gap: 1.5rem;
     width: 100%;
-    height: 100%;
+    min-height: 100%;
+    flex-shrink: 0;
 }
 
 #dojo-game-board.hidden {

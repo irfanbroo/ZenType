@@ -2610,6 +2610,21 @@ function setupSettingsListeners() {
                 // Balance point bump indicator
                 if (isBalance) {
                     svg += `<line class="balance-marker" x1="${x + keyW / 2 - 6}" y1="${y + keyH - 8}" x2="${x + keyW / 2 + 6}" y2="${y + keyH - 8}"/>`;
+
+                    // Blood drips from F and J keys
+                    const drips = [
+                        { dx: keyW * 0.25, delay: 0 },
+                        { dx: keyW * 0.55, delay: 1.2 },
+                        { dx: keyW * 0.75, delay: 2.4 }
+                    ];
+                    drips.forEach((drip, di) => {
+                        const dripX = x + drip.dx;
+                        const dripStartY = y + keyH;
+                        svg += `<g class="blood-drip" style="animation-delay: ${drip.delay}s">`;
+                        svg += `<ellipse cx="${dripX}" cy="${dripStartY + 6}" rx="2.5" ry="3.5" class="blood-drop"/>`;
+                        svg += `<rect x="${dripX - 1}" y="${dripStartY}" width="2" height="6" class="blood-trail" rx="1"/>`;
+                        svg += `</g>`;
+                    });
                 }
 
                 svg += `</g>`;
