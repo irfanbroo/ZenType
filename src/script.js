@@ -2285,7 +2285,8 @@ function setupSettingsListeners() {
         maxStreak: 0,
         total: 0,
         correct: 0,
-        listener: null
+        listener: null,
+        handGuideOn: false
     };
 
     function startDojoMode() {
@@ -2399,6 +2400,9 @@ function setupSettingsListeners() {
         // Back btn — returns from game to level select
         const backBtn = document.getElementById('dojo-back-btn');
         if (backBtn) backBtn.onclick = backToDojoSetup;
+
+        const guideBtn = document.getElementById('dojo-guide-btn');
+        if (guideBtn) guideBtn.onclick = toggleHandGuide;
 
         // Info Modal Elements
         const infoModal = document.getElementById('dojo-level-info-modal');
@@ -2633,6 +2637,225 @@ function setupSettingsListeners() {
 
         svg += `</svg>`;
         container.innerHTML = svg;
+
+        // Add hand guide overlay
+        createHandGuideOverlay(container);
+    }
+
+    function createHandGuideOverlay(container) {
+        const old = document.getElementById('hand-guide-overlay');
+        if (old) old.remove();
+
+        // Keyboard: keyW=60, keyH=60, gap=5
+        // Home row: y=80..140, key centers: A=70, S=135, D=200, F=265 | J=460, K=525, L=590
+        const palmY = 150; // Where fingers meet the palm
+
+        // ── Finger SVG generator ──
+        // Creates a natural tapered finger with knuckle detail + fingernail arc
+        function finger(cx, tipY, baseW, tipW, name) {
+            const bh = baseW / 2;
+            const th = tipW / 2;
+            const len = palmY - tipY;
+            const k1Y = tipY + len * 0.35;
+            const k2Y = tipY + len * 0.65;
+            const midW = (bh + th) / 2;
+
+            let d = `M ${cx - bh} ${palmY}`;
+            d += ` C ${cx - bh} ${k2Y + 5}, ${cx - midW - 0.5} ${k1Y + 8}, ${cx - th} ${tipY + th}`;
+            d += ` Q ${cx - th} ${tipY - 1}, ${cx} ${tipY - 2}`;
+            d += ` Q ${cx + th} ${tipY - 1}, ${cx + th} ${tipY + th}`;
+            d += ` C ${cx + midW + 0.5} ${k1Y + 8}, ${cx + bh} ${k2Y + 5}, ${cx + bh} ${palmY}`;
+
+            let g = `<g class="guide-finger-group" data-finger="${name}">`;
+            g += `<path d="${d}" class="guide-finger"/>`;
+
+            const nailW = th * 0.75;
+            const nailY = tipY + 3;
+            g += `<path d="M ${cx - nailW} ${nailY + 4} Q ${cx - nailW} ${nailY}, ${cx} ${nailY - 1} Q ${cx + nailW} ${nailY}, ${cx + nailW} ${nailY + 4}" class="guide-nail"/>`;
+
+            const crW1 = midW * 0.7;
+            const crW2 = (midW + bh) / 2 * 0.6;
+            g += `<line x1="${cx - crW1}" y1="${k1Y}" x2="${cx + crW1}" y2="${k1Y}" class="guide-crease"/>`;
+            g += `<line x1="${cx - crW2}" y1="${k2Y}" x2="${cx + crW2}" y2="${k2Y}" class="guide-crease"/>`;
+
+            g += `</g>`;
+            return g;
+        }
+
+        let svg = `<svg viewBox="0 0 730 310" preserveAspectRatio="xMidYMid meet" class="hand-guide-svg" xmlns="http://www.w3.org/2000/svg">`;
+
+        // ═══════ LEFT HAND ═══════
+        svg += `<g class="guide-hand guide-hand-left">`;
+        //              center  tipY  baseW  tipW   name
+        svg += finger(70, 102, 13, 10, 'l-pinky');
+        svg += finger(135, 90, 15, 12, 'l-ring');
+        svg += finger(200, 83, 16, 13, 'l-mid');
+        svg += finger(265, 89, 16, 13, 'l-index');
+
+        // Skin webs between fingers (natural V-curves)
+        svg += `<path d="M 77 ${palmY} Q 102 ${palmY - 14}, 127 ${palmY}" class="guide-web"/>`;
+        svg += `<path d="M 143 ${palmY} Q 168 ${palmY - 18}, 192 ${palmY}" class="guide-web"/>`;
+        svg += `<path d="M 208 ${palmY} Q 233 ${palmY - 15}, 257 ${palmY}" class="guide-web"/>`;
+
+        // Left palm — slim, stays within finger span
+        svg += `<path d="
+            M 63 ${palmY}
+            C 63 ${palmY + 15}, 65 ${palmY + 35}, 72 ${palmY + 52}
+            C 80 ${palmY + 70}, 100 ${palmY + 78}, 140 ${palmY + 80}
+            L 200 ${palmY + 78}
+            C 240 ${palmY + 75}, 260 ${palmY + 68}, 268 ${palmY + 50}
+            C 273 ${palmY + 35}, 273 ${palmY + 15}, 273 ${palmY}
+        " class="guide-palm"/>`;
+
+        // Palm crease lines
+        svg += `<path d="M 72 ${palmY + 20} Q 120 ${palmY + 35}, 168 ${palmY + 32} Q 220 ${palmY + 28}, 260 ${palmY + 15}" class="guide-crease" fill="none"/>`;
+        svg += `<path d="M 78 ${palmY + 42} Q 130 ${palmY + 54}, 175 ${palmY + 52} Q 230 ${palmY + 48}, 262 ${palmY + 38}" class="guide-crease" fill="none"/>`;
+
+        // Wrist — tapers in slightly
+        svg += `<path d="
+            M 80 ${palmY + 76} L 92 ${palmY + 110}
+        " class="guide-wrist"/>`;
+        svg += `<path d="
+            M 258 ${palmY + 72} L 248 ${palmY + 110}
+        " class="guide-wrist"/>`;
+
+        svg += `</g>`;
+
+        // ═══════ RIGHT HAND ═══════
+        svg += `<g class="guide-hand guide-hand-right">`;
+
+        svg += finger(460, 89, 16, 13, 'r-index');
+        svg += finger(525, 83, 16, 13, 'r-mid');
+        svg += finger(590, 90, 15, 12, 'r-ring');
+        svg += finger(648, 102, 13, 10, 'r-pinky');
+
+        // Skin webs between fingers
+        svg += `<path d="M 468 ${palmY} Q 493 ${palmY - 15}, 517 ${palmY}" class="guide-web"/>`;
+        svg += `<path d="M 533 ${palmY} Q 558 ${palmY - 18}, 582 ${palmY}" class="guide-web"/>`;
+        svg += `<path d="M 598 ${palmY} Q 620 ${palmY - 14}, 641 ${palmY}" class="guide-web"/>`;
+
+
+        // Right palm — slim, mirrored
+        svg += `<path d="
+            M 453 ${palmY}
+            C 453 ${palmY + 15}, 451 ${palmY + 35}, 456 ${palmY + 50}
+            C 464 ${palmY + 68}, 484 ${palmY + 75}, 524 ${palmY + 78}
+            L 580 ${palmY + 80}
+            C 620 ${palmY + 78}, 644 ${palmY + 70}, 652 ${palmY + 52}
+            C 659 ${palmY + 35}, 661 ${palmY + 15}, 661 ${palmY}
+        " class="guide-palm"/>`;
+
+        // Palm crease lines
+        svg += `<path d="M 464 ${palmY + 15} Q 510 ${palmY + 28}, 556 ${palmY + 32} Q 610 ${palmY + 35}, 652 ${palmY + 20}" class="guide-crease" fill="none"/>`;
+        svg += `<path d="M 462 ${palmY + 38} Q 504 ${palmY + 48}, 549 ${palmY + 52} Q 604 ${palmY + 54}, 646 ${palmY + 42}" class="guide-crease" fill="none"/>`;
+
+        // Wrist — tapers in slightly
+        svg += `<path d="
+            M 466 ${palmY + 72} L 476 ${palmY + 110}
+        " class="guide-wrist"/>`;
+        svg += `<path d="
+            M 644 ${palmY + 76} L 632 ${palmY + 110}
+        " class="guide-wrist"/>`;
+
+        svg += `</g>`;
+        svg += `</svg>`;
+
+        const overlay = document.createElement('div');
+        overlay.id = 'hand-guide-overlay';
+        overlay.innerHTML = svg;
+        overlay.style.display = dojoState.handGuideOn ? '' : 'none'; // Hidden by default
+        container.appendChild(overlay);
+    }
+
+    // ── Key-to-finger mapping ──
+    const keyFingerMap = {
+        'q': 'l-pinky', 'a': 'l-pinky', 'z': 'l-pinky',
+        'w': 'l-ring', 's': 'l-ring', 'x': 'l-ring',
+        'e': 'l-mid', 'd': 'l-mid', 'c': 'l-mid',
+        'r': 'l-index', 'f': 'l-index', 'v': 'l-index',
+        't': 'l-index', 'g': 'l-index', 'b': 'l-index',
+        'y': 'r-index', 'h': 'r-index', 'n': 'r-index',
+        'u': 'r-index', 'j': 'r-index', 'm': 'r-index',
+        'i': 'r-mid', 'k': 'r-mid',
+        'o': 'r-ring', 'l': 'r-ring',
+        'p': 'r-pinky'
+    };
+
+    // Key center positions (in SVG viewBox coords)
+    // Row 0: y=45, Row 1: y=110, Row 2: y=175
+    const keyCenters = {
+        'q': { x: 50, y: 45 }, 'w': { x: 115, y: 45 }, 'e': { x: 180, y: 45 },
+        'r': { x: 245, y: 45 }, 't': { x: 310, y: 45 }, 'y': { x: 375, y: 45 },
+        'u': { x: 440, y: 45 }, 'i': { x: 505, y: 45 }, 'o': { x: 570, y: 45 },
+        'p': { x: 635, y: 45 },
+        'a': { x: 70, y: 110 }, 's': { x: 135, y: 110 }, 'd': { x: 200, y: 110 },
+        'f': { x: 265, y: 110 }, 'g': { x: 330, y: 110 }, 'h': { x: 395, y: 110 },
+        'j': { x: 460, y: 110 }, 'k': { x: 525, y: 110 }, 'l': { x: 590, y: 110 },
+        'z': { x: 102, y: 175 }, 'x': { x: 167, y: 175 }, 'c': { x: 232, y: 175 },
+        'v': { x: 297, y: 175 }, 'b': { x: 362, y: 175 }, 'n': { x: 427, y: 175 },
+        'm': { x: 492, y: 175 }
+    };
+
+    // Finger home positions (center of home row key)
+    const fingerHomes = {
+        'l-pinky': { x: 70, y: 110 },
+        'l-ring': { x: 135, y: 110 },
+        'l-mid': { x: 200, y: 110 },
+        'l-index': { x: 265, y: 110 },
+        'r-index': { x: 460, y: 110 },
+        'r-mid': { x: 525, y: 110 },
+        'r-ring': { x: 590, y: 110 },
+        'r-pinky': { x: 648, y: 110 }
+    };
+
+    function highlightGuideFinger(key) {
+        if (!dojoState.handGuideOn) return;
+
+        // Reset ALL fingers to home position and remove active class
+        document.querySelectorAll('.guide-finger-group').forEach(g => {
+            g.style.transform = '';
+            g.querySelector('.guide-finger')?.classList.remove('finger-active');
+        });
+
+        if (!key) return;
+        const k = key.toLowerCase();
+        const fingerName = keyFingerMap[k];
+        if (!fingerName) return;
+
+        const target = keyCenters[k];
+        const home = fingerHomes[fingerName];
+        if (!target || !home) return;
+
+        const group = document.querySelector(`.guide-finger-group[data-finger="${fingerName}"]`);
+        if (!group) return;
+
+        // Calculate delta from home to target key
+        const dx = target.x - home.x;
+        const dy = target.y - home.y;
+
+        // Move the finger group
+        group.style.transform = `translate(${dx}px, ${dy}px)`;
+        group.querySelector('.guide-finger')?.classList.add('finger-active');
+    }
+
+    function toggleHandGuide() {
+        dojoState.handGuideOn = !dojoState.handGuideOn;
+        const overlay = document.getElementById('hand-guide-overlay');
+        const btn = document.getElementById('dojo-guide-btn');
+        if (overlay) overlay.style.display = dojoState.handGuideOn ? '' : 'none';
+        if (btn) btn.classList.toggle('active', dojoState.handGuideOn);
+
+        if (dojoState.handGuideOn) {
+            // Move the correct finger to the currently active key
+            const activeKey = document.querySelector('#dojo-keyboard .key-active');
+            if (activeKey) highlightGuideFinger(activeKey.dataset.key);
+        } else {
+            // Reset all fingers to home
+            document.querySelectorAll('.guide-finger-group').forEach(g => {
+                g.style.transform = '';
+                g.querySelector('.guide-finger')?.classList.remove('finger-active');
+            });
+        }
     }
 
     function initDojoLevel1() {
@@ -2798,6 +3021,7 @@ function setupSettingsListeners() {
                 document.querySelectorAll('#dojo-keyboard .key-active').forEach(el => el.classList.remove('key-active'));
                 const nextKeyEl = document.querySelector(`#dojo-keyboard .dojo-key[data-key="${nextKey}"]`);
                 if (nextKeyEl) nextKeyEl.classList.add('key-active');
+                highlightGuideFinger(nextKey);
             }
         } else {
             // Wrong character
@@ -3015,6 +3239,7 @@ function setupSettingsListeners() {
             const firstKey = dojoState.currentWord[0];
             const keyEl = document.querySelector(`#dojo-keyboard .dojo-key[data-key="${firstKey}"]`);
             if (keyEl) keyEl.classList.add('key-active');
+            highlightGuideFinger(firstKey);
 
             // Update word label based on timed mode
             const wordLabel = document.querySelector('.dojo-word-label');
@@ -3079,6 +3304,7 @@ function setupSettingsListeners() {
 
             const keyEl = document.querySelector(`#dojo-keyboard .dojo-key[data-key="${dojoState.target}"]`);
             if (keyEl) keyEl.classList.add('key-active');
+            highlightGuideFinger(dojoState.target);
         }
     }
 

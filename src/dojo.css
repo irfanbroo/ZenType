@@ -176,6 +176,123 @@
     display: flex;
     justify-content: center;
     transition: transform 0.1s ease;
+    overflow: visible;
+}
+
+/* ─── HAND GUIDE OVERLAY ─── */
+#hand-guide-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.hand-guide-svg {
+    width: 100%;
+    display: block;
+}
+
+.guide-finger {
+    fill: rgba(255, 255, 255, 0.04);
+    stroke: rgba(255, 255, 255, 0.22);
+    stroke-width: 1.2;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+    transition: fill 0.2s ease, stroke 0.2s ease, filter 0.2s ease;
+}
+
+.guide-palm {
+    fill: rgba(255, 255, 255, 0.03);
+    stroke: rgba(255, 255, 255, 0.15);
+    stroke-width: 1.2;
+    stroke-linejoin: round;
+}
+
+.guide-thumb {
+    fill: rgba(255, 255, 255, 0.03);
+    stroke: rgba(255, 255, 255, 0.18);
+    stroke-width: 1.2;
+    stroke-linejoin: round;
+}
+
+.guide-hand {
+    filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.05));
+}
+
+.guide-nail {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.15);
+    stroke-width: 0.8;
+}
+
+.guide-crease {
+    stroke: rgba(255, 255, 255, 0.08);
+    stroke-width: 0.7;
+    stroke-linecap: round;
+}
+
+.guide-wrist {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.1);
+    stroke-width: 1;
+    stroke-linecap: round;
+}
+
+.guide-web {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.12);
+    stroke-width: 1;
+    stroke-linecap: round;
+}
+
+/* Active finger highlight */
+.guide-finger-group {
+    transition: transform 0.2s ease;
+}
+
+.guide-finger-group .guide-finger.finger-active {
+    fill: rgba(206, 17, 38, 0.18);
+    stroke: rgba(206, 17, 38, 0.7);
+    stroke-width: 1.8;
+    filter: drop-shadow(0 0 8px rgba(206, 17, 38, 0.5));
+}
+
+/* Bottom controls layout */
+.dojo-bottom-controls {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    justify-content: center;
+    margin-top: 0.5rem;
+}
+
+.dojo-guide-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: rgba(255, 255, 255, 0.5);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.dojo-guide-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.dojo-guide-btn.active {
+    background: rgba(206, 17, 38, 0.15);
+    border-color: rgba(206, 17, 38, 0.5);
+    color: rgba(206, 17, 38, 0.9);
+    box-shadow: 0 0 12px rgba(206, 17, 38, 0.2);
 }
 
 .dojo-keyboard-container.shake {
