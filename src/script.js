@@ -2698,31 +2698,31 @@ function setupSettingsListeners() {
         svg += finger(265, 89, 16, 13, 'l-index');
 
         // Skin webs between fingers (natural V-curves)
-        svg += `<path d="M 77 ${palmY} Q 102 ${palmY - 14}, 127 ${palmY}" class="guide-web"/>`;
-        svg += `<path d="M 143 ${palmY} Q 168 ${palmY - 18}, 192 ${palmY}" class="guide-web"/>`;
-        svg += `<path d="M 208 ${palmY} Q 233 ${palmY - 15}, 257 ${palmY}" class="guide-web"/>`;
+        // svg += `<path d="M 77 ${palmY} Q 102 ${palmY - 14}, 127 ${palmY}" class="guide-web"/>`;
+        // svg += `<path d="M 143 ${palmY} Q 168 ${palmY - 18}, 192 ${palmY}" class="guide-web"/>`;
+        // svg += `<path d="M 208 ${palmY} Q 233 ${palmY - 15}, 257 ${palmY}" class="guide-web"/>`;
 
         // Left palm — slim, stays within finger span
-        svg += `<path d="
-            M 63 ${palmY}
-            C 63 ${palmY + 15}, 65 ${palmY + 35}, 72 ${palmY + 52}
-            C 80 ${palmY + 70}, 100 ${palmY + 78}, 140 ${palmY + 80}
-            L 200 ${palmY + 78}
-            C 240 ${palmY + 75}, 260 ${palmY + 68}, 268 ${palmY + 50}
-            C 273 ${palmY + 35}, 273 ${palmY + 15}, 273 ${palmY}
-        " class="guide-palm"/>`;
+        // svg += `<path d="
+        //     M 63 ${palmY}
+        //     C 63 ${palmY + 15}, 65 ${palmY + 35}, 72 ${palmY + 52}
+        //     C 80 ${palmY + 70}, 100 ${palmY + 78}, 140 ${palmY + 80}
+        //     L 200 ${palmY + 78}
+        //     C 240 ${palmY + 75}, 260 ${palmY + 68}, 268 ${palmY + 50}
+        //     C 273 ${palmY + 35}, 273 ${palmY + 15}, 273 ${palmY}
+        // " class="guide-palm"/>`;
 
         // Palm crease lines
-        svg += `<path d="M 72 ${palmY + 20} Q 120 ${palmY + 35}, 168 ${palmY + 32} Q 220 ${palmY + 28}, 260 ${palmY + 15}" class="guide-crease" fill="none"/>`;
-        svg += `<path d="M 78 ${palmY + 42} Q 130 ${palmY + 54}, 175 ${palmY + 52} Q 230 ${palmY + 48}, 262 ${palmY + 38}" class="guide-crease" fill="none"/>`;
+        // svg += `<path d="M 72 ${palmY + 20} Q 120 ${palmY + 35}, 168 ${palmY + 32} Q 220 ${palmY + 28}, 260 ${palmY + 15}" class="guide-crease" fill="none"/>`;
+        // svg += `<path d="M 78 ${palmY + 42} Q 130 ${palmY + 54}, 175 ${palmY + 52} Q 230 ${palmY + 48}, 262 ${palmY + 38}" class="guide-crease" fill="none"/>`;
 
         // Wrist — tapers in slightly
-        svg += `<path d="
-            M 80 ${palmY + 76} L 92 ${palmY + 110}
-        " class="guide-wrist"/>`;
-        svg += `<path d="
-            M 258 ${palmY + 72} L 248 ${palmY + 110}
-        " class="guide-wrist"/>`;
+        // svg += `<path d="
+        //     M 80 ${palmY + 76} L 92 ${palmY + 110}
+        // " class="guide-wrist"/>`;
+        // svg += `<path d="
+        //     M 258 ${palmY + 72} L 248 ${palmY + 110}
+        // " class="guide-wrist"/>`;
 
         svg += `</g>`;
 
@@ -2735,32 +2735,32 @@ function setupSettingsListeners() {
         svg += finger(648, 102, 13, 10, 'r-pinky');
 
         // Skin webs between fingers
-        svg += `<path d="M 468 ${palmY} Q 493 ${palmY - 15}, 517 ${palmY}" class="guide-web"/>`;
-        svg += `<path d="M 533 ${palmY} Q 558 ${palmY - 18}, 582 ${palmY}" class="guide-web"/>`;
-        svg += `<path d="M 598 ${palmY} Q 620 ${palmY - 14}, 641 ${palmY}" class="guide-web"/>`;
+        // svg += `<path d="M 468 ${palmY} Q 493 ${palmY - 15}, 517 ${palmY}" class="guide-web"/>`;
+        // svg += `<path d="M 533 ${palmY} Q 558 ${palmY - 18}, 582 ${palmY}" class="guide-web"/>`;
+        // svg += `<path d="M 598 ${palmY} Q 620 ${palmY - 14}, 641 ${palmY}" class="guide-web"/>`;
 
 
         // Right palm — slim, mirrored
-        svg += `<path d="
-            M 453 ${palmY}
-            C 453 ${palmY + 15}, 451 ${palmY + 35}, 456 ${palmY + 50}
-            C 464 ${palmY + 68}, 484 ${palmY + 75}, 524 ${palmY + 78}
-            L 580 ${palmY + 80}
-            C 620 ${palmY + 78}, 644 ${palmY + 70}, 652 ${palmY + 52}
-            C 659 ${palmY + 35}, 661 ${palmY + 15}, 661 ${palmY}
-        " class="guide-palm"/>`;
+        // svg += `<path d="
+        //     M 453 ${palmY}
+        //     C 453 ${palmY + 15}, 451 ${palmY + 35}, 456 ${palmY + 50}
+        //     C 464 ${palmY + 68}, 484 ${palmY + 75}, 524 ${palmY + 78}
+        //     L 580 ${palmY + 80}
+        //     C 620 ${palmY + 78}, 644 ${palmY + 70}, 652 ${palmY + 52}
+        //     C 659 ${palmY + 35}, 661 ${palmY + 15}, 661 ${palmY}
+        // " class="guide-palm"/>`;
 
         // Palm crease lines
-        svg += `<path d="M 464 ${palmY + 15} Q 510 ${palmY + 28}, 556 ${palmY + 32} Q 610 ${palmY + 35}, 652 ${palmY + 20}" class="guide-crease" fill="none"/>`;
-        svg += `<path d="M 462 ${palmY + 38} Q 504 ${palmY + 48}, 549 ${palmY + 52} Q 604 ${palmY + 54}, 646 ${palmY + 42}" class="guide-crease" fill="none"/>`;
+        // svg += `<path d="M 464 ${palmY + 15} Q 510 ${palmY + 28}, 556 ${palmY + 32} Q 610 ${palmY + 35}, 652 ${palmY + 20}" class="guide-crease" fill="none"/>`;
+        // svg += `<path d="M 462 ${palmY + 38} Q 504 ${palmY + 48}, 549 ${palmY + 52} Q 604 ${palmY + 54}, 646 ${palmY + 42}" class="guide-crease" fill="none"/>`;
 
         // Wrist — tapers in slightly
-        svg += `<path d="
-            M 466 ${palmY + 72} L 476 ${palmY + 110}
-        " class="guide-wrist"/>`;
-        svg += `<path d="
-            M 644 ${palmY + 76} L 632 ${palmY + 110}
-        " class="guide-wrist"/>`;
+        // svg += `<path d="
+        //     M 466 ${palmY + 72} L 476 ${palmY + 110}
+        // " class="guide-wrist"/>`;
+        // svg += `<path d="
+        //     M 644 ${palmY + 76} L 632 ${palmY + 110}
+        // " class="guide-wrist"/>`;
 
         svg += `</g>`;
         svg += `</svg>`;
