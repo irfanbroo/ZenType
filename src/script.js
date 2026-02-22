@@ -200,25 +200,7 @@ const wallpapers = [
         tint: 'dark',
         opacity: 15
     },
-    {
-        id: 'apt_cut',
-        isVideo: true,
-        category: 'styles',
-        categories: ['styles', 'aesthetic-videos'],
-        url: 'videos/apt_cut.mp4',
-        thumb: 'videos/thumbs/apt_cut.png',
-        opacity: 15,
-        // Preset Effects
-        effectType: 'snow',
-        effectColor: '#ff6bca',
-        effectIntensity: 77,
-        tint: 'dark',
-        soundProfile: 'typewriter',
-        particleColor: '#ff6bca',
-        caretColor: '#ff6bca',
-        wordPoolId: 1,
-        linkedTrackUrl: 'https://soundcloud.com/irfan-s-761237717/apt'
-    },
+
 
     {
         id: 'space1',
@@ -407,8 +389,7 @@ let masterPlaylist = [
     { url: 'https://soundcloud.com/eternityfounddead/stellar', name: 'Stellar', type: 'soundcloud' },
     { url: 'https://soundcloud.com/cadred/zenzenzense-lofi', name: 'Zenzenzense Lofi', type: 'soundcloud' },
     { url: 'https://soundcloud.com/txrtaa/zen-zen-zense', name: 'Zen Zen Zense', type: 'soundcloud' },
-    { url: 'https://soundcloud.com/maki-chill/suzume-lofi-cover', name: 'Suzume lofi', type: 'soundcloud' },
-    { url: 'https://soundcloud.com/irfan-s-761237717/apt', name: 'APT', type: 'soundcloud' }
+    { url: 'https://soundcloud.com/maki-chill/suzume-lofi-cover', name: 'Suzume lofi', type: 'soundcloud' }
 ];
 
 // SoundCloud Widget Interface
@@ -2827,6 +2808,9 @@ function setupSettingsListeners() {
         const fingerName = typeof info === 'string' ? info : (info ? info.finger : null);
         if (!fingerName) return;
 
+        // Highlight the legend panel
+        updateFingerLegend(fingerName);
+
         const k = key.toLowerCase();
         const target = keyCenters[k];
         const home = fingerHomes[fingerName];
@@ -2922,8 +2906,30 @@ function setupSettingsListeners() {
         dojoState.handGuideOn = !dojoState.handGuideOn;
         const overlay = document.getElementById('hand-guide-overlay');
         const btn = document.getElementById('dojo-guide-btn');
+        const legend = document.getElementById('finger-legend-scroll');
         if (overlay) overlay.style.display = dojoState.handGuideOn ? '' : 'none';
         if (btn) btn.classList.toggle('active', dojoState.handGuideOn);
+
+        if (legend) {
+            if (dojoState.handGuideOn) {
+                // Show first, then play open animation
+                legend.style.display = '';
+                legend.classList.remove('scroll-closing');
+                // Force reflow so animation restarts
+                void legend.offsetWidth;
+                legend.classList.add('scroll-opening');
+            } else {
+                // Play close animation, then hide
+                legend.classList.remove('scroll-opening');
+                legend.classList.add('scroll-closing');
+                legend.addEventListener('animationend', () => {
+                    if (legend.classList.contains('scroll-closing')) {
+                        legend.style.display = 'none';
+                        legend.classList.remove('scroll-closing');
+                    }
+                }, { once: true });
+            }
+        }
 
         if (dojoState.handGuideOn) {
             // Move the correct finger to the currently active key
@@ -2935,7 +2941,20 @@ function setupSettingsListeners() {
                 g.style.transform = '';
                 g.querySelector('.guide-finger')?.classList.remove('finger-active');
             });
+            // Clear legend highlights
+            document.querySelectorAll('.finger-legend-item').forEach(i => i.classList.remove('legend-active'));
         }
+    }
+
+    // Update the legend panel to highlight the active finger
+    function updateFingerLegend(fingerName) {
+        if (!dojoState.handGuideOn) return;
+        const items = document.querySelectorAll('.finger-legend-item');
+        items.forEach(item => {
+            const legFinger = item.dataset.legendFinger;
+            const isActive = fingerName && fingerName.includes(legFinger);
+            item.classList.toggle('legend-active', isActive);
+        });
     }
 
     function initDojoLevel1() {
@@ -4866,31 +4885,6 @@ function setupSettingsListeners() {
             document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             saveConfig();
-        });
-    }
-    // Support Modal
-    const supportBtn = document.querySelector('.support-btn');
-    const supportModal = document.getElementById('support-modal');
-    const closeSupportBtn = document.getElementById('close-support');
-
-    if (supportBtn && supportModal) {
-        supportBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            supportModal.classList.remove('hidden');
-        });
-    }
-
-    if (closeSupportBtn && supportModal) {
-        closeSupportBtn.addEventListener('click', () => {
-            supportModal.classList.add('hidden');
-        });
-    }
-
-    if (supportModal) {
-        supportModal.addEventListener('click', (e) => {
-            if (e.target === supportModal) {
-                supportModal.classList.add('hidden');
-            }
         });
     }
 }
