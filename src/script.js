@@ -366,6 +366,85 @@ let soundEnabled = true;
 let noiseBuffer = null;
 let currentBgAudio = null; // Track separate audio file for wallpapers
 let masterAudio = new Audio();
+
+// Hagakure Mode Theme Music — Playlist
+const hagakurePlaylist = [
+    { url: '/hagakure-theme.mp3', name: 'Warrior\'s Requiem' },
+    // Add more tracks here:
+    // { url: '/hagakure-track2.mp3', name: 'Blood & Steel' },
+    // { url: '/hagakure-track3.mp3', name: 'Crimson Dawn' },
+];
+let hagakureAudio = new Audio(hagakurePlaylist[0].url);
+hagakureAudio.loop = true;
+hagakureAudio.volume = 0.5;
+let currentHagakureTrack = 0;
+let wasPlayingBeforeHagakure = { masterPlaying: false, scPlaying: false, bgAudioPlaying: false, trackIndex: 0 };
+
+// Build Hagakure track selector UI
+function initHagakureTrackSelector() {
+    const list = document.getElementById('h-track-list');
+    if (!list) return;
+    list.innerHTML = '';
+
+    hagakurePlaylist.forEach((track, i) => {
+        const item = document.createElement('div');
+        item.className = 'h-track-item' + (i === currentHagakureTrack ? ' active' : '');
+        item.innerHTML = `<i class="${i === currentHagakureTrack ? 'ri-play-fill' : 'ri-music-fill'}"></i><span>${track.name}</span>`;
+        item.addEventListener('click', () => {
+            playHagakureTrack(i);
+        });
+        list.appendChild(item);
+    });
+
+    // Music button toggle
+    const btn = document.getElementById('h-music-btn');
+    const panel = document.getElementById('h-track-panel');
+    const closeBtn = document.getElementById('h-track-close');
+
+    if (btn) {
+        btn.onclick = (e) => {
+            e.stopPropagation();
+            panel.classList.toggle('hidden');
+        };
+    }
+    if (closeBtn) {
+        closeBtn.onclick = () => panel.classList.add('hidden');
+    }
+
+    // Update music button playing state
+    updateHagakureMusicBtn();
+}
+
+function playHagakureTrack(index) {
+    if (index < 0 || index >= hagakurePlaylist.length) return;
+    currentHagakureTrack = index;
+    const track = hagakurePlaylist[index];
+
+    hagakureAudio.src = track.url;
+    hagakureAudio.volume = (userConfig.bgVolume !== undefined ? userConfig.bgVolume : 50) / 100;
+    hagakureAudio.currentTime = 0;
+    hagakureAudio.play().catch(e => console.log('Hagakure track play failed:', e));
+
+    // Update track list UI
+    const items = document.querySelectorAll('.h-track-item');
+    items.forEach((item, i) => {
+        item.classList.toggle('active', i === index);
+        const icon = item.querySelector('i');
+        if (icon) icon.className = i === index ? 'ri-play-fill' : 'ri-music-fill';
+    });
+
+    updateHagakureMusicBtn();
+}
+
+function updateHagakureMusicBtn() {
+    const btn = document.getElementById('h-music-btn');
+    if (!btn) return;
+    if (!hagakureAudio.paused) {
+        btn.classList.add('playing');
+    } else {
+        btn.classList.remove('playing');
+    }
+}
 let masterPlaylist = [
     { url: '', name: 'No Track', type: 'none' },
     { url: 'https://soundcloud.com/irfan-s-761237717/akatsuki-no-requiem', name: 'Akatsuki no Requiem', type: 'soundcloud' },
@@ -4137,7 +4216,35 @@ function setupSettingsListeners() {
         const splash = document.getElementById('hagakure-splash');
         splash.classList.remove('hidden');
 
-        // 2. Play Sound (Optional - can add later)
+        // 2. Pause all existing audio and play Hagakure theme
+        // Save current audio state for restoration on exit
+        wasPlayingBeforeHagakure.trackIndex = currentTrackIndex;
+        wasPlayingBeforeHagakure.masterPlaying = !masterAudio.paused;
+        wasPlayingBeforeHagakure.bgAudioPlaying = currentBgAudio && !currentBgAudio.paused;
+        wasPlayingBeforeHagakure.scPlaying = false;
+
+        // Pause master audio
+        if (!masterAudio.paused) masterAudio.pause();
+
+        // Pause SoundCloud widget
+        if (scWidget) {
+            try {
+                scWidget.isPaused((paused) => {
+                    if (!paused) {
+                        wasPlayingBeforeHagakure.scPlaying = true;
+                        scWidget.pause();
+                    }
+                });
+            } catch (e) {
+                scWidget.pause();
+            }
+        }
+
+        // Pause wallpaper bg audio
+        if (currentBgAudio && !currentBgAudio.paused) currentBgAudio.pause();
+
+        // Play Hagakure theme music (default track or last selected)
+        playHagakureTrack(currentHagakureTrack);
 
         // 3. Wait 2 seconds, then transition
         setTimeout(() => {
@@ -4157,6 +4264,9 @@ function setupSettingsListeners() {
             // Show Hagakure UI
             const hUI = document.getElementById('hagakure-ui');
             hUI.classList.remove('hidden');
+
+            // Init hagakure track selector UI
+            initHagakureTrackSelector();
 
             // Set Game State
             state.gameMode = 'hagakure';
@@ -4221,6 +4331,10 @@ function setupSettingsListeners() {
         const hUI = document.getElementById('hagakure-ui');
         if (hUI) hUI.classList.add('hidden');
 
+        // Close track panel if open
+        const trackPanel = document.getElementById('h-track-panel');
+        if (trackPanel) trackPanel.classList.add('hidden');
+
         // Show Standard UI
         const gameUI = document.getElementById('game-ui');
         const appHeader = document.getElementById('app-header');
@@ -4233,6 +4347,20 @@ function setupSettingsListeners() {
         if (footer) footer.style.display = ''; // Reset to default CSS
 
         state.gameMode = 'time'; // Default back to time or previous
+
+        // Stop Hagakure theme music
+        hagakureAudio.pause();
+        hagakureAudio.currentTime = 0;
+
+        // Resume previous audio state
+        if (wasPlayingBeforeHagakure.scPlaying && scWidget) {
+            scWidget.play();
+        } else if (wasPlayingBeforeHagakure.masterPlaying) {
+            masterAudio.play().catch(e => console.log('Resume master audio failed:', e));
+        }
+        if (wasPlayingBeforeHagakure.bgAudioPlaying && currentBgAudio) {
+            currentBgAudio.play().catch(e => console.log('Resume bg audio failed:', e));
+        }
 
         // Clear Hagakure specific state
         if (state.timerInterval) clearInterval(state.timerInterval);
@@ -4799,6 +4927,7 @@ function setupSettingsListeners() {
         if (currentBgAudio) currentBgAudio.volume = vol;
         if (UI.bgVideo) UI.bgVideo.volume = vol;
         if (scWidget) scWidget.setVolume(userConfig.bgVolume);
+        hagakureAudio.volume = vol;
         saveConfig();
     });
 
