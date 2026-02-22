@@ -505,58 +505,16 @@ function updateHagakureMusicBtn() {
 }
 let masterPlaylist = [
     { url: '', name: 'No Track', type: 'none' },
-    { url: 'https://soundcloud.com/irfan-s-761237717/akatsuki-no-requiem', name: 'Akatsuki no Requiem', type: 'soundcloud' },
-    { url: 'https://soundcloud.com/law_xvm/boa-duvet-good-quality-slowed', name: 'Bôa - Duvet', type: 'soundcloud' },
-    { url: 'https://soundcloud.com/kijugo/crossing-fields-but-guess-what-its-lofi', name: 'Crossing Fields', type: 'soundcloud' },
-    { url: 'https://soundcloud.com/kijugo/blue-bird-but-is-it-okay-if-its-lofi', name: 'Blue Bird', type: 'soundcloud' },
-    { url: 'https://soundcloud.com/ziad-a-mahmoud/interstellar-main-theme-extra-extended-soundtrack-by-hans-zimmer', name: 'Interstellar Main Theme', type: 'soundcloud' },
-    { url: 'https://soundcloud.com/alex196-753703305/black-clover-ost-black-rover', name: 'Black Clover Ost Black Rover', type: 'soundcloud' },
-    { url: 'https://soundcloud.com/kijugo/uso-but-guess-what-its-lofi', name: 'USO', type: 'soundcloud' },
-    { url: 'https://soundcloud.com/myabandonedhome/snowfall-w-oneheart', name: 'Snowfall', type: 'soundcloud' },
-    { url: 'https://soundcloud.com/user-722231447/20250204_184406191-m4r', name: 'Call Of Silence', type: 'soundcloud' },
-    { url: 'https://soundcloud.com/shardzoestuff/kimi-no-na-wa-nandemonaiya-mitsuha-ver', name: 'Nandemonaiya (Mitsuha ver.)', type: 'soundcloud' },
-    { url: 'https://soundcloud.com/nightbot-59011134/sparkle-your-name-kimi-no-na-wa-piano-radwimps', name: 'Sparkle - Piano', type: 'soundcloud' },
-    { url: 'https://soundcloud.com/irfan-s-761237717/akuma-no-ko', name: 'Akuma no Ko', type: 'soundcloud' },
-    { url: 'https://soundcloud.com/kijugo/hikaru-nara-but-is-it-okay-if-its-lofi', name: 'Hikaru Nara', type: 'soundcloud' },
-    { url: 'https://soundcloud.com/kijugo/kamado-tanjiro-no-uta-but-guess-what-its-lofi', name: 'Kamado Tanjiro No Uta', type: 'soundcloud' },
-    { url: 'https://soundcloud.com/kijugo/black-catcher-but-guess-what-its-lofi', name: 'Black Catcher', type: 'soundcloud' },
-    { url: 'https://soundcloud.com/kijugo/lost-in-paradise-but-is-it-okay-if-its-lofi', name: 'Lost In Paradise', type: 'soundcloud' },
-    { url: 'https://soundcloud.com/yukinchi/everlasting-shine-black-cloverbut-a-lofi-remix', name: 'Everlasting Shine', type: 'soundcloud' },
-    { url: 'https://soundcloud.com/user-862370001/chubina-edit-audio', name: 'Chubina', type: 'soundcloud' },
-    { url: 'https://soundcloud.com/eternityfounddead/stellar', name: 'Stellar', type: 'soundcloud' },
-    { url: 'https://soundcloud.com/cadred/zenzenzense-lofi', name: 'Zenzenzense Lofi', type: 'soundcloud' },
-    { url: 'https://soundcloud.com/txrtaa/zen-zen-zense', name: 'Zen Zen Zense', type: 'soundcloud' },
-    { url: 'https://soundcloud.com/maki-chill/suzume-lofi-cover', name: 'Suzume lofi', type: 'soundcloud' }
+    { url: 'Dark Sky.mp3', name: 'Dark Sky', type: 'local' },
+    { url: 'Daydreams.mp3', name: 'Daydreams', type: 'local' },
+    { url: 'Lavender.mp3', name: 'Lavender', type: 'local' },
+    { url: 'Sunroof.mp3', name: 'Sunroof', type: 'local' },
+    { url: 'The Quiet Between Us.mp3', name: 'The Quiet Between Us', type: 'local' },
+    { url: 'Warm Lights.mp3', name: 'Warm Lights', type: 'local' },
 ];
 
-// SoundCloud Widget Interface
-let scWidget = null;
-let currentSCUrl = 'https://soundcloud.com/user-722231447/20250204_184406191-m4r';
 let currentTrackIndex = 0;
-let pendingTrackIndex = null;
 
-window.addEventListener('load', () => {
-    const iframe = document.getElementById('sc-widget');
-    if (iframe) {
-        scWidget = SC.Widget(iframe);
-        scWidget.bind(SC.Widget.Events.READY, () => {
-            console.log('SoundCloud Widget Ready');
-            scWidget.setVolume(userConfig.bgVolume !== undefined ? userConfig.bgVolume : 50);
-
-            // Play pending track if any (e.g. from initTheme with APT wallpaper)
-            if (pendingTrackIndex !== null) {
-                console.log("Playing pending track:", pendingTrackIndex);
-                playSpecificMasterTrack(pendingTrackIndex);
-                pendingTrackIndex = null;
-            }
-        });
-        scWidget.bind(SC.Widget.Events.FINISH, () => {
-            // Loop the current track
-            scWidget.seekTo(0);
-            scWidget.play();
-        });
-    }
-});
 
 function initTrackSelector() {
     const selector = document.getElementById('track-selector');
@@ -568,9 +526,8 @@ function initTrackSelector() {
         const item = document.createElement('div');
         item.className = 'track-item';
 
-        // Check if this track is the currently playing one
         // Default to "No Track" (index 0) if nothing is playing
-        if (index === 0 && masterAudio.paused && (!scWidget || !currentSCUrl)) {
+        if (index === 0 && masterAudio.paused) {
             item.classList.add('active');
             currentName.innerText = track.name;
         }
@@ -608,9 +565,7 @@ function playSpecificMasterTrack(index) {
 
     // Handle 'No Track'
     if (track.type === 'none') {
-        if (scWidget) scWidget.pause();
         masterAudio.pause();
-        // Update UI
         document.getElementById('current-track-name').innerText = track.name;
         document.querySelectorAll('.track-item').forEach((item, i) => {
             item.classList.toggle('active', i === index);
@@ -619,89 +574,21 @@ function playSpecificMasterTrack(index) {
         return;
     }
 
-    // Handle SoundCloud
-    if (track.type === 'soundcloud') {
-        if (!scWidget) {
-            // Widget not ready yet, queue it
-            console.log("Widget not ready, queuing track:", index);
-            pendingTrackIndex = index;
-            return;
-        }
+    // Handle Local Audio
+    masterAudio.src = track.url + '?t=' + Date.now();
+    masterAudio.volume = (userConfig.bgVolume !== undefined ? userConfig.bgVolume : 50) / 100;
 
-        // Pause local audio
-        masterAudio.pause();
-
-        // Play SC
-        // SHOW LOADING INDICATOR
-        const trackNameEl = document.getElementById('current-track-name');
-
-        // Immediately update UI to show we selected this track
-        document.querySelectorAll('.track-item').forEach((item, i) => {
-            item.classList.toggle('active', i === index);
-        });
-
-        trackNameEl.innerHTML = "LOADING";
-        trackNameEl.classList.add('track-loading');
-
-        // Helper to clear loading state
-        const clearLoading = () => {
-            // Verify we are still playing the SAME track we started loading
-            if (currentTrackIndex === index) {
-                const trackNameEl = document.getElementById('current-track-name');
-                if (trackNameEl) {
-                    trackNameEl.innerText = track.name;
-                    trackNameEl.classList.remove('track-loading');
-                }
-            }
-        };
-
-        // Bind clearLoading to PLAY/PROGRESS event
-        // We unbind first to avoid stacking listeners if possible, but SC widget API doesn't make unbinding easy by event name only?
-        // actually scWidget.unbind(SC.Widget.Events.PLAY) works if we pass the same function reference, but we are creating new functions each time.
-        // It's better to just rely on the race-condition check inside clearLoading or just use one permanent listener that checks state.
-        // For now, let's just add it, but maybe we should rely on the `callback` of load() and a timeout.
-
-        // Safety fallback: If it doesn't play in 8 seconds, clear loading
-        setTimeout(clearLoading, 8000);
-
-        if (currentSCUrl === track.url) {
-            scWidget.play();
-            scWidget.setVolume(userConfig.bgVolume !== undefined ? userConfig.bgVolume : 50);
-            // If it was already loaded, it might play fast.
-            setTimeout(clearLoading, 1000);
-        } else {
-            scWidget.load(track.url, {
-                auto_play: true,
-                show_artwork: false,
-                callback: function () {
-                    scWidget.setVolume(userConfig.bgVolume !== undefined ? userConfig.bgVolume : 50);
-                    // Explicitly try to play again to be sure
-                    scWidget.play();
-                    // Clear loading text shortly after load finishes
-                    setTimeout(clearLoading, 1000);
-                }
-            });
-            currentSCUrl = track.url;
-        }
-    } else {
-        // Handle Local Audio
-        if (scWidget) scWidget.pause();
-
-        masterAudio.src = track.url + "?t=" + Date.now(); // Cache bust if needed, or just normal
-        masterAudio.volume = (userConfig.bgVolume !== undefined ? userConfig.bgVolume : 50) / 100;
-
-        if (soundEnabled) {
-            masterAudio.muted = false;
-            masterAudio.play().catch(e => console.log("Manual track play failed:", e));
-        }
-
-        // Update UI
-        document.getElementById('current-track-name').innerText = track.name;
-        document.getElementById('current-track-name').classList.remove('track-loading');
-        document.querySelectorAll('.track-item').forEach((item, i) => {
-            item.classList.toggle('active', i === index);
-        });
+    if (soundEnabled) {
+        masterAudio.muted = false;
+        masterAudio.play().catch(e => console.log('Manual track play failed:', e));
     }
+
+    // Update UI
+    document.getElementById('current-track-name').innerText = track.name;
+    document.getElementById('current-track-name').classList.remove('track-loading');
+    document.querySelectorAll('.track-item').forEach((item, i) => {
+        item.classList.toggle('active', i === index);
+    });
 }
 
 
@@ -3747,16 +3634,11 @@ function setupSettingsListeners() {
             // Save current audio state then pause everything
             wasPlayingBeforeShadow.masterPlaying = !masterAudio.paused;
             wasPlayingBeforeShadow.bgAudioPlaying = currentBgAudio && !currentBgAudio.paused;
-            wasPlayingBeforeShadow.scPlaying = false;
+            wasPlayingBeforeShadow.bgVideoMuted = UI.bgVideo ? UI.bgVideo.muted : true;
             if (!masterAudio.paused) masterAudio.pause();
-            if (scWidget) {
-                try {
-                    scWidget.isPaused((paused) => {
-                        if (!paused) { wasPlayingBeforeShadow.scPlaying = true; scWidget.pause(); }
-                    });
-                } catch (e) { scWidget.pause(); }
-            }
             if (currentBgAudio && !currentBgAudio.paused) currentBgAudio.pause();
+            // Mute wallpaper video audio (e.g. Gura Yuri has built-in audio)
+            if (UI.bgVideo) UI.bgVideo.muted = true;
 
             // Start Shadow music immediately
             playShadowTrack(currentShadowTrack);
@@ -4225,14 +4107,14 @@ function setupSettingsListeners() {
         // Stop Shadow music and restore previous audio
         shadowAudio.pause();
         shadowAudio.currentTime = 0;
-        if (wasPlayingBeforeShadow.scPlaying && scWidget) {
-            scWidget.play();
-        } else if (wasPlayingBeforeShadow.masterPlaying) {
+        if (wasPlayingBeforeShadow.masterPlaying) {
             masterAudio.play().catch(e => console.log('Resume master failed:', e));
         }
         if (wasPlayingBeforeShadow.bgAudioPlaying && currentBgAudio) {
             currentBgAudio.play().catch(e => console.log('Resume bg failed:', e));
         }
+        // Restore wallpaper video audio
+        if (UI.bgVideo) UI.bgVideo.muted = wasPlayingBeforeShadow.bgVideoMuted ?? true;
 
         // Hide Shadow UI completely
         document.getElementById('shadow-ui').classList.add('hidden');
@@ -4313,27 +4195,15 @@ function setupSettingsListeners() {
         wasPlayingBeforeHagakure.trackIndex = currentTrackIndex;
         wasPlayingBeforeHagakure.masterPlaying = !masterAudio.paused;
         wasPlayingBeforeHagakure.bgAudioPlaying = currentBgAudio && !currentBgAudio.paused;
-        wasPlayingBeforeHagakure.scPlaying = false;
+        wasPlayingBeforeHagakure.bgVideoMuted = UI.bgVideo ? UI.bgVideo.muted : true;
 
         // Pause master audio
         if (!masterAudio.paused) masterAudio.pause();
 
-        // Pause SoundCloud widget
-        if (scWidget) {
-            try {
-                scWidget.isPaused((paused) => {
-                    if (!paused) {
-                        wasPlayingBeforeHagakure.scPlaying = true;
-                        scWidget.pause();
-                    }
-                });
-            } catch (e) {
-                scWidget.pause();
-            }
-        }
-
         // Pause wallpaper bg audio
         if (currentBgAudio && !currentBgAudio.paused) currentBgAudio.pause();
+        // Mute wallpaper video audio (e.g. Gura Yuri has built-in audio)
+        if (UI.bgVideo) UI.bgVideo.muted = true;
 
         // Play Hagakure theme music (default track or last selected)
         playHagakureTrack(currentHagakureTrack);
@@ -4445,14 +4315,14 @@ function setupSettingsListeners() {
         hagakureAudio.currentTime = 0;
 
         // Resume previous audio state
-        if (wasPlayingBeforeHagakure.scPlaying && scWidget) {
-            scWidget.play();
-        } else if (wasPlayingBeforeHagakure.masterPlaying) {
+        if (wasPlayingBeforeHagakure.masterPlaying) {
             masterAudio.play().catch(e => console.log('Resume master audio failed:', e));
         }
         if (wasPlayingBeforeHagakure.bgAudioPlaying && currentBgAudio) {
             currentBgAudio.play().catch(e => console.log('Resume bg audio failed:', e));
         }
+        // Restore wallpaper video audio
+        if (UI.bgVideo) UI.bgVideo.muted = wasPlayingBeforeHagakure.bgVideoMuted ?? true;
 
         // Clear Hagakure specific state
         if (state.timerInterval) clearInterval(state.timerInterval);
