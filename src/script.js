@@ -380,6 +380,64 @@ hagakureAudio.volume = 0.5;
 let currentHagakureTrack = 0;
 let wasPlayingBeforeHagakure = { masterPlaying: false, scPlaying: false, bgAudioPlaying: false, trackIndex: 0 };
 
+// ── SHADOW MODE MUSIC ──────────────────────────────────────────────────────
+const shadowPlaylist = [
+    { url: '/shadow1.mp3', name: 'Abyssal Whispers' },
+    // { url: '/shadow2.mp3', name: 'Void Resonance' },
+];
+let shadowAudio = new Audio(shadowPlaylist[0].url);
+shadowAudio.loop = true;
+shadowAudio.volume = 0.5;
+let currentShadowTrack = 0;
+let wasPlayingBeforeShadow = { masterPlaying: false, scPlaying: false, bgAudioPlaying: false };
+
+function initShadowTrackSelector() {
+    const list = document.getElementById('s-track-list');
+    if (!list) return;
+    list.innerHTML = '';
+
+    shadowPlaylist.forEach((track, i) => {
+        const item = document.createElement('div');
+        item.className = 'sm-track-item' + (i === currentShadowTrack ? ' active' : '');
+        item.innerHTML = `<i class="${i === currentShadowTrack ? 'ri-play-fill' : 'ri-disc-fill'}"></i><span>${track.name}</span>`;
+        item.addEventListener('click', () => playShadowTrack(i));
+        list.appendChild(item);
+    });
+
+    const btn = document.getElementById('s-music-btn');
+    const panel = document.getElementById('s-track-panel');
+    const closeBtn = document.getElementById('s-track-close');
+
+    if (btn) btn.onclick = (e) => { e.stopPropagation(); panel.classList.toggle('hidden'); };
+    if (closeBtn) closeBtn.onclick = () => panel.classList.add('hidden');
+
+    updateShadowMusicBtn();
+}
+
+function playShadowTrack(index) {
+    if (index < 0 || index >= shadowPlaylist.length) return;
+    currentShadowTrack = index;
+    shadowAudio.src = shadowPlaylist[index].url;
+    shadowAudio.volume = (userConfig.bgVolume !== undefined ? userConfig.bgVolume : 50) / 100;
+    shadowAudio.currentTime = 0;
+    shadowAudio.play().catch(e => console.log('Shadow track play failed:', e));
+
+    document.querySelectorAll('.sm-track-item').forEach((el, i) => {
+        el.classList.toggle('active', i === index);
+        const icon = el.querySelector('i');
+        if (icon) icon.className = i === index ? 'ri-play-fill' : 'ri-disc-fill';
+    });
+
+    updateShadowMusicBtn();
+}
+
+function updateShadowMusicBtn() {
+    const btn = document.getElementById('s-music-btn');
+    if (!btn) return;
+    btn.classList.toggle('playing', !shadowAudio.paused);
+}
+
+
 // Build Hagakure track selector UI
 function initHagakureTrackSelector() {
     const list = document.getElementById('h-track-list');
@@ -3686,6 +3744,23 @@ function setupSettingsListeners() {
                 if (el) el.classList.add('hidden');
             });
 
+            // Save current audio state then pause everything
+            wasPlayingBeforeShadow.masterPlaying = !masterAudio.paused;
+            wasPlayingBeforeShadow.bgAudioPlaying = currentBgAudio && !currentBgAudio.paused;
+            wasPlayingBeforeShadow.scPlaying = false;
+            if (!masterAudio.paused) masterAudio.pause();
+            if (scWidget) {
+                try {
+                    scWidget.isPaused((paused) => {
+                        if (!paused) { wasPlayingBeforeShadow.scPlaying = true; scWidget.pause(); }
+                    });
+                } catch (e) { scWidget.pause(); }
+            }
+            if (currentBgAudio && !currentBgAudio.paused) currentBgAudio.pause();
+
+            // Start Shadow music immediately
+            playShadowTrack(currentShadowTrack);
+
             // Transition to Shadow Setup after ritual
             setTimeout(() => {
                 shadowSplash.classList.add('hidden');
@@ -3693,6 +3768,7 @@ function setupSettingsListeners() {
                 const shadowUI = document.getElementById('shadow-ui');
                 if (shadowUI) {
                     shadowUI.classList.remove('hidden');
+                    initShadowTrackSelector();
                     initShadowSetup(); // Initialize listeners
                 }
             }, 3000);
@@ -4146,8 +4222,24 @@ function setupSettingsListeners() {
         const title = document.getElementById('s-result-title');
         if (title) title.classList.remove('victory-title-enter');
 
+        // Stop Shadow music and restore previous audio
+        shadowAudio.pause();
+        shadowAudio.currentTime = 0;
+        if (wasPlayingBeforeShadow.scPlaying && scWidget) {
+            scWidget.play();
+        } else if (wasPlayingBeforeShadow.masterPlaying) {
+            masterAudio.play().catch(e => console.log('Resume master failed:', e));
+        }
+        if (wasPlayingBeforeShadow.bgAudioPlaying && currentBgAudio) {
+            currentBgAudio.play().catch(e => console.log('Resume bg failed:', e));
+        }
+
         // Hide Shadow UI completely
         document.getElementById('shadow-ui').classList.add('hidden');
+
+        // Close track panel
+        const sTPanel = document.getElementById('s-track-panel');
+        if (sTPanel) sTPanel.classList.add('hidden');
 
         // Reset internal Shadow states
         document.getElementById('s-game-board').classList.add('hidden');
