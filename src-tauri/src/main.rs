@@ -2,11 +2,15 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use std::sync::Mutex;
+use std::time::{SystemTime, UNIX_EPOCH};
 use tauri::Manager;
 use discord_rich_presence::{activity, DiscordIpc, DiscordIpcClient};
 
-// Wrapper so we can store the client in Tauri managed state
-struct DiscordClient(Mutex<Option<DiscordIpcClient>>);
+// Wrapper so we can store the client + app start time in Tauri managed state
+struct DiscordClient {
+    client: Mutex<Option<DiscordIpcClient>>,
+    start_time: i64,
+}
 
 #[tauri::command]
 fn set_discord_presence(
@@ -14,7 +18,8 @@ fn set_discord_presence(
     state_text: String,
     large_image_text: String,
 ) {
-    if let Ok(mut guard) = discord.0.lock() {
+    let start = discord.start_time;
+    if let Ok(mut guard) = discord.client.lock() {
         if let Some(client) = guard.as_mut() {
             let _ = client.set_activity(
                 activity::Activity::new()
@@ -24,6 +29,10 @@ fn set_discord_presence(
                         activity::Assets::new()
                             .large_image("app_logo")
                             .large_text(&large_image_text),
+                    )
+                    .timestamps(
+                        activity::Timestamps::new()
+                            .start(start),
                     ),
             );
         }
@@ -32,7 +41,7 @@ fn set_discord_presence(
 
 #[tauri::command]
 fn clear_discord_presence(discord: tauri::State<DiscordClient>) {
-    if let Ok(mut guard) = discord.0.lock() {
+    if let Ok(mut guard) = discord.client.lock() {
         if let Some(client) = guard.as_mut() {
             let _ = client.clear_activity();
         }
@@ -40,6 +49,11 @@ fn clear_discord_presence(discord: tauri::State<DiscordClient>) {
 }
 
 fn main() {
+    let start_time = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_secs() as i64;
+
     // Try to connect to Discord — if Discord isn't running, we just skip
     let discord_client = match DiscordIpcClient::new("1475312349484159147") {
         Ok(mut client) => {
@@ -53,6 +67,10 @@ fn main() {
                             activity::Assets::new()
                                 .large_image("app_logo")
                                 .large_text("Last Practice: 0 WPM"),
+                        )
+                        .timestamps(
+                            activity::Timestamps::new()
+                                .start(start_time),
                         ),
                 );
                 Some(client)
@@ -64,7 +82,10 @@ fn main() {
     };
 
     tauri::Builder::default()
-        .manage(DiscordClient(Mutex::new(discord_client)))
+        .manage(DiscordClient {
+            client: Mutex::new(discord_client),
+            start_time,
+        })
         .invoke_handler(tauri::generate_handler![
             set_discord_presence,
             clear_discord_presence

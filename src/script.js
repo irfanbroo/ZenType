@@ -338,12 +338,25 @@ const discordPresence = {
     concludedTimeout: null,
     currentState: 'idle',
 
+    idleFlavors: [
+        'In Stillness', 'Awaiting the Flow', 'Between Keystrokes',
+        'The Calm Before', 'Resting the Mind', 'Breathing In Silence',
+        'Keys at Rest', 'Gathering Focus', 'The Void Awaits', 'Mind Like Water'
+    ],
+    typingFlavors: [
+        'Mastering the Keys', 'Finding the Flow', 'In the Zone',
+        'Words Like Water', 'Chasing Perfection', 'Fingers in Motion',
+        'The Keys Speak', 'Carving the Path', 'Rhythm Unlocked', 'Typing with Intent'
+    ],
+
+    pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; },
+
     async setIdle() {
         if (this.currentState === 'idle') return;
         this.currentState = 'idle';
         try {
             await window.__TAURI_INTERNALS__.invoke('set_discord_presence', {
-                stateText: 'In Stillness',
+                stateText: this.pick(this.idleFlavors),
                 largeImageText: `Last Practice: ${this.previousWpm} WPM`
             });
         } catch (e) { /* Discord not connected */ }
@@ -358,7 +371,7 @@ const discordPresence = {
         this.currentState = 'typing';
         try {
             await window.__TAURI_INTERNALS__.invoke('set_discord_presence', {
-                stateText: `Mastering the Keys (${duration}s)`,
+                stateText: `${this.pick(this.typingFlavors)} (${duration}s)`,
                 largeImageText: 'Calm Hands. Clear Mind.'
             });
         } catch (e) { /* Discord not connected */ }
