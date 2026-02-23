@@ -231,15 +231,24 @@ const wallpapers = [
     },
     { id: 'relax2', isVideo: false, category: 'relax', url: 'images/relax2.jpg', thumb: 'images/relax2.jpg', tint: 'dark', opacity: 15 },
     { id: 'relax3', isVideo: false, category: 'relax', url: 'images/relax3.jpg', thumb: 'images/relax3.jpg', tint: 'dark', opacity: 15 },
-    { id: 'relax4', isVideo: false, category: 'relax', url: 'images/relax4.jpg', thumb: 'images/relax4.jpg', tint: 'dark', opacity: 15 },
     { id: 'relax5', isVideo: false, category: 'relax', url: 'images/relax5.jpg', thumb: 'images/relax5.jpg', tint: 'dark', opacity: 15 },
     { id: 'relax6', isVideo: false, category: 'relax', url: 'images/relax6.jpg', thumb: 'images/relax6.jpg', tint: 'dark', opacity: 15 },
+    { id: 'girl-2', isVideo: false, category: 'relax', url: 'images/girl-2.png', thumb: 'images/girl-2.png', tint: 'dark', opacity: 15 },
+    { id: 'relax7', isVideo: false, category: 'relax', url: 'images/relax7.png', thumb: 'images/relax7.png', tint: 'dark', opacity: 15 },
+    { id: 'relax8', isVideo: false, category: 'relax', url: 'images/relax8.png', thumb: 'images/relax8.png', tint: 'dark', opacity: 15 },
+    { id: 'relax9', isVideo: false, category: 'relax', url: 'images/relax9.png', thumb: 'images/relax9.png', tint: 'dark', opacity: 15 },
+    { id: 'relax10', isVideo: false, category: 'relax', url: 'images/relax10.png', thumb: 'images/relax10.png', tint: 'dark', opacity: 15 },
 
     // ═══ AESTHETIC ═══
+    { id: 'gal1', isVideo: false, category: 'aesthetic', url: 'images/gal1.png', thumb: 'images/gal1.png', tint: 'dark', opacity: 15 },
+    { id: 'gal2', isVideo: false, category: 'aesthetic', url: 'images/gal2.png', thumb: 'images/gal2.png', tint: 'dark', opacity: 15 },
     { id: 'neon-1', isVideo: false, category: 'aesthetic', tint: 'dark', opacity: 15, url: 'https://images.unsplash.com/photo-1542051841857-5f90071e7989?q=80&w=3840', thumb: 'https://images.unsplash.com/photo-1542051841857-5f90071e7989?q=80&w=400' },
     { id: 'japan-night', isVideo: false, category: 'aesthetic', tint: 'dark', opacity: 15, url: 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?q=80&w=3840', thumb: 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?q=80&w=400' },
     { id: 'lofi-room', isVideo: false, category: 'aesthetic', tint: 'dark', opacity: 15, url: 'https://images.unsplash.com/photo-1598198414976-ddb788ec80c1?q=80&w=3840', thumb: 'https://images.unsplash.com/photo-1598198414976-ddb788ec80c1?q=80&w=400' },
     { id: 'minimal-dark', isVideo: false, category: 'aesthetic', tint: 'dark', opacity: 15, url: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=3840', thumb: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=400' },
+    { id: 'girl-1', isVideo: false, category: 'aesthetic', url: 'images/girl-1.png', thumb: 'images/girl-1.png', tint: 'dark', opacity: 15 },
+    { id: 'boy-1', isVideo: false, category: 'aesthetic', url: 'images/boy-1.png', thumb: 'images/boy-1.png', tint: 'dark', opacity: 15 },
+    { id: 'girl-3', isVideo: false, category: 'aesthetic', url: 'images/girl-3.png', thumb: 'images/girl-3.png', tint: 'dark', opacity: 15 },
 
     // ═══ CARS ═══
     {
@@ -261,6 +270,7 @@ const wallpapers = [
         tint: 'dark',
         opacity: 15
     },
+    { id: 'skyline-2', isVideo: false, category: 'cars', url: 'images/skyline-2.png', thumb: 'images/skyline-2.png', tint: 'dark', opacity: 15 },
 
     // ═══ NATURE ═══
     { id: 'sunset', isVideo: false, category: 'nature', tint: 'light', opacity: 15, url: 'https://images.unsplash.com/photo-1558470598-a5dda9640f6b?q=80&w=3840', thumb: 'https://images.unsplash.com/photo-1558470598-a5dda9640f6b?q=80&w=400' },
