@@ -5123,9 +5123,10 @@ function initGame() {
     state.combo = 0;
     state.maxCombo = 0;
 
-    // Reset Discord presence so next test picks up correct duration
+    // Reset Discord presence back to idle when test is cancelled
     if (discordPresence.currentState === 'typing') {
-        discordPresence.currentState = 'idle';
+        discordPresence.currentState = '_reset';
+        discordPresence.setIdle();
     }
 
     // WPM Graph Data
