@@ -332,6 +332,56 @@ let state = {
     maxCombo: 0
 };
 
+// --- DISCORD RICH PRESENCE ---
+const discordPresence = {
+    previousWpm: 0,
+    concludedTimeout: null,
+    currentState: 'idle',
+
+    async setIdle() {
+        if (this.currentState === 'idle') return;
+        this.currentState = 'idle';
+        try {
+            await window.__TAURI_INTERNALS__.invoke('set_discord_presence', {
+                stateText: 'In Stillness',
+                largeImageText: `Last Practice: ${this.previousWpm} WPM`
+            });
+        } catch (e) { /* Discord not connected */ }
+    },
+
+    async setTyping(duration) {
+        if (this.concludedTimeout) {
+            clearTimeout(this.concludedTimeout);
+            this.concludedTimeout = null;
+        }
+        if (this.currentState === 'typing') return;
+        this.currentState = 'typing';
+        try {
+            await window.__TAURI_INTERNALS__.invoke('set_discord_presence', {
+                stateText: `Mastering the Keys (${duration}s)`,
+                largeImageText: 'Calm Hands. Clear Mind.'
+            });
+        } catch (e) { /* Discord not connected */ }
+    },
+
+    async setConcluded(finalWpm, accuracy) {
+        this.previousWpm = finalWpm;
+        this.currentState = 'concluded';
+        try {
+            await window.__TAURI_INTERNALS__.invoke('set_discord_presence', {
+                stateText: `${finalWpm} WPM · ${accuracy}% Accuracy`,
+                largeImageText: 'Practice Concluded'
+            });
+        } catch (e) { /* Discord not connected */ }
+
+        // After 5 seconds, return to idle (unless a new test starts)
+        this.concludedTimeout = setTimeout(() => {
+            this.concludedTimeout = null;
+            this.setIdle();
+        }, 5000);
+    }
+};
+
 // --- AUTO-INIT AUDIO ON FIRST INTERACTION ---
 function autoInitAudio() {
     if (!audioCtx) {
@@ -5073,6 +5123,11 @@ function initGame() {
     state.combo = 0;
     state.maxCombo = 0;
 
+    // Reset Discord presence so next test picks up correct duration
+    if (discordPresence.currentState === 'typing') {
+        discordPresence.currentState = 'idle';
+    }
+
     // WPM Graph Data
     state.wpmHistory = [];
     state.lastRecordTime = 0;
@@ -5251,6 +5306,7 @@ UI.input.addEventListener('input', (e) => {
 function startTimer() {
     state.isActive = true;
     state.startTime = Date.now();
+    discordPresence.setTyping(state.timeLimit);
     state.lastRecordTime = state.startTime;
     state.lastTotalChars = state.totalCharsTyped;
     state.timerInterval = setInterval(() => {
@@ -5352,6 +5408,8 @@ function endGame() {
     // Animate Numbers
     animateValue(UI.finalWpm, 0, netWpm, 1500);
     animateValue(UI.finalAcc, 0, accuracy, 1500, "%");
+
+    discordPresence.setConcluded(netWpm, accuracy);
 }
 
 const rankQuotes = {
@@ -5962,6 +6020,9 @@ initTheme();
 initGame();
 initParticles();
 initKeypressParticles();
+// Set initial Discord presence
+discordPresence.currentState = '_boot';
+discordPresence.setIdle();
 initTrackSelector(); // Initialize UI
 function drawResultChart(data) {
     const canvas = document.getElementById('results-chart');
