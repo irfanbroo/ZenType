@@ -82,17 +82,14 @@ let currentPool = 0;
 const wallpaperCategories = [
     { id: 'relax', label: 'Relax', icon: 'ri-cup-line' },
     { id: 'styles', label: 'Styles', icon: 'ri-magic-line' },
-    { id: 'anime-videos', label: 'Anime Videos', icon: 'ri-movie-2-line' },
-    { id: 'anime-stills', label: 'Anime (Stills)', icon: 'ri-image-line' },
     { id: 'aesthetic-videos', label: 'Aesthetic Videos', icon: 'ri-film-line' },
     { id: 'aesthetic', label: 'Aesthetic', icon: 'ri-palette-line' },
 
     { id: 'cars', label: 'Cars', icon: 'ri-roadster-line' },
-    { id: 'nature', label: 'Nature', icon: 'ri-leaf-line' },
-    { id: 'space', label: 'Space', icon: 'ri-rocket-line' }
+    { id: 'nature', label: 'Nature', icon: 'ri-leaf-line' }
 ];
 
-let currentCategory = 'anime-videos';
+let currentCategory = 'relax';
 
 // --- STYLES CONFIGURATION ---
 // --- STYLES CONFIGURATION ---
@@ -100,50 +97,6 @@ let currentCategory = 'anime-videos';
 
 
 const wallpapers = [
-    // ═══ ANIME VIDEOS ═══
-
-    {
-        id: 'anime_girls',
-        isVideo: true,
-        hasAudio: true,
-        category: 'anime-videos',
-        url: 'videos/anime_girls.mp4',
-        thumb: 'videos/thumbs/anime_girls_thumb.png',
-        tint: 'dark',
-        opacity: 15
-    },
-    {
-        id: 'anime_main',
-        isVideo: true,
-        hasAudio: true,
-        category: 'anime-videos',
-        url: 'videos/anime_main.mp4',
-        thumb: 'videos/thumbs/anime_main_thumb.png',
-        tint: 'dark',
-        opacity: 15
-    },
-    {
-        id: 'goth_girl',
-        isVideo: true,
-        category: 'anime-videos',
-        url: 'videos/goth girl.mp4',
-        thumb: 'videos/thumbs/goth girl.png',
-        tint: 'dark',
-        opacity: 15
-    },
-    {
-        id: 'hypno_eyes',
-        isVideo: true,
-        category: 'anime-videos',
-        url: 'videos/hypno eyes.mp4',
-        thumb: 'videos/thumbs/hypno eyes.png',
-        tint: 'dark',
-        opacity: 15
-    },
-
-    // ═══ ANIME (STILLS) ═══
-    // Add anime still images here:
-    // { id: 'anime-still-1', isVideo: false, category: 'anime-stills', url: 'images/YOUR_IMAGE.jpg', thumb: 'images/thumbs/YOUR_THUMB.jpg', tint: 'dark', opacity: 60 },
 
     // ═══ AESTHETIC VIDEOS ═══
     {
@@ -155,68 +108,12 @@ const wallpapers = [
         tint: 'dark',
         opacity: 15
     },
-    {
-        id: 'samuraibw',
-        isVideo: true,
-        category: 'aesthetic-videos',
-        url: 'videos/samuraibw.mp4',
-        thumb: 'videos/thumbs/samuraibw.png',
-        tint: 'dark',
-        opacity: 15
-    },
-    {
-        id: 'whiteeyes',
-        isVideo: true,
-        category: 'aesthetic-videos',
-        url: 'videos/whiteeyes.mp4',
-        thumb: 'videos/thumbs/whiteeyes.png',
-        tint: 'dark',
-        opacity: 15
-    },
-    {
-        id: 'castle',
-        isVideo: true,
-        category: 'aesthetic-videos',
-        url: 'videos/castle.mp4',
-        thumb: 'videos/thumbs/castle.png',
-        tint: 'dark',
-        opacity: 15
-    },
-    {
-        id: 'batman',
-        isVideo: true,
-        category: 'aesthetic-videos',
-        url: 'videos/batman.mp4',
-        thumb: 'videos/thumbs/batman.png',
-        tint: 'dark',
-        opacity: 15
-    },
-    {
-        id: 'dark_queen',
-        isVideo: true,
-        category: 'aesthetic-videos',
-        url: 'videos/dark queen.mp4',
-        thumb: 'videos/thumbs/dark queen.png',
-        tint: 'dark',
-        opacity: 15
-    },
 
 
-    {
-        id: 'space1',
-        isVideo: true,
-        category: 'styles',
-        categories: ['styles', 'space'],
-        url: 'videos/space1.mp4',
-        thumb: 'videos/thumbs/space1.png',
-        opacity: 15,
-        tint: 'dark',
-        // Style Presets
-        effectType: 'starfield',
-        effectColor: '#ffffff',
-        effectIntensity: 38,
-        soundProfile: 'creamy'
-    },
+
+
+
+
 
     // ═══ RELAX ═══
     {
@@ -244,8 +141,8 @@ const wallpapers = [
     { id: 'gal2', isVideo: false, category: 'aesthetic', url: 'images/gal2.png', thumb: 'images/gal2.png', tint: 'dark', opacity: 15 },
     { id: 'neon-1', isVideo: false, category: 'aesthetic', tint: 'dark', opacity: 15, url: 'https://images.unsplash.com/photo-1542051841857-5f90071e7989?q=80&w=3840', thumb: 'https://images.unsplash.com/photo-1542051841857-5f90071e7989?q=80&w=400' },
     { id: 'japan-night', isVideo: false, category: 'aesthetic', tint: 'dark', opacity: 15, url: 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?q=80&w=3840', thumb: 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?q=80&w=400' },
-    { id: 'lofi-room', isVideo: false, category: 'aesthetic', tint: 'dark', opacity: 15, url: 'https://images.unsplash.com/photo-1598198414976-ddb788ec80c1?q=80&w=3840', thumb: 'https://images.unsplash.com/photo-1598198414976-ddb788ec80c1?q=80&w=400' },
     { id: 'minimal-dark', isVideo: false, category: 'aesthetic', tint: 'dark', opacity: 15, url: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=3840', thumb: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=400' },
+
     { id: 'girl-1', isVideo: false, category: 'aesthetic', url: 'images/girl-1.png', thumb: 'images/girl-1.png', tint: 'dark', opacity: 15 },
     { id: 'boy-1', isVideo: false, category: 'aesthetic', url: 'images/boy-1.png', thumb: 'images/boy-1.png', tint: 'dark', opacity: 15 },
     { id: 'girl-3', isVideo: false, category: 'aesthetic', url: 'images/girl-3.png', thumb: 'images/girl-3.png', tint: 'dark', opacity: 15 },
@@ -261,16 +158,8 @@ const wallpapers = [
         tint: 'dark',
         opacity: 15
     },
-    {
-        id: 'nissancarpink',
-        isVideo: true,
-        category: 'cars',
-        url: 'videos/nissancarpink.mp4',
-        thumb: 'videos/thumbs/nissancarpink.png',
-        tint: 'dark',
-        opacity: 15
-    },
     { id: 'skyline-2', isVideo: false, category: 'cars', url: 'images/skyline-2.png', thumb: 'images/skyline-2.png', tint: 'dark', opacity: 15 },
+
     { id: 'porshe', isVideo: false, category: 'cars', url: 'images/porshe.jpg', thumb: 'images/porshe.jpg', tint: 'dark', opacity: 15 },
     { id: 'porshe_2', isVideo: false, category: 'cars', url: 'images/porshe 2.jpg', thumb: 'images/porshe 2.jpg', tint: 'dark', opacity: 15 },
     { id: 'porshe_3', isVideo: false, category: 'cars', url: 'images/porshe 3.jpg', thumb: 'images/porshe 3.jpg', tint: 'dark', opacity: 15 },
