@@ -81,13 +81,13 @@ let currentPool = 0;
 // --- 1. WALLPAPER CONFIGURATION ---
 const wallpaperCategories = [
     { id: 'relax', label: 'Relax', icon: 'ri-cup-line' },
-    { id: 'styles', label: 'Styles', icon: 'ri-magic-line' },
+    { id: 'nature', label: 'Nature', icon: 'ri-leaf-line' },
     { id: 'aesthetic-videos', label: 'Aesthetic Videos', icon: 'ri-film-line' },
     { id: 'aesthetic', label: 'Aesthetic', icon: 'ri-palette-line' },
-
     { id: 'cars', label: 'Cars', icon: 'ri-roadster-line' },
-    { id: 'nature', label: 'Nature', icon: 'ri-leaf-line' }
+    { id: 'styles', label: 'Styles', icon: 'ri-magic-line' }
 ];
+
 
 let currentCategory = 'relax';
 
