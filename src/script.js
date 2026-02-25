@@ -271,10 +271,23 @@ const wallpapers = [
         opacity: 15
     },
     { id: 'skyline-2', isVideo: false, category: 'cars', url: 'images/skyline-2.png', thumb: 'images/skyline-2.png', tint: 'dark', opacity: 15 },
+    { id: 'porshe', isVideo: false, category: 'cars', url: 'images/porshe.jpg', thumb: 'images/porshe.jpg', tint: 'dark', opacity: 15 },
+    { id: 'porshe_2', isVideo: false, category: 'cars', url: 'images/porshe 2.jpg', thumb: 'images/porshe 2.jpg', tint: 'dark', opacity: 15 },
+    { id: 'porshe_3', isVideo: false, category: 'cars', url: 'images/porshe 3.jpg', thumb: 'images/porshe 3.jpg', tint: 'dark', opacity: 15 },
+    { id: 'porshe_4', isVideo: false, category: 'cars', url: 'images/porshe 4.jpg', thumb: 'images/porshe 4.jpg', tint: 'dark', opacity: 15 },
 
     // ═══ NATURE ═══
-    { id: 'sunset', isVideo: false, category: 'nature', tint: 'light', opacity: 15, url: 'https://images.unsplash.com/photo-1558470598-a5dda9640f6b?q=80&w=3840', thumb: 'https://images.unsplash.com/photo-1558470598-a5dda9640f6b?q=80&w=400' },
-    { id: 'white-room', isVideo: false, category: 'nature', tint: 'light', opacity: 15, url: 'https://images.unsplash.com/photo-1493723843689-d60feeb0333d?q=80&w=3840', thumb: 'https://images.unsplash.com/photo-1493723843689-d60feeb0333d?q=80&w=400' }
+    { id: 'greenary', isVideo: false, category: 'nature', url: 'images/greenary.jpg', thumb: 'images/greenary.jpg', tint: 'dark', opacity: 15 },
+    { id: 'pink', isVideo: false, category: 'nature', url: 'images/pink.jpg', thumb: 'images/pink.jpg', tint: 'dark', opacity: 15 },
+    { id: 'night', isVideo: false, category: 'nature', url: 'images/NIGHT.jpg', thumb: 'images/NIGHT.jpg', tint: 'dark', opacity: 15 },
+    { id: 'yosemite', isVideo: false, category: 'nature', url: 'images/yosemite.jpg', thumb: 'images/yosemite.jpg', tint: 'dark', opacity: 15 },
+    { id: 'slovakia', isVideo: false, category: 'nature', url: 'images/Slovakia.jpg', thumb: 'images/Slovakia.jpg', tint: 'dark', opacity: 15 },
+    { id: 'iceland', isVideo: false, category: 'nature', url: 'images/Iceland.jpg', thumb: 'images/Iceland.jpg', tint: 'dark', opacity: 15 },
+    { id: 'mountain_reflection', isVideo: false, category: 'nature', url: 'images/Beautiful mountain reflection.jpg', thumb: 'images/Beautiful mountain reflection.jpg', tint: 'dark', opacity: 15 },
+    { id: 'el_capitan', isVideo: false, category: 'nature', url: 'images/El Capitan.jpg', thumb: 'images/El Capitan.jpg', tint: 'dark', opacity: 15 },
+    { id: 'streets', isVideo: false, category: 'nature', url: 'images/streets.jpg', thumb: 'images/streets.jpg', tint: 'dark', opacity: 15 },
+    { id: 'tokyo_tower', isVideo: false, category: 'nature', url: 'images/Tokyo Tower.jpg', thumb: 'images/Tokyo Tower.jpg', tint: 'dark', opacity: 15 },
+    { id: 'mt_rainier', isVideo: false, category: 'nature', url: 'images/Mt Rainier National Park.jpg', thumb: 'images/Mt Rainier National Park.jpg', tint: 'dark', opacity: 15 }
 ];
 
 let userConfig = {
