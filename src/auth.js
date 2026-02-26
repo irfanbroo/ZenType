@@ -101,6 +101,13 @@ function initAuth() {
                 // Hide stale profile immediately to prevent "flash" of previous user data
                 if (authUI.userProfile) authUI.userProfile.classList.add('hidden');
                 fetchUserStats();
+            } else {
+                // NOT logged in: reset containers to show login form
+                // (fixes stale public profile showing after viewing a player from leaderboard)
+                if (authUI.authForms) authUI.authForms.classList.remove('hidden');
+                if (authUI.userProfile) authUI.userProfile.classList.add('hidden');
+                if (authUI.loginContainer) authUI.loginContainer.classList.remove('hidden');
+                if (authUI.signupContainer) authUI.signupContainer.classList.add('hidden');
             }
 
             authUI.modal.classList.remove('hidden');

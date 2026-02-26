@@ -486,6 +486,10 @@ let masterPlaylist = [
     { url: 'Sunroof.mp3', name: 'Sunroof', type: 'local' },
     { url: 'The Quiet Between Us.mp3', name: 'The Quiet Between Us', type: 'local' },
     { url: 'Warm Lights.mp3', name: 'Warm Lights', type: 'local' },
+    { url: 'After the Last Train.mp3', name: 'After the Last Train', type: 'local' },
+    { url: 'Sleepless in Kyoto.mp3', name: 'Sleepless in Kyoto', type: 'local' },
+    { url: 'Echoes of 2AM.mp3', name: 'Echoes of 2AM', type: 'local' },
+    { url: 'Sleepless in Kyoto pt 2.mp3', name: 'Sleepless in Kyoto pt 2', type: 'local' },
 ];
 
 let currentTrackIndex = 0;
