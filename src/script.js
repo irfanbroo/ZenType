@@ -1764,6 +1764,7 @@ window.addEventListener('resize', () => {
 // ── KEYPRESS PARTICLES ──
 let keyCtx;
 let keyParticles = [];
+let keypressAnimId = null;
 
 function initKeypressParticles() {
     const canvas = UI.keypressCanvas;
@@ -1781,7 +1782,6 @@ function initKeypressParticles() {
 }
 
 function loopKeypressParticles() {
-    requestAnimationFrame(loopKeypressParticles);
     if (!keyCtx) return;
 
     keyCtx.clearRect(0, 0, UI.keypressCanvas.width, UI.keypressCanvas.height);
@@ -1790,7 +1790,7 @@ function loopKeypressParticles() {
         const p = keyParticles[i];
         p.x += p.vx;
         p.y += p.vy;
-        p.vy += p.gravity || 0; // Support for gravity
+        p.vy += p.gravity || 0;
         p.life -= p.decay;
         p.size *= 0.94;
 
@@ -1804,6 +1804,13 @@ function loopKeypressParticles() {
         const { r, g, b } = hexToRgb(p.color);
         keyCtx.fillStyle = `rgba(${r}, ${g}, ${b}, ${p.life})`;
         keyCtx.fill();
+    }
+
+    // Only keep looping if there are particles to render; stop when idle
+    if (keyParticles.length > 0) {
+        keypressAnimId = requestAnimationFrame(loopKeypressParticles);
+    } else {
+        keypressAnimId = null;
     }
 }
 
@@ -1826,6 +1833,10 @@ function spawnKeypressParticles(x, y) {
             size: 2 + Math.random() * 3,
             color: color
         });
+    }
+    // Restart the render loop if it was idle
+    if (!keypressAnimId) {
+        keypressAnimId = requestAnimationFrame(loopKeypressParticles);
     }
 }
 
@@ -1866,6 +1877,10 @@ function spawnHagakureParticles(x, y) {
             color: '#ffffff',
             gravity: 0.05
         });
+    }
+    // Restart the render loop if it was idle
+    if (!keypressAnimId) {
+        keypressAnimId = requestAnimationFrame(loopKeypressParticles);
     }
 }
 
@@ -5954,6 +5969,52 @@ initKeypressParticles();
 discordPresence.currentState = '_boot';
 discordPresence.setIdle();
 initTrackSelector(); // Initialize UI
+
+// --- PERFORMANCE: Pause all rendering when app is hidden/minimized ---
+// Use Tauri window API directly since visibilitychange doesn't work in desktop apps
+(async () => {
+    try {
+        const { getCurrentWindow } = await import('@tauri-apps/api/window');
+        const appWindow = getCurrentWindow();
+        appWindow.onFocusChanged(({ payload: focused }) => {
+            if (!focused) {
+                // Pause background canvas effect
+                if (effectAnimId) {
+                    cancelAnimationFrame(effectAnimId);
+                    effectAnimId = null;
+                }
+                // Pause keypress particle loop
+                if (keypressAnimId) {
+                    cancelAnimationFrame(keypressAnimId);
+                    keypressAnimId = null;
+                }
+                // Pause video wallpaper to save GPU decode cycles
+                if (UI.bgVideo && !UI.bgVideo.paused) {
+                    UI.bgVideo.pause();
+                    UI.bgVideo._wasPausedByVisibility = true;
+                }
+                // Pause ALL CSS animations to stop GPU repaints (caret blink etc)
+                document.body.classList.add('app-paused');
+            } else {
+                // Resume background canvas effect
+                initParticles();
+                // Resume keypress particles if any were mid-flight
+                if (keyParticles.length > 0 && !keypressAnimId) {
+                    keypressAnimId = requestAnimationFrame(loopKeypressParticles);
+                }
+                // Resume video wallpaper
+                if (UI.bgVideo && UI.bgVideo._wasPausedByVisibility) {
+                    UI.bgVideo.play();
+                    UI.bgVideo._wasPausedByVisibility = false;
+                }
+                // Resume CSS animations
+                document.body.classList.remove('app-paused');
+            }
+        });
+    } catch (e) {
+        // Not in Tauri environment, skip
+    }
+})();
 function drawResultChart(data) {
     const canvas = document.getElementById('results-chart');
     if (!canvas) return;

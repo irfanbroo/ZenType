@@ -18,6 +18,14 @@
 
 }
 
+/* Freeze all GPU work when app is unfocused */
+body.app-paused *,
+body.app-paused *::before,
+body.app-paused *::after {
+    animation-play-state: paused !important;
+    transition: none !important;
+}
+
 body {
     font-family: var(--font-main);
     background-color: #14141e;
@@ -118,11 +126,9 @@ body::before {
     justify-content: center;
     padding: 0;
     border-radius: 14px;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.15);
     color: rgba(255, 255, 255, 0.9);
     border: 1px solid rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -422,6 +428,9 @@ body.zen-mode #zen-btn:hover {
 #modes-modal.hidden {
     opacity: 0;
     pointer-events: none;
+    visibility: hidden;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
 }
 
 .settings-content {
@@ -1301,6 +1310,7 @@ body.zen-mode #zen-btn:hover {
 #results-overlay.hidden {
     opacity: 0;
     pointer-events: none;
+    visibility: hidden;
 }
 
 .results-content {
@@ -1391,6 +1401,9 @@ body.zen-mode #zen-btn:hover {
 #loading-overlay.hidden {
     opacity: 0;
     pointer-events: none;
+    visibility: hidden;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
 }
 
 .loader-text {
