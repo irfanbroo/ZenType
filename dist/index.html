@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google-site-verification" content="BWW0hMMw7Y84Myib4JPiUWQOsNLHf9sGvL9Ad4H39FQ" />
     <title>ZenType - Professional Typing Practice</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link
         href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Montserrat:wght@400;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;500;600;700&family=Shojumaru&display=swap"
         rel="stylesheet">
@@ -17,8 +17,8 @@
     </script>
     <script defer src="/_vercel/insights/script.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script type="module" crossorigin src="/assets/index-BdYT-VpF.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-C_-amc9N.css">
+  <script type="module" crossorigin src="/assets/index-C5Yj_mQQ.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-0M55luxm.css">
 </head>
 
 <body>
@@ -36,11 +36,7 @@
         </div>
     </div>
 
-    <!-- SoundCloud Widget (Hidden) -->
-    <iframe id="sc-widget"
-        src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/user-722231447/20250204_184406191-m4r&auto_play=false&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false&visual=false"
-        width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay" style="display: none;"></iframe>
-    <script src="https://w.soundcloud.com/player/api.js"></script>
+
 
     <video id="bg-video" autoplay loop muted playsinline class="fade-out"></video>
     <canvas id="particles"></canvas>
@@ -949,63 +945,6 @@
         </div>
     </div>
 
-    <!-- SUPPORT MODAL -->
-    <div id="support-modal" class="hidden">
-        <div class="settings-content support-content">
-            <div class="settings-header">
-                <div class="settings-header-left">
-                    <div class="settings-icon-wrap"
-                        style="background: rgba(255, 69, 58, 0.15); color: #ff453a; border-color: rgba(255, 69, 58, 0.3);">
-                        <i class="ri-heart-3-fill"></i>
-                    </div>
-                    <div>
-                        <h2 class="settings-title">Support ZenType</h2>
-                        <p class="settings-subtitle">Fuel the development</p>
-                    </div>
-                </div>
-                <button id="close-support" class="close-btn">
-                    <i class="ri-close-line"></i>
-                </button>
-            </div>
-
-            <div class="support-body" style="padding: 24px 28px;">
-                <p class="support-message">
-                    <strong>Hey, it's the creator here <span>&lt;3</span></strong>
-                    As a solo dev, I’ve spent days and nights working nonstop to make ZenType look and feel exactly
-                    right. My goal was simple: a completely free, relaxing typing experience without any annoying ads or
-                    distractions.
-                    <br><br>
-                    If you're enjoying the site, any form of support—no matter how small—is a huge motivation for me to
-                    keep building and improving this project. Thanks for being part of the journey! 🖤
-                </p>
-
-                <a href="https://buymeacoffee.com/ir7fan" target="_blank" class="bmc-btn">
-                    <i class="ri-cup-line"></i>
-                    <span>Buy Me a Coffee</span>
-                </a>
-
-                <div class="divider">
-                    <span>Coming Soon</span>
-                </div>
-
-                <div class="support-grid">
-                    <div class="support-option disabled">
-                        <i class="ri-patreon-line"></i>
-                        <span>Patreon</span>
-                    </div>
-                    <div class="support-option disabled">
-                        <i class="ri-t-shirt-2-line"></i>
-                        <span>Merch</span>
-                    </div>
-                    <div class="support-option disabled">
-                        <i class="ri-github-fill"></i>
-                        <span>Sponsor</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <footer class="site-footer">
         <div class="footer-info">
             <span class="copyright">© 2026 ZenType</span>
@@ -1013,14 +952,11 @@
             <span class="app-desc">Minimalist typing practice tool designed to improve speed and accuracy.</span>
         </div>
         <div class="footer-links">
-            <a href="privacy.html" class="footer-link-pill">
-                <i class="ri-lock-line"></i> Privacy
-            </a>
             <a href="#" class="footer-link-pill" id="modes-btn">
                 <i class="ri-gamepad-line"></i> Modes
             </a>
-            <a href="#" class="footer-link-pill support-btn">
-                <i class="ri-heart-fill"></i> Support
+            <a href="privacy.html" class="footer-link-pill">
+                <i class="ri-lock-line"></i> Privacy
             </a>
         </div>
     </footer>
@@ -1054,14 +990,14 @@
                         <div class="mode-status">Active</div>
                     </div>
 
-                    <!-- Zen Mode (Coming Soon) -->
-                    <div class="mode-card disabled">
-                        <div class="mode-icon"><i class="ri-leaf-line"></i></div>
+                    <!-- Dojo Mode -->
+                    <div class="mode-card active" id="dojo-mode-card">
+                        <div class="mode-icon"><i class="ri-graduation-cap-line"></i></div>
                         <div class="mode-info">
-                            <h3>Zen Mode</h3>
-                            <p>Pure focus. No distractions.</p>
+                            <h3>Dojo Mode</h3>
+                            <p>Master the blade. Train your fingers.</p>
                         </div>
-                        <div class="mode-status">Coming Soon</div>
+                        <div class="mode-status">Active</div>
                     </div>
                 </div>
             </div>
@@ -1077,6 +1013,22 @@
     </div>
 
     <div id="hagakure-ui" class="hidden">
+        <!-- HAGAKURE MUSIC CONTROLS -->
+        <div id="h-music-controls">
+            <button id="h-music-btn" title="Warrior's Anthem">
+                <i class="ri-disc-fill"></i>
+            </button>
+            <div id="h-track-panel" class="hidden">
+                <div class="h-track-header">
+                    <span class="h-track-title">🎵 WARRIOR'S ANTHEM</span>
+                    <button id="h-track-close"><i class="ri-close-line"></i></button>
+                </div>
+                <div id="h-track-list">
+                    <!-- Tracks injected by JS -->
+                </div>
+            </div>
+        </div>
+
         <!-- SETUP SCREEN -->
         <div id="h-setup">
             <h2 class="h-setup-title">CHOOSE YOUR PATH</h2>
@@ -1163,6 +1115,22 @@
     </div>
 
     <div id="shadow-ui" class="hidden">
+        <!-- SHADOW MUSIC CONTROLS -->
+        <div id="s-music-controls">
+            <button id="s-music-btn" title="Void Anthem">
+                <i class="ri-disc-fill"></i>
+            </button>
+            <div id="s-track-panel" class="hidden">
+                <div class="sm-track-header">
+                    <span class="sm-track-title">🎵 VOID ANTHEM</span>
+                    <button id="s-track-close"><i class="ri-close-line"></i></button>
+                </div>
+                <div id="s-track-list">
+                    <!-- Tracks injected by JS -->
+                </div>
+            </div>
+        </div>
+
         <div id="s-setup">
             <h1 class="s-title">SHADOW MODE</h1>
             <p class="s-subtitle">MIND AND HAND AS ONE</p>
@@ -1201,7 +1169,245 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div>
+    <!-- DOJO MODE UI -->
+    <div id="dojo-splash" class="hidden">
+        <div class="dojo-splash-content">
+            <h1 class="dojo-splash-title">ENTER THE DOJO</h1>
+            <p class="dojo-splash-quote">"Where the blade learns to sing."</p>
+        </div>
+    </div>
+
+    <div id="dojo-ui" class="hidden">
+        <!-- LEVEL SELECTION -->
+        <div id="dojo-setup" class="dojo-setup">
+            <div class="dojo-header">
+                <div class="dojo-header-title">THE DOJO</div>
+                <div class="dojo-header-level">CHOOSE YOUR PATH</div>
+                <button id="dojo-leaderboard-btn" class="dojo-trophy-btn" title="The Sensei's Inner Circle">
+                    <i class="ri-trophy-line"></i>
+                </button>
+            </div>
+
+            <div class="dojo-levels-list">
+                <div class="dojo-level-card" data-level="1">
+                    <div class="dojo-level-number">I</div>
+                    <div class="dojo-level-info">
+                        <div class="dojo-level-name">Katana Position</div>
+                        <div class="dojo-level-desc">Balance Points — learn to hold the blade (F & J)</div>
+                    </div>
+                    <div class="dojo-level-keys">F J</div>
+                    <button class="dojo-info-trigger" data-level="1"><i class="ri-information-line"></i></button>
+                </div>
+
+                <div class="dojo-level-card" data-level="2">
+                    <div class="dojo-level-number">II</div>
+                    <div class="dojo-level-info">
+                        <div class="dojo-level-name">First Strikes</div>
+                        <div class="dojo-level-desc">The foundation of all combat — Home Row</div>
+                    </div>
+                    <div class="dojo-level-keys">A S D F G H J K L</div>
+                    <button class="dojo-info-trigger" data-level="2"><i class="ri-information-line"></i></button>
+                </div>
+
+                <div class="dojo-level-card" data-level="3">
+                    <div class="dojo-level-number">III</div>
+                    <div class="dojo-level-info">
+                        <div class="dojo-level-name">Rising Blade</div>
+                        <div class="dojo-level-desc">Strike from above — Top Row</div>
+                    </div>
+                    <div class="dojo-level-keys">Q W E R T Y U I O P</div>
+                    <button class="dojo-info-trigger" data-level="3"><i class="ri-information-line"></i></button>
+                </div>
+
+                <div class="dojo-level-card" data-level="4">
+                    <div class="dojo-level-number">IV</div>
+                    <div class="dojo-level-info">
+                        <div class="dojo-level-name">Grounding Stance</div>
+                        <div class="dojo-level-desc">Root yourself to the earth — Bottom Row</div>
+                    </div>
+                    <div class="dojo-level-keys">Z X C V B N M</div>
+                    <button class="dojo-info-trigger" data-level="4"><i class="ri-information-line"></i></button>
+                </div>
+
+                <div class="dojo-level-card" data-level="5">
+                    <div class="dojo-level-number">V</div>
+                    <div class="dojo-level-info">
+                        <div class="dojo-level-name">Flowing Water</div>
+                        <div class="dojo-level-desc">Blend all stances seamlessly — All Keys</div>
+                    </div>
+                    <div class="dojo-level-keys">A — Z</div>
+                    <button class="dojo-info-trigger" data-level="5"><i class="ri-information-line"></i></button>
+                </div>
+
+                <div class="dojo-level-card" data-level="6">
+                    <div class="dojo-level-number">VI</div>
+                    <div class="dojo-level-info">
+                        <div class="dojo-level-name">Words of Power</div>
+                        <div class="dojo-level-desc">Channel your strikes into words</div>
+                    </div>
+                    <div class="dojo-level-keys">WORDS</div>
+                    <button class="dojo-info-trigger" data-level="6"><i class="ri-information-line"></i></button>
+                </div>
+
+                <div class="dojo-level-card" data-level="7">
+                    <div class="dojo-level-number">VII</div>
+                    <div class="dojo-level-info">
+                        <div class="dojo-level-name">Way of the Wind</div>
+                        <div class="dojo-level-desc">True mastery — flow like the wind</div>
+                    </div>
+                    <div class="dojo-level-keys">速い</div>
+                    <button class="dojo-info-trigger" data-level="7"><i class="ri-information-line"></i></button>
+                </div>
+            </div>
+
+            <button class="dojo-exit-btn" id="dojo-exit-btn">LEAVE DOJO</button>
+        </div>
+
+        <!-- GAME BOARD (hidden until a level is selected) -->
+        <div id="dojo-game-board" class="hidden">
+            <div class="dojo-header">
+                <div class="dojo-header-title" id="dojo-board-title">THE DOJO</div>
+                <div class="dojo-header-level" id="dojo-board-level">LEVEL 1 — KATANA POSITION</div>
+                <div class="dojo-global-timer hidden" id="dojo-global-timer">
+                    <span class="dojo-global-timer-label">TIME REMAINING</span>
+                    <span class="dojo-global-timer-value" id="dojo-global-timer-value">30:00</span>
+                </div>
+            </div>
+
+            <div class="dojo-prompt-area">
+                <span class="dojo-prompt-label">STRIKE THE KEY</span>
+                <span class="dojo-prompt-key" id="dojo-prompt">F</span>
+                <span class="dojo-stance-label" id="dojo-stance">HOME STANCE — LEFT HAND</span>
+            </div>
+
+            <!-- Word display for levels 6-7 -->
+            <div class="dojo-word-display hidden" id="dojo-word-display">
+                <span class="dojo-word-label">TYPE THE WORD</span>
+                <div class="dojo-word-chars" id="dojo-word-chars"></div>
+                <!-- Timer bar for Level 7 -->
+                <div class="dojo-timer-bar hidden" id="dojo-timer-bar">
+                    <div class="dojo-timer-fill" id="dojo-timer-fill"></div>
+                </div>
+            </div>
+
+            <div class="dojo-keyboard-container" id="dojo-keyboard-container">
+                <!-- SVG keyboard injected by JS -->
+            </div>
+
+            <!-- Finger Legend Panel — Japanese Scroll -->
+            <div id="finger-legend-scroll" style="display:none;">
+                <div class="scroll-roller scroll-roller-top">
+                    <div class="scroll-roller-cap left"></div>
+                    <div class="scroll-roller-bar"></div>
+                    <div class="scroll-roller-cap right"></div>
+                </div>
+                <div id="finger-legend">
+                    <div class="finger-legend-title">指の案内 <span>Finger Guide</span></div>
+                    <div class="finger-legend-item" data-legend-finger="index">
+                        <div class="finger-legend-dot" style="--fc: #ce1126;"></div>
+                        <div class="finger-legend-names">
+                            <span class="finger-legend-jp">人差し指</span>
+                            <span class="finger-legend-en">Index · 火 Fire</span>
+                        </div>
+                    </div>
+                    <div class="finger-legend-item" data-legend-finger="mid">
+                        <div class="finger-legend-dot" style="--fc: #ffaa00;"></div>
+                        <div class="finger-legend-names">
+                            <span class="finger-legend-jp">中指</span>
+                            <span class="finger-legend-en">Middle · 土 Earth</span>
+                        </div>
+                    </div>
+                    <div class="finger-legend-item" data-legend-finger="ring">
+                        <div class="finger-legend-dot" style="--fc: #00ffff;"></div>
+                        <div class="finger-legend-names">
+                            <span class="finger-legend-jp">薬指</span>
+                            <span class="finger-legend-en">Ring · 水 Water</span>
+                        </div>
+                    </div>
+                    <div class="finger-legend-item" data-legend-finger="pinky">
+                        <div class="finger-legend-dot" style="--fc: #b400ff;"></div>
+                        <div class="finger-legend-names">
+                            <span class="finger-legend-jp">小指</span>
+                            <span class="finger-legend-en">Pinky · 空 Void</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="scroll-roller scroll-roller-bottom">
+                    <div class="scroll-roller-cap left"></div>
+                    <div class="scroll-roller-bar"></div>
+                    <div class="scroll-roller-cap right"></div>
+                </div>
+            </div>
+
+            <div class="dojo-stats">
+                <div class="dojo-stat">
+                    <span class="dojo-stat-value" id="dojo-streak">0</span>
+                    <span class="dojo-stat-label">STREAK</span>
+                </div>
+                <div class="dojo-stat">
+                    <span class="dojo-stat-value" id="dojo-accuracy">100%</span>
+                    <span class="dojo-stat-label">ACCURACY</span>
+                </div>
+                <div class="dojo-stat">
+                    <span class="dojo-stat-value" id="dojo-total">0</span>
+                    <span class="dojo-stat-label">STRIKES</span>
+                </div>
+            </div>
+
+            <div class="dojo-bottom-controls">
+                <button class="dojo-guide-btn" id="dojo-guide-btn">🤚 HAND GUIDE</button>
+                <button class="dojo-exit-btn" id="dojo-back-btn">RETURN TO DOJO</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="dojo-feedback" id="dojo-feedback"></div>
+
+    <!-- DOJO LEADERBOARD MODAL -->
+    <div id="dojo-leaderboard-modal" class="hidden">
+        <div class="dojo-l-overlay"></div>
+        <div class="dojo-l-content">
+            <div class="dojo-l-header">
+                <i class="ri-trophy-fill dojo-l-icon"></i>
+                <div class="dojo-l-title">THE SENSEI’S INNER CIRCLE</div>
+                <button id="close-dojo-leaderboard" class="dojo-l-close">
+                    <i class="ri-close-line"></i>
+                </button>
+            </div>
+            <div class="dojo-l-body">
+                <div class="dojo-l-list-header">
+                    <span class="d-rank">RANK</span>
+                    <span class="d-name">WARRIOR</span>
+                    <span class="d-wins">CONQUESTS</span>
+                </div>
+                <div class="dojo-l-list" id="dojo-leaderboard-list">
+                    <!-- Injected by JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DOJO LEVEL INFO MODAL -->
+    <div id="dojo-level-info-modal" class="hidden">
+        <div class="dojo-info-overlay"></div>
+        <div class="dojo-info-content">
+            <div class="dojo-info-header">
+                <h2 id="d-info-title">LEVEL TITLE</h2>
+                <button id="close-dojo-info" class="dojo-info-close">
+                    <i class="ri-close-line"></i>
+                </button>
+            </div>
+            <div class="dojo-info-body">
+                <p id="d-info-desc" class="d-info-p"></p>
+                <div class="d-info-benefits">
+                    <h3>MASTERY BENEFITS</h3>
+                    <ul id="d-info-list" class="d-info-ul"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </body>
 
 </html>
