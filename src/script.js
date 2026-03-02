@@ -2845,8 +2845,8 @@ function setupSettingsListeners() {
                 document.querySelectorAll('.coding-theme-pill').forEach(p => {
                     p.classList.toggle('active', p.dataset.theme === theme);
                 });
-                // Apply theme to all buffer wraps and screens
-                document.querySelectorAll('.coding-buffer-wrap, .coding-screen').forEach(wrap => {
+                // Apply theme to all buffer wraps, screens and results overlay
+                document.querySelectorAll('.coding-buffer-wrap, .coding-screen, #coding-results').forEach(wrap => {
                     if (theme === 'midnight') {
                         wrap.removeAttribute('data-theme');
                     } else {

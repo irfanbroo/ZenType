@@ -330,8 +330,8 @@
 /* Exit button */
 .coding-exit-btn {
     background: transparent;
-    border: 1px solid rgba(0, 255, 65, 0.2);
-    color: rgba(0, 255, 65, 0.5);
+    border: 1px solid rgba(var(--accent), 0.2);
+    color: rgba(var(--accent), 0.5);
     padding: 10px 28px;
     border-radius: 6px;
     font-family: 'JetBrains Mono', monospace;
@@ -344,9 +344,9 @@
 }
 
 .coding-exit-btn:hover {
-    border-color: #00ff41;
-    color: #00ff41;
-    box-shadow: 0 0 15px rgba(0, 255, 65, 0.15);
+    border-color: rgb(var(--accent));
+    color: rgb(var(--accent));
+    box-shadow: 0 0 15px rgba(var(--accent), 0.15);
 }
 
 .coding-game-exit {
@@ -1843,8 +1843,8 @@
 .coding-results-badge {
     font-size: 3.5rem;
     font-weight: 700;
-    color: #00ff41;
-    text-shadow: 0 0 30px rgba(0, 255, 65, 0.5), 0 0 60px rgba(0, 255, 65, 0.2);
+    color: rgb(var(--accent));
+    text-shadow: 0 0 30px rgba(var(--accent), 0.5), 0 0 60px rgba(var(--accent), 0.2);
     margin-bottom: 10px;
     animation: badgePulse 2s ease-in-out infinite;
 }
@@ -1871,13 +1871,13 @@
     display: block;
     font-size: 2rem;
     font-weight: 700;
-    color: #00ff41;
+    color: rgb(var(--accent));
     margin-bottom: 4px;
 }
 
 .coding-stat-label {
     font-size: 0.6rem;
-    color: rgba(0, 255, 65, 0.3);
+    color: rgba(var(--accent), 0.3);
     letter-spacing: 0.2em;
 }
 
@@ -1888,9 +1888,9 @@
 }
 
 .coding-btn-primary {
-    background: rgba(0, 255, 65, 0.1);
-    border: 1px solid rgba(0, 255, 65, 0.3);
-    color: #00ff41;
+    background: rgba(var(--accent), 0.1);
+    border: 1px solid rgba(var(--accent), 0.3);
+    color: rgb(var(--accent));
     padding: 12px 32px;
     border-radius: 8px;
     font-family: 'JetBrains Mono', monospace;
@@ -1901,9 +1901,9 @@
 }
 
 .coding-btn-primary:hover {
-    background: rgba(0, 255, 65, 0.2);
-    border-color: #00ff41;
-    box-shadow: 0 0 20px rgba(0, 255, 65, 0.15);
+    background: rgba(var(--accent), 0.2);
+    border-color: rgb(var(--accent));
+    box-shadow: 0 0 20px rgba(var(--accent), 0.15);
 }
 
 /* Coding Mode Card styling in modes modal */
@@ -1943,11 +1943,11 @@
 
     0%,
     100% {
-        text-shadow: 0 0 8px rgba(0, 255, 65, 0.3);
+        text-shadow: 0 0 8px rgba(var(--accent), 0.3);
     }
 
     50% {
-        text-shadow: 0 0 18px rgba(0, 255, 65, 0.6);
+        text-shadow: 0 0 18px rgba(var(--accent), 0.6);
     }
 }
 
@@ -1979,11 +1979,11 @@
 
     0%,
     100% {
-        text-shadow: 0 0 30px rgba(0, 255, 65, 0.5), 0 0 60px rgba(0, 255, 65, 0.2);
+        text-shadow: 0 0 30px rgba(var(--accent), 0.5), 0 0 60px rgba(var(--accent), 0.2);
     }
 
     50% {
-        text-shadow: 0 0 40px rgba(0, 255, 65, 0.7), 0 0 80px rgba(0, 255, 65, 0.3);
+        text-shadow: 0 0 40px rgba(var(--accent), 0.7), 0 0 80px rgba(var(--accent), 0.3);
     }
 }
 
