@@ -2798,6 +2798,59 @@ function setupSettingsListeners() {
         document.getElementById('storm-font-down').onclick = (e) => { e.stopPropagation(); adjustFont(-0.1); };
         document.getElementById('algo-font-up').onclick = (e) => { e.stopPropagation(); adjustFont(0.1); };
         document.getElementById('algo-font-down').onclick = (e) => { e.stopPropagation(); adjustFont(-0.1); };
+
+        // Width controls
+        codingState._bufferWidth = 750; // default px
+        const adjustWidth = (delta) => {
+            codingState._bufferWidth = Math.min(1200, Math.max(500, codingState._bufferWidth + delta));
+            document.querySelectorAll('.coding-buffer-wrap').forEach(wrap => {
+                wrap.style.maxWidth = codingState._bufferWidth + 'px';
+            });
+        };
+        document.getElementById('storm-width-up').onclick = (e) => { e.stopPropagation(); adjustWidth(100); };
+        document.getElementById('storm-width-down').onclick = (e) => { e.stopPropagation(); adjustWidth(-100); };
+        document.getElementById('algo-width-up').onclick = (e) => { e.stopPropagation(); adjustWidth(100); };
+        document.getElementById('algo-width-down').onclick = (e) => { e.stopPropagation(); adjustWidth(-100); };
+
+        // Theme toggle dropdown
+        document.querySelectorAll('.coding-theme-toggle').forEach(btn => {
+            btn.onclick = (e) => {
+                e.stopPropagation();
+                const pills = btn.closest('.coding-theme-pills');
+                // Close other dropdowns
+                document.querySelectorAll('.coding-theme-pills').forEach(p => {
+                    if (p !== pills) p.classList.remove('open');
+                });
+                pills.classList.toggle('open');
+            };
+        });
+
+        // Close dropdown on outside click
+        document.addEventListener('click', () => {
+            document.querySelectorAll('.coding-theme-pills').forEach(p => p.classList.remove('open'));
+        });
+
+        // Theme switching
+        document.querySelectorAll('.coding-theme-pill').forEach(pill => {
+            pill.onclick = (e) => {
+                e.stopPropagation();
+                const theme = pill.dataset.theme;
+                // Update all pills active state
+                document.querySelectorAll('.coding-theme-pill').forEach(p => {
+                    p.classList.toggle('active', p.dataset.theme === theme);
+                });
+                // Apply theme to all buffer wraps
+                document.querySelectorAll('.coding-buffer-wrap').forEach(wrap => {
+                    if (theme === 'midnight') {
+                        wrap.removeAttribute('data-theme');
+                    } else {
+                        wrap.setAttribute('data-theme', theme);
+                    }
+                });
+                // Close dropdown
+                document.querySelectorAll('.coding-theme-pills').forEach(p => p.classList.remove('open'));
+            };
+        });
     }
 
     // ── LANGUAGE GRID ──
