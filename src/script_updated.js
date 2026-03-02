@@ -2746,706 +2746,908 @@ function setupSettingsListeners() {
         { name: 'Word Ladder', category: 'GRAPH', complexity: 'O(n*m)', code: 'from collections import deque\ndef word_ladder(begin, end, words):\n    ws = set(words)\n    if end not in ws: return 0\n    q = deque([(begin, 1)])\n    while q:\n        word, d = q.popleft()\n        if word == end: return d\n        for i in range(len(word)):\n            for c in "abcdefghijklmnopqrstuvwxyz":\n                nxt = word[:i]+c+word[i+1:]\n                if nxt in ws:\n                    ws.remove(nxt)\n                    q.append((nxt, d+1))\n    return 0' }
     ];
 
-    const dsaData = [
-        // 1-4: EASY
+    const dsaData =[
         {
             name: 'Find Pair Sum',
             difficulty: 'EASY',
             category: 'HASH MAP',
-            description: `Given an array of integers <code>nums</code> and an integer <code>target</code>, return indices of the two numbers such that they add up to <code>target</code>.<br><br>You may assume that each input would have exactly one solution, and you may not use the same element twice.<br><br><pre><strong>Input:</strong> nums = [2,7,11,15], target = 9\n<strong>Output:</strong> [0,1]\n<strong>Explanation:</strong> Because nums[0] + nums[1] == 9, we return [0, 1].</pre>`,
+            topics: ['HASH MAP', 'MATH', 'TWO POINTERS'],
+            description: `Given an array of integers <code>nums</code> and an integer <code>target</code>, return indices of the two numbers such that they add up to <code>target</code>.<br><br>You may assume that each input would have exactly one solution, and you may not use the same element twice.<br><br><pre><strong>Input:</strong> nums = [2,7,11,15], target = 9
+<strong>Output:</strong> [0,1]
+<strong>Explanation:</strong> Because nums[0] + nums[1] == 9, we return [0, 1].</pre>`,
             code: 'def find_pair_sum(nums, target):\n    num_map = {}\n    for i, num in enumerate(nums):\n        complement = target - num\n        if complement in num_map:\n            return [num_map[complement], i]\n        num_map[num] = i\n    return []'
         },
         {
             name: 'Valid Brackets',
             difficulty: 'EASY',
             category: 'STACK',
-            description: `Given a string <code>s</code> containing just the characters <code>'('</code>, <code>')'</code>, <code>'{'</code>, <code>'}'</code>, <code>'['</code> and <code>']'</code>, determine if the input string is valid.<br><br>An input string is valid if open brackets are closed by the same type of brackets in the correct order.<br><br><pre><strong>Input:</strong> s = "()[]{}"\n<strong>Output:</strong> true</pre>`,
+            topics: ['STACK'],
+            description: `Given a string <code>s</code> containing just the characters <code>'('</code>, <code>')'</code>, <code>'{'</code>, <code>'}'</code>, <code>'['</code> and <code>']'</code>, determine if the input string is valid.<br><br>An input string is valid if open brackets are closed by the same type of brackets in the correct order.<br><br><pre><strong>Input:</strong> s = "()[]{}"
+<strong>Output:</strong> true</pre>`,
             code: 'def is_valid_brackets(s):\n    stack = []\n    mapping = {")": "(", "}": "{", "]": "["}\n    for char in s:\n        if char in mapping:\n            top = stack.pop() if stack else "#"\n            if mapping[char] != top:\n                return False\n        else:\n            stack.append(char)\n    return not stack'
         },
         {
             name: 'Stock Market Profit',
             difficulty: 'EASY',
             category: 'ARRAY',
-            description: `You are given an array <code>prices</code> where <code>prices[i]</code> is the price of a given stock on the <code>i</code>th day.<br><br>You want to maximize your profit by choosing a single day to buy and a different day in the future to sell.<br><br><pre><strong>Input:</strong> prices = [7,1,5,3,6,4]\n<strong>Output:</strong> 5\n<strong>Explanation:</strong> Buy on day 2 (price=1) and sell on day 5 (price=6), profit = 5.</pre>`,
+            topics: ['ARRAY', 'GREEDY'],
+            description: `You are given an array <code>prices</code> where <code>prices[i]</code> is the price of a given stock on the <code>i</code>th day.<br><br>You want to maximize your profit by choosing a single day to buy and a different day in the future to sell.<br><br><pre><strong>Input:</strong> prices = [7,1,5,3,6,4]
+<strong>Output:</strong> 5
+<strong>Explanation:</strong> Buy on day 2 (price=1) and sell on day 5 (price=6), profit = 5.</pre>`,
             code: 'def max_profit(prices):\n    min_price = float("inf")\n    max_profit = 0\n    for price in prices:\n        if price < min_price:\n            min_price = price\n        elif price - min_price > max_profit:\n            max_profit = price - min_price\n    return max_profit'
         },
         {
             name: 'Invert Linked List',
             difficulty: 'EASY',
             category: 'LINKED LIST',
-            description: `Given the <code>head</code> of a singly linked list, invert the list and return the reversed list.<br><br><pre><strong>Input:</strong> head = [1,2,3,4,5]\n<strong>Output:</strong> [5,4,3,2,1]</pre>`,
+            topics: ['LINKED LIST'],
+            description: `Given the <code>head</code> of a singly linked list, invert the list and return the reversed list.<br><br><pre><strong>Input:</strong> head = [1,2,3,4,5]
+<strong>Output:</strong> [5,4,3,2,1]</pre>`,
             code: 'def invert_list(head):\n    prev = None\n    curr = head\n    while curr:\n        next_temp = curr.next\n        curr.next = prev\n        prev = curr\n        curr = next_temp\n    return prev'
         },
         {
             name: 'Palindrome Check',
             difficulty: 'EASY',
             category: 'STRING',
-            description: `Given a string <code>s</code>, determine if it is a palindrome. A palindrome reads the same forward and backward.<br><br>Consider only alphanumeric characters and ignore cases.<br><br><pre><strong>Input:</strong> s = "racecar"\n<strong>Output:</strong> true</pre>`,
+            topics: ['STRING', 'TWO POINTERS'],
+            description: `Given a string <code>s</code>, determine if it is a palindrome. A palindrome reads the same forward and backward.<br><br>Consider only alphanumeric characters and ignore cases.<br><br><pre><strong>Input:</strong> s = "racecar"
+<strong>Output:</strong> true</pre>`,
             code: 'def is_palindrome(s):\n    s = s.lower()\n    left = 0\n    right = len(s) - 1\n    while left < right:\n        if s[left] != s[right]:\n            return False\n        left += 1\n        right -= 1\n    return True'
         },
         {
             name: 'Reverse String',
             difficulty: 'EASY',
             category: 'STRING',
-            description: `Write a function that reverses a string. The input string is given as an array of characters <code>s</code>.<br><br>You must do this by modifying the input array in-place.<br><br><pre><strong>Input:</strong> s = ["h","e","l","l","o"]\n<strong>Output:</strong> ["o","l","l","e","h"]</pre>`,
+            topics: ['STRING'],
+            description: `Write a function that reverses a string. The input string is given as an array of characters <code>s</code>.<br><br>You must do this by modifying the input array in-place.<br><br><pre><strong>Input:</strong> s = ["h","e","l","l","o"]
+<strong>Output:</strong> ["o","l","l","e","h"]</pre>`,
             code: 'def reverse_string(s):\n    left = 0\n    right = len(s) - 1\n    while left < right:\n        s[left], s[right] = s[right], s[left]\n        left += 1\n        right -= 1\n    return s'
         },
         {
             name: 'Count Vowels',
             difficulty: 'EASY',
             category: 'STRING',
-            description: `Given a string <code>s</code>, count the number of vowels (a, e, i, o, u) in it. The string may contain both uppercase and lowercase letters.<br><br><pre><strong>Input:</strong> s = "Hello World"\n<strong>Output:</strong> 3</pre>`,
+            topics: ['STRING'],
+            description: `Given a string <code>s</code>, count the number of vowels (a, e, i, o, u) in it. The string may contain both uppercase and lowercase letters.<br><br><pre><strong>Input:</strong> s = "Hello World"
+<strong>Output:</strong> 3</pre>`,
             code: 'def count_vowels(s):\n    count = 0\n    vowels = "aeiouAEIOU"\n    for char in s:\n        if char in vowels:\n            count += 1\n    return count'
         },
         {
             name: 'Fibonacci Sequence',
             difficulty: 'EASY',
             category: 'MATH',
-            description: `Given <code>n</code>, return the nth Fibonacci number. The Fibonacci sequence starts with 0 and 1, and each subsequent number is the sum of the two preceding ones.<br><br><pre><strong>Input:</strong> n = 6\n<strong>Output:</strong> 8\n<strong>Explanation:</strong> 0, 1, 1, 2, 3, 5, 8</pre>`,
+            topics: ['MATH'],
+            description: `Given <code>n</code>, return the nth Fibonacci number. The Fibonacci sequence starts with 0 and 1, and each subsequent number is the sum of the two preceding ones.<br><br><pre><strong>Input:</strong> n = 6
+<strong>Output:</strong> 8
+<strong>Explanation:</strong> 0, 1, 1, 2, 3, 5, 8</pre>`,
             code: 'def fibonacci(n):\n    if n <= 1:\n        return n\n    a = 0\n    b = 1\n    for i in range(2, n + 1):\n        a, b = b, a + b\n    return b'
         },
         {
             name: 'Find Maximum',
             difficulty: 'EASY',
             category: 'ARRAY',
-            description: `Given an array of integers <code>nums</code>, find and return the maximum value in the array.<br><br><pre><strong>Input:</strong> nums = [3, 7, 2, 9, 1, 5]\n<strong>Output:</strong> 9</pre>`,
+            topics: ['ARRAY'],
+            description: `Given an array of integers <code>nums</code>, find and return the maximum value in the array.<br><br><pre><strong>Input:</strong> nums = [3, 7, 2, 9, 1, 5]
+<strong>Output:</strong> 9</pre>`,
             code: 'def find_max(nums):\n    max_val = nums[0]\n    for num in nums:\n        if num > max_val:\n            max_val = num\n    return max_val'
         },
         {
             name: 'Remove Duplicates',
             difficulty: 'EASY',
             category: 'ARRAY',
-            description: `Given a list of integers <code>nums</code>, remove all duplicate values and return a list with only unique elements, preserving their original order.<br><br><pre><strong>Input:</strong> nums = [1, 2, 2, 3, 4, 4, 5]\n<strong>Output:</strong> [1, 2, 3, 4, 5]</pre>`,
+            topics: ['ARRAY'],
+            description: `Given a list of integers <code>nums</code>, remove all duplicate values and return a list with only unique elements, preserving their original order.<br><br><pre><strong>Input:</strong> nums = [1, 2, 2, 3, 4, 4, 5]
+<strong>Output:</strong> [1, 2, 3, 4, 5]</pre>`,
             code: 'def remove_duplicates(nums):\n    seen = set()\n    result = []\n    for num in nums:\n        if num not in seen:\n            seen.add(num)\n            result.append(num)\n    return result'
         },
         {
             name: 'Missing Number',
             difficulty: 'EASY',
             category: 'ARRAY',
-            description: `Given an array <code>nums</code> containing <code>n</code> distinct numbers in the range <code>[0, n]</code>, return the only number in the range that is missing.<br><br><pre><strong>Input:</strong> nums = [3,0,1]\n<strong>Output:</strong> 2</pre>`,
+            topics: ['ARRAY'],
+            description: `Given an array <code>nums</code> containing <code>n</code> distinct numbers in the range <code>[0, n]</code>, return the only number in the range that is missing.<br><br><pre><strong>Input:</strong> nums = [3,0,1]
+<strong>Output:</strong> 2</pre>`,
             code: 'def missing_number(nums):\n    n = len(nums)\n    expected = n * (n + 1) // 2\n    actual = sum(nums)\n    return expected - actual'
         },
         {
             name: 'Single Number',
             difficulty: 'EASY',
             category: 'BIT MANIPULATION',
-            description: `Given a non-empty array of integers <code>nums</code>, every element appears twice except for one. Find that single one.<br><br><pre><strong>Input:</strong> nums = [4,1,2,1,2]\n<strong>Output:</strong> 4</pre>`,
+            topics: ['BIT MANIPULATION'],
+            description: `Given a non-empty array of integers <code>nums</code>, every element appears twice except for one. Find that single one.<br><br><pre><strong>Input:</strong> nums = [4,1,2,1,2]
+<strong>Output:</strong> 4</pre>`,
             code: 'def single_number(nums):\n    res = 0\n    for num in nums:\n        res ^= num\n    return res'
         },
         {
             name: 'Contains Duplicate',
             difficulty: 'EASY',
             category: 'HASH MAP',
-            description: `Given an integer array <code>nums</code>, return <code>true</code> if any value appears at least twice, and return <code>false</code> if every element is distinct.<br><br><pre><strong>Input:</strong> nums = [1,2,3,1]\n<strong>Output:</strong> true</pre>`,
+            topics: ['HASH MAP'],
+            description: `Given an integer array <code>nums</code>, return <code>true</code> if any value appears at least twice, and return <code>false</code> if every element is distinct.<br><br><pre><strong>Input:</strong> nums = [1,2,3,1]
+<strong>Output:</strong> true</pre>`,
             code: 'def contains_duplicate(nums):\n    seen = set()\n    for num in nums:\n        if num in seen:\n            return True\n        seen.add(num)\n    return False'
         },
         {
             name: 'Majority Element',
             difficulty: 'EASY',
             category: 'ARRAY',
-            description: `Given an array <code>nums</code> of size <code>n</code>, return the majority element. The majority element appears more than <code>n / 2</code> times.<br><br><pre><strong>Input:</strong> nums = [3,2,3]\n<strong>Output:</strong> 3</pre>`,
+            topics: ['ARRAY'],
+            description: `Given an array <code>nums</code> of size <code>n</code>, return the majority element. The majority element appears more than <code>n / 2</code> times.<br><br><pre><strong>Input:</strong> nums = [3,2,3]
+<strong>Output:</strong> 3</pre>`,
             code: 'def majority_element(nums):\n    count = 0\n    candidate = None\n    for num in nums:\n        if count == 0:\n            candidate = num\n        count += (1 if num == candidate else -1)\n    return candidate'
         },
         {
             name: 'Move Zeroes',
             difficulty: 'EASY',
             category: 'TWO POINTERS',
-            description: `Given an integer array <code>nums</code>, move all <code>0</code>s to the end while maintaining the relative order of the non-zero elements.<br><br><pre><strong>Input:</strong> nums = [0,1,0,3,12]\n<strong>Output:</strong> [1,3,12,0,0]</pre>`,
+            topics: ['TWO POINTERS'],
+            description: `Given an integer array <code>nums</code>, move all <code>0</code>s to the end while maintaining the relative order of the non-zero elements.<br><br><pre><strong>Input:</strong> nums = [0,1,0,3,12]
+<strong>Output:</strong> [1,3,12,0,0]</pre>`,
             code: 'def move_zeroes(nums):\n    pos = 0\n    for num in nums:\n        if num != 0:\n            nums[pos] = num\n            pos += 1\n    for i in range(pos, len(nums)):\n        nums[i] = 0'
         },
         {
             name: 'Plus One',
             difficulty: 'EASY',
             category: 'MATH',
-            description: `You are given a large integer represented as an integer array <code>digits</code>. Increment the large integer by one and return the resulting array of digits.<br><br><pre><strong>Input:</strong> digits = [1,2,3]\n<strong>Output:</strong> [1,2,4]</pre>`,
+            topics: ['MATH'],
+            description: `You are given a large integer represented as an integer array <code>digits</code>. Increment the large integer by one and return the resulting array of digits.<br><br><pre><strong>Input:</strong> digits = [1,2,3]
+<strong>Output:</strong> [1,2,4]</pre>`,
             code: 'def plus_one(digits):\n    for i in range(len(digits) - 1, -1, -1):\n        if digits[i] < 9:\n            digits[i] += 1\n            return digits\n        digits[i] = 0\n    return [1] + digits'
         },
         {
             name: 'Intersection of Two Arrays',
             difficulty: 'EASY',
             category: 'HASH MAP',
-            description: `Given two integer arrays <code>nums1</code> and <code>nums2</code>, return an array of their intersection. Each element in the result must be unique.<br><br><pre><strong>Input:</strong> nums1 = [1,2,2,1], nums2 = [2,2]\n<strong>Output:</strong> [2]</pre>`,
+            topics: ['HASH MAP'],
+            description: `Given two integer arrays <code>nums1</code> and <code>nums2</code>, return an array of their intersection. Each element in the result must be unique.<br><br><pre><strong>Input:</strong> nums1 = [1,2,2,1], nums2 = [2,2]
+<strong>Output:</strong> [2]</pre>`,
             code: 'def intersection(nums1, nums2):\n    set1 = set(nums1)\n    set2 = set(nums2)\n    return list(set1 & set2)'
         },
         {
             name: 'Power of Two',
             difficulty: 'EASY',
             category: 'MATH',
-            description: `Given an integer <code>n</code>, return <code>true</code> if it is a power of two. Otherwise return <code>false</code>.<br><br><pre><strong>Input:</strong> n = 16\n<strong>Output:</strong> true</pre>`,
+            topics: ['MATH'],
+            description: `Given an integer <code>n</code>, return <code>true</code> if it is a power of two. Otherwise return <code>false</code>.<br><br><pre><strong>Input:</strong> n = 16
+<strong>Output:</strong> true</pre>`,
             code: 'def is_power_of_two(n):\n    if n <= 0:\n        return False\n    return (n & (n - 1)) == 0'
         },
         {
             name: 'Happy Number',
             difficulty: 'EASY',
             category: 'MATH',
-            description: `Write an algorithm to determine if a number <code>n</code> is happy. A happy number is defined by replacing the number by the sum of the squares of its digits until it equals 1.<br><br><pre><strong>Input:</strong> n = 19\n<strong>Output:</strong> true</pre>`,
+            topics: ['MATH'],
+            description: `Write an algorithm to determine if a number <code>n</code> is happy. A happy number is defined by replacing the number by the sum of the squares of its digits until it equals 1.<br><br><pre><strong>Input:</strong> n = 19
+<strong>Output:</strong> true</pre>`,
             code: 'def is_happy(n):\n    seen = set()\n    while n != 1 and n not in seen:\n        seen.add(n)\n        n = sum(int(d) ** 2 for d in str(n))\n    return n == 1'
         },
         {
             name: 'Roman to Integer',
             difficulty: 'EASY',
             category: 'MATH',
-            description: `Given a roman numeral, convert it to an integer.<br><br><pre><strong>Input:</strong> s = "IX"\n<strong>Output:</strong> 9</pre>`,
+            topics: ['MATH'],
+            description: `Given a roman numeral, convert it to an integer.<br><br><pre><strong>Input:</strong> s = "IX"
+<strong>Output:</strong> 9</pre>`,
             code: 'def roman_to_int(s):\n    roman = {"I": 1, "V": 5, "X": 10, "L": 50, "C": 100, "D": 500, "M": 1000}\n    res = 0\n    for i in range(len(s)):\n        if i + 1 < len(s) and roman[s[i]] < roman[s[i + 1]]:\n            res -= roman[s[i]]\n        else:\n            res += roman[s[i]]\n    return res'
         },
         {
             name: 'Longest Common Prefix',
             difficulty: 'EASY',
             category: 'STRING',
-            description: `Write a function to find the longest common prefix string amongst an array of strings. If there is no common prefix, return an empty string.<br><br><pre><strong>Input:</strong> strs = ["flower","flow","flight"]\n<strong>Output:</strong> "fl"</pre>`,
+            topics: ['STRING', 'PREFIX SUM'],
+            description: `Write a function to find the longest common prefix string amongst an array of strings. If there is no common prefix, return an empty string.<br><br><pre><strong>Input:</strong> strs = ["flower","flow","flight"]
+<strong>Output:</strong> "fl"</pre>`,
             code: 'def longest_common_prefix(strs):\n    if not strs:\n        return ""\n    prefix = strs[0]\n    for s in strs[1:]:\n        while not s.startswith(prefix):\n            prefix = prefix[:-1]\n            if not prefix:\n                return ""\n    return prefix'
         },
         {
             name: 'Valid Anagram',
             difficulty: 'EASY',
             category: 'STRING',
-            description: `Given two strings <code>s</code> and <code>t</code>, return <code>true</code> if <code>t</code> is an anagram of <code>s</code>.<br><br><pre><strong>Input:</strong> s = "anagram", t = "nagaram"\n<strong>Output:</strong> true</pre>`,
+            topics: ['STRING', 'STRING MATCHING'],
+            description: `Given two strings <code>s</code> and <code>t</code>, return <code>true</code> if <code>t</code> is an anagram of <code>s</code>.<br><br><pre><strong>Input:</strong> s = "anagram", t = "nagaram"
+<strong>Output:</strong> true</pre>`,
             code: 'def is_anagram(s, t):\n    if len(s) != len(t):\n        return False\n    counts = {}\n    for c in s:\n        counts[c] = counts.get(c, 0) + 1\n    for c in t:\n        if counts.get(c, 0) == 0:\n            return False\n        counts[c] -= 1\n    return True'
         },
         {
             name: 'Length of Last Word',
             difficulty: 'EASY',
             category: 'STRING',
-            description: `Given a string <code>s</code> consisting of words and spaces, return the length of the last word in the string.<br><br><pre><strong>Input:</strong> s = "Hello World"\n<strong>Output:</strong> 5</pre>`,
+            topics: ['STRING'],
+            description: `Given a string <code>s</code> consisting of words and spaces, return the length of the last word in the string.<br><br><pre><strong>Input:</strong> s = "Hello World"
+<strong>Output:</strong> 5</pre>`,
             code: 'def length_of_last_word(s):\n    s = s.strip()\n    length = 0\n    for i in range(len(s) - 1, -1, -1):\n        if s[i] == " ":\n            break\n        length += 1\n    return length'
         },
         {
             name: 'First Unique Character',
             difficulty: 'EASY',
             category: 'STRING',
-            description: `Given a string <code>s</code>, find the first non-repeating character in it and return its index. If it does not exist, return <code>-1</code>.<br><br><pre><strong>Input:</strong> s = "leetcode"\n<strong>Output:</strong> 0</pre>`,
+            topics: ['STRING'],
+            description: `Given a string <code>s</code>, find the first non-repeating character in it and return its index. If it does not exist, return <code>-1</code>.<br><br><pre><strong>Input:</strong> s = "leetcode"
+<strong>Output:</strong> 0</pre>`,
             code: 'def first_uniq_char(s):\n    counts = {}\n    for c in s:\n        counts[c] = counts.get(c, 0) + 1\n    for i, c in enumerate(s):\n        if counts[c] == 1:\n            return i\n    return -1'
         },
         {
             name: 'Ransom Note',
             difficulty: 'EASY',
             category: 'HASH MAP',
-            description: `Given two strings <code>ransomNote</code> and <code>magazine</code>, return <code>true</code> if <code>ransomNote</code> can be constructed using letters from <code>magazine</code>.<br><br><pre><strong>Input:</strong> ransomNote = "aa", magazine = "aab"\n<strong>Output:</strong> true</pre>`,
+            topics: ['HASH MAP'],
+            description: `Given two strings <code>ransomNote</code> and <code>magazine</code>, return <code>true</code> if <code>ransomNote</code> can be constructed using letters from <code>magazine</code>.<br><br><pre><strong>Input:</strong> ransomNote = "aa", magazine = "aab"
+<strong>Output:</strong> true</pre>`,
             code: 'def can_construct(ransomNote, magazine):\n    counts = {}\n    for c in magazine:\n        counts[c] = counts.get(c, 0) + 1\n    for c in ransomNote:\n        if counts.get(c, 0) == 0:\n            return False\n        counts[c] -= 1\n    return True'
         },
         {
             name: 'Isomorphic Strings',
             difficulty: 'EASY',
             category: 'HASH MAP',
-            description: `Given two strings <code>s</code> and <code>t</code>, determine if they are isomorphic. Two strings are isomorphic if the characters in <code>s</code> can be replaced to get <code>t</code>.<br><br><pre><strong>Input:</strong> s = "egg", t = "add"\n<strong>Output:</strong> true</pre>`,
+            topics: ['HASH MAP'],
+            description: `Given two strings <code>s</code> and <code>t</code>, determine if they are isomorphic. Two strings are isomorphic if the characters in <code>s</code> can be replaced to get <code>t</code>.<br><br><pre><strong>Input:</strong> s = "egg", t = "add"
+<strong>Output:</strong> true</pre>`,
             code: 'def is_isomorphic(s, t):\n    map_st = {}\n    map_ts = {}\n    for a, b in zip(s, t):\n        if map_st.get(a, b) != b:\n            return False\n        if map_ts.get(b, a) != a:\n            return False\n        map_st[a] = b\n        map_ts[b] = a\n    return True'
         },
         {
             name: 'Word Pattern',
             difficulty: 'EASY',
             category: 'HASH MAP',
-            description: `Given a <code>pattern</code> and a string <code>s</code>, find if <code>s</code> follows the same pattern.<br><br><pre><strong>Input:</strong> pattern = "abba", s = "dog cat cat dog"\n<strong>Output:</strong> true</pre>`,
+            topics: ['HASH MAP'],
+            description: `Given a <code>pattern</code> and a string <code>s</code>, find if <code>s</code> follows the same pattern.<br><br><pre><strong>Input:</strong> pattern = "abba", s = "dog cat cat dog"
+<strong>Output:</strong> true</pre>`,
             code: 'def word_pattern(pattern, s):\n    words = s.split()\n    if len(pattern) != len(words):\n        return False\n    p2w = {}\n    w2p = {}\n    for c, w in zip(pattern, words):\n        if c in p2w and p2w[c] != w:\n            return False\n        if w in w2p and w2p[w] != c:\n            return False\n        p2w[c] = w\n        w2p[w] = c\n    return True'
         },
         {
             name: 'Find the Difference',
             difficulty: 'EASY',
             category: 'STRING',
-            description: `String <code>t</code> is generated by shuffling string <code>s</code> and adding one more letter. Return the letter that was added.<br><br><pre><strong>Input:</strong> s = "abcd", t = "abcde"\n<strong>Output:</strong> "e"</pre>`,
+            topics: ['STRING'],
+            description: `String <code>t</code> is generated by shuffling string <code>s</code> and adding one more letter. Return the letter that was added.<br><br><pre><strong>Input:</strong> s = "abcd", t = "abcde"
+<strong>Output:</strong> "e"</pre>`,
             code: 'def find_the_difference(s, t):\n    code = 0\n    for c in s:\n        code ^= ord(c)\n    for c in t:\n        code ^= ord(c)\n    return chr(code)'
         },
         {
             name: 'Add Binary',
             difficulty: 'EASY',
             category: 'MATH',
-            description: `Given two binary strings <code>a</code> and <code>b</code>, return their sum as a binary string.<br><br><pre><strong>Input:</strong> a = "11", b = "1"\n<strong>Output:</strong> "100"</pre>`,
+            topics: ['MATH'],
+            description: `Given two binary strings <code>a</code> and <code>b</code>, return their sum as a binary string.<br><br><pre><strong>Input:</strong> a = "11", b = "1"
+<strong>Output:</strong> "100"</pre>`,
             code: 'def add_binary(a, b):\n    result = []\n    carry = 0\n    i, j = len(a) - 1, len(b) - 1\n    while i >= 0 or j >= 0 or carry:\n        total = carry\n        if i >= 0:\n            total += int(a[i])\n            i -= 1\n        if j >= 0:\n            total += int(b[j])\n            j -= 1\n        result.append(str(total % 2))\n        carry = total // 2\n    return "".join(reversed(result))'
         },
         {
             name: 'Linked List Cycle',
             difficulty: 'EASY',
             category: 'LINKED LIST',
-            description: `Given <code>head</code>, the head of a linked list, determine if the linked list has a cycle in it.<br><br><pre><strong>Input:</strong> head = [3,2,0,-4], pos = 1\n<strong>Output:</strong> true</pre>`,
+            topics: ['LINKED LIST'],
+            description: `Given <code>head</code>, the head of a linked list, determine if the linked list has a cycle in it.<br><br><pre><strong>Input:</strong> head = [3,2,0,-4], pos = 1
+<strong>Output:</strong> true</pre>`,
             code: 'def has_cycle(head):\n    slow = head\n    fast = head\n    while fast and fast.next:\n        slow = slow.next\n        fast = fast.next.next\n        if slow == fast:\n            return True\n    return False'
         },
         {
             name: 'Middle of Linked List',
             difficulty: 'EASY',
             category: 'LINKED LIST',
-            description: `Given the <code>head</code> of a singly linked list, return the middle node. If there are two middle nodes, return the second one.<br><br><pre><strong>Input:</strong> head = [1,2,3,4,5]\n<strong>Output:</strong> [3,4,5]</pre>`,
+            topics: ['LINKED LIST'],
+            description: `Given the <code>head</code> of a singly linked list, return the middle node. If there are two middle nodes, return the second one.<br><br><pre><strong>Input:</strong> head = [1,2,3,4,5]
+<strong>Output:</strong> [3,4,5]</pre>`,
             code: 'def middle_node(head):\n    slow = head\n    fast = head\n    while fast and fast.next:\n        slow = slow.next\n        fast = fast.next.next\n    return slow'
         },
         {
             name: 'Remove List Elements',
             difficulty: 'EASY',
             category: 'LINKED LIST',
-            description: `Given the <code>head</code> of a linked list and an integer <code>val</code>, remove all nodes with <code>Node.val == val</code>.<br><br><pre><strong>Input:</strong> head = [1,2,6,3,4,5,6], val = 6\n<strong>Output:</strong> [1,2,3,4,5]</pre>`,
+            topics: ['LINKED LIST'],
+            description: `Given the <code>head</code> of a linked list and an integer <code>val</code>, remove all nodes with <code>Node.val == val</code>.<br><br><pre><strong>Input:</strong> head = [1,2,6,3,4,5,6], val = 6
+<strong>Output:</strong> [1,2,3,4,5]</pre>`,
             code: 'def remove_elements(head, val):\n    dummy = ListNode(next=head)\n    curr = dummy\n    while curr.next:\n        if curr.next.val == val:\n            curr.next = curr.next.next\n        else:\n            curr = curr.next\n    return dummy.next'
         },
         {
             name: 'Palindrome Linked List',
             difficulty: 'EASY',
             category: 'LINKED LIST',
-            description: `Given the <code>head</code> of a singly linked list, return <code>true</code> if it is a palindrome.<br><br><pre><strong>Input:</strong> head = [1,2,2,1]\n<strong>Output:</strong> true</pre>`,
+            topics: ['LINKED LIST'],
+            description: `Given the <code>head</code> of a singly linked list, return <code>true</code> if it is a palindrome.<br><br><pre><strong>Input:</strong> head = [1,2,2,1]
+<strong>Output:</strong> true</pre>`,
             code: 'def is_palindrome_ll(head):\n    vals = []\n    curr = head\n    while curr:\n        vals.append(curr.val)\n        curr = curr.next\n    return vals == vals[::-1]'
         },
         {
             name: 'Max Depth Binary Tree',
             difficulty: 'EASY',
             category: 'TREE',
-            description: `Given the <code>root</code> of a binary tree, return its maximum depth.<br><br><pre><strong>Input:</strong> root = [3,9,20,null,null,15,7]\n<strong>Output:</strong> 3</pre>`,
+            topics: ['TREE', 'DFS'],
+            description: `Given the <code>root</code> of a binary tree, return its maximum depth.<br><br><pre><strong>Input:</strong> root = [3,9,20,null,null,15,7]
+<strong>Output:</strong> 3</pre>`,
             code: 'def max_depth(root):\n    if not root:\n        return 0\n    return 1 + max(max_depth(root.left), max_depth(root.right))'
         },
         {
             name: 'Same Tree',
             difficulty: 'EASY',
             category: 'TREE',
-            description: `Given the roots of two binary trees <code>p</code> and <code>q</code>, check if they are the same. Two trees are the same if they are structurally identical with the same values.<br><br><pre><strong>Input:</strong> p = [1,2,3], q = [1,2,3]\n<strong>Output:</strong> true</pre>`,
+            topics: ['TREE', 'DFS'],
+            description: `Given the roots of two binary trees <code>p</code> and <code>q</code>, check if they are the same. Two trees are the same if they are structurally identical with the same values.<br><br><pre><strong>Input:</strong> p = [1,2,3], q = [1,2,3]
+<strong>Output:</strong> true</pre>`,
             code: 'def is_same_tree(p, q):\n    if not p and not q:\n        return True\n    if not p or not q or p.val != q.val:\n        return False\n    return is_same_tree(p.left, q.left) and is_same_tree(p.right, q.right)'
         },
         {
             name: 'Symmetric Tree',
             difficulty: 'EASY',
             category: 'TREE',
-            description: `Given the <code>root</code> of a binary tree, check whether it is a mirror of itself (symmetric around its center).<br><br><pre><strong>Input:</strong> root = [1,2,2,3,4,4,3]\n<strong>Output:</strong> true</pre>`,
+            topics: ['TREE', 'DFS'],
+            description: `Given the <code>root</code> of a binary tree, check whether it is a mirror of itself (symmetric around its center).<br><br><pre><strong>Input:</strong> root = [1,2,2,3,4,4,3]
+<strong>Output:</strong> true</pre>`,
             code: 'def is_symmetric(root):\n    def mirror(a, b):\n        if not a and not b:\n            return True\n        if not a or not b:\n            return False\n        return a.val == b.val and mirror(a.left, b.right) and mirror(a.right, b.left)\n    return mirror(root.left, root.right) if root else True'
         },
         {
             name: 'Flip Binary Tree',
             difficulty: 'EASY',
             category: 'TREE',
-            description: `Given the <code>root</code> of a binary tree, invert the tree and return its root.<br><br><pre><strong>Input:</strong> root = [4,2,7,1,3,6,9]\n<strong>Output:</strong> [4,7,2,9,6,3,1]</pre>`,
+            topics: ['TREE', 'DFS'],
+            description: `Given the <code>root</code> of a binary tree, invert the tree and return its root.<br><br><pre><strong>Input:</strong> root = [4,2,7,1,3,6,9]
+<strong>Output:</strong> [4,7,2,9,6,3,1]</pre>`,
             code: 'def invert_tree(root):\n    if root:\n        root.left, root.right = invert_tree(root.right), invert_tree(root.left)\n        return root\n    return None'
         },
         {
             name: 'Diameter of Binary Tree',
             difficulty: 'EASY',
             category: 'TREE',
-            description: `Given the <code>root</code> of a binary tree, return the length of the diameter. The diameter is the longest path between any two nodes.<br><br><pre><strong>Input:</strong> root = [1,2,3,4,5]\n<strong>Output:</strong> 3</pre>`,
+            topics: ['TREE', 'DFS'],
+            description: `Given the <code>root</code> of a binary tree, return the length of the diameter. The diameter is the longest path between any two nodes.<br><br><pre><strong>Input:</strong> root = [1,2,3,4,5]
+<strong>Output:</strong> 3</pre>`,
             code: 'def diameter(root):\n    result = 0\n    def depth(node):\n        nonlocal result\n        if not node:\n            return 0\n        l = depth(node.left)\n        r = depth(node.right)\n        result = max(result, l + r)\n        return max(l, r) + 1\n    depth(root)\n    return result'
         },
         {
             name: 'Path Sum',
             difficulty: 'EASY',
             category: 'TREE',
-            description: `Given the <code>root</code> of a binary tree and an integer <code>targetSum</code>, return <code>true</code> if the tree has a root-to-leaf path whose values add up to <code>targetSum</code>.<br><br><pre><strong>Input:</strong> root = [5,4,8,11,null,13,4], targetSum = 22\n<strong>Output:</strong> true</pre>`,
+            topics: ['TREE', 'MATH'],
+            description: `Given the <code>root</code> of a binary tree and an integer <code>targetSum</code>, return <code>true</code> if the tree has a root-to-leaf path whose values add up to <code>targetSum</code>.<br><br><pre><strong>Input:</strong> root = [5,4,8,11,null,13,4], targetSum = 22
+<strong>Output:</strong> true</pre>`,
             code: 'def has_path_sum(root, target):\n    if not root:\n        return False\n    if not root.left and not root.right:\n        return root.val == target\n    return has_path_sum(root.left, target - root.val) or has_path_sum(root.right, target - root.val)'
         },
         {
             name: 'Search in BST',
             difficulty: 'EASY',
             category: 'TREE',
-            description: `Given the <code>root</code> of a BST and an integer <code>val</code>, find the node whose value equals <code>val</code> and return the subtree rooted at that node.<br><br><pre><strong>Input:</strong> root = [4,2,7,1,3], val = 2\n<strong>Output:</strong> [2,1,3]</pre>`,
+            topics: ['TREE', 'BINARY SEARCH'],
+            description: `Given the <code>root</code> of a BST and an integer <code>val</code>, find the node whose value equals <code>val</code> and return the subtree rooted at that node.<br><br><pre><strong>Input:</strong> root = [4,2,7,1,3], val = 2
+<strong>Output:</strong> [2,1,3]</pre>`,
             code: 'def search_bst(root, val):\n    curr = root\n    while curr:\n        if curr.val == val:\n            return curr\n        elif curr.val > val:\n            curr = curr.left\n        else:\n            curr = curr.right\n    return None'
         },
         {
             name: 'Binary Search',
             difficulty: 'EASY',
             category: 'BINARY SEARCH',
-            description: `Given a sorted array <code>nums</code> and a <code>target</code>, search for target in nums. If found, return its index. Otherwise return <code>-1</code>.<br><br><pre><strong>Input:</strong> nums = [-1,0,3,5,9,12], target = 9\n<strong>Output:</strong> 4</pre>`,
+            topics: ['BINARY SEARCH'],
+            description: `Given a sorted array <code>nums</code> and a <code>target</code>, search for target in nums. If found, return its index. Otherwise return <code>-1</code>.<br><br><pre><strong>Input:</strong> nums = [-1,0,3,5,9,12], target = 9
+<strong>Output:</strong> 4</pre>`,
             code: 'def search(nums, target):\n    left, right = 0, len(nums) - 1\n    while left <= right:\n        mid = (left + right) // 2\n        if nums[mid] == target:\n            return mid\n        elif nums[mid] < target:\n            left = mid + 1\n        else:\n            right = mid - 1\n    return -1'
         },
         {
             name: 'First Bad Version',
             difficulty: 'EASY',
             category: 'BINARY SEARCH',
-            description: `You have <code>n</code> versions <code>[1, 2, ..., n]</code> and you want to find the first bad one which causes all following ones to be bad.<br><br><pre><strong>Input:</strong> n = 5, bad = 4\n<strong>Output:</strong> 4</pre>`,
+            topics: ['BINARY SEARCH'],
+            description: `You have <code>n</code> versions <code>[1, 2, ..., n]</code> and you want to find the first bad one which causes all following ones to be bad.<br><br><pre><strong>Input:</strong> n = 5, bad = 4
+<strong>Output:</strong> 4</pre>`,
             code: 'def first_bad_version(n):\n    left, right = 1, n\n    while left < right:\n        mid = (left + right) // 2\n        if isBadVersion(mid):\n            right = mid\n        else:\n            left = mid + 1\n    return left'
         },
         {
             name: 'Search Insert Position',
             difficulty: 'EASY',
             category: 'BINARY SEARCH',
-            description: `Given a sorted array and a target value, return the index if the target is found. If not, return the index where it would be inserted.<br><br><pre><strong>Input:</strong> nums = [1,3,5,6], target = 5\n<strong>Output:</strong> 2</pre>`,
+            topics: ['BINARY SEARCH'],
+            description: `Given a sorted array and a target value, return the index if the target is found. If not, return the index where it would be inserted.<br><br><pre><strong>Input:</strong> nums = [1,3,5,6], target = 5
+<strong>Output:</strong> 2</pre>`,
             code: 'def search_insert(nums, target):\n    left, right = 0, len(nums) - 1\n    while left <= right:\n        mid = (left + right) // 2\n        if nums[mid] == target:\n            return mid\n        elif nums[mid] < target:\n            left = mid + 1\n        else:\n            right = mid - 1\n    return left'
         },
         {
             name: 'Squares of Sorted Array',
             difficulty: 'EASY',
             category: 'TWO POINTERS',
-            description: `Given a sorted array <code>nums</code>, return an array of the squares of each number sorted in non-decreasing order.<br><br><pre><strong>Input:</strong> nums = [-4,-1,0,3,10]\n<strong>Output:</strong> [0,1,9,16,100]</pre>`,
+            topics: ['TWO POINTERS', 'SORTING'],
+            description: `Given a sorted array <code>nums</code>, return an array of the squares of each number sorted in non-decreasing order.<br><br><pre><strong>Input:</strong> nums = [-4,-1,0,3,10]
+<strong>Output:</strong> [0,1,9,16,100]</pre>`,
             code: 'def sorted_squares(nums):\n    n = len(nums)\n    result = [0] * n\n    left, right = 0, n - 1\n    for i in range(n - 1, -1, -1):\n        if abs(nums[left]) > abs(nums[right]):\n            result[i] = nums[left] ** 2\n            left += 1\n        else:\n            result[i] = nums[right] ** 2\n            right -= 1\n    return result'
         },
         {
             name: 'Reverse Vowels',
             difficulty: 'EASY',
             category: 'TWO POINTERS',
-            description: `Given a string <code>s</code>, reverse only all the vowels in the string and return it.<br><br><pre><strong>Input:</strong> s = "hello"\n<strong>Output:</strong> "holle"</pre>`,
+            topics: ['TWO POINTERS'],
+            description: `Given a string <code>s</code>, reverse only all the vowels in the string and return it.<br><br><pre><strong>Input:</strong> s = "hello"
+<strong>Output:</strong> "holle"</pre>`,
             code: 'def reverse_vowels(s):\n    vowels = set("aeiouAEIOU")\n    s = list(s)\n    l, r = 0, len(s) - 1\n    while l < r:\n        while l < r and s[l] not in vowels:\n            l += 1\n        while l < r and s[r] not in vowels:\n            r -= 1\n        s[l], s[r] = s[r], s[l]\n        l += 1\n        r -= 1\n    return "".join(s)'
         },
         {
             name: 'Contains Duplicate II',
             difficulty: 'EASY',
             category: 'HASH MAP',
-            description: `Given an integer array <code>nums</code> and an integer <code>k</code>, return <code>true</code> if there are two distinct indices <code>i</code> and <code>j</code> such that <code>nums[i] == nums[j]</code> and <code>abs(i - j) <= k</code>.<br><br><pre><strong>Input:</strong> nums = [1,2,3,1], k = 3\n<strong>Output:</strong> true</pre>`,
+            topics: ['HASH MAP'],
+            description: `Given an integer array <code>nums</code> and an integer <code>k</code>, return <code>true</code> if there are two distinct indices <code>i</code> and <code>j</code> such that <code>nums[i] == nums[j]</code> and <code>abs(i - j) <= k</code>.<br><br><pre><strong>Input:</strong> nums = [1,2,3,1], k = 3
+<strong>Output:</strong> true</pre>`,
             code: 'def contains_nearby_dup(nums, k):\n    seen = {}\n    for i, num in enumerate(nums):\n        if num in seen and i - seen[num] <= k:\n            return True\n        seen[num] = i\n    return False'
         },
         {
             name: 'Balanced Binary Tree',
             difficulty: 'EASY',
             category: 'TREE',
-            description: `Given a binary tree, determine if it is height-balanced. A tree is balanced if left and right subtrees differ in height by no more than 1.<br><br><pre><strong>Input:</strong> root = [3,9,20,null,null,15,7]\n<strong>Output:</strong> true</pre>`,
+            topics: ['TREE', 'DFS'],
+            description: `Given a binary tree, determine if it is height-balanced. A tree is balanced if left and right subtrees differ in height by no more than 1.<br><br><pre><strong>Input:</strong> root = [3,9,20,null,null,15,7]
+<strong>Output:</strong> true</pre>`,
             code: 'def is_balanced(root):\n    def check(node):\n        if not node:\n            return 0\n        l = check(node.left)\n        r = check(node.right)\n        if l == -1 or r == -1 or abs(l - r) > 1:\n            return -1\n        return max(l, r) + 1\n    return check(root) != -1'
         },
         {
             name: 'LCA of a BST',
             difficulty: 'EASY',
             category: 'TREE',
-            description: `Given a BST, find the lowest common ancestor (LCA) of two given nodes <code>p</code> and <code>q</code>.<br><br><pre><strong>Input:</strong> root = [6,2,8,0,4,7,9], p = 2, q = 8\n<strong>Output:</strong> 6</pre>`,
+            topics: ['TREE'],
+            description: `Given a BST, find the lowest common ancestor (LCA) of two given nodes <code>p</code> and <code>q</code>.<br><br><pre><strong>Input:</strong> root = [6,2,8,0,4,7,9], p = 2, q = 8
+<strong>Output:</strong> 6</pre>`,
             code: 'def lowest_common_ancestor(root, p, q):\n    curr = root\n    while curr:\n        if p.val > curr.val and q.val > curr.val:\n            curr = curr.right\n        elif p.val < curr.val and q.val < curr.val:\n            curr = curr.left\n        else:\n            return curr'
         },
         {
             name: 'Merge Sorted Array',
             difficulty: 'EASY',
             category: 'ARRAY',
-            description: `You are given two integer arrays <code>nums1</code> and <code>nums2</code>, sorted in non-decreasing order, and two integers <code>m</code> and <code>n</code>, representing the number of elements in <code>nums1</code> and <code>nums2</code> respectively. Merge <code>nums2</code> into <code>nums1</code> as one sorted array.<br><br><pre><strong>Input:</strong> nums1 = [1,2,3,0,0,0], m = 3, nums2 = [2,5,6], n = 3\n<strong>Output:</strong> [1,2,2,3,5,6]</pre>`,
+            topics: ['ARRAY', 'SORTING'],
+            description: `You are given two integer arrays <code>nums1</code> and <code>nums2</code>, sorted in non-decreasing order, and two integers <code>m</code> and <code>n</code>, representing the number of elements in <code>nums1</code> and <code>nums2</code> respectively. Merge <code>nums2</code> into <code>nums1</code> as one sorted array.<br><br><pre><strong>Input:</strong> nums1 = [1,2,3,0,0,0], m = 3, nums2 = [2,5,6], n = 3
+<strong>Output:</strong> [1,2,2,3,5,6]</pre>`,
             code: 'def merge(nums1, m, nums2, n):\n    i, j, k = m - 1, n - 1, m + n - 1\n    while j >= 0:\n        if i >= 0 and nums1[i] > nums2[j]:\n            nums1[k] = nums1[i]\n            i -= 1\n        else:\n            nums1[k] = nums2[j]\n            j -= 1\n        k -= 1'
         },
         {
             name: 'Climbing Stairs',
             difficulty: 'EASY',
             category: 'DYNAMIC PROG',
-            description: `You are climbing a staircase. It takes <code>n</code> steps to reach the top. Each time you can climb 1 or 2 steps. In how many distinct ways can you climb to the top?<br><br><pre><strong>Input:</strong> n = 5\n<strong>Output:</strong> 8</pre>`,
+            topics: ['DYNAMIC PROG'],
+            description: `You are climbing a staircase. It takes <code>n</code> steps to reach the top. Each time you can climb 1 or 2 steps. In how many distinct ways can you climb to the top?<br><br><pre><strong>Input:</strong> n = 5
+<strong>Output:</strong> 8</pre>`,
             code: 'def climb_stairs(n):\n    if n <= 2:\n        return n\n    a, b = 1, 2\n    for i in range(3, n + 1):\n        a, b = b, a + b\n    return b'
         },
         {
             name: '3Sum',
             difficulty: 'MEDIUM',
             category: 'TWO POINTERS',
-            description: `Given an integer array <code>nums</code>, return all the triplets <code>[nums[i], nums[j], nums[k]]</code> such that <code>i != j</code>, <code>i != k</code>, and <code>j != k</code>, and <code>nums[i] + nums[j] + nums[k] == 0</code>.<br><br>The solution set must not contain duplicate triplets.<br><br><pre><strong>Input:</strong> nums = [-1,0,1,2,-1,-4]\n<strong>Output:</strong> [[-1,-1,2],[-1,0,1]]</pre>`,
+            topics: ['TWO POINTERS', 'MATH'],
+            description: `Given an integer array <code>nums</code>, return all the triplets <code>[nums[i], nums[j], nums[k]]</code> such that <code>i != j</code>, <code>i != k</code>, and <code>j != k</code>, and <code>nums[i] + nums[j] + nums[k] == 0</code>.<br><br>The solution set must not contain duplicate triplets.<br><br><pre><strong>Input:</strong> nums = [-1,0,1,2,-1,-4]
+<strong>Output:</strong> [[-1,-1,2],[-1,0,1]]</pre>`,
             code: 'def three_sum(nums):\n    nums.sort()\n    res = []\n    for i in range(len(nums)):\n        if i > 0 and nums[i] == nums[i-1]:\n            continue\n        l, r = i + 1, len(nums) - 1\n        while l < r:\n            s = nums[i] + nums[l] + nums[r]\n            if s < 0:\n                l += 1\n            elif s > 0:\n                r -= 1\n            else:\n                res.append([nums[i], nums[l], nums[r]])\n                while l < r and nums[l] == nums[l+1]:\n                    l += 1\n                while l < r and nums[r] == nums[r-1]:\n                    r -= 1\n                l += 1\n                r -= 1\n    return res'
         },
         {
             name: 'Group Anagrams',
             difficulty: 'MEDIUM',
             category: 'HASH MAP',
-            description: `Given an array of strings <code>strs</code>, group the anagrams together. You can return the answer in any order.<br><br><pre><strong>Input:</strong> strs = ["eat","tea","tan","ate","nat","bat"]\n<strong>Output:</strong> [["bat"],["nat","tan"],["ate","eat","tea"]]</pre>`,
+            topics: ['HASH MAP', 'STRING MATCHING'],
+            description: `Given an array of strings <code>strs</code>, group the anagrams together. You can return the answer in any order.<br><br><pre><strong>Input:</strong> strs = ["eat","tea","tan","ate","nat","bat"]
+<strong>Output:</strong> [["bat"],["nat","tan"],["ate","eat","tea"]]</pre>`,
             code: 'def group_anagrams(strs):\n    res = {}\n    for s in strs:\n        count = [0] * 26\n        for c in s:\n            count[ord(c) - ord("a")] += 1\n        key = tuple(count)\n        if key not in res:\n            res[key] = []\n        res[key].append(s)\n    return list(res.values())'
         },
         {
             name: 'Longest Consecutive Seq',
             difficulty: 'MEDIUM',
             category: 'HASH MAP',
-            description: `Given an unsorted array of integers <code>nums</code>, return the length of the longest consecutive elements sequence.<br><br>You must write an algorithm that runs in <code>O(n)</code> time.<br><br><pre><strong>Input:</strong> nums = [100,4,200,1,3,2]\n<strong>Output:</strong> 4</pre>`,
+            topics: ['HASH MAP'],
+            description: `Given an unsorted array of integers <code>nums</code>, return the length of the longest consecutive elements sequence.<br><br>You must write an algorithm that runs in <code>O(n)</code> time.<br><br><pre><strong>Input:</strong> nums = [100,4,200,1,3,2]
+<strong>Output:</strong> 4</pre>`,
             code: 'def longest_consecutive(nums):\n    num_set = set(nums)\n    longest = 0\n    for n in nums:\n        if (n - 1) not in num_set:\n            length = 0\n            while (n + length) in num_set:\n                length += 1\n            longest = max(length, longest)\n    return longest'
         },
         {
             name: 'Container with Most Water',
             difficulty: 'MEDIUM',
             category: 'TWO POINTERS',
-            description: `Given an integer array <code>height</code> of length <code>n</code>. Find two lines that together with the x-axis form a container, such that the container contains the most water.<br><br><pre><strong>Input:</strong> height = [1,8,6,2,5,4,8,3,7]\n<strong>Output:</strong> 49</pre>`,
+            topics: ['TWO POINTERS'],
+            description: `Given an integer array <code>height</code> of length <code>n</code>. Find two lines that together with the x-axis form a container, such that the container contains the most water.<br><br><pre><strong>Input:</strong> height = [1,8,6,2,5,4,8,3,7]
+<strong>Output:</strong> 49</pre>`,
             code: 'def max_area(height):\n    res = 0\n    l, r = 0, len(height) - 1\n    while l < r:\n        res = max(res, min(height[l], height[r]) * (r - l))\n        if height[l] < height[r]:\n            l += 1\n        else:\n            r -= 1\n    return res'
         },
         {
             name: 'Longest Substr No Repeat',
             difficulty: 'MEDIUM',
             category: 'SLIDING WINDOW',
-            description: `Given a string <code>s</code>, find the length of the longest substring without repeating characters.<br><br><pre><strong>Input:</strong> s = "abcabcbb"\n<strong>Output:</strong> 3</pre>`,
+            topics: ['SLIDING WINDOW'],
+            description: `Given a string <code>s</code>, find the length of the longest substring without repeating characters.<br><br><pre><strong>Input:</strong> s = "abcabcbb"
+<strong>Output:</strong> 3</pre>`,
             code: 'def length_of_longest_substring(s):\n    char_set = set()\n    l = 0\n    res = 0\n    for r in range(len(s)):\n        while s[r] in char_set:\n            char_set.remove(s[l])\n            l += 1\n        char_set.add(s[r])\n        res = max(res, r - l + 1)\n    return res'
         },
         {
             name: 'Longest Repeating Replacement',
             difficulty: 'MEDIUM',
             category: 'SLIDING WINDOW',
-            description: `You are given a string <code>s</code> and an integer <code>k</code>. You can choose any character in the string and change it to any other uppercase English character. Find the length of the longest substring containing the same letter you can get after performing at most <code>k</code> operations.<br><br><pre><strong>Input:</strong> s = "XYYX", k = 2\n<strong>Output:</strong> 4</pre>`,
+            topics: ['SLIDING WINDOW'],
+            description: `You are given a string <code>s</code> and an integer <code>k</code>. You can choose any character in the string and change it to any other uppercase English character. Find the length of the longest substring containing the same letter you can get after performing at most <code>k</code> operations.<br><br><pre><strong>Input:</strong> s = "XYYX", k = 2
+<strong>Output:</strong> 4</pre>`,
             code: 'def character_replacement(s, k):\n    count = {}\n    max_f = 0\n    l = 0\n    for r in range(len(s)):\n        count[s[r]] = 1 + count.get(s[r], 0)\n        max_f = max(max_f, count[s[r]])\n        if (r - l + 1) - max_f > k:\n            count[s[l]] -= 1\n            l += 1\n    return (len(s) - l)'
         },
         {
             name: 'Product of Array Except Self',
             difficulty: 'MEDIUM',
             category: 'ARRAY',
-            description: `Given an integer array <code>nums</code>, return an array <code>answer</code> such that <code>answer[i]</code> is equal to the product of all the elements of <code>nums</code> except <code>nums[i]</code>.<br><br><pre><strong>Input:</strong> nums = [1,2,3,4]\n<strong>Output:</strong> [24,12,8,6]</pre>`,
+            topics: ['ARRAY'],
+            description: `Given an integer array <code>nums</code>, return an array <code>answer</code> such that <code>answer[i]</code> is equal to the product of all the elements of <code>nums</code> except <code>nums[i]</code>.<br><br><pre><strong>Input:</strong> nums = [1,2,3,4]
+<strong>Output:</strong> [24,12,8,6]</pre>`,
             code: 'def product_except_self(nums):\n    res = [1] * len(nums)\n    prefix = 1\n    for i in range(len(nums)):\n        res[i] = prefix\n        prefix *= nums[i]\n    postfix = 1\n    for i in range(len(nums) - 1, -1, -1):\n        res[i] *= postfix\n        postfix *= nums[i]\n    return res'
         },
         {
             name: 'Top K Frequent Elements',
             difficulty: 'MEDIUM',
             category: 'HEAP',
-            description: `Given an integer array <code>nums</code> and an integer <code>k</code>, return the <code>k</code> most frequent elements.<br><br><pre><strong>Input:</strong> nums = [1,1,1,2,2,3], k = 2\n<strong>Output:</strong> [1,2]</pre>`,
+            topics: ['HEAP'],
+            description: `Given an integer array <code>nums</code> and an integer <code>k</code>, return the <code>k</code> most frequent elements.<br><br><pre><strong>Input:</strong> nums = [1,1,1,2,2,3], k = 2
+<strong>Output:</strong> [1,2]</pre>`,
             code: 'import heapq\ndef top_k_frequent(nums, k):\n    count = {}\n    for n in nums:\n        count[n] = 1 + count.get(n, 0)\n    heap = []\n    for n, freq in count.items():\n        heapq.heappush(heap, (freq, n))\n        if len(heap) > k:\n            heapq.heappop(heap)\n    return [pair[1] for pair in heap]'
         },
         {
             name: 'Valid Sudoku',
             difficulty: 'MEDIUM',
             category: 'ARRAY',
-            description: `Determine if a 9 x 9 Sudoku board is valid. Only the filled cells need to be validated according to the traditional Sudoku rules.<br><br><pre><strong>Input:</strong> board = [["5","3",".",".","7",".",".",".","."],...]\n<strong>Output:</strong> true</pre>`,
+            topics: ['ARRAY'],
+            description: `Determine if a 9 x 9 Sudoku board is valid. Only the filled cells need to be validated according to the traditional Sudoku rules.<br><br><pre><strong>Input:</strong> board = [["5","3",".",".","7",".",".",".","."],...]
+<strong>Output:</strong> true</pre>`,
             code: 'def is_valid_sudoku(board):\n    cols = [set() for _ in range(9)]\n    rows = [set() for _ in range(9)]\n    squares = [set() for _ in range(9)]\n    for r in range(9):\n        for c in range(9):\n            if board[r][c] == ".": continue\n            v = board[r][c]\n            s_idx = (r // 3) * 3 + (c // 3)\n            if v in rows[r] or v in cols[c] or v in squares[s_idx]:\n                return False\n            rows[r].add(v)\n            cols[c].add(v)\n            squares[s_idx].add(v)\n    return True'
         },
         {
             name: 'Binary Tree Level Order',
             difficulty: 'MEDIUM',
             category: 'TREE',
-            description: `Given the <code>root</code> of a binary tree, return the level order traversal of its nodes' values. (i.e., from left to right, level by level).<br><br><pre><strong>Input:</strong> root = [3,9,20,null,null,15,7]\n<strong>Output:</strong> [[3],[9,20],[15,7]]</pre>`,
+            topics: ['TREE', 'DFS', 'BFS'],
+            description: `Given the <code>root</code> of a binary tree, return the level order traversal of its nodes' values. (i.e., from left to right, level by level).<br><br><pre><strong>Input:</strong> root = [3,9,20,null,null,15,7]
+<strong>Output:</strong> [[3],[9,20],[15,7]]</pre>`,
             code: 'from collections import deque\ndef level_order(root):\n    if not root: return []\n    res = []\n    q = deque([root])\n    while q:\n        level = []\n        for i in range(len(q)):\n            node = q.popleft()\n            level.append(node.val)\n            if node.left: q.append(node.left)\n            if node.right: q.append(node.right)\n        res.append(level)\n    return res'
         },
         {
             name: 'Construct BT from Pre/In',
             difficulty: 'MEDIUM',
             category: 'TREE',
-            description: `Given two integer arrays <code>preorder</code> and <code>inorder</code> where preorder is the preorder traversal of a binary tree and inorder is the inorder traversal of the same tree, construct and return the binary tree.<br><br><pre><strong>Input:</strong> preorder = [3,9,20,15,7], inorder = [9,3,15,20,7]\n<strong>Output:</strong> [3,9,20,null,null,15,7]</pre>`,
+            topics: ['TREE'],
+            description: `Given two integer arrays <code>preorder</code> and <code>inorder</code> where preorder is the preorder traversal of a binary tree and inorder is the inorder traversal of the same tree, construct and return the binary tree.<br><br><pre><strong>Input:</strong> preorder = [3,9,20,15,7], inorder = [9,3,15,20,7]
+<strong>Output:</strong> [3,9,20,null,null,15,7]</pre>`,
             code: 'def build_tree(preorder, inorder):\n    if not preorder or not inorder:\n        return None\n    root = TreeNode(preorder[0])\n    mid = inorder.index(preorder[0])\n    root.left = build_tree(preorder[1:mid+1], inorder[:mid])\n    root.right = build_tree(preorder[mid+1:], inorder[mid+1:])\n    return root'
         },
         {
             name: 'Kth Smallest in BST',
             difficulty: 'MEDIUM',
             category: 'TREE',
-            description: `Given the <code>root</code> of a binary search tree, and an integer <code>k</code>, return the <code>k</code>th smallest value (1-indexed) of all the values of the nodes in the tree.<br><br><pre><strong>Input:</strong> root = [3,1,4,null,2], k = 1\n<strong>Output:</strong> 1</pre>`,
+            topics: ['TREE'],
+            description: `Given the <code>root</code> of a binary search tree, and an integer <code>k</code>, return the <code>k</code>th smallest value (1-indexed) of all the values of the nodes in the tree.<br><br><pre><strong>Input:</strong> root = [3,1,4,null,2], k = 1
+<strong>Output:</strong> 1</pre>`,
             code: 'def kth_smallest(root, k):\n    stack = []\n    curr = root\n    while stack or curr:\n        while curr:\n            stack.append(curr)\n            curr = curr.left\n        curr = stack.pop()\n        k -= 1\n        if k == 0:\n            return curr.val\n        curr = curr.right'
         },
         {
             name: 'Validate BST',
             difficulty: 'MEDIUM',
             category: 'TREE',
-            description: `Given the <code>root</code> of a binary tree, determine if it is a valid binary search tree (BST).<br><br><pre><strong>Input:</strong> root = [2,1,3]\n<strong>Output:</strong> true</pre>`,
+            topics: ['TREE'],
+            description: `Given the <code>root</code> of a binary tree, determine if it is a valid binary search tree (BST).<br><br><pre><strong>Input:</strong> root = [2,1,3]
+<strong>Output:</strong> true</pre>`,
             code: 'def is_valid_bst(root):\n    def validate(node, low, high):\n        if not node: return True\n        if not (low < node.val < high):\n            return False\n        return validate(node.left, low, node.val) and validate(node.right, node.val, high)\n    return validate(root, float("-inf"), float("inf"))'
         },
         {
             name: 'BT Right Side View',
             difficulty: 'MEDIUM',
             category: 'TREE',
-            description: `Given the <code>root</code> of a binary tree, imagine yourself standing on the right side of it, return the values of the nodes you can see ordered from top to bottom.<br><br><pre><strong>Input:</strong> root = [1,2,3,null,5,null,4]\n<strong>Output:</strong> [1,3,4]</pre>`,
+            topics: ['TREE'],
+            description: `Given the <code>root</code> of a binary tree, imagine yourself standing on the right side of it, return the values of the nodes you can see ordered from top to bottom.<br><br><pre><strong>Input:</strong> root = [1,2,3,null,5,null,4]
+<strong>Output:</strong> [1,3,4]</pre>`,
             code: 'from collections import deque\ndef right_side_view(root):\n    if not root: return []\n    res = []\n    q = deque([root])\n    while q:\n        rightmost = None\n        for i in range(len(q)):\n            node = q.popleft()\n            rightmost = node\n            if node.left: q.append(node.left)\n            if node.right: q.append(node.right)\n        res.append(rightmost.val)\n    return res'
         },
         {
             name: 'Number of Islands',
             difficulty: 'MEDIUM',
             category: 'GRAPHS',
-            description: `Given an <code>m x n</code> 2D binary grid <code>grid</code> which represents a map of '1's (land) and '0's (water), return the number of islands.<br><br><pre><strong>Input:</strong> grid = [["1","1","0"],["0","0","1"]] \n<strong>Output:</strong> 2</pre>`,
+            topics: ['GRAPHS'],
+            description: `Given an <code>m x n</code> 2D binary grid <code>grid</code> which represents a map of '1's (land) and '0's (water), return the number of islands.<br><br><pre><strong>Input:</strong> grid = [["1","1","0"],["0","0","1"]] 
+<strong>Output:</strong> 2</pre>`,
             code: 'def num_islands(grid):\n    if not grid: return 0\n    rows, cols = len(grid), len(grid[0])\n    islands = 0\n    def dfs(r, c):\n        if r < 0 or c < 0 or r >= rows or c >= cols or grid[r][c] == "0":\n            return\n        grid[r][c] = "0"\n        dfs(r+1, c); dfs(r-1, c); dfs(r, c+1); dfs(r, c-1)\n    for r in range(rows):\n        for c in range(cols):\n            if grid[r][c] == "1":\n                islands += 1\n                dfs(r, c)\n    return islands'
         },
         {
             name: 'Clone Graph',
             difficulty: 'MEDIUM',
             category: 'GRAPHS',
-            description: `Given a reference of a node in a connected undirected graph. Return a deep copy (clone) of the graph.<br><br><pre><strong>Input:</strong> adjList = [[2,4],[1,3],[2,4],[1,3]]\n<strong>Output:</strong> [[2,4],[1,3],[2,4],[1,3]]</pre>`,
+            topics: ['GRAPHS'],
+            description: `Given a reference of a node in a connected undirected graph. Return a deep copy (clone) of the graph.<br><br><pre><strong>Input:</strong> adjList = [[2,4],[1,3],[2,4],[1,3]]
+<strong>Output:</strong> [[2,4],[1,3],[2,4],[1,3]]</pre>`,
             code: 'def clone_graph(node):\n    old_to_new = {}\n    def dfs(node):\n        if node in old_to_new:\n            return old_to_new[node]\n        copy = Node(node.val)\n        old_to_new[node] = copy\n        for nei in node.neighbors:\n            copy.neighbors.append(dfs(nei))\n        return copy\n    return dfs(node) if node else None'
         },
         {
             name: 'Course Schedule',
             difficulty: 'MEDIUM',
             category: 'GRAPHS',
-            description: `There are a total of <code>numCourses</code> courses you have to take, labeled from 0 to <code>numCourses - 1</code>. Some courses have prerequisites. Return <code>true</code> if you can finish all courses.<br><br><pre><strong>Input:</strong> numCourses = 2, pre = [[1,0]]\n<strong>Output:</strong> true</pre>`,
+            topics: ['GRAPHS'],
+            description: `There are a total of <code>numCourses</code> courses you have to take, labeled from 0 to <code>numCourses - 1</code>. Some courses have prerequisites. Return <code>true</code> if you can finish all courses.<br><br><pre><strong>Input:</strong> numCourses = 2, pre = [[1,0]]
+<strong>Output:</strong> true</pre>`,
             code: 'def can_finish(numCourses, prerequisites):\n    adj = {i: [] for i in range(numCourses)}\n    for crs, pre in prerequisites: adj[crs].append(pre)\n    visit = set()\n    def dfs(crs):\n        if crs in visit: return False\n        if adj[crs] == []: return True\n        visit.add(crs)\n        for pre in adj[crs]:\n            if not dfs(pre): return False\n        visit.remove(crs)\n        adj[crs] = []\n        return True\n    for c in range(numCourses):\n        if not dfs(c): return False\n    return True'
         },
         {
             name: 'Pacific Atlantic Water',
             difficulty: 'MEDIUM',
             category: 'GRAPHS',
-            description: `Find all grid coordinates from which water can flow to both the Pacific and Atlantic oceans.<br><br><pre><strong>Input:</strong> heights = [[1,2,2,3,5],[3,2,3,4,4],...]\n<strong>Output:</strong> [[0,4],[1,3],[1,4],...]</pre>`,
+            topics: ['GRAPHS'],
+            description: `Find all grid coordinates from which water can flow to both the Pacific and Atlantic oceans.<br><br><pre><strong>Input:</strong> heights = [[1,2,2,3,5],[3,2,3,4,4],...]
+<strong>Output:</strong> [[0,4],[1,3],[1,4],...]</pre>`,
             code: 'def pacific_atlantic(heights):\n    R, C = len(heights), len(heights[0])\n    pac, atl = set(), set()\n    def dfs(r, c, visit, prevH):\n        if (r,c) in visit or r<0 or c<0 or r==R or c==C or heights[r][c]<prevH:\n            return\n        visit.add((r,c))\n        dfs(r+1,c,visit,heights[r][c]); dfs(r-1,c,visit,heights[r][c])\n        dfs(r,c+1,visit,heights[r][c]); dfs(r,c-1,visit,heights[r][c])\n    for c in range(C):\n        dfs(0,c,pac,heights[0][c]); dfs(R-1,c,atl,heights[R-1][c])\n    for r in range(R):\n        dfs(r,0,pac,heights[r][0]); dfs(r,C-1,atl,heights[r][C-1])\n    return list(pac & atl)'
         },
         {
             name: 'Rotting Oranges',
             difficulty: 'MEDIUM',
             category: 'GRAPHS',
-            description: `Determine the minimum time until no fresh oranges remain. Each minute, any fresh orange that is 4-directionally adjacent to a rotten orange becomes rotten.<br><br><pre><strong>Input:</strong> grid = [[2,1,1],[1,1,0],[0,1,1]]\n<strong>Output:</strong> 4</pre>`,
+            topics: ['GRAPHS'],
+            description: `Determine the minimum time until no fresh oranges remain. Each minute, any fresh orange that is 4-directionally adjacent to a rotten orange becomes rotten.<br><br><pre><strong>Input:</strong> grid = [[2,1,1],[1,1,0],[0,1,1]]
+<strong>Output:</strong> 4</pre>`,
             code: 'from collections import deque\ndef oranges_rotting(grid):\n    q = deque(); fresh, time = 0, 0\n    R, C = len(grid), len(grid[0])\n    for r in range(R):\n        for c in range(C):\n            if grid[r][c] == 1: fresh += 1\n            if grid[r][c] == 2: q.append([r,c])\n    while q and fresh > 0:\n        for i in range(len(q)):\n            r, c = q.popleft()\n            for dr, dc in [[0,1],[0,-1],[1,0],[-1,0]]:\n                row, col = r+dr, c+dc\n                if 0<=row<R and 0<=col<C and grid[row][col]==1:\n                    grid[row][col]=2; q.append([row,col]); fresh-=1\n        time += 1\n    return time if fresh == 0 else -1'
         },
         {
             name: 'Reorder List',
             difficulty: 'MEDIUM',
             category: 'LINKED LIST',
-            description: `You are given the head of a singly linked-list. Reorder it as: <code>L0 → Ln → L1 → Ln-1 → L2 → Ln-2 → …</code><br><br><pre><strong>Input:</strong> head = [1,2,3,4]\n<strong>Output:</strong> [1,4,2,3]</pre>`,
+            topics: ['LINKED LIST'],
+            description: `You are given the head of a singly linked-list. Reorder it as: <code>L0 → Ln → L1 → Ln-1 → L2 → Ln-2 → …</code><br><br><pre><strong>Input:</strong> head = [1,2,3,4]
+<strong>Output:</strong> [1,4,2,3]</pre>`,
             code: 'def reorder_list(head):\n    slow, fast = head, head.next\n    while fast and fast.next:\n        slow, fast = slow.next, fast.next.next\n    second = slow.next; prev = slow.next = None\n    while second:\n        tmp = second.next; second.next = prev\n        prev = second; second = tmp\n    first, second = head, prev\n    while second:\n        tmp1, tmp2 = first.next, second.next\n        first.next, second.next = second, tmp1\n        first, second = tmp1, tmp2'
         },
         {
             name: 'Remove Nth Node From End',
             difficulty: 'MEDIUM',
             category: 'LINKED LIST',
-            description: `Given the <code>head</code> of a linked list, remove the <code>n</code>th node from the end of the list and return its head.<br><br><pre><strong>Input:</strong> head = [1,2,3,4,5], n = 2\n<strong>Output:</strong> [1,2,3,5]</pre>`,
+            topics: ['LINKED LIST'],
+            description: `Given the <code>head</code> of a linked list, remove the <code>n</code>th node from the end of the list and return its head.<br><br><pre><strong>Input:</strong> head = [1,2,3,4,5], n = 2
+<strong>Output:</strong> [1,2,3,5]</pre>`,
             code: 'def remove_nth_from_end(head, n):\n    dummy = ListNode(0, head)\n    left = dummy; right = head\n    while n > 0: right = right.next; n -= 1\n    while right:\n        left = left.next; right = right.next\n    left.next = left.next.next\n    return dummy.next'
         },
         {
             name: 'Add Two Numbers',
             difficulty: 'MEDIUM',
             category: 'LINKED LIST',
-            description: `Two numbers represented by linked lists in reverse order. Add the two numbers and return the sum as a linked list.<br><br><pre><strong>Input:</strong> l1 = [2,4,3], l2 = [5,6,4]\n<strong>Output:</strong> [7,0,8]</pre>`,
+            topics: ['LINKED LIST', 'MATH'],
+            description: `Two numbers represented by linked lists in reverse order. Add the two numbers and return the sum as a linked list.<br><br><pre><strong>Input:</strong> l1 = [2,4,3], l2 = [5,6,4]
+<strong>Output:</strong> [7,0,8]</pre>`,
             code: 'def add_two_numbers(l1, l2):\n    dummy = ListNode(); curr = dummy; carry = 0\n    while l1 or l2 or carry:\n        v1 = l1.val if l1 else 0\n        v2 = l2.val if l2 else 0\n        val = v1 + v2 + carry\n        carry = val // 10; curr.next = ListNode(val % 10)\n        curr = curr.next; l1 = l1.next if l1 else None; l2 = l2.next if l2 else None\n    return dummy.next'
         },
         {
             name: 'Set Matrix Zeroes',
             difficulty: 'MEDIUM',
             category: 'ARRAY',
-            description: `Given an <code>m x n</code> integer matrix <code>matrix</code>, if an element is 0, set its entire row and column to 0's. Do it in-place.<br><br><pre><strong>Input:</strong> matrix = [[1,1,1],[1,0,1],[1,1,1]]\n<strong>Output:</strong> [[1,0,1],[0,0,0],[1,0,1]]</pre>`,
+            topics: ['ARRAY'],
+            description: `Given an <code>m x n</code> integer matrix <code>matrix</code>, if an element is 0, set its entire row and column to 0's. Do it in-place.<br><br><pre><strong>Input:</strong> matrix = [[1,1,1],[1,0,1],[1,1,1]]
+<strong>Output:</strong> [[1,0,1],[0,0,0],[1,0,1]]</pre>`,
             code: 'def set_zeroes(matrix):\n    R, C = len(matrix), len(matrix[0])\n    row_zero = False\n    for r in range(R):\n        for c in range(C):\n            if matrix[r][c] == 0:\n                matrix[0][c] = 0\n                if r > 0: matrix[r][0] = 0\n                else: row_zero = True\n    for r in range(1, R):\n        for c in range(1, C):\n            if matrix[0][c] == 0 or matrix[r][0] == 0: matrix[r][c] = 0\n    if matrix[0][0] == 0:\n        for r in range(R): matrix[r][0] = 0\n    if row_zero:\n        for c in range(C): matrix[0][c] = 0'
         },
         {
             name: 'Min in Rotated Sorted Array',
             difficulty: 'MEDIUM',
             category: 'BINARY SEARCH',
-            description: `Find the minimum element in a sorted rotated array of unique elements.<br><br><pre><strong>Input:</strong> nums = [3,4,5,1,2]\n<strong>Output:</strong> 1</pre>`,
+            topics: ['BINARY SEARCH', 'SORTING'],
+            description: `Find the minimum element in a sorted rotated array of unique elements.<br><br><pre><strong>Input:</strong> nums = [3,4,5,1,2]
+<strong>Output:</strong> 1</pre>`,
             code: 'def find_min(nums):\n    res = nums[0]; l, r = 0, len(nums) - 1\n    while l <= r:\n        if nums[l] < nums[r]: res = min(res, nums[l]); break\n        m = (l + r) // 2; res = min(res, nums[m])\n        if nums[m] >= nums[l]: l = m + 1\n        else: r = m - 1\n    return res'
         },
         {
             name: 'Search in Rotated Array',
             difficulty: 'MEDIUM',
             category: 'BINARY SEARCH',
-            description: `Search for a target value in a sorted rotated array. If found, return its index. Otherwise, return -1.<br><br><pre><strong>Input:</strong> nums = [4,5,6,7,0,1,2], target = 0\n<strong>Output:</strong> 4</pre>`,
+            topics: ['BINARY SEARCH'],
+            description: `Search for a target value in a sorted rotated array. If found, return its index. Otherwise, return -1.<br><br><pre><strong>Input:</strong> nums = [4,5,6,7,0,1,2], target = 0
+<strong>Output:</strong> 4</pre>`,
             code: 'def search(nums, target):\n    l, r = 0, len(nums) - 1\n    while l <= r:\n        mid = (l + r) // 2\n        if target == nums[mid]: return mid\n        if nums[l] <= nums[mid]:\n            if target > nums[mid] or target < nums[l]: l = mid + 1\n            else: r = mid - 1\n        else:\n            if target < nums[mid] or target > nums[r]: r = mid - 1\n            else: l = mid + 1\n    return -1'
         },
         {
             name: 'Kth Largest in Array',
             difficulty: 'MEDIUM',
             category: 'HEAP',
-            description: `Find the <code>k</code>th largest element in an unsorted array.<br><br><pre><strong>Input:</strong> nums = [3,2,1,5,6,4], k = 2\n<strong>Output:</strong> 5</pre>`,
+            topics: ['HEAP'],
+            description: `Find the <code>k</code>th largest element in an unsorted array.<br><br><pre><strong>Input:</strong> nums = [3,2,1,5,6,4], k = 2
+<strong>Output:</strong> 5</pre>`,
             code: 'import heapq\ndef find_kth_largest(nums, k):\n    heap = nums[:k]\n    heapq.heapify(heap)\n    for n in nums[k:]:\n        if n > heap[0]:\n            heapq.heapreplace(heap, n)\n    return heap[0]'
         },
         {
             name: 'Subsets',
             difficulty: 'MEDIUM',
             category: 'BACKTRACKING',
-            description: `Given an integer array <code>nums</code> of unique elements, return all possible subsets (the power set).<br><br><pre><strong>Input:</strong> nums = [1,2,3]\n<strong>Output:</strong> [[],[1],[2],[1,2],[3],[1,3],[2,3],[1,2,3]]</pre>`,
+            topics: ['BACKTRACKING'],
+            description: `Given an integer array <code>nums</code> of unique elements, return all possible subsets (the power set).<br><br><pre><strong>Input:</strong> nums = [1,2,3]
+<strong>Output:</strong> [[],[1],[2],[1,2],[3],[1,3],[2,3],[1,2,3]]</pre>`,
             code: 'def subsets(nums):\n    res = []\n    subset = []\n    def dfs(i):\n        if i >= len(nums): res.append(subset[:]); return\n        subset.append(nums[i]); dfs(i + 1)\n        subset.pop(); dfs(i + 1)\n    dfs(0); return res'
         },
         {
             name: 'Combination Sum',
             difficulty: 'MEDIUM',
             category: 'BACKTRACKING',
-            description: `Find all unique combinations in <code>candidates</code> where the candidate numbers sum to <code>target</code>. You may use the same number an unlimited number of times.<br><br><pre><strong>Input:</strong> candidates = [2,3,6,7], target = 7\n<strong>Output:</strong> [[2,2,3],[7]]</pre>`,
+            topics: ['BACKTRACKING', 'MATH'],
+            description: `Find all unique combinations in <code>candidates</code> where the candidate numbers sum to <code>target</code>. You may use the same number an unlimited number of times.<br><br><pre><strong>Input:</strong> candidates = [2,3,6,7], target = 7
+<strong>Output:</strong> [[2,2,3],[7]]</pre>`,
             code: 'def combination_sum(candidates, target):\n    res = []\n    def dfs(i, cur, total):\n        if total == target: res.append(cur[:]); return\n        if i >= len(candidates) or total > target: return\n        cur.append(candidates[i]); dfs(i, cur, total + candidates[i])\n        cur.pop(); dfs(i + 1, cur, total)\n    dfs(0, [], 0); return res'
         },
         {
             name: 'Permutations',
             difficulty: 'MEDIUM',
             category: 'BACKTRACKING',
-            description: `Given an array <code>nums</code> of distinct integers, return all the possible permutations.<br><br><pre><strong>Input:</strong> nums = [1,2,3]\n<strong>Output:</strong> [[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]</pre>`,
+            topics: ['BACKTRACKING'],
+            description: `Given an array <code>nums</code> of distinct integers, return all the possible permutations.<br><br><pre><strong>Input:</strong> nums = [1,2,3]
+<strong>Output:</strong> [[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]</pre>`,
             code: 'def permute(nums):\n    res = []\n    if len(nums) == 1: return [nums[:]]\n    for i in range(len(nums)):\n        n = nums.pop(0)\n        perms = permute(nums)\n        for p in perms: p.append(n)\n        res.extend(perms); nums.append(n)\n    return res'
         },
         {
             name: 'Word Search',
             difficulty: 'MEDIUM',
             category: 'BACKTRACKING',
-            description: `Given an <code>m x n</code> grid of characters <code>board</code> and a string <code>word</code>, return <code>true</code> if the word exists in the grid.<br><br><pre><strong>Input:</strong> board = [["A","B","C","E"],["S","F","C","S"],...], word = "ABCCED"\n<strong>Output:</strong> true</pre>`,
+            topics: ['BACKTRACKING', 'BINARY SEARCH'],
+            description: `Given an <code>m x n</code> grid of characters <code>board</code> and a string <code>word</code>, return <code>true</code> if the word exists in the grid.<br><br><pre><strong>Input:</strong> board = [["A","B","C","E"],["S","F","C","S"],...], word = "ABCCED"
+<strong>Output:</strong> true</pre>`,
             code: 'def exist(board, word):\n    R, C = len(board), len(board[0]); visit = set()\n    def dfs(r, c, i):\n        if i == len(word): return True\n        if r<0 or c<0 or r>=R or c>=C or word[i]!=board[r][c] or (r,c) in visit: return False\n        visit.add((r,c))\n        res = dfs(r+1,c,i+1) or dfs(r-1,c,i+1) or dfs(r,c+1,i+1) or dfs(r,c-1,i+1)\n        visit.remove((r,c)); return res\n    for r in range(R):\n        for c in range(C):\n            if dfs(r,c,0): return True\n    return False'
         },
         {
             name: 'House Robber',
             difficulty: 'MEDIUM',
             category: 'DYNAMIC PROG',
-            description: `You are a professional robber planning to rob houses along a street. Each house has a certain amount of money stashed. You cannot rob two adjacent houses.<br><br><pre><strong>Input:</strong> nums = [1,2,3,1]\n<strong>Output:</strong> 4</pre>`,
+            topics: ['DYNAMIC PROG'],
+            description: `You are a professional robber planning to rob houses along a street. Each house has a certain amount of money stashed. You cannot rob two adjacent houses.<br><br><pre><strong>Input:</strong> nums = [1,2,3,1]
+<strong>Output:</strong> 4</pre>`,
             code: 'def rob(nums):\n    rob1, rob2 = 0, 0\n    for n in nums: \n        tmp = max(n + rob1, rob2)\n        rob1 = rob2; rob2 = tmp\n    return rob2'
         },
         {
             name: 'House Robber II',
             difficulty: 'MEDIUM',
             category: 'DYNAMIC PROG',
-            description: `Same as House Robber, but houses are arranged in a circle. The first house is the neighbor of the last one.<br><br><pre><strong>Input:</strong> nums = [2,3,2]\n<strong>Output:</strong> 3</pre>`,
+            topics: ['DYNAMIC PROG'],
+            description: `Same as House Robber, but houses are arranged in a circle. The first house is the neighbor of the last one.<br><br><pre><strong>Input:</strong> nums = [2,3,2]
+<strong>Output:</strong> 3</pre>`,
             code: 'def rob_circular(nums):\n    def helper(nums):\n        r1, r2 = 0, 0\n        for n in nums:\n            tmp = max(n + r1, r2)\n            r1, r2 = r2, tmp\n        return r2\n    return max(nums[0], helper(nums[1:]), helper(nums[:-1]))'
         },
         {
             name: 'Longest Palindromic Substr',
             difficulty: 'MEDIUM',
             category: 'DYNAMIC PROG',
-            description: `Given a string <code>s</code>, return the longest palindromic substring in <code>s</code>.<br><br><pre><strong>Input:</strong> s = "babad"\n<strong>Output:</strong> "bab"</pre>`,
+            topics: ['DYNAMIC PROG'],
+            description: `Given a string <code>s</code>, return the longest palindromic substring in <code>s</code>.<br><br><pre><strong>Input:</strong> s = "babad"
+<strong>Output:</strong> "bab"</pre>`,
             code: 'def longest_palindrome(s):\n    res = ""; resL = 0\n    for i in range(len(s)):\n        l, r = i, i\n        while l >= 0 and r < len(s) and s[l] == s[r]:\n            if (r - l + 1) > resL: res = s[l:r+1]; resL = r - l + 1\n            l -= 1; r += 1\n        l, r = i, i + 1\n        while l >= 0 and r < len(s) and s[l] == s[r]:\n            if (r - l + 1) > resL: res = s[l:r+1]; resL = r - l + 1\n            l -= 1; r += 1\n    return res'
         },
         {
             name: 'Palindromic Substrings',
             difficulty: 'MEDIUM',
             category: 'DYNAMIC PROG',
-            description: `Given a string <code>s</code>, return the number of palindromic substrings in it.<br><br><pre><strong>Input:</strong> s = "aaa"\n<strong>Output:</strong> 6</pre>`,
+            topics: ['DYNAMIC PROG', 'SLIDING WINDOW'],
+            description: `Given a string <code>s</code>, return the number of palindromic substrings in it.<br><br><pre><strong>Input:</strong> s = "aaa"
+<strong>Output:</strong> 6</pre>`,
             code: 'def count_substrings(s):\n    res = 0\n    for i in range(len(s)):\n        l = r = i\n        while l >= 0 and r < len(s) and s[l] == s[r]:\n            res += 1; l -= 1; r += 1\n        l, r = i, i + 1\n        while l >= 0 and r < len(s) and s[l] == s[r]:\n            res += 1; l -= 1; r += 1\n    return res'
         },
         {
             name: 'Coin Change',
             difficulty: 'MEDIUM',
             category: 'DYNAMIC PROG',
-            description: `Given an integer array <code>coins</code> and an integer <code>amount</code>, return the fewest number of coins that you need to make up that amount.<br><br><pre><strong>Input:</strong> coins = [1,2,5], amount = 11\n<strong>Output:</strong> 3</pre>`,
+            topics: ['DYNAMIC PROG'],
+            description: `Given an integer array <code>coins</code> and an integer <code>amount</code>, return the fewest number of coins that you need to make up that amount.<br><br><pre><strong>Input:</strong> coins = [1,2,5], amount = 11
+<strong>Output:</strong> 3</pre>`,
             code: 'def coin_change(coins, amount):\n    dp = [amount + 1] * (amount + 1); dp[0] = 0\n    for a in range(1, amount + 1):\n        for c in coins:\n            if a - c >= 0: dp[a] = min(dp[a], 1 + dp[a - c])\n    return dp[amount] if dp[amount] != amount + 1 else -1'
         },
         {
             name: 'Maximum Product Subarray',
             difficulty: 'MEDIUM',
             category: 'DYNAMIC PROG',
-            description: `Given an integer array <code>nums</code>, find a subarray that has the largest product, and return the product.<br><br><pre><strong>Input:</strong> nums = [2,3,-2,4]\n<strong>Output:</strong> 6</pre>`,
+            topics: ['DYNAMIC PROG', 'SLIDING WINDOW'],
+            description: `Given an integer array <code>nums</code>, find a subarray that has the largest product, and return the product.<br><br><pre><strong>Input:</strong> nums = [2,3,-2,4]
+<strong>Output:</strong> 6</pre>`,
             code: 'def max_product(nums):\n    res = max(nums); curMin, curMax = 1, 1\n    for n in nums:\n        if n == 0: curMin, curMax = 1, 1; continue\n        tmp = curMax * n\n        curMax = max(n*curMax, n*curMin, n)\n        curMin = min(tmp, n*curMin, n)\n        res = max(res, curMax)\n    return res'
         },
         {
             name: 'Word Break',
             difficulty: 'MEDIUM',
             category: 'DYNAMIC PROG',
-            description: `Given a string <code>s</code> and a dictionary of strings <code>wordDict</code>, return <code>true</code> if <code>s</code> can be segmented into a space-separated sequence of one or more dictionary words.<br><br><pre><strong>Input:</strong> s = "leetcode", wordDict = ["leet","code"]\n<strong>Output:</strong> true</pre>`,
+            topics: ['DYNAMIC PROG'],
+            description: `Given a string <code>s</code> and a dictionary of strings <code>wordDict</code>, return <code>true</code> if <code>s</code> can be segmented into a space-separated sequence of one or more dictionary words.<br><br><pre><strong>Input:</strong> s = "leetcode", wordDict = ["leet","code"]
+<strong>Output:</strong> true</pre>`,
             code: 'def word_break(s, wordDict):\n    dp = [False] * (len(s) + 1); dp[len(s)] = True\n    for i in range(len(s) - 1, -1, -1):\n        for w in wordDict:\n            if (i + len(w)) <= len(s) and s[i : i + len(w)] == w:\n                dp[i] = dp[i + len(w)]\n            if dp[i]: break\n    return dp[0]'
         },
         {
             name: 'Longest Increasing Subseq',
             difficulty: 'MEDIUM',
             category: 'DYNAMIC PROG',
-            description: `Given an integer array <code>nums</code>, return the length of the longest strictly increasing subsequence.<br><br><pre><strong>Input:</strong> nums = [10,9,2,5,3,7,101,18]\n<strong>Output:</strong> 4</pre>`,
+            topics: ['DYNAMIC PROG'],
+            description: `Given an integer array <code>nums</code>, return the length of the longest strictly increasing subsequence.<br><br><pre><strong>Input:</strong> nums = [10,9,2,5,3,7,101,18]
+<strong>Output:</strong> 4</pre>`,
             code: 'def length_of_lis(nums):\n    LIS = [1] * len(nums)\n    for i in range(len(nums) - 1, -1, -1):\n        for j in range(i + 1, len(nums)):\n            if nums[i] < nums[j]: LIS[i] = max(LIS[i], 1 + LIS[j])\n    return max(LIS)'
         },
         {
             name: 'Jump Game',
             difficulty: 'MEDIUM',
             category: 'GREEDY',
-            description: `You are given an integer array <code>nums</code>. You are initially positioned at the first index. Determine if you can reach the last index.<br><br><pre><strong>Input:</strong> nums = [2,3,1,1,4]\n<strong>Output:</strong> true</pre>`,
+            topics: ['GREEDY'],
+            description: `You are given an integer array <code>nums</code>. You are initially positioned at the first index. Determine if you can reach the last index.<br><br><pre><strong>Input:</strong> nums = [2,3,1,1,4]
+<strong>Output:</strong> true</pre>`,
             code: 'def can_jump(nums):\n    goal = len(nums) - 1\n    for i in range(len(nums) - 2, -1, -1):\n        if i + nums[i] >= goal: goal = i\n    return goal == 0'
         },
         {
             name: 'LCA of Binary Tree',
             difficulty: 'MEDIUM',
             category: 'TREE',
-            description: `Given a binary tree, find the lowest common ancestor (LCA) of two given nodes <code>p</code> and <code>q</code>.<br><br><pre><strong>Input:</strong> root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 1\n<strong>Output:</strong> 3</pre>`,
+            topics: ['TREE', 'DFS'],
+            description: `Given a binary tree, find the lowest common ancestor (LCA) of two given nodes <code>p</code> and <code>q</code>.<br><br><pre><strong>Input:</strong> root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 1
+<strong>Output:</strong> 3</pre>`,
             code: 'def lca(root, p, q):\n    if not root or root == p or root == q: return root\n    left = lca(root.left, p, q)\n    right = lca(root.right, p, q)\n    if left and right: return root\n    return left or right'
         },
         {
             name: 'Median Two Arrays',
             difficulty: 'HARD',
             category: 'BINARY SEARCH',
-            description: `Given two sorted arrays <code>nums1</code> and <code>nums2</code>, return the median of the two sorted arrays. The overall run time complexity should be <code>O(log(m+n))</code>.<br><br><pre><strong>Input:</strong> nums1 = [1,3], nums2 = [2]\n<strong>Output:</strong> 2.0</pre>`,
+            topics: ['BINARY SEARCH'],
+            description: `Given two sorted arrays <code>nums1</code> and <code>nums2</code>, return the median of the two sorted arrays. The overall run time complexity should be <code>O(log(m+n))</code>.<br><br><pre><strong>Input:</strong> nums1 = [1,3], nums2 = [2]
+<strong>Output:</strong> 2.0</pre>`,
             code: 'def find_median_sorted_arrays(nums1, nums2):\n    A, B = nums1, nums2\n    total = len(nums1) + len(nums2); half = total // 2\n    if len(B) < len(A): A, B = B, A\n    l, r = 0, len(A) - 1\n    while True:\n        i = (l + r) // 2; j = half - i - 2\n        Aleft = A[i] if i >= 0 else float("-inf")\n        Aright = A[i+1] if (i+1) < len(A) else float("inf")\n        Bleft = B[j] if j >= 0 else float("-inf")\n        Bright = B[j+1] if (j+1) < len(B) else float("inf")\n        if Aleft <= Bright and Bleft <= Aright:\n            if total % 2: return min(Aright, Bright)\n            return (max(Aleft, Bleft) + min(Aright, Bright)) / 2\n        elif Aleft > Bright: r = i - 1\n        else: l = i + 1'
         },
         {
             name: 'Merge k Sorted Lists',
             difficulty: 'HARD',
             category: 'HEAP',
-            description: `You are given an array of <code>k</code> linked-lists, each sorted in ascending order. Merge all the linked-lists into one sorted linked-list.<br><br><pre><strong>Input:</strong> lists = [[1,4,5],[1,3,4],[2,6]]\n<strong>Output:</strong> [1,1,2,3,4,4,5,6]</pre>`,
+            topics: ['HEAP', 'SORTING'],
+            description: `You are given an array of <code>k</code> linked-lists, each sorted in ascending order. Merge all the linked-lists into one sorted linked-list.<br><br><pre><strong>Input:</strong> lists = [[1,4,5],[1,3,4],[2,6]]
+<strong>Output:</strong> [1,1,2,3,4,4,5,6]</pre>`,
             code: 'import heapq\ndef merge_k_lists(lists):\n    h = []; dummy = ListNode(); curr = dummy\n    for i, l in enumerate(lists):\n        if l: heapq.heappush(h, (l.val, i, l))\n    while h:\n        val, i, node = heapq.heappop(h)\n        curr.next = ListNode(val); curr = curr.next\n        if node.next: heapq.heappush(h, (node.next.val, i, node.next))\n    return dummy.next'
         },
         {
             name: 'Trapping Rain Water',
             difficulty: 'HARD',
             category: 'TWO POINTERS',
-            description: `Given <code>n</code> non-negative integers representing an elevation map where the width of each bar is 1, compute how much water it can trap after raining.<br><br><pre><strong>Input:</strong> height = [0,1,0,2,1,0,1,3,2,1,2,1]\n<strong>Output:</strong> 6</pre>`,
+            topics: ['TWO POINTERS'],
+            description: `Given <code>n</code> non-negative integers representing an elevation map where the width of each bar is 1, compute how much water it can trap after raining.<br><br><pre><strong>Input:</strong> height = [0,1,0,2,1,0,1,3,2,1,2,1]
+<strong>Output:</strong> 6</pre>`,
             code: 'def trap(height):\n    if not height: return 0\n    l, r = 0, len(height) - 1\n    leftMax, rightMax = height[l], height[r]\n    res = 0\n    while l < r:\n        if leftMax < rightMax:\n            l += 1; leftMax = max(leftMax, height[l])\n            res += leftMax - height[l]\n        else:\n            r -= 1; rightMax = max(rightMax, height[r])\n            res += rightMax - height[r]\n    return res'
         },
         {
             name: 'Reverse k-Group',
             difficulty: 'HARD',
             category: 'LINKED LIST',
-            description: `Given the head of a linked list, reverse the nodes of the list <code>k</code> at a time, and return the modified list.<br><br><pre><strong>Input:</strong> head = [1,2,3,4,5], k = 2\n<strong>Output:</strong> [2,1,4,3,5]</pre>`,
+            topics: ['LINKED LIST'],
+            description: `Given the head of a linked list, reverse the nodes of the list <code>k</code> at a time, and return the modified list.<br><br><pre><strong>Input:</strong> head = [1,2,3,4,5], k = 2
+<strong>Output:</strong> [2,1,4,3,5]</pre>`,
             code: 'def reverse_k_group(head, k):\n    dummy = ListNode(0, head); groupPrev = dummy\n    while True:\n        kth = get_kth(groupPrev, k)\n        if not kth: break\n        groupNext = kth.next; prev, curr = kth.next, groupPrev.next\n        while curr != groupNext:\n            tmp = curr.next; curr.next = prev\n            prev = curr; curr = tmp\n        tmp = groupPrev.next; groupPrev.next = kth; groupPrev = tmp\n    return dummy.next\ndef get_kth(curr, k):\n    while curr and k > 0: curr = curr.next; k -= 1\n    return curr'
         },
         {
             name: 'BT Max Path Sum',
             difficulty: 'HARD',
             category: 'TREE',
-            description: `Given the <code>root</code> of a binary tree, return the maximum path sum of any non-empty path.<br><br><pre><strong>Input:</strong> root = [-10,9,20,null,null,15,7]\n<strong>Output:</strong> 42</pre>`,
+            topics: ['TREE', 'MATH'],
+            description: `Given the <code>root</code> of a binary tree, return the maximum path sum of any non-empty path.<br><br><pre><strong>Input:</strong> root = [-10,9,20,null,null,15,7]
+<strong>Output:</strong> 42</pre>`,
             code: 'def max_path_sum(root):\n    res = [root.val]\n    def dfs(node):\n        if not node: return 0\n        leftMax = max(dfs(node.left), 0)\n        rightMax = max(dfs(node.right), 0)\n        res[0] = max(res[0], node.val + leftMax + rightMax)\n        return node.val + max(leftMax, rightMax)\n    dfs(root); return res[0]'
         },
         {
             name: 'Word Ladder',
             difficulty: 'HARD',
             category: 'GRAPHS',
-            description: `Given two words, beginWord and endWord, and a dictionary wordList, return the length of the shortest transformation sequence from beginWord to endWord.<br><br><pre><strong>Input:</strong> beginWord = "hit", endWord = "cog", wordList = ["hot","dot","dog","lot","log","cog"]\n<strong>Output:</strong> 5</pre>`,
+            topics: ['GRAPHS'],
+            description: `Given two words, beginWord and endWord, and a dictionary wordList, return the length of the shortest transformation sequence from beginWord to endWord.<br><br><pre><strong>Input:</strong> beginWord = "hit", endWord = "cog", wordList = ["hot","dot","dog","lot","log","cog"]
+<strong>Output:</strong> 5</pre>`,
             code: 'from collections import deque\ndef ladder_length(beginWord, endWord, wordList):\n    if endWord not in wordList: return 0\n    nei = collections.defaultdict(list); wordList.append(beginWord)\n    for word in wordList:\n        for j in range(len(word)):\n            pattern = word[:j] + "*" + word[j + 1 :]\n            nei[pattern].append(word)\n    visit = set([beginWord]); q = deque([beginWord]); res = 1\n    while q:\n        for i in range(len(q)):\n            word = q.popleft()\n            if word == endWord: return res\n            for j in range(len(word)):\n                pattern = word[:j] + "*" + word[j + 1 :]\n                for neighbor in nei[pattern]:\n                    if neighbor not in visit:\n                        visit.add(neighbor); q.append(neighbor)\n        res += 1\n    return 0'
         },
         {
             name: 'N-Queens',
             difficulty: 'HARD',
             category: 'BACKTRACKING',
-            description: `The n-queens puzzle is the problem of placing n queens on an n x n chessboard such that no two queens attack each other. Return all distinct solutions.<br><br><pre><strong>Input:</strong> n = 4\n<strong>Output:</strong> [[".Q..","...Q","Q...","..Q."],["..Q.","Q...","...Q",".Q.."]]</pre>`,
+            topics: ['BACKTRACKING'],
+            description: `The n-queens puzzle is the problem of placing n queens on an n x n chessboard such that no two queens attack each other. Return all distinct solutions.<br><br><pre><strong>Input:</strong> n = 4
+<strong>Output:</strong> [[".Q..","...Q","Q...","..Q."],["..Q.","Q...","...Q",".Q.."]]</pre>`,
             code: 'def solve_n_queens(n):\n    col, posDiag, negDiag = set(), set(), set(); res = []\n    board = [["."] * n for _ in range(n)]\n    def backtrack(r):\n        if r == n:\n            copy = ["".join(row) for row in board]; res.append(copy); return\n        for c in range(n):\n            if c in col or (r + c) in posDiag or (r - c) in negDiag: continue\n            col.add(c); posDiag.add(r + c); negDiag.add(r - c)\n            board[r][c] = "Q"; backtrack(r + 1)\n            col.remove(c); posDiag.remove(r + c); negDiag.remove(r - c)\n            board[r][c] = "."\n    backtrack(0); return res'
         },
         {
             name: 'Minimum Window Substr',
             difficulty: 'HARD',
             category: 'SLIDING WINDOW',
-            description: `Given two strings <code>s</code> and <code>t</code>, return the minimum window substring of <code>s</code> such that every character in <code>t</code> (including duplicates) is included in the window.<br><br><pre><strong>Input:</strong> s = "ADOBECODEBANC", t = "ABC"\n<strong>Output:</strong> "BANC"</pre>`,
+            topics: ['SLIDING WINDOW'],
+            description: `Given two strings <code>s</code> and <code>t</code>, return the minimum window substring of <code>s</code> such that every character in <code>t</code> (including duplicates) is included in the window.<br><br><pre><strong>Input:</strong> s = "ADOBECODEBANC", t = "ABC"
+<strong>Output:</strong> "BANC"</pre>`,
             code: 'def min_window(s, t):\n    if t == "": return ""\n    countT, window = {}, {}\n    for c in t: countT[c] = 1 + countT.get(c, 0)\n    have, need = 0, len(countT); res, resLen = [-1, -1], float("inf"); l = 0\n    for r in range(len(s)):\n        c = s[r]; window[c] = 1 + window.get(c, 0)\n        if c in countT and window[c] == countT[c]: have += 1\n        while have == need:\n            if (r - l + 1) < resLen: res = [l, r]; resLen = (r - l + 1)\n            window[s[l]] -= 1\n            if s[l] in countT and window[s[l]] < countT[s[l]]: have -= 1\n            l += 1\n    l, r = res; return s[l : r + 1] if resLen != float("inf") else ""'
         },
         {
             name: 'Longest Valid Parens',
             difficulty: 'HARD',
             category: 'STACK',
-            description: `Given a string containing just the characters '(' and ')', find the length of the longest valid (well-formed) parentheses substring.<br><br><pre><strong>Input:</strong> s = ")()())"\n<strong>Output:</strong> 4</pre>`,
+            topics: ['STACK'],
+            description: `Given a string containing just the characters '(' and ')', find the length of the longest valid (well-formed) parentheses substring.<br><br><pre><strong>Input:</strong> s = ")()())"
+<strong>Output:</strong> 4</pre>`,
             code: 'def longest_valid_parentheses(s):\n    stack = [-1]; res = 0\n    for i, c in enumerate(s):\n        if c == "(": stack.append(i)\n        else:\n            stack.pop()\n            if not stack: stack.append(i)\n            else: res = max(res, i - stack[-1])\n    return res'
         },
         {
             name: 'Sliding Window Max',
             difficulty: 'HARD',
             category: 'QUEUE',
-            description: `You are given an array of integers <code>nums</code>, there is a sliding window of size <code>k</code> which is moving from the very left of the array to the very right. Return the max sliding window.<br><br><pre><strong>Input:</strong> nums = [1,3,-1,-3,5,3,6,7], k = 3\n<strong>Output:</strong> [3,3,5,5,6,7]</pre>`,
+            topics: ['QUEUE', 'SLIDING WINDOW'],
+            description: `You are given an array of integers <code>nums</code>, there is a sliding window of size <code>k</code> which is moving from the very left of the array to the very right. Return the max sliding window.<br><br><pre><strong>Input:</strong> nums = [1,3,-1,-3,5,3,6,7], k = 3
+<strong>Output:</strong> [3,3,5,5,6,7]</pre>`,
             code: 'from collections import deque\ndef max_sliding_window(nums, k):\n    output = []; q = deque(); l = r = 0\n    while r < len(nums):\n        while q and nums[q[-1]] < nums[r]: q.pop()\n        q.append(r)\n        if l > q[0]: q.popleft()\n        if (r + 1) >= k: output.append(nums[q[0]]); l += 1\n        r += 1\n    return output'
         }
     ];

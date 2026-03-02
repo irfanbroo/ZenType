@@ -1272,6 +1272,14 @@
                     <p class="cmc-desc">Long-form legendary algorithms. Deep focus and rhythm.</p>
                     <div class="cmc-tag">FLOW STATE</div>
                 </div>
+
+                <div class="coding-mode-card" id="dsa-master-card">
+                    <div class="cmc-number">03</div>
+                    <div class="cmc-icon"><i class="ri-code-box-line"></i></div>
+                    <h3 class="cmc-title">DSA_MASTER</h3>
+                    <p class="cmc-desc">Mock interview grind. Problem on left, type the solution on right.</p>
+                    <div class="cmc-tag">INTERVIEW PREP</div>
+                </div>
             </div>
 
             <button class="coding-exit-btn" id="coding-exit-btn">
@@ -1320,6 +1328,20 @@
             </div>
 
             <div class="coding-algo-grid" id="coding-algo-grid">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+
+        <!-- SCREEN 5: DSA_MASTER PROBLEM PICKER -->
+        <div class="coding-screen hidden" id="coding-dsa-select">
+            <div class="coding-header">
+                <button class="coding-back-btn" id="coding-dsa-back"><i class="ri-arrow-left-s-line"></i></button>
+                <div>
+                    <h2 class="coding-setup-title">CHOOSE A PROBLEM</h2>
+                    <p class="coding-setup-subtitle">mock interview grind</p>
+                </div>
+            </div>
+            <div class="coding-algo-grid" id="coding-dsa-grid">
                 <!-- Populated by JS -->
             </div>
         </div>
@@ -1462,6 +1484,69 @@
                 <button class="coding-exit-btn coding-game-exit" id="algo-exit-btn">
                     <i class="ri-logout-box-r-line" style="margin-right: 6px;"></i>EXIT
                 </button>
+            </div>
+        </div>
+
+        <!-- GAME BOARD: DSA_MASTER -->
+        <div class="coding-screen hidden" id="coding-dsa-board" data-theme="gruvbox">
+            <div class="dsa-split">
+                <!-- Left Panel: Problem Description -->
+                <div class="dsa-left">
+                    <div class="dsa-problem-header">
+                        <h2 class="dsa-problem-title" id="dsa-title">Problem Title</h2>
+                        <div class="dsa-meta">
+                            <span class="dsa-difficulty" id="dsa-difficulty">EASY</span>
+                            <span class="dsa-tag"><i class="ri-price-tag-3-line"></i> Topics</span>
+                        </div>
+                    </div>
+                    <div class="dsa-problem-body" id="dsa-description"></div>
+                </div>
+                <!-- Right Panel: Code Typing -->
+                <div class="dsa-right">
+                    <div class="dsa-right-header">
+                        <div class="dsa-lang-badge"><i class="ri-code-s-slash-line"></i> Python</div>
+                        <div class="coding-game-hud" style="margin:0;padding:0;gap:20px;">
+                            <div class="coding-hud-item"><span class="coding-hud-label">WPM</span><span
+                                    class="coding-hud-value" id="dsa-wpm">0</span></div>
+                            <div class="coding-hud-item"><span class="coding-hud-label">ACC</span><span
+                                    class="coding-hud-value" id="dsa-accuracy">100%</span></div>
+                        </div>
+                        <div class="coding-font-controls" style="margin-left:auto;">
+                            <button class="coding-font-btn" id="dsa-font-down">A-</button>
+                            <button class="coding-font-btn" id="dsa-font-up">A+</button>
+                        </div>
+                        <div class="coding-theme-pills">
+                            <button class="coding-theme-toggle"><i class="ri-palette-line"></i></button>
+                            <div class="coding-theme-dropdown">
+                                <button class="coding-theme-pill" data-theme="midnight">🌙 Midnight</button>
+                                <button class="coding-theme-pill" data-theme="ubuntu">🟣 Ubuntu</button>
+                                <button class="coding-theme-pill" data-theme="monokai">🔥 Monokai</button>
+                                <button class="coding-theme-pill" data-theme="arctic">❄️ Arctic</button>
+                                <button class="coding-theme-pill" data-theme="synthwave">🌆 Synthwave</button>
+                                <button class="coding-theme-pill" data-theme="dracula">🧛 Dracula</button>
+                                <button class="coding-theme-pill" data-theme="solarized">☀️ Solarized</button>
+                                <button class="coding-theme-pill active" data-theme="gruvbox">🌻 Gruvbox</button>
+                                <button class="coding-theme-pill" data-theme="catppuccin">🌸 Catppuccin</button>
+                                <button class="coding-theme-pill" data-theme="cyberpunk">👾 Cyberpunk</button>
+                                <button class="coding-theme-pill" data-theme="tokyo">🏯 Tokyo Night</button>
+                                <button class="coding-theme-pill" data-theme="rosepine">🌹 Rosé Pine</button>
+                                <button class="coding-theme-pill" data-theme="ayu">🌅 Ayu</button>
+                                <button class="coding-theme-pill" data-theme="vesper">🕯️ Vesper</button>
+                            </div>
+                        </div>
+                        <button class="coding-exit-btn" id="dsa-exit-btn"
+                            style="margin:0;padding:5px 14px;font-size:0.7rem;"><i class="ri-logout-box-r-line"
+                                style="margin-right:4px;"></i>EXIT</button>
+                    </div>
+                    <div class="dsa-code-area">
+                        <div class="coding-buffer-wrap" data-theme="gruvbox"
+                            style="max-width:100%;margin:0;padding:30px;justify-content:flex-start;align-items:flex-start;">
+                            <div class="coding-buffer" id="dsa-buffer" style="text-align:left;"></div>
+                        </div>
+                        <input type="text" id="dsa-input" class="coding-hidden-input" autocomplete="off"
+                            spellcheck="false" autocapitalize="off">
+                    </div>
+                </div>
             </div>
         </div>
 
