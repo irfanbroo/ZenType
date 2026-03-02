@@ -1197,27 +1197,45 @@
     <!-- CODING MODE -->
     <div id="coding-splash" class="hidden">
         <!-- Floating code particles (background) -->
-        <div class="code-particle" style="left:5%; --duration:7s; --delay:0s; --drift:30px;">const app = require('express')();</div>
-        <div class="code-particle" style="left:15%; --duration:9s; --delay:1s; --drift:-20px;">if (speed > 100) { rank = 'ELITE'; }</div>
-        <div class="code-particle" style="left:25%; --duration:6s; --delay:0.5s; --drift:40px;">async function compile() { ... }</div>
-        <div class="code-particle" style="left:40%; --duration:8s; --delay:1.5s; --drift:-35px;">import { useState } from 'react';</div>
-        <div class="code-particle" style="left:55%; --duration:7s; --delay:0.3s; --drift:25px;">// TODO: optimize this loop</div>
-        <div class="code-particle" style="left:65%; --duration:10s; --delay:2s; --drift:-15px;">return res.status(200).json(data);</div>
-        <div class="code-particle" style="left:75%; --duration:6.5s; --delay:0.8s; --drift:30px;">class TypeEngine extends Core {</div>
-        <div class="code-particle" style="left:85%; --duration:8.5s; --delay:1.2s; --drift:-40px;">npm run build && deploy</div>
-        <div class="code-particle" style="left:10%; --duration:9.5s; --delay:2.5s; --drift:20px;">git push origin main --force</div>
-        <div class="code-particle" style="left:50%; --duration:7.5s; --delay:0.7s; --drift:-25px;">SELECT * FROM users WHERE wpm > 120;</div>
-        <div class="code-particle" style="left:90%; --duration:8s; --delay:1.8s; --drift:15px;">docker compose up -d</div>
-        <div class="code-particle" style="left:35%; --duration:6.8s; --delay:0.2s; --drift:-30px;">fn main() -> Result&lt;(), Error&gt; {</div>
+        <div class="code-particle" style="left:5%; --duration:7s; --delay:0s; --drift:30px;">const app =
+            require('express')();</div>
+        <div class="code-particle" style="left:15%; --duration:9s; --delay:1s; --drift:-20px;">if (speed > 100) { rank =
+            'ELITE'; }</div>
+        <div class="code-particle" style="left:25%; --duration:6s; --delay:0.5s; --drift:40px;">async function compile()
+            { ... }</div>
+        <div class="code-particle" style="left:40%; --duration:8s; --delay:1.5s; --drift:-35px;">import { useState }
+            from 'react';</div>
+        <div class="code-particle" style="left:55%; --duration:7s; --delay:0.3s; --drift:25px;">// TODO: optimize this
+            loop</div>
+        <div class="code-particle" style="left:65%; --duration:10s; --delay:2s; --drift:-15px;">return
+            res.status(200).json(data);</div>
+        <div class="code-particle" style="left:75%; --duration:6.5s; --delay:0.8s; --drift:30px;">class TypeEngine
+            extends Core {</div>
+        <div class="code-particle" style="left:85%; --duration:8.5s; --delay:1.2s; --drift:-40px;">npm run build &&
+            deploy</div>
+        <div class="code-particle" style="left:10%; --duration:9.5s; --delay:2.5s; --drift:20px;">git push origin main
+            --force</div>
+        <div class="code-particle" style="left:50%; --duration:7.5s; --delay:0.7s; --drift:-25px;">SELECT * FROM users
+            WHERE wpm > 120;</div>
+        <div class="code-particle" style="left:90%; --duration:8s; --delay:1.8s; --drift:15px;">docker compose up -d
+        </div>
+        <div class="code-particle" style="left:35%; --duration:6.8s; --delay:0.2s; --drift:-30px;">fn main() ->
+            Result&lt;(), Error&gt; {</div>
 
         <div class="coding-splash-inner">
             <div class="coding-terminal">
-                <div class="terminal-line"><span class="prompt">$</span> <span class="func">initialize</span> coding_mode <span class="operator">--</span>force</div>
+                <div class="terminal-line"><span class="prompt">$</span> <span class="func">initialize</span>
+                    coding_mode <span class="operator">--</span>force</div>
                 <div class="terminal-line"><span class="comment">// loading syntax engine...</span></div>
-                <div class="terminal-line"><span class="keyword">import</span> { <span class="func">TypeEngine</span> } <span class="keyword">from</span> <span class="string">'@zentype/core'</span>;</div>
-                <div class="terminal-line"><span class="keyword">const</span> mode <span class="operator">=</span> <span class="keyword">new</span> <span class="func">CodingSession</span>();</div>
-                <div class="terminal-line">mode.<span class="func">activate</span>({ <span class="string">difficulty</span>: <span class="string">'adaptive'</span> });</div>
-                <div class="terminal-line"><span class="comment">// ready.</span> <span class="terminal-cursor"></span></div>
+                <div class="terminal-line"><span class="keyword">import</span> { <span class="func">TypeEngine</span> }
+                    <span class="keyword">from</span> <span class="string">'@zentype/core'</span>;
+                </div>
+                <div class="terminal-line"><span class="keyword">const</span> mode <span class="operator">=</span> <span
+                        class="keyword">new</span> <span class="func">CodingSession</span>();</div>
+                <div class="terminal-line">mode.<span class="func">activate</span>({ <span
+                        class="string">difficulty</span>: <span class="string">'adaptive'</span> });</div>
+                <div class="terminal-line"><span class="comment">// ready.</span> <span class="terminal-cursor"></span>
+                </div>
             </div>
 
             <h1 class="coding-splash-title" data-text="CODING MODE">CODING MODE</h1>
@@ -1230,19 +1248,199 @@
     </div>
 
     <div id="coding-ui" class="hidden">
-        <div class="coding-setup" id="coding-setup">
-            <h2 class="coding-setup-title">&lt;/&gt; CODING MODE</h2>
-            <p class="coding-setup-subtitle">select your challenge</p>
 
-            <div class="coding-options-placeholder">
-                CHALLENGES LOADING...<br>
-                <span style="font-size: 0.7rem; opacity: 0.5; margin-top: 10px; display: inline-block;">Content coming soon</span>
+        <!-- SCREEN 1: MODE SELECTION -->
+        <div class="coding-screen" id="coding-mode-select">
+            <div class="coding-header">
+                <h2 class="coding-setup-title">&lt;/&gt; CODING MODE</h2>
+                <p class="coding-setup-subtitle">select your challenge</p>
+            </div>
+
+            <div class="coding-mode-cards">
+                <div class="coding-mode-card" id="syntax-storm-card">
+                    <div class="cmc-number">01</div>
+                    <div class="cmc-icon"><i class="ri-flashlight-line"></i></div>
+                    <h3 class="cmc-title">SYNTAX_STORM</h3>
+                    <p class="cmc-desc">60-second bursts of real code snippets. Pure speed.</p>
+                    <div class="cmc-tag">WARMUP</div>
+                </div>
+
+                <div class="coding-mode-card" id="algo-zen-card">
+                    <div class="cmc-number">02</div>
+                    <div class="cmc-icon"><i class="ri-mind-map"></i></div>
+                    <h3 class="cmc-title">ALGO_ZEN</h3>
+                    <p class="cmc-desc">Long-form legendary algorithms. Deep focus and rhythm.</p>
+                    <div class="cmc-tag">FLOW STATE</div>
+                </div>
             </div>
 
             <button class="coding-exit-btn" id="coding-exit-btn">
                 <i class="ri-logout-box-r-line" style="margin-right: 6px;"></i>EXIT MODE
             </button>
         </div>
+
+        <!-- SCREEN 2: LANGUAGE PICKER (SYNTAX_STORM) -->
+        <div class="coding-screen hidden" id="coding-lang-select">
+            <div class="coding-header">
+                <button class="coding-back-btn" id="coding-lang-back"><i class="ri-arrow-left-s-line"></i></button>
+                <div>
+                    <h2 class="coding-setup-title">CHOOSE YOUR LANGUAGE</h2>
+                    <p class="coding-setup-subtitle">pick a language to storm</p>
+                </div>
+            </div>
+
+            <div class="coding-lang-grid" id="coding-lang-grid">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+
+        <!-- SCREEN 3: SYNTAX CATEGORY PICKER -->
+        <div class="coding-screen hidden" id="coding-cat-select">
+            <div class="coding-header">
+                <button class="coding-back-btn" id="coding-cat-back"><i class="ri-arrow-left-s-line"></i></button>
+                <div>
+                    <h2 class="coding-setup-title" id="coding-cat-title">PYTHON SYNTAX</h2>
+                    <p class="coding-setup-subtitle">choose a syntax category</p>
+                </div>
+            </div>
+
+            <div class="coding-cat-grid" id="coding-cat-grid">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+
+        <!-- SCREEN 4: ALGO_ZEN ALGORITHM PICKER -->
+        <div class="coding-screen hidden" id="coding-algo-select">
+            <div class="coding-header">
+                <button class="coding-back-btn" id="coding-algo-back"><i class="ri-arrow-left-s-line"></i></button>
+                <div>
+                    <h2 class="coding-setup-title">CHOOSE YOUR ALGORITHM</h2>
+                    <p class="coding-setup-subtitle">enter the flow state</p>
+                </div>
+            </div>
+
+            <div class="coding-algo-grid" id="coding-algo-grid">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+
+        <!-- GAME BOARD: SYNTAX_STORM -->
+        <div class="coding-screen hidden" id="coding-storm-board">
+            <div class="coding-game-hud">
+                <div class="coding-hud-item">
+                    <span class="coding-hud-label">WPM</span>
+                    <span class="coding-hud-value" id="storm-wpm">0</span>
+                </div>
+                <div class="coding-hud-item coding-hud-timer">
+                    <span class="coding-hud-value" id="storm-timer">60</span>
+                    <span class="coding-hud-label">SEC</span>
+                </div>
+                <div class="coding-hud-item">
+                    <span class="coding-hud-label">ACC</span>
+                    <span class="coding-hud-value" id="storm-accuracy">100%</span>
+                </div>
+            </div>
+
+            <div class="coding-font-controls">
+                <button class="coding-font-btn" id="storm-font-down">A-</button>
+                <button class="coding-font-btn" id="storm-font-up">A+</button>
+            </div>
+            <div class="coding-buffer-wrap">
+                <div class="coding-buffer" id="storm-buffer">
+                    <!-- Code characters rendered by JS -->
+                </div>
+            </div>
+
+            <input type="text" id="storm-input" class="coding-hidden-input" autocomplete="off" spellcheck="false"
+                autocapitalize="off">
+
+            <button class="coding-exit-btn coding-game-exit" id="storm-exit-btn">
+                <i class="ri-logout-box-r-line" style="margin-right: 6px;"></i>EXIT
+            </button>
+        </div>
+
+        <!-- GAME BOARD: ALGO_ZEN -->
+        <div class="coding-screen hidden" id="coding-algo-board">
+            <!-- Big O Efficiency Bar -->
+            <div class="bigo-bar-container">
+                <div class="bigo-label bigo-top">O(1)</div>
+                <div class="bigo-track">
+                    <div class="bigo-fill" id="bigo-fill"></div>
+                    <div class="bigo-markers">
+                        <div class="bigo-marker" style="bottom: 100%;"><span>O(1)</span></div>
+                        <div class="bigo-marker" style="bottom: 75%;"><span>O(log n)</span></div>
+                        <div class="bigo-marker" style="bottom: 50%;"><span>O(n)</span></div>
+                        <div class="bigo-marker" style="bottom: 25%;"><span>O(n log n)</span></div>
+                        <div class="bigo-marker" style="bottom: 0%;"><span>O(n²)</span></div>
+                    </div>
+                </div>
+                <div class="bigo-label bigo-bottom">O(n²)</div>
+            </div>
+
+            <div class="coding-algo-main">
+                <div class="coding-game-hud">
+                    <div class="coding-hud-item">
+                        <span class="coding-hud-label">WPM</span>
+                        <span class="coding-hud-value" id="algo-wpm">0</span>
+                    </div>
+                    <div class="coding-hud-item">
+                        <span class="coding-hud-label">ALGORITHM</span>
+                        <span class="coding-hud-value" id="algo-name"
+                            style="font-size: 0.8rem; letter-spacing: 0.1em;">—</span>
+                    </div>
+                    <div class="coding-hud-item">
+                        <span class="coding-hud-label">ACC</span>
+                        <span class="coding-hud-value" id="algo-accuracy">100%</span>
+                    </div>
+                </div>
+
+                <div class="coding-font-controls">
+                    <button class="coding-font-btn" id="algo-font-down">A-</button>
+                    <button class="coding-font-btn" id="algo-font-up">A+</button>
+                </div>
+                <div class="coding-buffer-wrap">
+                    <div class="coding-buffer" id="algo-buffer">
+                        <!-- Code characters rendered by JS -->
+                    </div>
+                </div>
+
+                <input type="text" id="algo-input" class="coding-hidden-input" autocomplete="off" spellcheck="false"
+                    autocapitalize="off">
+
+                <button class="coding-exit-btn coding-game-exit" id="algo-exit-btn">
+                    <i class="ri-logout-box-r-line" style="margin-right: 6px;"></i>EXIT
+                </button>
+            </div>
+        </div>
+
+        <!-- RESULTS OVERLAY -->
+        <div class="coding-screen hidden" id="coding-results">
+            <div class="coding-results-inner">
+                <div class="coding-results-badge" id="coding-results-badge">A+</div>
+                <h2 class="coding-results-title" id="coding-results-title">COMPILATION COMPLETE</h2>
+                <div class="coding-results-stats">
+                    <div class="coding-stat">
+                        <span class="coding-stat-val" id="cr-wpm">0</span>
+                        <span class="coding-stat-label">WPM</span>
+                    </div>
+                    <div class="coding-stat">
+                        <span class="coding-stat-val" id="cr-accuracy">0%</span>
+                        <span class="coding-stat-label">ACCURACY</span>
+                    </div>
+                    <div class="coding-stat">
+                        <span class="coding-stat-val" id="cr-chars">0</span>
+                        <span class="coding-stat-label">CHARS</span>
+                    </div>
+                </div>
+                <div class="coding-results-actions">
+                    <button class="coding-btn-primary" id="coding-retry-btn"><i class="ri-refresh-line"></i>
+                        RETRY</button>
+                    <button class="coding-exit-btn" id="coding-results-exit"><i class="ri-logout-box-r-line"></i>
+                        EXIT</button>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <div id="dojo-ui" class="hidden">

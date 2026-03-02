@@ -2319,14 +2319,21 @@ function setupSettingsListeners() {
 
             state.gameMode = 'coding';
 
-            // Setup exit button
-            const exitBtn = document.getElementById('coding-exit-btn');
-            if (exitBtn) exitBtn.onclick = exitCodingMode;
+            // Initialize coding mode UI ONCE and show mode select
+            if (!codingState._uiInitialized) {
+                initCodingModeUI();
+                codingState._uiInitialized = true;
+            }
+            showCodingScreen('coding-mode-select');
 
         }, 3500); // 3.5s to let the full animation play
     }
 
     function exitCodingMode() {
+        // Clean up intervals
+        if (codingState.timerInterval) { clearInterval(codingState.timerInterval); codingState.timerInterval = null; }
+        if (codingState.wpmInterval) { clearInterval(codingState.wpmInterval); codingState.wpmInterval = null; }
+
         // Hide coding UI
         const codingUI = document.getElementById('coding-ui');
         if (codingUI) codingUI.classList.add('hidden');
@@ -2354,10 +2361,906 @@ function setupSettingsListeners() {
         newGame();
     }
 
-    // ═══════════════════════════════════════════════════════
-    //                    DOJO MODE
-    //     "The Dojo is where the blade learns to sing."
-    // ═══════════════════════════════════════════════════════
+    // ── CODING MODE DATA ──
+    const codingLanguages = [
+        { id: 'python', name: 'Python', icon: '🐍' },
+        { id: 'javascript', name: 'JavaScript', icon: '⚡' },
+        { id: 'typescript', name: 'TypeScript', icon: '🔷' },
+        { id: 'c', name: 'C', icon: '⚙️' },
+        { id: 'cpp', name: 'C++', icon: '🔧' },
+        { id: 'java', name: 'Java', icon: '☕' },
+        { id: 'rust', name: 'Rust', icon: '🦀' },
+        { id: 'go', name: 'Go', icon: '🐹' }
+    ];
+
+    const codingCategories = [
+        { id: 'loops', name: 'Loops', icon: 'ri-loop-left-line' },
+        { id: 'conditionals', name: 'Conditionals', icon: 'ri-git-branch-line' },
+        { id: 'functions', name: 'Functions', icon: 'ri-code-box-line' },
+        { id: 'data_structures', name: 'Data Structures', icon: 'ri-database-2-line' },
+        { id: 'classes', name: 'Classes / OOP', icon: 'ri-stack-line' },
+        { id: 'error_handling', name: 'Error Handling', icon: 'ri-bug-line' },
+        { id: 'imports', name: 'Imports / Modules', icon: 'ri-download-2-line' }
+    ];
+
+    const codingSnippets = {
+        python: {
+            loops: [
+                'for i in range(10):\n    print(i)',
+                'for item in items:\n    process(item)',
+                'while count > 0:\n    count -= 1',
+                'for key, val in data.items():\n    print(key, val)',
+                'for i, v in enumerate(lst):\n    print(i, v)',
+                '[x * 2 for x in range(10)]'
+            ],
+            conditionals: [
+                'if x > 0:\n    return "positive"',
+                'if age >= 18:\n    status = "adult"\nelse:\n    status = "minor"',
+                'result = "yes" if valid else "no"',
+                'if x > 0:\n    print("pos")\nelif x < 0:\n    print("neg")\nelse:\n    print("zero")',
+                'if name and len(name) > 0:\n    greet(name)'
+            ],
+            functions: [
+                'def greet(name):\n    return f"Hello, {name}"',
+                'def add(a, b=0):\n    return a + b',
+                'lambda x: x * 2',
+                'def factorial(n):\n    if n <= 1:\n        return 1\n    return n * factorial(n - 1)',
+                'async def fetch(url):\n    response = await get(url)\n    return response.json()'
+            ],
+            data_structures: [
+                'nums = [1, 2, 3, 4, 5]',
+                'user = {"name": "zen", "wpm": 120}',
+                'coords = (10, 20)',
+                'unique = {1, 2, 3, 4}',
+                'from collections import deque\nq = deque([1, 2, 3])'
+            ],
+            classes: [
+                'class Player:\n    def __init__(self, name):\n        self.name = name',
+                'class Admin(User):\n    def __init__(self):\n        super().__init__()',
+                '@property\ndef score(self):\n    return self._score',
+                'class Singleton:\n    _instance = None\n    @classmethod\n    def get(cls):\n        if not cls._instance:\n            cls._instance = cls()\n        return cls._instance'
+            ],
+            error_handling: [
+                'try:\n    result = divide(a, b)\nexcept ZeroDivisionError:\n    print("Cannot divide by zero")',
+                'try:\n    data = load(path)\nexcept FileNotFoundError as e:\n    log(e)\nfinally:\n    cleanup()',
+                'raise ValueError("Invalid input")',
+                'assert len(items) > 0, "Empty list"'
+            ],
+            imports: [
+                'import os',
+                'from pathlib import Path',
+                'from typing import List, Dict',
+                'import json\nfrom datetime import datetime',
+                'from collections import Counter, defaultdict'
+            ]
+        },
+        javascript: {
+            loops: [
+                'for (let i = 0; i < 10; i++) {\n    console.log(i);\n}',
+                'for (const item of items) {\n    process(item);\n}',
+                'while (count > 0) {\n    count--;\n}',
+                'items.forEach((item, i) => {\n    console.log(i, item);\n});',
+                'array.map(x => x * 2);'
+            ],
+            conditionals: [
+                'if (x > 0) {\n    return "positive";\n}',
+                'const status = age >= 18 ? "adult" : "minor";',
+                'if (x > 0) {\n    log("pos");\n} else if (x < 0) {\n    log("neg");\n} else {\n    log("zero");\n}',
+                'switch (action) {\n    case "start":\n        begin();\n        break;\n    case "stop":\n        end();\n        break;\n    default:\n        idle();\n}'
+            ],
+            functions: [
+                'function greet(name) {\n    return `Hello, ${name}`;\n}',
+                'const add = (a, b) => a + b;',
+                'async function fetchData(url) {\n    const res = await fetch(url);\n    return res.json();\n}',
+                'const debounce = (fn, ms) => {\n    let timer;\n    return (...args) => {\n        clearTimeout(timer);\n        timer = setTimeout(() => fn(...args), ms);\n    };\n};'
+            ],
+            data_structures: [
+                'const nums = [1, 2, 3, 4, 5];',
+                'const user = { name: "zen", wpm: 120 };',
+                'const map = new Map();\nmap.set("key", "value");',
+                'const set = new Set([1, 2, 3]);',
+                'const stack = [];\nstack.push(1);\nstack.pop();'
+            ],
+            classes: [
+                'class Player {\n    constructor(name) {\n        this.name = name;\n    }\n}',
+                'class Admin extends User {\n    constructor() {\n        super();\n        this.role = "admin";\n    }\n}',
+                'get score() {\n    return this._score;\n}\nset score(val) {\n    this._score = val;\n}'
+            ],
+            error_handling: [
+                'try {\n    const data = JSON.parse(raw);\n} catch (err) {\n    console.error(err);\n}',
+                'try {\n    await connect();\n} catch (e) {\n    retry();\n} finally {\n    cleanup();\n}',
+                'throw new Error("Invalid input");'
+            ],
+            imports: [
+                'import React from "react";',
+                'import { useState, useEffect } from "react";',
+                'const fs = require("fs");',
+                'import express from "express";',
+                'export default function App() {}'
+            ]
+        },
+        typescript: {
+            loops: [
+                'for (let i: number = 0; i < 10; i++) {\n    console.log(i);\n}',
+                'for (const item of items) {\n    process(item);\n}',
+                'array.map((x: number) => x * 2);',
+                'Object.entries(obj).forEach(([k, v]) => {\n    console.log(k, v);\n});'
+            ],
+            conditionals: [
+                'if (value !== undefined) {\n    return value;\n}',
+                'const result: string = ok ? "yes" : "no";',
+                'if (isAdmin(user)) {\n    grantAccess();\n} else {\n    deny();\n}'
+            ],
+            functions: [
+                'function add(a: number, b: number): number {\n    return a + b;\n}',
+                'const greet = (name: string): string => {\n    return `Hello, ${name}`;\n};',
+                'async function fetch<T>(url: string): Promise<T> {\n    const res = await get(url);\n    return res.json();\n}'
+            ],
+            data_structures: [
+                'const nums: number[] = [1, 2, 3];',
+                'interface User {\n    name: string;\n    age: number;\n}',
+                'type Status = "active" | "idle" | "offline";',
+                'const map = new Map<string, number>();'
+            ],
+            classes: [
+                'class Player {\n    private score: number = 0;\n    constructor(public name: string) {}\n}',
+                'class Logger implements ILogger {\n    log(msg: string): void {\n        console.log(msg);\n    }\n}'
+            ],
+            error_handling: [
+                'try {\n    const data = parse(raw);\n} catch (err: unknown) {\n    if (err instanceof Error) {\n        log(err.message);\n    }\n}',
+                'function assert(val: unknown): asserts val {\n    if (!val) throw new Error("Assertion failed");\n}'
+            ],
+            imports: [
+                'import type { FC } from "react";',
+                'import { z } from "zod";',
+                'export interface Config {\n    port: number;\n    host: string;\n}'
+            ]
+        },
+        c: {
+            loops: [
+                'for (int i = 0; i < 10; i++) {\n    printf("%d\\n", i);\n}',
+                'while (n > 0) {\n    n--;\n}',
+                'do {\n    scanf("%d", &x);\n} while (x != 0);',
+                'for (int *p = arr; p < arr + n; p++) {\n    sum += *p;\n}'
+            ],
+            conditionals: [
+                'if (x > 0) {\n    return 1;\n} else {\n    return -1;\n}',
+                'switch (ch) {\n    case \'a\':\n        action();\n        break;\n    default:\n        idle();\n}'
+            ],
+            functions: [
+                'int add(int a, int b) {\n    return a + b;\n}',
+                'void swap(int *a, int *b) {\n    int tmp = *a;\n    *a = *b;\n    *b = tmp;\n}',
+                'char *strdup(const char *s) {\n    char *d = malloc(strlen(s) + 1);\n    strcpy(d, s);\n    return d;\n}'
+            ],
+            data_structures: [
+                'int arr[10] = {0};',
+                'struct Node {\n    int data;\n    struct Node *next;\n};',
+                'typedef struct {\n    char name[50];\n    int age;\n} Person;'
+            ],
+            classes: [
+                'struct Stack {\n    int data[100];\n    int top;\n};\nvoid push(struct Stack *s, int val) {\n    s->data[++s->top] = val;\n}'
+            ],
+            error_handling: [
+                'if (ptr == NULL) {\n    fprintf(stderr, "Memory error\\n");\n    exit(1);\n}',
+                'FILE *fp = fopen(path, "r");\nif (!fp) {\n    perror("fopen");\n    return -1;\n}'
+            ],
+            imports: [
+                '#include <stdio.h>',
+                '#include <stdlib.h>\n#include <string.h>',
+                '#include "myheader.h"'
+            ]
+        },
+        cpp: {
+            loops: [
+                'for (int i = 0; i < n; i++) {\n    cout << i << endl;\n}',
+                'for (auto& item : items) {\n    process(item);\n}',
+                'while (!q.empty()) {\n    auto val = q.front();\n    q.pop();\n}'
+            ],
+            conditionals: [
+                'if (auto it = m.find(key); it != m.end()) {\n    return it->second;\n}',
+                'const auto result = (x > 0) ? "pos" : "neg";'
+            ],
+            functions: [
+                'int add(int a, int b) {\n    return a + b;\n}',
+                'template<typename T>\nT max(T a, T b) {\n    return (a > b) ? a : b;\n}',
+                'auto square = [](int x) { return x * x; };'
+            ],
+            data_structures: [
+                'vector<int> nums = {1, 2, 3};',
+                'map<string, int> scores;',
+                'unordered_set<int> seen;',
+                'stack<int> s;\ns.push(42);'
+            ],
+            classes: [
+                'class Player {\npublic:\n    Player(string n) : name(n) {}\nprivate:\n    string name;\n};',
+                'class Shape {\npublic:\n    virtual double area() const = 0;\n};'
+            ],
+            error_handling: [
+                'try {\n    riskyOp();\n} catch (const exception& e) {\n    cerr << e.what() << endl;\n}',
+                'throw runtime_error("fail");'
+            ],
+            imports: [
+                '#include <iostream>',
+                '#include <vector>\n#include <algorithm>',
+                'using namespace std;'
+            ]
+        },
+        java: {
+            loops: [
+                'for (int i = 0; i < 10; i++) {\n    System.out.println(i);\n}',
+                'for (String item : items) {\n    process(item);\n}',
+                'while (scanner.hasNext()) {\n    String line = scanner.nextLine();\n}'
+            ],
+            conditionals: [
+                'if (x > 0) {\n    return "positive";\n} else {\n    return "negative";\n}',
+                'String result = (age >= 18) ? "adult" : "minor";'
+            ],
+            functions: [
+                'public int add(int a, int b) {\n    return a + b;\n}',
+                'public static void main(String[] args) {\n    System.out.println("Hello");\n}',
+                'private <T> List<T> filter(List<T> list) {\n    return list.stream().collect(Collectors.toList());\n}'
+            ],
+            data_structures: [
+                'List<Integer> nums = new ArrayList<>();',
+                'Map<String, Integer> map = new HashMap<>();',
+                'Set<String> set = new HashSet<>();',
+                'Queue<Integer> q = new LinkedList<>();'
+            ],
+            classes: [
+                'public class Player {\n    private String name;\n    public Player(String name) {\n        this.name = name;\n    }\n}',
+                'public class Admin extends User {\n    @Override\n    public void login() {\n        super.login();\n    }\n}'
+            ],
+            error_handling: [
+                'try {\n    parse(data);\n} catch (Exception e) {\n    e.printStackTrace();\n}',
+                'throw new IllegalArgumentException("Invalid");'
+            ],
+            imports: [
+                'import java.util.List;',
+                'import java.util.Map;\nimport java.util.HashMap;',
+                'import java.io.*;'
+            ]
+        },
+        rust: {
+            loops: [
+                'for i in 0..10 {\n    println!("{}", i);\n}',
+                'for item in &items {\n    process(item);\n}',
+                'loop {\n    if done { break; }\n}',
+                'while let Some(val) = iter.next() {\n    handle(val);\n}'
+            ],
+            conditionals: [
+                'if x > 0 {\n    "positive"\n} else {\n    "negative"\n}',
+                'match action {\n    Action::Start => begin(),\n    Action::Stop => end(),\n    _ => idle(),\n}'
+            ],
+            functions: [
+                'fn add(a: i32, b: i32) -> i32 {\n    a + b\n}',
+                'fn greet(name: &str) -> String {\n    format!("Hello, {}", name)\n}',
+                'async fn fetch(url: &str) -> Result<Response, Error> {\n    let res = reqwest::get(url).await?;\n    Ok(res)\n}'
+            ],
+            data_structures: [
+                'let nums: Vec<i32> = vec![1, 2, 3];',
+                'let mut map = HashMap::new();\nmap.insert("key", 42);',
+                'let set: HashSet<i32> = HashSet::new();'
+            ],
+            classes: [
+                'struct Player {\n    name: String,\n    score: u32,\n}',
+                'impl Player {\n    fn new(name: &str) -> Self {\n        Player { name: name.to_string(), score: 0 }\n    }\n}',
+                'trait Drawable {\n    fn draw(&self);\n}'
+            ],
+            error_handling: [
+                'match result {\n    Ok(val) => println!("{}", val),\n    Err(e) => eprintln!("{}", e),\n}',
+                'let data = fs::read_to_string(path)?;'
+            ],
+            imports: [
+                'use std::collections::HashMap;',
+                'use std::io::{self, Read};',
+                'mod utils;\nuse crate::utils::helper;'
+            ]
+        },
+        go: {
+            loops: [
+                'for i := 0; i < 10; i++ {\n    fmt.Println(i)\n}',
+                'for _, item := range items {\n    process(item)\n}',
+                'for key, val := range data {\n    fmt.Println(key, val)\n}'
+            ],
+            conditionals: [
+                'if x > 0 {\n    return "positive"\n}',
+                'if err != nil {\n    log.Fatal(err)\n}',
+                'switch action {\ncase "start":\n    begin()\ncase "stop":\n    end()\ndefault:\n    idle()\n}'
+            ],
+            functions: [
+                'func add(a, b int) int {\n    return a + b\n}',
+                'func greet(name string) string {\n    return fmt.Sprintf("Hello, %s", name)\n}',
+                'func divide(a, b float64) (float64, error) {\n    if b == 0 {\n        return 0, errors.New("division by zero")\n    }\n    return a / b, nil\n}'
+            ],
+            data_structures: [
+                'nums := []int{1, 2, 3}',
+                'data := map[string]int{"a": 1}',
+                'type Node struct {\n    Val  int\n    Next *Node\n}'
+            ],
+            classes: [
+                'type Player struct {\n    Name  string\n    Score int\n}',
+                'func (p *Player) Greet() string {\n    return "Hello, " + p.Name\n}',
+                'type Logger interface {\n    Log(msg string)\n}'
+            ],
+            error_handling: [
+                'if err != nil {\n    return fmt.Errorf("failed: %w", err)\n}',
+                'defer file.Close()',
+                'data, err := ioutil.ReadAll(resp.Body)\nif err != nil {\n    log.Fatal(err)\n}'
+            ],
+            imports: [
+                'import "fmt"',
+                'import (\n    "fmt"\n    "os"\n)',
+                'import "net/http"'
+            ]
+        }
+    };
+
+    const algoData = [
+        { name: 'Bubble Sort', category: 'SORTING', complexity: 'O(n²)', code: 'function bubbleSort(arr) {\n    for (let i = 0; i < arr.length; i++) {\n        for (let j = 0; j < arr.length - i - 1; j++) {\n            if (arr[j] > arr[j + 1]) {\n                [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];\n            }\n        }\n    }\n    return arr;\n}' },
+        { name: 'Quick Sort', category: 'SORTING', complexity: 'O(n log n)', code: 'function quickSort(arr) {\n    if (arr.length <= 1) return arr;\n    const pivot = arr[0];\n    const left = arr.slice(1).filter(x => x <= pivot);\n    const right = arr.slice(1).filter(x => x > pivot);\n    return [...quickSort(left), pivot, ...quickSort(right)];\n}' },
+        { name: 'Merge Sort', category: 'SORTING', complexity: 'O(n log n)', code: 'function mergeSort(arr) {\n    if (arr.length <= 1) return arr;\n    const mid = Math.floor(arr.length / 2);\n    const left = mergeSort(arr.slice(0, mid));\n    const right = mergeSort(arr.slice(mid));\n    return merge(left, right);\n}' },
+        { name: 'Binary Search', category: 'SEARCH', complexity: 'O(log n)', code: 'function binarySearch(arr, target) {\n    let lo = 0, hi = arr.length - 1;\n    while (lo <= hi) {\n        const mid = Math.floor((lo + hi) / 2);\n        if (arr[mid] === target) return mid;\n        if (arr[mid] < target) lo = mid + 1;\n        else hi = mid - 1;\n    }\n    return -1;\n}' },
+        { name: 'DFS', category: 'GRAPH', complexity: 'O(V + E)', code: 'function dfs(graph, node, visited = new Set()) {\n    visited.add(node);\n    console.log(node);\n    for (const neighbor of graph[node]) {\n        if (!visited.has(neighbor)) {\n            dfs(graph, neighbor, visited);\n        }\n    }\n}' },
+        { name: 'BFS', category: 'GRAPH', complexity: 'O(V + E)', code: 'function bfs(graph, start) {\n    const visited = new Set([start]);\n    const queue = [start];\n    while (queue.length > 0) {\n        const node = queue.shift();\n        for (const n of graph[node]) {\n            if (!visited.has(n)) {\n                visited.add(n);\n                queue.push(n);\n            }\n        }\n    }\n}' },
+        { name: 'Fibonacci (DP)', category: 'DYNAMIC PROGRAMMING', complexity: 'O(n)', code: 'function fib(n) {\n    const dp = [0, 1];\n    for (let i = 2; i <= n; i++) {\n        dp[i] = dp[i - 1] + dp[i - 2];\n    }\n    return dp[n];\n}' },
+        { name: 'Linked List', category: 'DATA STRUCTURE', complexity: 'O(1) insert', code: 'class ListNode {\n    constructor(val) {\n        this.val = val;\n        this.next = null;\n    }\n}\nfunction insert(head, val) {\n    const node = new ListNode(val);\n    node.next = head;\n    return node;\n}' },
+        { name: 'Stack', category: 'DATA STRUCTURE', complexity: 'O(1)', code: 'class Stack {\n    constructor() {\n        this.items = [];\n    }\n    push(val) {\n        this.items.push(val);\n    }\n    pop() {\n        return this.items.pop();\n    }\n    peek() {\n        return this.items[this.items.length - 1];\n    }\n}' },
+        { name: 'Two Sum', category: 'HASH MAP', complexity: 'O(n)', code: 'function twoSum(nums, target) {\n    const map = new Map();\n    for (let i = 0; i < nums.length; i++) {\n        const comp = target - nums[i];\n        if (map.has(comp)) {\n            return [map.get(comp), i];\n        }\n        map.set(nums[i], i);\n    }\n    return [];\n}' }
+    ];
+
+    // Keywords per language for Syntax Glow
+    const langKeywords = {
+        python: ['def', 'class', 'if', 'elif', 'else', 'for', 'while', 'return', 'import', 'from', 'as', 'try', 'except', 'finally', 'raise', 'with', 'yield', 'lambda', 'pass', 'break', 'continue', 'and', 'or', 'not', 'in', 'is', 'None', 'True', 'False', 'async', 'await', 'assert', 'del', 'global', 'nonlocal', 'self', 'super', 'property'],
+        javascript: ['function', 'const', 'let', 'var', 'if', 'else', 'for', 'while', 'return', 'import', 'export', 'from', 'class', 'extends', 'new', 'this', 'try', 'catch', 'finally', 'throw', 'async', 'await', 'yield', 'switch', 'case', 'break', 'default', 'typeof', 'instanceof', 'delete', 'void', 'null', 'undefined', 'true', 'false', 'of', 'in', 'get', 'set'],
+        typescript: ['function', 'const', 'let', 'var', 'if', 'else', 'for', 'while', 'return', 'import', 'export', 'from', 'class', 'extends', 'implements', 'interface', 'type', 'new', 'this', 'try', 'catch', 'finally', 'throw', 'async', 'await', 'public', 'private', 'protected', 'readonly', 'abstract', 'enum', 'null', 'undefined', 'true', 'false', 'unknown', 'never', 'void', 'asserts'],
+        c: ['int', 'char', 'float', 'double', 'void', 'long', 'short', 'unsigned', 'signed', 'const', 'static', 'extern', 'struct', 'typedef', 'enum', 'union', 'if', 'else', 'for', 'while', 'do', 'return', 'break', 'continue', 'switch', 'case', 'default', 'sizeof', 'NULL', 'include', 'define'],
+        cpp: ['int', 'char', 'float', 'double', 'void', 'bool', 'auto', 'const', 'static', 'class', 'struct', 'public', 'private', 'protected', 'virtual', 'override', 'template', 'typename', 'namespace', 'using', 'new', 'delete', 'if', 'else', 'for', 'while', 'return', 'try', 'catch', 'throw', 'nullptr', 'true', 'false', 'include'],
+        java: ['public', 'private', 'protected', 'static', 'final', 'abstract', 'class', 'interface', 'extends', 'implements', 'new', 'this', 'super', 'if', 'else', 'for', 'while', 'return', 'try', 'catch', 'finally', 'throw', 'throws', 'import', 'void', 'int', 'boolean', 'String', 'null', 'true', 'false', 'Override'],
+        rust: ['fn', 'let', 'mut', 'const', 'if', 'else', 'for', 'while', 'loop', 'match', 'return', 'struct', 'impl', 'trait', 'enum', 'pub', 'use', 'mod', 'crate', 'self', 'super', 'async', 'await', 'move', 'ref', 'where', 'type', 'dyn', 'true', 'false', 'Some', 'None', 'Ok', 'Err', 'Self'],
+        go: ['func', 'var', 'const', 'type', 'struct', 'interface', 'map', 'chan', 'if', 'else', 'for', 'range', 'switch', 'case', 'default', 'return', 'break', 'continue', 'go', 'defer', 'select', 'import', 'package', 'nil', 'true', 'false', 'error', 'string', 'int', 'float64', 'bool']
+    };
+
+    const bracketPairs = { '{': '}', '(': ')', '[': ']' };
+
+    let codingState = {
+        mode: null, // 'storm' or 'algo'
+        lang: null,
+        category: null,
+        snippets: [],
+        currentCode: '',
+        charIndex: 0,
+        correct: 0,
+        total: 0,
+        startTime: null,
+        timerInterval: null,
+        wpmInterval: null,
+        timeLeft: 60,
+        bigoLevel: 10,
+        algoIndex: null
+    };
+
+    // ── CODING MODE NAVIGATION ──
+    function showCodingScreen(id) {
+        document.querySelectorAll('#coding-ui .coding-screen').forEach(s => s.classList.add('hidden'));
+        const el = document.getElementById(id);
+        if (el) el.classList.remove('hidden');
+    }
+
+    function initCodingModeUI() {
+        // Mode selection
+        document.getElementById('syntax-storm-card').onclick = () => {
+            codingState.mode = 'storm';
+            renderLangGrid();
+            showCodingScreen('coding-lang-select');
+        };
+        document.getElementById('algo-zen-card').onclick = () => {
+            codingState.mode = 'algo';
+            renderAlgoGrid();
+            showCodingScreen('coding-algo-select');
+        };
+
+        // Back buttons
+        document.getElementById('coding-lang-back').onclick = () => showCodingScreen('coding-mode-select');
+        document.getElementById('coding-cat-back').onclick = () => showCodingScreen('coding-lang-select');
+        document.getElementById('coding-algo-back').onclick = () => showCodingScreen('coding-mode-select');
+
+        // Exit
+        document.getElementById('coding-exit-btn').onclick = exitCodingMode;
+        document.getElementById('coding-results-exit').onclick = exitCodingMode;
+
+        // In-game exit buttons
+        document.getElementById('storm-exit-btn').onclick = () => {
+            if (codingState.timerInterval) { clearInterval(codingState.timerInterval); codingState.timerInterval = null; }
+            if (codingState.wpmInterval) { clearInterval(codingState.wpmInterval); codingState.wpmInterval = null; }
+            showCodingScreen('coding-mode-select');
+        };
+        document.getElementById('algo-exit-btn').onclick = () => {
+            if (codingState.wpmInterval) { clearInterval(codingState.wpmInterval); codingState.wpmInterval = null; }
+            showCodingScreen('coding-mode-select');
+        };
+        document.getElementById('coding-retry-btn').onclick = () => {
+            if (codingState.mode === 'storm') {
+                launchStorm();
+            } else {
+                launchAlgo(codingState.algoIndex);
+            }
+        };
+
+        // Font size controls
+        codingState._fontSize = 0.95; // default rem
+        const adjustFont = (delta) => {
+            codingState._fontSize = Math.min(1.6, Math.max(0.7, codingState._fontSize + delta));
+            document.querySelectorAll('.coding-buffer').forEach(buf => {
+                buf.style.fontSize = codingState._fontSize + 'rem';
+            });
+        };
+        document.getElementById('storm-font-up').onclick = (e) => { e.stopPropagation(); adjustFont(0.1); };
+        document.getElementById('storm-font-down').onclick = (e) => { e.stopPropagation(); adjustFont(-0.1); };
+        document.getElementById('algo-font-up').onclick = (e) => { e.stopPropagation(); adjustFont(0.1); };
+        document.getElementById('algo-font-down').onclick = (e) => { e.stopPropagation(); adjustFont(-0.1); };
+    }
+
+    // ── LANGUAGE GRID ──
+    function renderLangGrid() {
+        const grid = document.getElementById('coding-lang-grid');
+        grid.innerHTML = codingLanguages.map(lang =>
+            `<div class="coding-lang-card" data-lang="${lang.id}">
+                <span class="lang-icon">${lang.icon}</span>
+                <span class="lang-name">${lang.name}</span>
+            </div>`
+        ).join('');
+        grid.querySelectorAll('.coding-lang-card').forEach(card => {
+            card.onclick = () => {
+                codingState.lang = card.dataset.lang;
+                renderCatGrid();
+                showCodingScreen('coding-cat-select');
+            };
+        });
+    }
+
+    // ── CATEGORY GRID ──
+    function renderCatGrid() {
+        const lang = codingLanguages.find(l => l.id === codingState.lang);
+        document.getElementById('coding-cat-title').textContent = `${lang.name.toUpperCase()} SYNTAX`;
+        const grid = document.getElementById('coding-cat-grid');
+        grid.innerHTML = codingCategories.map(cat => {
+            const snippets = codingSnippets[codingState.lang]?.[cat.id] || [];
+            return `<div class="coding-cat-card" data-cat="${cat.id}">
+                <div class="cat-icon"><i class="${cat.icon}"></i></div>
+                <div class="cat-info">
+                    <div class="cat-name">${cat.name}</div>
+                    <div class="cat-count">${snippets.length} snippets</div>
+                </div>
+            </div>`;
+        }).join('');
+        grid.querySelectorAll('.coding-cat-card').forEach(card => {
+            card.onclick = () => {
+                codingState.category = card.dataset.cat;
+                launchStorm();
+            };
+        });
+    }
+
+    // ── ALGORITHM GRID ──
+    function renderAlgoGrid() {
+        const grid = document.getElementById('coding-algo-grid');
+        grid.innerHTML = algoData.map((algo, i) =>
+            `<div class="coding-algo-card" data-idx="${i}">
+                <div class="algo-category">${algo.category}</div>
+                <div class="algo-name">${algo.name}</div>
+                <div class="algo-complexity">${algo.complexity}</div>
+            </div>`
+        ).join('');
+        grid.querySelectorAll('.coding-algo-card').forEach(card => {
+            card.onclick = () => launchAlgo(parseInt(card.dataset.idx));
+        });
+    }
+
+    // ── SYNTAX GLOW: RENDER BUFFER ──
+    function renderCodeBuffer(code, bufferId, lang) {
+        const buffer = document.getElementById(bufferId);
+        const keywords = langKeywords[lang] || langKeywords.javascript;
+        const chars = code.split('');
+
+        // Pre-compute token types for each character
+        const tokenTypes = new Array(chars.length).fill('');
+        let i = 0;
+        while (i < chars.length) {
+            // Comments
+            if (chars[i] === '/' && chars[i + 1] === '/') {
+                let end = i;
+                while (end < chars.length && chars[end] !== '\n') end++;
+                for (let j = i; j < end; j++) tokenTypes[j] = 'kw-comment';
+                i = end; continue;
+            }
+            if (chars[i] === '#' && (lang === 'python' || lang === 'c' || lang === 'cpp')) {
+                if (lang === 'python') {
+                    let end = i;
+                    while (end < chars.length && chars[end] !== '\n') end++;
+                    for (let j = i; j < end; j++) tokenTypes[j] = 'kw-comment';
+                    i = end; continue;
+                }
+            }
+            // Strings
+            if (chars[i] === '"' || chars[i] === "'" || chars[i] === '`') {
+                const q = chars[i]; let end = i + 1;
+                while (end < chars.length && chars[end] !== q) end++;
+                if (end < chars.length) end++;
+                for (let j = i; j < end; j++) tokenTypes[j] = 'kw-string';
+                i = end; continue;
+            }
+            // Numbers
+            if (/\d/.test(chars[i]) && (i === 0 || /[\s(,=+\-*/<>[\]{};:]/.test(chars[i - 1]))) {
+                let end = i;
+                while (end < chars.length && /[\d.]/.test(chars[end])) end++;
+                for (let j = i; j < end; j++) tokenTypes[j] = 'kw-number';
+                i = end; continue;
+            }
+            // Keywords/identifiers
+            if (/[a-zA-Z_@]/.test(chars[i])) {
+                let end = i;
+                while (end < chars.length && /[a-zA-Z0-9_]/.test(chars[end])) end++;
+                const word = chars.slice(i, end).join('');
+                if (keywords.includes(word)) {
+                    for (let j = i; j < end; j++) tokenTypes[j] = 'kw-keyword';
+                } else if (end < chars.length && chars[end] === '(') {
+                    for (let j = i; j < end; j++) tokenTypes[j] = 'kw-function';
+                }
+                i = end; continue;
+            }
+            // Operators
+            if ('=+-*/<>!&|^~%'.includes(chars[i])) {
+                tokenTypes[i] = 'kw-operator';
+            }
+            i++;
+        }
+
+        // Find bracket pairs for matching
+        const bracketMap = {};
+        const stack = [];
+        chars.forEach((ch, idx) => {
+            if ('{(['.includes(ch)) {
+                stack.push(idx);
+            } else if ('})]'.includes(ch) && stack.length) {
+                const open = stack.pop();
+                bracketMap[open] = idx;
+                bracketMap[idx] = open;
+            }
+        });
+
+        buffer.innerHTML = chars.map((ch, idx) => {
+            const tokenCls = tokenTypes[idx] ? ` ${tokenTypes[idx]}` : '';
+            const isBracket = '{([})]'.includes(ch);
+            const bracketData = isBracket ? ` data-bracket="${bracketMap[idx] ?? ''}"` : '';
+            const cursorCls = idx === 0 ? ' cursor' : '';
+            const display = ch === '\n' ? '\n' : (ch === ' ' ? ' ' : ch);
+            return `<span class="code-char${tokenCls}${cursorCls}" data-idx="${idx}"${bracketData}>${display}</span>`;
+        }).join('');
+
+        buffer._tokenTypes = tokenTypes;
+        buffer._bracketMap = bracketMap;
+        buffer._code = code;
+    }
+
+    // ── SYNTAX GLOW: TYPING ENGINE ──
+    function initTypingEngine(bufferId, inputId, onComplete) {
+        const buffer = document.getElementById(bufferId);
+        const input = document.getElementById(inputId);
+        const code = buffer._code;
+
+        codingState.charIndex = 0;
+        codingState.correct = 0;
+        codingState.total = 0;
+        codingState.startTime = null;
+
+        input.value = '';
+        input.focus();
+        input.onblur = () => setTimeout(() => input.focus(), 50);
+
+        // Click buffer to focus
+        buffer.parentElement.onclick = () => input.focus();
+
+        // Remove any previous handler to prevent stacking
+        if (codingState._currentHandler && codingState._currentInput) {
+            codingState._currentInput.removeEventListener('keydown', codingState._currentHandler);
+        }
+
+        const handler = function (e) {
+            if (e.key === 'Tab') {
+                e.preventDefault();
+                // Insert spaces for tab
+                for (let t = 0; t < 4 && codingState.charIndex < code.length; t++) {
+                    if (code[codingState.charIndex] === ' ') {
+                        processChar(' ', buffer, code);
+                    } else break;
+                }
+                return;
+            }
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                if (code[codingState.charIndex] === '\n') {
+                    processChar('\n', buffer, code);
+                    // Auto-skip leading whitespace after newline
+                    while (codingState.charIndex < code.length && code[codingState.charIndex] === ' ') {
+                        processChar(' ', buffer, code);
+                    }
+                }
+                return;
+            }
+            // Ctrl+Backspace — delete entire word
+            if (e.key === 'Backspace' && e.ctrlKey) {
+                e.preventDefault();
+                if (codingState.charIndex > 0) {
+                    while (codingState.charIndex > 0 && /[\s\n]/.test(code[codingState.charIndex - 1])) {
+                        backspaceOne(buffer, code);
+                    }
+                    while (codingState.charIndex > 0 && /[a-zA-Z0-9_]/.test(code[codingState.charIndex - 1])) {
+                        backspaceOne(buffer, code);
+                    }
+                    buffer.querySelectorAll('.code-char.cursor').forEach(el => el.classList.remove('cursor'));
+                    const curEl = buffer.querySelector(`.code-char[data-idx="${codingState.charIndex}"]`);
+                    if (curEl) curEl.classList.add('cursor');
+                }
+                return;
+            }
+            // Regular Backspace
+            if (e.key === 'Backspace') {
+                e.preventDefault();
+                if (codingState.charIndex > 0) {
+                    backspaceOne(buffer, code);
+                    buffer.querySelectorAll('.code-char.cursor').forEach(el => el.classList.remove('cursor'));
+                    const curEl = buffer.querySelector(`.code-char[data-idx="${codingState.charIndex}"]`);
+                    if (curEl) curEl.classList.add('cursor');
+                }
+                return;
+            }
+            if (e.key.length === 1) {
+                e.preventDefault();
+                if (!codingState.startTime) codingState.startTime = Date.now();
+                processChar(e.key, buffer, code);
+
+                // Bracket auto-close highlight
+                const autoCloseMap = { '(': ')', '{': '}', '[': ']' };
+                if (autoCloseMap[e.key]) {
+                    const nextIdx = codingState.charIndex;
+                    if (nextIdx < code.length && code[nextIdx] === autoCloseMap[e.key]) {
+                        const matchEl = buffer.querySelector(`.code-char[data-idx="${nextIdx}"]`);
+                        if (matchEl) matchEl.classList.add('bracket-match');
+                    }
+                }
+
+                if (codingState.charIndex >= code.length) {
+                    input.removeEventListener('keydown', handler);
+                    codingState._currentHandler = null;
+                    codingState._currentInput = null;
+                    if (onComplete) onComplete();
+                }
+            }
+        };
+
+        input.addEventListener('keydown', handler);
+        codingState._currentHandler = handler;
+        codingState._currentInput = input;
+    }
+
+    // Helper: backspace one character
+    function backspaceOne(buffer, code) {
+        codingState.charIndex--;
+        const idx = codingState.charIndex;
+        const charEl = buffer.querySelector(`.code-char[data-idx="${idx}"]`);
+        buffer.querySelectorAll('.bracket-match').forEach(el => el.classList.remove('bracket-match'));
+        if (charEl) {
+            const wasWrong = charEl.classList.contains('wrong');
+            charEl.classList.remove('typed', 'wrong', 'word-complete');
+            if (codingState.total > 0) codingState.total--;
+            if (!wasWrong && codingState.correct > 0) codingState.correct--;
+        }
+    }
+
+    function processChar(typed, buffer, code) {
+        const idx = codingState.charIndex;
+        if (idx >= code.length) return;
+
+        const expected = code[idx];
+        const charEl = buffer.querySelector(`.code-char[data-idx="${idx}"]`);
+        codingState.total++;
+
+        // Remove old cursor
+        buffer.querySelectorAll('.code-char.cursor').forEach(el => el.classList.remove('cursor'));
+        // Remove old bracket matches
+        buffer.querySelectorAll('.bracket-match').forEach(el => el.classList.remove('bracket-match'));
+
+        if (typed === expected) {
+            codingState.correct++;
+            if (charEl) {
+                charEl.classList.add('typed');
+                charEl.classList.remove('wrong');
+                // Check for word completion glow
+                const tokenType = buffer._tokenTypes[idx];
+                if (tokenType && (tokenType === 'kw-keyword' || tokenType === 'kw-function')) {
+                    // Check if this is the last char of the token
+                    const nextType = buffer._tokenTypes[idx + 1];
+                    if (nextType !== tokenType) {
+                        // Find start of this token and add glow pulse
+                        let start = idx;
+                        while (start > 0 && buffer._tokenTypes[start - 1] === tokenType) start--;
+                        for (let j = start; j <= idx; j++) {
+                            const el = buffer.querySelector(`.code-char[data-idx="${j}"]`);
+                            if (el) { el.classList.add('word-complete'); }
+                        }
+                    }
+                }
+                // Bracket matching
+                if ('{(['.includes(expected)) {
+                    const matchIdx = buffer._bracketMap[idx];
+                    if (matchIdx !== undefined) {
+                        const matchEl = buffer.querySelector(`.code-char[data-idx="${matchIdx}"]`);
+                        if (matchEl) matchEl.classList.add('bracket-match');
+                    }
+                }
+            }
+            codingState.charIndex++;
+        } else {
+            if (charEl) {
+                charEl.classList.add('wrong');
+            }
+            codingState.charIndex++; // Move forward even on mistakes
+        }
+
+        // Set new cursor
+        const nextEl = buffer.querySelector(`.code-char[data-idx="${codingState.charIndex}"]`);
+        if (nextEl) {
+            nextEl.classList.add('cursor');
+            nextEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
+
+    // ── SYNTAX_STORM GAME ──
+    function launchStorm() {
+        const snippets = codingSnippets[codingState.lang]?.[codingState.category] || [];
+        if (!snippets.length) return;
+
+        // Pick random snippets and join
+        const shuffled = [...snippets].sort(() => Math.random() - 0.5);
+        codingState.currentCode = shuffled.slice(0, 4).join('\n\n');
+        codingState.timeLeft = 60;
+
+        showCodingScreen('coding-storm-board');
+        renderCodeBuffer(codingState.currentCode, 'storm-buffer', codingState.lang);
+
+        // Reset HUD
+        document.getElementById('storm-wpm').textContent = '0';
+        document.getElementById('storm-accuracy').textContent = '100%';
+        document.getElementById('storm-timer').textContent = '60';
+        document.querySelector('.coding-hud-timer')?.classList.remove('danger');
+
+        // Start timer
+        if (codingState.timerInterval) clearInterval(codingState.timerInterval);
+        if (codingState.wpmInterval) clearInterval(codingState.wpmInterval);
+
+        codingState.timerInterval = setInterval(() => {
+            if (!codingState.startTime) return; // Don't countdown until typing starts
+            codingState.timeLeft--;
+            document.getElementById('storm-timer').textContent = codingState.timeLeft;
+            if (codingState.timeLeft <= 10) {
+                document.querySelector('.coding-hud-timer')?.classList.add('danger');
+            }
+            if (codingState.timeLeft <= 0) {
+                clearInterval(codingState.timerInterval);
+                clearInterval(codingState.wpmInterval);
+                showStormResults();
+            }
+        }, 1000);
+
+        codingState.wpmInterval = setInterval(updateStormHUD, 300);
+
+        initTypingEngine('storm-buffer', 'storm-input', () => {
+            // Completed all text before time ran out — feed more
+            const more = [...snippets].sort(() => Math.random() - 0.5);
+            codingState.currentCode = more.slice(0, 4).join('\n\n');
+            renderCodeBuffer(codingState.currentCode, 'storm-buffer', codingState.lang);
+            initTypingEngine('storm-buffer', 'storm-input', null);
+        });
+    }
+
+    function updateStormHUD() {
+        if (!codingState.startTime) return;
+        const mins = (Date.now() - codingState.startTime) / 60000;
+        const wpm = Math.round((codingState.correct / 5) / mins) || 0;
+        const acc = codingState.total > 0 ? Math.round((codingState.correct / codingState.total) * 100) : 100;
+        document.getElementById('storm-wpm').textContent = wpm;
+        document.getElementById('storm-accuracy').textContent = acc + '%';
+    }
+
+    function showStormResults() {
+        const mins = codingState.startTime ? (Date.now() - codingState.startTime) / 60000 : 1;
+        const wpm = Math.round((codingState.correct / 5) / mins) || 0;
+        const acc = codingState.total > 0 ? Math.round((codingState.correct / codingState.total) * 100) : 100;
+
+        let badge = 'D', title = 'SYNTAX ERROR';
+        if (wpm >= 80 && acc >= 95) { badge = 'S+'; title = 'GOD-TIER CODER'; }
+        else if (wpm >= 60 && acc >= 90) { badge = 'A+'; title = 'SENIOR ENGINEER'; }
+        else if (wpm >= 45 && acc >= 85) { badge = 'A'; title = 'MID-LEVEL DEV'; }
+        else if (wpm >= 30 && acc >= 80) { badge = 'B'; title = 'JUNIOR DEV'; }
+        else if (wpm >= 20) { badge = 'C'; title = 'INTERN'; }
+
+        document.getElementById('coding-results-badge').textContent = badge;
+        document.getElementById('coding-results-title').textContent = title;
+        document.getElementById('cr-wpm').textContent = wpm;
+        document.getElementById('cr-accuracy').textContent = acc + '%';
+        document.getElementById('cr-chars').textContent = codingState.correct;
+        showCodingScreen('coding-results');
+    }
+
+    // ── ALGO_ZEN GAME ──
+    function launchAlgo(idx) {
+        const algo = algoData[idx];
+        if (!algo) return;
+        codingState.algoIndex = idx;
+        codingState.currentCode = algo.code;
+        codingState.bigoLevel = 10;
+
+        showCodingScreen('coding-algo-board');
+        renderCodeBuffer(algo.code, 'algo-buffer', 'javascript');
+
+        // Reset HUD
+        document.getElementById('algo-wpm').textContent = '0';
+        document.getElementById('algo-accuracy').textContent = '100%';
+        document.getElementById('algo-name').textContent = algo.name.toUpperCase();
+        document.getElementById('bigo-fill').style.height = '10%';
+
+        if (codingState.wpmInterval) clearInterval(codingState.wpmInterval);
+        codingState.wpmInterval = setInterval(updateAlgoHUD, 300);
+
+        initTypingEngine('algo-buffer', 'algo-input', () => {
+            clearInterval(codingState.wpmInterval);
+            showAlgoResults();
+        });
+    }
+
+    function updateAlgoHUD() {
+        if (!codingState.startTime) return;
+        const mins = (Date.now() - codingState.startTime) / 60000;
+        const wpm = Math.round((codingState.correct / 5) / mins) || 0;
+        const acc = codingState.total > 0 ? Math.round((codingState.correct / codingState.total) * 100) : 100;
+        document.getElementById('algo-wpm').textContent = wpm;
+        document.getElementById('algo-accuracy').textContent = acc + '%';
+
+        // Big O bar: maps WPM×accuracy to 0-100%
+        const score = (wpm / 80) * (acc / 100);
+        const targetPct = Math.min(100, Math.max(5, score * 100));
+        const fill = document.getElementById('bigo-fill');
+
+        // Smooth or glitch
+        if (targetPct < codingState.bigoLevel - 5) {
+            // Drop — glitch effect
+            fill.parentElement.classList.add('bigo-glitch');
+            setTimeout(() => fill.parentElement.classList.remove('bigo-glitch'), 300);
+        }
+        codingState.bigoLevel = targetPct;
+        fill.style.height = targetPct + '%';
+    }
+
+    function showAlgoResults() {
+        const mins = codingState.startTime ? (Date.now() - codingState.startTime) / 60000 : 1;
+        const wpm = Math.round((codingState.correct / 5) / mins) || 0;
+        const acc = codingState.total > 0 ? Math.round((codingState.correct / codingState.total) * 100) : 100;
+
+        let badge = 'D', title = 'RUNTIME ERROR';
+        if (wpm >= 60 && acc >= 95) { badge = 'O(1)'; title = 'CONSTANT TIME MASTERY'; }
+        else if (wpm >= 45 && acc >= 90) { badge = 'O(log n)'; title = 'LOGARITHMIC FLOW'; }
+        else if (wpm >= 30 && acc >= 85) { badge = 'O(n)'; title = 'LINEAR EXECUTION'; }
+        else if (wpm >= 20 && acc >= 75) { badge = 'O(n²)'; title = 'QUADRATIC GRIND'; }
+
+        document.getElementById('coding-results-badge').textContent = badge;
+        document.getElementById('coding-results-title').textContent = title;
+        document.getElementById('cr-wpm').textContent = wpm;
+        document.getElementById('cr-accuracy').textContent = acc + '%';
+        document.getElementById('cr-chars').textContent = codingState.correct;
+        showCodingScreen('coding-results');
+    }
+
+    // ── DOJO MODE (unchanged below) ──
 
     let dojoState = {
         active: false,
