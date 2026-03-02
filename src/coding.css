@@ -371,30 +371,34 @@
 }
 
 .coding-font-btn {
-    background: rgba(0, 255, 65, 0.05);
-    border: 1px solid rgba(0, 255, 65, 0.12);
-    color: rgba(0, 255, 65, 0.45);
+    background: rgba(var(--accent), 0.05);
+    border: 1px solid rgba(var(--accent), 0.12);
+    color: rgba(var(--accent), 0.45);
     font-family: 'JetBrains Mono', monospace;
-    font-size: 0.65rem;
+    font-size: 0.75rem;
     font-weight: 700;
-    padding: 3px 10px;
-    border-radius: 4px;
+    padding: 5px 12px;
+    border-radius: 6px;
     cursor: pointer;
     transition: all 0.2s ease;
     letter-spacing: 0.05em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .coding-font-btn:hover {
-    border-color: rgba(0, 255, 65, 0.4);
-    color: #00ff41;
-    background: rgba(0, 255, 65, 0.1);
+    border-color: rgba(var(--accent), 0.4);
+    color: rgb(var(--accent));
+    background: rgba(var(--accent), 0.1);
+    box-shadow: 0 0 12px rgba(var(--accent), 0.15);
 }
 
 .coding-control-sep {
     width: 1px;
-    height: 14px;
+    height: 18px;
     background: rgba(255, 255, 255, 0.08);
-    margin: 0 2px;
+    margin: 0 4px;
 }
 
 /* ── TOOLBAR (theme pills + font controls) ── */
@@ -418,24 +422,25 @@
 }
 
 .coding-theme-toggle {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    color: rgba(255, 255, 255, 0.3);
-    font-size: 0.8rem;
-    width: 28px;
-    height: 28px;
-    border-radius: 6px;
+    background: rgba(var(--accent), 0.05);
+    border: 1px solid rgba(var(--accent), 0.12);
+    color: rgba(var(--accent), 0.45);
+    font-size: 1rem;
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.25s ease;
+    transition: all 0.2s ease;
 }
 
 .coding-theme-toggle:hover {
-    border-color: rgba(0, 255, 65, 0.25);
-    color: #00ff41;
-    background: rgba(0, 255, 65, 0.06);
+    border-color: rgba(var(--accent), 0.4);
+    color: rgb(var(--accent));
+    background: rgba(var(--accent), 0.1);
+    box-shadow: 0 0 12px rgba(var(--accent), 0.15);
 }
 
 .coding-theme-dropdown {
@@ -1522,6 +1527,63 @@
     color: rgba(0, 255, 65, 0.4);
 }
 
+/* ── THEME ACCENTS FOR HUD & PROGRESS ── */
+.coding-screen {
+    --accent: 0, 255, 65;
+}
+
+.coding-screen[data-theme="ubuntu"] {
+    --accent: 138, 226, 52;
+}
+
+.coding-screen[data-theme="monokai"] {
+    --accent: 166, 226, 46;
+}
+
+.coding-screen[data-theme="arctic"] {
+    --accent: 136, 192, 208;
+}
+
+.coding-screen[data-theme="synthwave"] {
+    --accent: 255, 56, 187;
+}
+
+.coding-screen[data-theme="dracula"] {
+    --accent: 189, 147, 249;
+}
+
+.coding-screen[data-theme="solarized"] {
+    --accent: 38, 139, 210;
+}
+
+.coding-screen[data-theme="gruvbox"] {
+    --accent: 254, 128, 25;
+}
+
+.coding-screen[data-theme="catppuccin"] {
+    --accent: 203, 166, 247;
+}
+
+.coding-screen[data-theme="cyberpunk"] {
+    --accent: 255, 234, 0;
+}
+
+.coding-screen[data-theme="tokyo"] {
+    --accent: 122, 162, 247;
+}
+
+.coding-screen[data-theme="rosepine"] {
+    --accent: 235, 111, 146;
+}
+
+.coding-screen[data-theme="ayu"] {
+    --accent: 255, 180, 84;
+}
+
+.coding-screen[data-theme="vesper"] {
+    --accent: 255, 198, 109;
+}
+
 /* ── GAME HUD ── */
 .coding-game-hud {
     display: flex;
@@ -1538,7 +1600,7 @@
 .coding-hud-label {
     display: block;
     font-size: 0.6rem;
-    color: rgba(0, 255, 65, 0.3);
+    color: rgba(var(--accent), 0.3);
     letter-spacing: 0.2em;
     margin-bottom: 4px;
 }
@@ -1547,8 +1609,8 @@
     display: block;
     font-size: 1.6rem;
     font-weight: 700;
-    color: #00ff41;
-    text-shadow: 0 0 15px rgba(0, 255, 65, 0.3);
+    color: rgb(var(--accent));
+    text-shadow: 0 0 15px rgba(var(--accent), 0.3);
 }
 
 .coding-hud-timer .coding-hud-value {
@@ -1707,7 +1769,7 @@
 
 .bigo-label {
     font-size: 0.6rem;
-    color: rgba(0, 255, 65, 0.4);
+    color: rgba(var(--accent), 0.4);
     letter-spacing: 0.15em;
 }
 
@@ -1715,7 +1777,7 @@
     width: 32px;
     height: 350px;
     background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(0, 255, 65, 0.1);
+    border: 1px solid rgba(var(--accent), 0.1);
     border-radius: 16px;
     position: relative;
     overflow: hidden;
@@ -1732,10 +1794,10 @@
             #ff8844 25%,
             #ffdd44 50%,
             #44ddff 75%,
-            #00ff41 100%);
+            rgb(var(--accent)) 100%);
     border-radius: 0 0 14px 14px;
     transition: height 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-    box-shadow: 0 0 15px rgba(0, 255, 65, 0.2);
+    box-shadow: 0 0 15px rgba(var(--accent), 0.2);
 }
 
 .bigo-markers {

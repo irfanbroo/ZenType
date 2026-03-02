@@ -2787,7 +2787,7 @@ function setupSettingsListeners() {
         };
 
         // Font size controls
-        codingState._fontSize = 0.95; // default rem
+        codingState._fontSize = 1.6; // default rem
         const adjustFont = (delta) => {
             codingState._fontSize = Math.min(1.6, Math.max(0.7, codingState._fontSize + delta));
             document.querySelectorAll('.coding-buffer').forEach(buf => {
@@ -2799,8 +2799,11 @@ function setupSettingsListeners() {
         document.getElementById('algo-font-up').onclick = (e) => { e.stopPropagation(); adjustFont(0.1); };
         document.getElementById('algo-font-down').onclick = (e) => { e.stopPropagation(); adjustFont(-0.1); };
 
+        // Apply default font size immediately
+        adjustFont(0);
+
         // Width controls
-        codingState._bufferWidth = 750; // default px
+        codingState._bufferWidth = 1200; // default px
         const adjustWidth = (delta) => {
             codingState._bufferWidth = Math.min(1200, Math.max(500, codingState._bufferWidth + delta));
             document.querySelectorAll('.coding-buffer-wrap').forEach(wrap => {
@@ -2811,6 +2814,9 @@ function setupSettingsListeners() {
         document.getElementById('storm-width-down').onclick = (e) => { e.stopPropagation(); adjustWidth(-100); };
         document.getElementById('algo-width-up').onclick = (e) => { e.stopPropagation(); adjustWidth(100); };
         document.getElementById('algo-width-down').onclick = (e) => { e.stopPropagation(); adjustWidth(-100); };
+
+        // Apply default width immediately
+        adjustWidth(0);
 
         // Theme toggle dropdown
         document.querySelectorAll('.coding-theme-toggle').forEach(btn => {
@@ -2839,8 +2845,8 @@ function setupSettingsListeners() {
                 document.querySelectorAll('.coding-theme-pill').forEach(p => {
                     p.classList.toggle('active', p.dataset.theme === theme);
                 });
-                // Apply theme to all buffer wraps
-                document.querySelectorAll('.coding-buffer-wrap').forEach(wrap => {
+                // Apply theme to all buffer wraps and screens
+                document.querySelectorAll('.coding-buffer-wrap, .coding-screen').forEach(wrap => {
                     if (theme === 'midnight') {
                         wrap.removeAttribute('data-theme');
                     } else {
@@ -3208,11 +3214,10 @@ function setupSettingsListeners() {
         codingState.wpmInterval = setInterval(updateStormHUD, 300);
 
         initTypingEngine('storm-buffer', 'storm-input', () => {
-            // Completed all text before time ran out — feed more
-            const more = [...snippets].sort(() => Math.random() - 0.5);
-            codingState.currentCode = more.slice(0, 4).join('\n\n');
-            renderCodeBuffer(codingState.currentCode, 'storm-buffer', codingState.lang);
-            initTypingEngine('storm-buffer', 'storm-input', null);
+            // Completed all text before time ran out — END THE GAME
+            clearInterval(codingState.timerInterval);
+            clearInterval(codingState.wpmInterval);
+            showStormResults();
         });
     }
 
