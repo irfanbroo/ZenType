@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="/src/shadow.css">
     <link rel="stylesheet" href="/src/hagakure.css">
     <link rel="stylesheet" href="/src/dojo.css">
+    <link rel="stylesheet" href="/src/coding.css">
     <link
         href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Montserrat:wght@400;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;500;600;700&family=Shojumaru&display=swap"
         rel="stylesheet">
@@ -1002,6 +1003,16 @@
                         </div>
                         <div class="mode-status">Active</div>
                     </div>
+
+                    <!-- Coding Mode -->
+                    <div class="mode-card active" id="coding-mode-card">
+                        <div class="mode-icon"><i class="ri-code-s-slash-line"></i></div>
+                        <div class="mode-info">
+                            <h3>Coding Mode</h3>
+                            <p>Built for Developers. Type Real Code.</p>
+                        </div>
+                        <div class="mode-status">Active</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1180,6 +1191,57 @@
         <div class="dojo-splash-content">
             <h1 class="dojo-splash-title">ENTER THE DOJO</h1>
             <p class="dojo-splash-quote">"Where the blade learns to sing."</p>
+        </div>
+    </div>
+
+    <!-- CODING MODE -->
+    <div id="coding-splash" class="hidden">
+        <!-- Floating code particles (background) -->
+        <div class="code-particle" style="left:5%; --duration:7s; --delay:0s; --drift:30px;">const app = require('express')();</div>
+        <div class="code-particle" style="left:15%; --duration:9s; --delay:1s; --drift:-20px;">if (speed > 100) { rank = 'ELITE'; }</div>
+        <div class="code-particle" style="left:25%; --duration:6s; --delay:0.5s; --drift:40px;">async function compile() { ... }</div>
+        <div class="code-particle" style="left:40%; --duration:8s; --delay:1.5s; --drift:-35px;">import { useState } from 'react';</div>
+        <div class="code-particle" style="left:55%; --duration:7s; --delay:0.3s; --drift:25px;">// TODO: optimize this loop</div>
+        <div class="code-particle" style="left:65%; --duration:10s; --delay:2s; --drift:-15px;">return res.status(200).json(data);</div>
+        <div class="code-particle" style="left:75%; --duration:6.5s; --delay:0.8s; --drift:30px;">class TypeEngine extends Core {</div>
+        <div class="code-particle" style="left:85%; --duration:8.5s; --delay:1.2s; --drift:-40px;">npm run build && deploy</div>
+        <div class="code-particle" style="left:10%; --duration:9.5s; --delay:2.5s; --drift:20px;">git push origin main --force</div>
+        <div class="code-particle" style="left:50%; --duration:7.5s; --delay:0.7s; --drift:-25px;">SELECT * FROM users WHERE wpm > 120;</div>
+        <div class="code-particle" style="left:90%; --duration:8s; --delay:1.8s; --drift:15px;">docker compose up -d</div>
+        <div class="code-particle" style="left:35%; --duration:6.8s; --delay:0.2s; --drift:-30px;">fn main() -> Result&lt;(), Error&gt; {</div>
+
+        <div class="coding-splash-inner">
+            <div class="coding-terminal">
+                <div class="terminal-line"><span class="prompt">$</span> <span class="func">initialize</span> coding_mode <span class="operator">--</span>force</div>
+                <div class="terminal-line"><span class="comment">// loading syntax engine...</span></div>
+                <div class="terminal-line"><span class="keyword">import</span> { <span class="func">TypeEngine</span> } <span class="keyword">from</span> <span class="string">'@zentype/core'</span>;</div>
+                <div class="terminal-line"><span class="keyword">const</span> mode <span class="operator">=</span> <span class="keyword">new</span> <span class="func">CodingSession</span>();</div>
+                <div class="terminal-line">mode.<span class="func">activate</span>({ <span class="string">difficulty</span>: <span class="string">'adaptive'</span> });</div>
+                <div class="terminal-line"><span class="comment">// ready.</span> <span class="terminal-cursor"></span></div>
+            </div>
+
+            <h1 class="coding-splash-title" data-text="CODING MODE">CODING MODE</h1>
+            <p class="coding-splash-subtitle">where syntax becomes second nature</p>
+
+            <div class="coding-load-bar">
+                <div class="coding-load-fill"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="coding-ui" class="hidden">
+        <div class="coding-setup" id="coding-setup">
+            <h2 class="coding-setup-title">&lt;/&gt; CODING MODE</h2>
+            <p class="coding-setup-subtitle">select your challenge</p>
+
+            <div class="coding-options-placeholder">
+                CHALLENGES LOADING...<br>
+                <span style="font-size: 0.7rem; opacity: 0.5; margin-top: 10px; display: inline-block;">Content coming soon</span>
+            </div>
+
+            <button class="coding-exit-btn" id="coding-exit-btn">
+                <i class="ri-logout-box-r-line" style="margin-right: 6px;"></i>EXIT MODE
+            </button>
         </div>
     </div>
 

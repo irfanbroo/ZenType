@@ -1,0 +1,552 @@
+/* ═══════════════════════════════════════════════════════
+                     CODING MODE
+      "Where syntax becomes second nature."
+   ═══════════════════════════════════════════════════════ */
+
+/* ── CODING SPLASH SCREEN ── */
+#coding-splash {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9999;
+    background: #0a0a0f;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+#coding-splash.hidden {
+    display: none;
+}
+
+/* CRT scanline overlay */
+#coding-splash::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(0deg,
+            transparent,
+            transparent 2px,
+            rgba(0, 255, 65, 0.015) 2px,
+            rgba(0, 255, 65, 0.015) 4px);
+    pointer-events: none;
+    z-index: 3;
+    animation: scanlineScroll 8s linear infinite;
+}
+
+/* Screen noise/grain */
+#coding-splash::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 2;
+    animation: noiseShift 0.5s steps(5) infinite;
+}
+
+.coding-splash-inner {
+    position: relative;
+    z-index: 5;
+    width: 100%;
+    max-width: 700px;
+    padding: 40px;
+    text-align: center;
+}
+
+/* Terminal window */
+.coding-terminal {
+    background: rgba(0, 255, 65, 0.03);
+    border: 1px solid rgba(0, 255, 65, 0.15);
+    border-radius: 8px;
+    padding: 24px 28px;
+    margin-bottom: 40px;
+    text-align: left;
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+    font-size: 0.85rem;
+    line-height: 1.8;
+    position: relative;
+    overflow: hidden;
+    opacity: 0;
+    animation: terminalFadeIn 0.6s ease-out 0.3s forwards;
+}
+
+.coding-terminal::before {
+    content: '● ● ●';
+    display: block;
+    font-size: 0.5rem;
+    letter-spacing: 6px;
+    color: rgba(0, 255, 65, 0.3);
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(0, 255, 65, 0.08);
+}
+
+.terminal-line {
+    color: rgba(0, 255, 65, 0);
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.terminal-line .prompt {
+    color: #00ff41;
+    opacity: 0.6;
+}
+
+.terminal-line .keyword {
+    color: #ff79c6;
+}
+
+.terminal-line .string {
+    color: #f1fa8c;
+}
+
+.terminal-line .func {
+    color: #8be9fd;
+}
+
+.terminal-line .comment {
+    color: rgba(0, 255, 65, 0.3);
+    font-style: italic;
+}
+
+.terminal-line .operator {
+    color: #ff5555;
+}
+
+/* Each line types in sequentially */
+.terminal-line:nth-child(1) {
+    animation: typeInLine 0.4s ease-out 0.6s forwards;
+}
+
+.terminal-line:nth-child(2) {
+    animation: typeInLine 0.4s ease-out 0.9s forwards;
+}
+
+.terminal-line:nth-child(3) {
+    animation: typeInLine 0.4s ease-out 1.2s forwards;
+}
+
+.terminal-line:nth-child(4) {
+    animation: typeInLine 0.4s ease-out 1.5s forwards;
+}
+
+.terminal-line:nth-child(5) {
+    animation: typeInLine 0.4s ease-out 1.8s forwards;
+}
+
+.terminal-line:nth-child(6) {
+    animation: typeInLine 0.4s ease-out 2.1s forwards;
+}
+
+/* Blinking cursor on last line */
+.terminal-cursor {
+    display: inline-block;
+    width: 8px;
+    height: 16px;
+    background: #00ff41;
+    vertical-align: middle;
+    margin-left: 2px;
+    animation: cursorBlink 0.8s step-end infinite;
+    opacity: 0;
+}
+
+.terminal-line:last-child .terminal-cursor {
+    animation: cursorAppear 0s ease-out 2.1s forwards, cursorBlink 0.8s step-end 2.1s infinite;
+}
+
+/* Main title */
+.coding-splash-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 3rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #00ff41;
+    text-shadow:
+        0 0 20px rgba(0, 255, 65, 0.5),
+        0 0 40px rgba(0, 255, 65, 0.3),
+        0 0 80px rgba(0, 255, 65, 0.15);
+    position: relative;
+    opacity: 0;
+    animation: titleGlitchIn 0.8s ease-out 2.4s forwards;
+    margin-bottom: 12px;
+}
+
+/* Glitch pseudo-elements on title */
+.coding-splash-title::before,
+.coding-splash-title::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+}
+
+.coding-splash-title::before {
+    color: #ff0040;
+    animation: glitchLeft 0.15s ease-in-out 2.4s 3, glitchFade 3s ease-out 2.4s forwards;
+    clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%);
+}
+
+.coding-splash-title::after {
+    color: #00d4ff;
+    animation: glitchRight 0.15s ease-in-out 2.5s 3, glitchFade 3s ease-out 2.5s forwards;
+    clip-path: polygon(0 55%, 100% 55%, 100% 100%, 0 100%);
+}
+
+.coding-splash-subtitle {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9rem;
+    color: rgba(0, 255, 65, 0.4);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    opacity: 0;
+    animation: subtitleFadeIn 0.6s ease-out 2.8s forwards;
+}
+
+/* Loading bar */
+.coding-load-bar {
+    width: 200px;
+    height: 2px;
+    background: rgba(0, 255, 65, 0.1);
+    margin: 30px auto 0;
+    border-radius: 2px;
+    overflow: hidden;
+    opacity: 0;
+    animation: subtitleFadeIn 0.3s ease-out 0.5s forwards;
+}
+
+.coding-load-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #00ff41, #00d4ff);
+    box-shadow: 0 0 10px rgba(0, 255, 65, 0.5);
+    animation: loadProgress 2.5s ease-in-out 0.6s forwards;
+    border-radius: 2px;
+}
+
+/* Floating code particles in background */
+.code-particle {
+    position: absolute;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: rgba(0, 255, 65, 0.08);
+    pointer-events: none;
+    white-space: nowrap;
+    animation: floatUp var(--duration, 6s) linear var(--delay, 0s) infinite;
+}
+
+/* ── CODING UI (placeholder) ── */
+#coding-ui {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 500;
+    background: linear-gradient(180deg, #0a0a0f 0%, #0d1117 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+#coding-ui.hidden {
+    display: none;
+}
+
+.coding-setup {
+    text-align: center;
+    max-width: 600px;
+    width: 90%;
+}
+
+.coding-setup-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: #00ff41;
+    text-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
+    margin-bottom: 8px;
+}
+
+.coding-setup-subtitle {
+    font-size: 0.85rem;
+    color: rgba(0, 255, 65, 0.35);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 50px;
+}
+
+.coding-options-placeholder {
+    color: rgba(0, 255, 65, 0.2);
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    border: 1px dashed rgba(0, 255, 65, 0.1);
+    border-radius: 12px;
+    padding: 60px 30px;
+    margin-bottom: 40px;
+}
+
+.coding-exit-btn {
+    background: transparent;
+    border: 1px solid rgba(0, 255, 65, 0.2);
+    color: rgba(0, 255, 65, 0.5);
+    padding: 10px 28px;
+    border-radius: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.coding-exit-btn:hover {
+    border-color: #00ff41;
+    color: #00ff41;
+    box-shadow: 0 0 15px rgba(0, 255, 65, 0.15);
+}
+
+/* Coding Mode Card styling in modes modal */
+#coding-mode-card .mode-icon {
+    color: #00ff41 !important;
+}
+
+/* ── KEYFRAME ANIMATIONS ── */
+
+@keyframes scanlineScroll {
+    0% {
+        transform: translateY(0);
+    }
+
+    100% {
+        transform: translateY(4px);
+    }
+}
+
+@keyframes noiseShift {
+    0% {
+        transform: translate(0, 0);
+    }
+
+    20% {
+        transform: translate(-2%, 2%);
+    }
+
+    40% {
+        transform: translate(1%, -1%);
+    }
+
+    60% {
+        transform: translate(-1%, 3%);
+    }
+
+    80% {
+        transform: translate(2%, -2%);
+    }
+
+    100% {
+        transform: translate(0, 0);
+    }
+}
+
+@keyframes terminalFadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes typeInLine {
+    0% {
+        color: rgba(0, 255, 65, 0);
+        transform: translateX(-5px);
+        filter: blur(2px);
+    }
+
+    50% {
+        filter: blur(0);
+    }
+
+    100% {
+        color: rgba(0, 255, 65, 0.7);
+        transform: translateX(0);
+        filter: blur(0);
+    }
+}
+
+@keyframes cursorBlink {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
+}
+
+@keyframes cursorAppear {
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes titleGlitchIn {
+    0% {
+        opacity: 0;
+        transform: translateY(15px) scale(0.9);
+        filter: blur(10px);
+    }
+
+    30% {
+        opacity: 1;
+        filter: blur(0);
+    }
+
+    35% {
+        transform: translateX(8px) skewX(-5deg);
+    }
+
+    40% {
+        transform: translateX(-8px) skewX(5deg);
+    }
+
+    45% {
+        transform: translateX(4px) skewX(-2deg);
+    }
+
+    50% {
+        transform: translateX(-2px) skewX(1deg);
+    }
+
+    60% {
+        transform: translateX(0) skewX(0) scale(1);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+    }
+}
+
+@keyframes glitchLeft {
+    0% {
+        transform: translate(-3px, -1px);
+        opacity: 0.7;
+    }
+
+    50% {
+        transform: translate(3px, 1px);
+        opacity: 0.5;
+    }
+
+    100% {
+        transform: translate(-1px, 0);
+        opacity: 0;
+    }
+}
+
+@keyframes glitchRight {
+    0% {
+        transform: translate(3px, 1px);
+        opacity: 0.7;
+    }
+
+    50% {
+        transform: translate(-3px, -1px);
+        opacity: 0.5;
+    }
+
+    100% {
+        transform: translate(1px, 0);
+        opacity: 0;
+    }
+}
+
+@keyframes glitchFade {
+
+    0%,
+    10% {
+        opacity: 0.5;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+@keyframes subtitleFadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes loadProgress {
+    0% {
+        width: 0%;
+    }
+
+    20% {
+        width: 15%;
+    }
+
+    50% {
+        width: 45%;
+    }
+
+    75% {
+        width: 75%;
+    }
+
+    100% {
+        width: 100%;
+    }
+}
+
+@keyframes floatUp {
+    0% {
+        transform: translateY(100vh) translateX(0);
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 0.08;
+    }
+
+    90% {
+        opacity: 0.08;
+    }
+
+    100% {
+        transform: translateY(-20vh) translateX(var(--drift, 20px));
+        opacity: 0;
+    }
+}

@@ -2270,6 +2270,88 @@ function setupSettingsListeners() {
                 modesModal.classList.add('hidden');
             });
         }
+
+        // Coding Mode Card Click
+        const codingCard = document.getElementById('coding-mode-card');
+        if (codingCard) {
+            codingCard.addEventListener('click', () => {
+                startCodingMode();
+                modesModal.classList.add('hidden');
+            });
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════
+    //                    CODING MODE
+    //     "Where syntax becomes second nature."
+    // ═══════════════════════════════════════════════════════
+
+    function startCodingMode() {
+        const splash = document.getElementById('coding-splash');
+        if (!splash) return;
+
+        // Show splash
+        splash.classList.remove('hidden');
+
+        // Hide main UI elements
+        ['game-ui', 'modes-modal'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.classList.add('hidden');
+        });
+
+        const appHeader = document.getElementById('app-header');
+        const navButtons = document.getElementById('top-nav-buttons');
+        const footer = document.querySelector('footer') || document.querySelector('.site-footer');
+
+        if (appHeader) appHeader.style.display = 'none';
+        if (navButtons) navButtons.style.display = 'none';
+        if (footer) footer.style.display = 'none';
+
+        // Mute background audio/video
+        if (UI.bgVideo) UI.bgVideo.muted = true;
+
+        // After splash animation, transition to coding UI
+        setTimeout(() => {
+            splash.classList.add('hidden');
+
+            const codingUI = document.getElementById('coding-ui');
+            if (codingUI) codingUI.classList.remove('hidden');
+
+            state.gameMode = 'coding';
+
+            // Setup exit button
+            const exitBtn = document.getElementById('coding-exit-btn');
+            if (exitBtn) exitBtn.onclick = exitCodingMode;
+
+        }, 3500); // 3.5s to let the full animation play
+    }
+
+    function exitCodingMode() {
+        // Hide coding UI
+        const codingUI = document.getElementById('coding-ui');
+        if (codingUI) codingUI.classList.add('hidden');
+
+        // Restore main UI
+        const gameUI = document.getElementById('game-ui');
+        const appHeader = document.getElementById('app-header');
+        const navButtons = document.getElementById('top-nav-buttons');
+        const footer = document.querySelector('footer') || document.querySelector('.site-footer');
+
+        if (gameUI) gameUI.classList.remove('hidden');
+        if (appHeader) appHeader.style.display = '';
+        if (navButtons) navButtons.style.display = '';
+        if (footer) footer.style.display = '';
+
+        // Restore video audio state
+        if (UI.bgVideo) {
+            const wp = wallpapers.find(w => w.id === userConfig.wallpaperId);
+            if (wp && wp.hasAudio && userConfig.wallpaperAudio) {
+                UI.bgVideo.muted = false;
+            }
+        }
+
+        state.gameMode = 'time';
+        newGame();
     }
 
     // ═══════════════════════════════════════════════════════
