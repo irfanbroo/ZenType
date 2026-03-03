@@ -4437,7 +4437,9 @@ function setupSettingsListeners() {
         timerInterval: null,
         contentIndex: 0,
         shuffled: [],
-        _escHandler: null
+        theme: 'spring-rain',
+        _escHandler: null,
+        _typeHandler: null
     };
 
     function launchZenGarden() {
@@ -4455,8 +4457,450 @@ function setupSettingsListeners() {
 
         showCodingScreen('coding-zen-board');
         loadNextZenQuote();
-        startZenRain();
+
+        // Ensure board has correct theme class
+        const board = document.getElementById('coding-zen-board');
+        if (board) {
+            board.className = 'coding-screen theme-' + zenState.theme;
+        }
+
+        // Setup Theme Toggle Menu
+        const themeToggle = document.getElementById('zen-theme-toggle');
+        const themeMenu = document.getElementById('zen-theme-menu');
+
+        if (themeToggle && themeMenu) {
+            themeToggle.onclick = (e) => {
+                e.stopPropagation();
+                themeMenu.classList.toggle('open');
+            };
+
+            // Close menu if clicking outside
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('#zen-theme-wrapper')) {
+                    themeMenu.classList.remove('open');
+                }
+            }, { once: true }); // Attach once per launch, relies on exit cleanup if needed, but safe enough here
+        }
+
+        const themeBtns = document.querySelectorAll('.zen-theme-btn');
+        themeBtns.forEach(btn => {
+            btn.onclick = (e) => {
+                e.stopPropagation();
+                themeBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                zenState.theme = btn.dataset.theme;
+
+                if (board) board.className = 'coding-screen theme-' + zenState.theme;
+                startZenParticles();
+
+                if (themeMenu) themeMenu.classList.remove('open');
+            };
+        });
+
+        startZenParticles();
         startZenTimer();
+
+        // Type Physics for Particles
+        if (zenState._typeHandler) document.removeEventListener('keydown', zenState._typeHandler);
+        zenState._typeHandler = function (e) {
+            if (!zenState.active) return;
+            // Only react to standard typed characters
+            if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+                const theme = zenState.theme;
+
+                if (theme === 'autumn-drift' || theme === 'sakura-blossom' || theme === 'midnight-snow') {
+                    const selector = theme === 'autumn-drift' ? '.zen-leaf' :
+                        theme === 'sakura-blossom' ? '.zen-sakura' : '.zen-snow';
+                    const force = theme === 'midnight-snow' ? 5 : theme === 'sakura-blossom' ? 15 : 25;
+                    document.querySelectorAll(selector).forEach(p => {
+                        const currentTx = parseFloat(p.dataset.tx || 0);
+                        const newTx = currentTx + (force + Math.random() * force);
+                        p.dataset.tx = newTx;
+                        p.style.transform = `translateX(${newTx}px) rotate(${Math.random() * 180}deg)`;
+                    });
+                } else if (theme === 'desert-sand') {
+                    document.querySelectorAll('.zen-sand').forEach(p => {
+                        const currentTx = parseFloat(p.dataset.tx || 0);
+                        let newTx = currentTx + (40 + Math.random() * 40);
+                        if (newTx > window.innerWidth + 50) {
+                            // Wrap back to left edge — instant snap, no visible slide back
+                            newTx = -(50 + Math.random() * 100);
+                            p.style.transition = 'none';
+                        } else {
+                            p.style.transition = 'transform 0.6s ease-out';
+                        }
+                        p.dataset.tx = newTx;
+                        p.style.transform = `translateX(${newTx}px)`;
+                    });
+                } else if (theme === 'abyssal-depths' || theme === 'ember-glow') {
+                    const selector = theme === 'abyssal-depths' ? '.zen-bubble' : '.zen-ember';
+                    const force = theme === 'ember-glow' ? 30 : 15;
+                    document.querySelectorAll(selector).forEach(p => {
+                        const currentTy = parseFloat(p.dataset.ty || 0);
+                        const newTy = currentTy - (force + Math.random() * force);
+                        p.dataset.ty = newTy;
+                        p.style.transition = 'transform 1.2s ease-out';
+                        p.style.transform = `translateY(${newTy}px)`;
+                    });
+                } else if (theme === 'synthwave-grid' || theme === 'quantum-float') {
+                    const selector = theme === 'synthwave-grid' ? '.zen-synth' : '.zen-quantum';
+                    document.querySelectorAll(selector).forEach(p => {
+                        const currentRot = parseFloat(p.dataset.rot || 0);
+                        const newRot = currentRot + 45;
+                        p.dataset.rot = newRot;
+                        p.style.transform = `rotate(${newRot}deg) scale(1.2)`;
+                        setTimeout(() => p.style.transform = `rotate(${newRot}deg) scale(1)`, 200);
+                    });
+                } else if (theme === 'fireflies' || theme === 'golden-hour' || theme === 'stardust') {
+                    const selector = theme === 'fireflies' ? '.zen-firefly' : theme === 'golden-hour' ? '.zen-gold-dust' : '.zen-star';
+                    document.querySelectorAll(selector).forEach(p => {
+                        if (Math.random() > 0.5) {
+                            p.style.transform = `scale(1.5)`;
+                            p.style.opacity = '1';
+                            setTimeout(() => {
+                                p.style.transform = 'scale(1)';
+                                p.style.opacity = '';
+                            }, 300);
+                        }
+                    });
+                } else if (theme === 'neon-rain') {
+                    // Surge: randomly brighten a subset of streaks
+                    document.querySelectorAll('.zen-neon-streak').forEach(p => {
+                        if (Math.random() > 0.4) {
+                            p.style.opacity = '1';
+                            p.style.transition = 'opacity 0.1s';
+                            setTimeout(() => { p.style.opacity = '0.6'; p.style.transition = 'opacity 0.6s'; }, 120);
+                        }
+                    });
+                } else if (theme === 'coral-reef') {
+                    // Pop: scale up and glow brighter on key
+                    document.querySelectorAll('.zen-coral').forEach(p => {
+                        if (Math.random() > 0.5) {
+                            p.style.transition = 'transform 0.15s ease-out';
+                            p.style.transform = `scale(1.6)`;
+                            setTimeout(() => { p.style.transform = 'scale(1)'; p.style.transition = 'transform 0.5s ease-in'; }, 180);
+                        }
+                    });
+                } else if (theme === 'aurora-borealis') {
+                    // Ripple: push aurora ribbons sideways
+                    document.querySelectorAll('.zen-aurora').forEach(p => {
+                        const currentTx = parseFloat(p.dataset.tx || 0);
+                        const shift = (Math.random() - 0.5) * 60;
+                        const newTx = currentTx + shift;
+                        p.dataset.tx = newTx;
+                        p.style.transition = 'transform 1.5s ease-out';
+                        p.style.transform = `translateX(${newTx}px) scaleY(${0.9 + Math.random() * 0.4})`;
+                    });
+                } else if (theme === 'lava-drip') {
+                    // Splatter: random subset jolts sideways then back
+                    document.querySelectorAll('.zen-lava').forEach(p => {
+                        if (Math.random() > 0.5) {
+                            const jolt = (Math.random() - 0.5) * 30;
+                            p.style.transition = 'transform 0.1s ease-out';
+                            p.style.transform = `translateX(${jolt}px) scaleY(1.3)`;
+                            setTimeout(() => { p.style.transform = ''; p.style.transition = 'transform 0.4s ease-in'; }, 150);
+                        }
+                    });
+                } else if (theme === 'void-whisper') {
+                    document.querySelectorAll('.zen-void').forEach(p => {
+                        p.style.transition = 'transform 0.2s ease-in, opacity 0.2s';
+                        p.style.transform = 'scale(0.3)';
+                        p.style.opacity = '0.8';
+                        setTimeout(() => {
+                            p.style.transition = 'transform 0.8s cubic-bezier(0.2,1.5,0.5,1), opacity 0.6s';
+                            p.style.transform = 'scale(1.8)';
+                            p.style.opacity = '0.2';
+                        }, 200);
+                    });
+                } else if (theme === 'crystal-cave') {
+                    // Scatter: shards spin and flash bright
+                    document.querySelectorAll('.zen-crystal').forEach(p => {
+                        if (Math.random() > 0.4) {
+                            const spin = (Math.random() - 0.5) * 60;
+                            p.style.transition = 'transform 0.15s ease-out, filter 0.15s';
+                            p.style.transform = `rotate(${spin}deg) scale(1.5)`;
+                            p.style.filter = 'brightness(3) saturate(2)';
+                            setTimeout(() => {
+                                p.style.transform = '';
+                                p.style.filter = '';
+                                p.style.transition = 'transform 0.8s ease-out, filter 0.8s';
+                            }, 150);
+                        }
+                    });
+                } else if (theme === 'monsoon') {
+                    // Lightning: brief full-screen flash — cooldown-gated so it feels like real storm lightning
+                    let flash = document.querySelector('.zen-lightning-flash');
+                    if (!flash) {
+                        flash = document.createElement('div');
+                        flash.className = 'zen-lightning-flash';
+                        document.getElementById('coding-zen-board').appendChild(flash);
+                    }
+                    const now = Date.now();
+                    const lastStrike = parseFloat(flash.dataset.lastStrike || 0);
+                    // Min 5s gap, randomized up to 12s so strikes don't feel mechanical
+                    const cooldown = 5000 + Math.random() * 7000;
+                    if ((now - lastStrike > cooldown) && Math.random() > 0.8) {
+                        flash.dataset.lastStrike = now;
+                        // Double-flash: real lightning rarely strikes just once
+                        flash.style.opacity = '1';
+                        setTimeout(() => { flash.style.opacity = '0'; }, 70);
+                        setTimeout(() => { flash.style.opacity = '0.7'; }, 110);
+                        setTimeout(() => { flash.style.opacity = '0'; }, 190);
+                    }
+                    // Also speed up all drops briefly
+                    document.querySelectorAll('.zen-monsoon-drop').forEach(p => {
+                        if (Math.random() > 0.5) {
+                            p.style.animationDuration = (0.15 + Math.random() * 0.2) + 's';
+                        }
+                    });
+                } else if (theme === 'bioluminescence') {
+                    // Burst: random orbs flare bright
+                    document.querySelectorAll('.zen-bio').forEach(p => {
+                        if (Math.random() > 0.5) {
+                            p.style.transition = 'box-shadow 0.1s, opacity 0.1s';
+                            p.style.boxShadow = '0 0 40px rgba(0,255,160,0.9), 0 0 80px rgba(0,200,255,0.5)';
+                            p.style.opacity = '1';
+                            setTimeout(() => {
+                                p.style.boxShadow = '';
+                                p.style.opacity = '';
+                                p.style.transition = 'box-shadow 1s, opacity 1s';
+                            }, 200);
+                        }
+                    });
+                } else if (theme === 'galactic-drift') {
+                    // Supernova: random nebula expands fast then fades
+                    document.querySelectorAll('.zen-nebula').forEach(p => {
+                        if (Math.random() > 0.6) {
+                            p.style.transition = 'transform 0.3s ease-out, opacity 0.3s';
+                            p.style.transform = 'scale(2.5)';
+                            p.style.opacity = '0.6';
+                            setTimeout(() => {
+                                p.style.transform = 'scale(1)';
+                                p.style.opacity = '0.15';
+                                p.style.transition = 'transform 1.5s ease-in, opacity 1.5s';
+                            }, 300);
+                        }
+                    });
+                } else if (theme === 'ink-drop') {
+                    // Spawn a fresh ink bloom at a random position on each keypress
+                    const container = document.getElementById('zen-particles');
+                    if (container) {
+                        const drop = document.createElement('div');
+                        drop.className = 'zen-ink';
+                        const isz = 20 + Math.random() * 60;
+                        drop.style.width = isz + 'px';
+                        drop.style.height = isz + 'px';
+                        drop.style.top = (10 + Math.random() * 80) + '%';
+                        drop.style.left = (5 + Math.random() * 90) + '%';
+                        drop.style.background = `radial-gradient(circle, rgba(${Math.floor(Math.random() * 40)},${Math.floor(Math.random() * 40)},${Math.floor(40 + Math.random() * 60)},0.9) 0%, transparent 70%)`;
+                        drop.style.animationDuration = (1 + Math.random() * 1.5) + 's';
+                        container.appendChild(drop);
+                        setTimeout(() => drop.remove(), 3000);
+                    }
+                } else if (theme === 'candlelight') {
+                    // Gust: randomly extinguish & re-ignite flames
+                    document.querySelectorAll('.zen-candle-flame').forEach(p => {
+                        if (Math.random() > 0.5) {
+                            p.style.transition = 'transform 0.1s, opacity 0.1s';
+                            p.style.transform = `skewX(${(Math.random() - 0.5) * 30}deg) scaleY(${0.3 + Math.random() * 0.5})`;
+                            p.style.opacity = (0.1 + Math.random() * 0.4).toString();
+                            setTimeout(() => {
+                                p.style.transform = '';
+                                p.style.opacity = '';
+                                p.style.transition = 'transform 0.5s ease-out, opacity 0.5s';
+                            }, 100 + Math.random() * 200);
+                        }
+                    });
+                } else if (theme === 'tesla-coil') {
+                    // Chain discharge: burst of new sparks on every keypress
+                    const tcContainer = document.getElementById('zen-particles');
+                    if (tcContainer) {
+                        const burstCount = 1 + Math.floor(Math.random() * 3);
+                        for (let b = 0; b < burstCount; b++) {
+                            const sp = document.createElement('div');
+                            sp.className = 'zen-spark';
+                            const ssz = 2 + Math.random() * 6;
+                            const angle = Math.random() * Math.PI * 2;
+                            const dist = 60 + Math.random() * 200;
+                            sp.style.width = ssz + 'px';
+                            sp.style.height = ssz + 'px';
+                            sp.style.top = (45 + Math.random() * 10) + '%';
+                            sp.style.left = (45 + Math.random() * 10) + '%';
+                            sp.style.background = Math.random() > 0.5 ? 'rgba(120,200,255,0.9)' : 'rgba(255,255,255,1)';
+                            sp.style.boxShadow = '0 0 8px rgba(120,200,255,0.9)';
+                            sp.style.setProperty('--sx', (Math.cos(angle) * dist) + 'px');
+                            sp.style.setProperty('--sy', (Math.sin(angle) * dist) + 'px');
+                            sp.style.animationDuration = (0.3 + Math.random() * 0.8) + 's';
+                            tcContainer.appendChild(sp);
+                            setTimeout(() => sp.remove(), 1200);
+                        }
+                    }
+                } else if (theme === 'deep-current') {
+                    // Surge: push all currents sideways briefly
+                    document.querySelectorAll('.zen-current').forEach(p => {
+                        const surge = 30 + Math.random() * 50;
+                        p.style.transition = 'transform 0.4s ease-out';
+                        p.style.transform = `translateX(${surge}px) scale(1.3)`;
+                        setTimeout(() => {
+                            p.style.transform = '';
+                            p.style.transition = 'transform 1.5s ease-in';
+                        }, 400);
+                    });
+                } else if (theme === 'mushroom-spores') {
+                    // Puff: burst of extra spores
+                    const msContainer = document.getElementById('zen-particles');
+                    if (msContainer) {
+                        const puffCount = 4 + Math.floor(Math.random() * 6);
+                        for (let b = 0; b < puffCount; b++) {
+                            const sp = document.createElement('div');
+                            sp.className = 'zen-spore';
+                            const msz = 4 + Math.random() * 8;
+                            sp.style.width = msz + 'px';
+                            sp.style.height = msz + 'px';
+                            sp.style.left = (5 + Math.random() * 90) + '%';
+                            sp.style.background = `rgba(180,255,${Math.floor(80 + Math.random() * 120)},0.8)`;
+                            sp.style.boxShadow = `0 0 ${msz * 2}px rgba(180,255,120,0.6)`;
+                            sp.style.animationDuration = `${2 + Math.random() * 3}s, ${1 + Math.random()}s`;
+                            msContainer.appendChild(sp);
+                            setTimeout(() => sp.remove(), 5000);
+                        }
+                    }
+                } else if (theme === 'saturn-ring') {
+                    // Tilt: dramatically change ring inclination on keypress
+                    document.querySelectorAll('.zen-ring-particle').forEach(p => {
+                        const tiltDeg = 60 + Math.random() * 30;
+                        const ro = p.style.getPropertyValue('--ro') || '120px';
+                        p.style.transition = 'transform 0.5s cubic-bezier(0.2, 1.5, 0.5, 1)';
+                        p.style.transform = `rotateX(${tiltDeg}deg) rotateZ(${Math.random() * 360}deg) translateX(${ro})`;
+                        setTimeout(() => {
+                            p.style.transform = '';
+                            p.style.transition = 'transform 1s ease-out';
+                        }, 500);
+                    });
+                } else if (theme === 'meteor-shower') {
+                    // Constant slow speed, subtle flash on keypress
+                    document.querySelectorAll('.zen-meteor').forEach(p => {
+                        if (Math.random() > 0.6) {
+                            p.style.transition = 'filter 0.1s';
+                            p.style.filter = 'brightness(2.5)';
+                            setTimeout(() => { p.style.filter = ''; p.style.transition = 'filter 0.4s'; }, 100);
+                        }
+                    });
+                } else if (theme === 'tornado') {
+                    // Intensify: speed up all debris and widen the vortex
+                    document.querySelectorAll('.zen-debris').forEach(p => {
+                        const faster = (0.5 + Math.random() * 1) + 's';
+                        p.style.animationDuration = faster;
+                        const tx = (Math.random() - 0.5) * 300;
+                        const ty = -(80 + Math.random() * 200);
+                        p.style.setProperty('--tx', tx + 'px');
+                        p.style.setProperty('--ty', ty + 'px');
+                        setTimeout(() => { p.style.animationDuration = (1.5 + Math.random() * 3) + 's'; }, 600);
+                    });
+                } else if (theme === 'blood-moon') {
+                    // Drip surge: accelerate and redden all drops
+                    document.querySelectorAll('.zen-blood-drop').forEach(p => {
+                        if (Math.random() > 0.4) {
+                            p.style.transition = 'filter 0.1s';
+                            p.style.filter = 'brightness(2) saturate(2)';
+                            p.style.animationDuration = (0.8 + Math.random() * 1) + 's';
+                            setTimeout(() => { p.style.filter = ''; p.style.transition = 'filter 0.5s'; }, 200);
+                        }
+                    });
+                } else if (theme === 'fireworks') {
+                    // Burst: explode a full firework from random position
+                    const fwContainer = document.getElementById('zen-particles');
+                    if (fwContainer) {
+                        const cx = 15 + Math.random() * 70;
+                        const cy = 15 + Math.random() * 60;
+                        const fwHue = Math.random() * 360;
+                        const petals = 12 + Math.floor(Math.random() * 8);
+                        for (let b = 0; b < petals; b++) {
+                            const fw = document.createElement('div');
+                            fw.className = 'zen-firework';
+                            const sz = 3 + Math.random() * 5;
+                            const angle = (b / petals) * Math.PI * 2;
+                            const dist = 60 + Math.random() * 120;
+                            fw.style.width = sz + 'px';
+                            fw.style.height = sz + 'px';
+                            fw.style.top = cy + '%';
+                            fw.style.left = cx + '%';
+                            fw.style.background = `hsl(${fwHue + b * 15},100%,70%)`;
+                            fw.style.boxShadow = `0 0 ${sz * 3}px hsl(${fwHue},100%,70%)`;
+                            fw.style.transition = `transform ${0.5 + Math.random() * 0.4}s ease-out, opacity 0.8s ease-in`;
+                            fw.style.opacity = '1';
+                            fwContainer.appendChild(fw);
+                            requestAnimationFrame(() => {
+                                fw.style.transform = `translate(${Math.cos(angle) * dist}px, ${Math.sin(angle) * dist}px) scale(0.2)`;
+                                fw.style.opacity = '0';
+                            });
+                            setTimeout(() => fw.remove(), 1000);
+                        }
+                    }
+                } else if (theme === 'evergreen') {
+                    // Puff: swell the mist
+                    document.querySelectorAll('.zen-mist').forEach(p => {
+                        if (Math.random() > 0.5) {
+                            p.style.transition = 'transform 0.3s ease-out, opacity 0.3s';
+                            p.style.transform = 'scaleX(2) scaleY(1.5)';
+                            p.style.opacity = '0.8';
+                            setTimeout(() => { p.style.transform = ''; p.style.opacity = ''; p.style.transition = 'transform 1s, opacity 1s'; }, 300);
+                        }
+                    });
+                } else if (theme === 'golden-curtain') {
+                    // Ripple: send a shimmer wave through curtains
+                    document.querySelectorAll('.zen-curtain').forEach((p, i) => {
+                        setTimeout(() => {
+                            p.style.transition = 'transform 0.2s ease-out, opacity 0.2s';
+                            p.style.transform = 'scaleX(1.4)';
+                            p.style.opacity = '0.9';
+                            setTimeout(() => { p.style.transform = ''; p.style.opacity = ''; p.style.transition = 'transform 0.6s, opacity 0.6s'; }, 200);
+                        }, i * 20);
+                    });
+                } else if (theme === 'permafrost') {
+                    // Shatter: ice shards briefly spin and brightness-spike
+                    document.querySelectorAll('.zen-ice').forEach(p => {
+                        if (Math.random() > 0.4) {
+                            p.style.transition = 'transform 0.1s, filter 0.1s';
+                            p.style.transform = `scale(1.6) rotate(${Math.random() * 90}deg)`;
+                            p.style.filter = 'brightness(4) saturate(0)';
+                            setTimeout(() => { p.style.transform = ''; p.style.filter = ''; p.style.transition = 'transform 0.8s, filter 0.8s'; }, 120);
+                        }
+                    });
+                } else if (theme === 'mountain-fog') {
+                    // Roll: slowly billow all fog patches outward
+                    document.querySelectorAll('.zen-fog').forEach(p => {
+                        p.style.transition = 'transform 2s ease-out, opacity 1s';
+                        p.style.transform = `scale(${1.3 + Math.random() * 0.5})`;
+                        p.style.opacity = '0.2';
+                        setTimeout(() => { p.style.transform = ''; p.style.opacity = ''; p.style.transition = 'transform 3s, opacity 3s'; }, 2000);
+                    });
+                } else if (theme === 'prism-break') {
+                    // Scatter: random prism orbs jump to new positions with hue spike
+                    document.querySelectorAll('.zen-prism').forEach(p => {
+                        if (Math.random() > 0.4) {
+                            p.style.transition = 'transform 0.15s ease-out, filter 0.15s';
+                            p.style.transform = `scale(2) translateX(${(Math.random() - 0.5) * 60}px)`;
+                            p.style.filter = 'brightness(3)';
+                            setTimeout(() => { p.style.transform = ''; p.style.filter = ''; p.style.transition = 'transform 0.6s, filter 0.6s'; }, 150);
+                        }
+                    });
+                } else if (theme === 'shadow-realm') {
+                    // Shrink then explode outward
+                    document.querySelectorAll('.zen-shadow').forEach(p => {
+                        p.style.transition = 'transform 0.15s ease-in, opacity 0.15s';
+                        p.style.transform = 'scale(0.2)';
+                        p.style.opacity = '0.8';
+                        setTimeout(() => {
+                            p.style.transition = 'transform 0.8s cubic-bezier(0.2, 1.5, 0.5, 1), opacity 0.6s';
+                            p.style.transform = 'scale(2.5)';
+                            p.style.opacity = '0.1';
+                        }, 150);
+                    });
+                }
+            }
+        };
+        document.addEventListener('keydown', zenState._typeHandler);
 
         // ESC to exit
         if (zenState._escHandler) document.removeEventListener('keydown', zenState._escHandler);
@@ -4521,36 +4965,469 @@ function setupSettingsListeners() {
             const timeEl = document.getElementById('zen-time');
             if (timeEl) timeEl.textContent = mins + ':' + secs;
 
-            // Glow intensifies over time
-            const glow = document.querySelector('.zen-ambient-glow');
-            if (glow) {
-                const intensity = Math.min(0.12, 0.04 + (elapsed / 1800) * 0.08);
-                glow.style.background = 'radial-gradient(ellipse at 50% 80%, rgba(138, 196, 165, ' + intensity + ') 0%, transparent 60%)';
-            }
+            // Glow and stillness labels intensify over time using CSS vars on the board
+            const board = document.getElementById('coding-zen-board');
+            if (board) {
+                const glowAlpha = Math.min(0.12, 0.04 + (elapsed / 1800) * 0.08);
+                board.style.setProperty('--zen-glow-alpha', glowAlpha);
 
-            // Stillness label color brightens
-            const still = document.getElementById('zen-stillness');
-            if (still) {
-                const alpha = Math.min(0.6, 0.3 + (elapsed / 600) * 0.3);
-                still.style.color = 'rgba(138, 196, 165, ' + alpha + ')';
+                const stillAlpha = Math.min(0.6, 0.3 + (elapsed / 600) * 0.3);
+                board.style.setProperty('--zen-still-alpha', stillAlpha);
             }
         }, 1000);
     }
 
-    function startZenRain() {
-        const container = document.getElementById('zen-rain');
+    function startZenParticles() {
+        const container = document.getElementById('zen-particles');
         if (!container) return;
         container.innerHTML = '';
 
-        for (let i = 0; i < 40; i++) {
-            const drop = document.createElement('div');
-            drop.className = 'zen-raindrop';
-            drop.style.left = Math.random() * 100 + '%';
-            drop.style.height = (15 + Math.random() * 25) + 'px';
-            drop.style.animationDuration = (2 + Math.random() * 3) + 's';
-            drop.style.animationDelay = Math.random() * 5 + 's';
-            drop.style.opacity = 0.15 + Math.random() * 0.25;
-            container.appendChild(drop);
+        const themeConfig = {
+            'spring-rain': { cls: 'zen-raindrop', count: 40 },
+            'autumn-drift': { cls: 'zen-leaf', count: 25 },
+            'midnight-snow': { cls: 'zen-snow', count: 60 },
+            'sakura-blossom': { cls: 'zen-sakura', count: 35 },
+            'stardust': { cls: 'zen-star', count: 80 },
+            'abyssal-depths': { cls: 'zen-bubble', count: 30 },
+            'ember-glow': { cls: 'zen-ember', count: 45 },
+            'synthwave-grid': { cls: 'zen-synth', count: 15 },
+            'fireflies': { cls: 'zen-firefly', count: 35 },
+            'desert-sand': { cls: 'zen-sand', count: 100 },
+            'quantum-float': { cls: 'zen-quantum', count: 20 },
+            'golden-hour': { cls: 'zen-gold-dust', count: 40 },
+            'neon-rain': { cls: 'zen-neon-streak', count: 60 },
+            'coral-reef': { cls: 'zen-coral', count: 35 },
+            'aurora-borealis': { cls: 'zen-aurora', count: 18 },
+            'lava-drip': { cls: 'zen-lava', count: 25 },
+            'void-whisper': { cls: 'zen-void', count: 22 },
+            'crystal-cave': { cls: 'zen-crystal', count: 28 },
+            'monsoon': { cls: 'zen-monsoon-drop', count: 80 },
+            'bioluminescence': { cls: 'zen-bio', count: 30 },
+            'galactic-drift': { cls: 'zen-nebula', count: 16 },
+            'ink-drop': { cls: 'zen-ink', count: 20 },
+            'candlelight': { cls: 'zen-candle-flame', count: 30 },
+            'tesla-coil': { cls: 'zen-spark', count: 18 },
+            'deep-current': { cls: 'zen-current', count: 25 },
+            'mushroom-spores': { cls: 'zen-spore', count: 35 },
+            'saturn-ring': { cls: 'zen-ring-particle', count: 60 },
+            'meteor-shower': { cls: 'zen-meteor', count: 50 },
+            'tornado': { cls: 'zen-debris', count: 35 },
+            'blood-moon': { cls: 'zen-blood-drop', count: 30 },
+            'fireworks': { cls: 'zen-firework', count: 8 },
+            'evergreen': { cls: 'zen-mist', count: 30 },
+            'golden-curtain': { cls: 'zen-curtain', count: 25 },
+            'permafrost': { cls: 'zen-ice', count: 20 },
+            'mountain-fog': { cls: 'zen-fog', count: 12 },
+            'prism-break': { cls: 'zen-prism', count: 40 },
+            'shadow-realm': { cls: 'zen-shadow', count: 18 }
+        };
+
+        const config = themeConfig[zenState.theme] || themeConfig['spring-rain'];
+
+        for (let i = 0; i < config.count; i++) {
+            const particle = document.createElement('div');
+            particle.className = config.cls;
+
+            // Common resets for physics
+            particle.dataset.tx = 0;
+            particle.dataset.ty = 0;
+            particle.dataset.rot = 0;
+
+            const x = Math.random() * 100;
+            const y = Math.random() * 100;
+            const scale = 0.5 + Math.random() * 0.8;
+            const dur = 3 + Math.random() * 7;
+            const delay = Math.random() * 10;
+
+            if (zenState.theme === 'spring-rain') {
+                particle.style.left = x + '%';
+                particle.style.height = (15 + Math.random() * 25) + 'px';
+                particle.style.animationDuration = (2 + Math.random() * 2) + 's';
+                particle.style.animationDelay = delay + 's';
+                particle.style.opacity = 0.15 + Math.random() * 0.25;
+            } else if (zenState.theme === 'synthwave-grid' || zenState.theme === 'quantum-float') {
+                particle.style.left = x + '%';
+                particle.style.top = y + '%';
+                particle.style.animationDelay = delay + 's';
+                if (zenState.theme === 'synthwave-grid') {
+                    const size = (15 * scale);
+                    particle.style.width = size + 'px';
+                    particle.style.height = size + 'px';
+                    particle.style.animationDuration = dur + 5 + 's';
+                }
+            } else if (zenState.theme === 'fireflies' || zenState.theme === 'golden-hour' || zenState.theme === 'stardust') {
+                particle.style.left = x + '%';
+                particle.style.top = y + '%';
+                particle.style.animationDelay = delay + 's';
+                particle.style.animationDuration = dur + 's';
+            } else if (zenState.theme === 'abyssal-depths' || zenState.theme === 'ember-glow') {
+                particle.style.left = x + '%';
+                const animDur = dur + 2;
+                // Use negative delay to pre-spread particles across screen height from spawn
+                // so they don't all start at bottom: -20px and surge as a wave on first keypress
+                const preOffset = -(Math.random() * animDur);
+                particle.style.animationDelay = preOffset + 's';
+                particle.style.animationDuration = animDur + 's';
+                const size = zenState.theme === 'abyssal-depths' ? (8 * scale) : (3 * scale);
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+                // Also stagger starting ty for physics calcs
+                particle.dataset.ty = -(Math.random() * 200);
+            } else {
+                particle.style.left = x + '%';
+                particle.style.animationDuration = dur + 's';
+                particle.style.animationDelay = delay + 's';
+
+                if (zenState.theme === 'autumn-drift' || zenState.theme === 'sakura-blossom') {
+                    particle.style.width = (24 * scale) + 'px';
+                    particle.style.height = (24 * scale) + 'px';
+                    particle.style.opacity = 0.4 + Math.random() * 0.5;
+                } else if (zenState.theme === 'desert-sand') {
+                    const sandDur = 1 + Math.random();
+                    particle.style.animationDuration = sandDur + 's';
+                    particle.style.top = (Math.random() * 100) + '%';
+                    particle.style.animationDelay = -(Math.random() * sandDur) + 's';
+                } else if (zenState.theme === 'neon-rain') {
+                    // Each streak: random cyan→magenta color, random height, random speed
+                    const hue = Math.random() < 0.5 ? '180' : (Math.random() < 0.5 ? '300' : '120');
+                    const nLen = 30 + Math.random() * 80;
+                    const nDur = 0.4 + Math.random() * 1.2;
+                    particle.style.height = nLen + 'px';
+                    particle.style.background = `linear-gradient(to bottom, transparent, hsl(${hue},100%,60%), transparent)`;
+                    particle.style.boxShadow = `0 0 4px hsl(${hue},100%,70%)`;
+                    particle.style.animationDuration = nDur + 's';
+                    particle.style.animationDelay = -(Math.random() * nDur) + 's';
+                    particle.style.opacity = '0.7';
+                } else if (zenState.theme === 'coral-reef') {
+                    const coralColors = [
+                        'rgba(255,120,80,0.7)', 'rgba(255,200,80,0.7)',
+                        'rgba(80,220,200,0.7)', 'rgba(255,80,160,0.7)',
+                        'rgba(100,200,255,0.7)'
+                    ];
+                    const sz = 6 + Math.random() * 16;
+                    const coralDur = 4 + Math.random() * 6;
+                    particle.style.width = sz + 'px';
+                    particle.style.height = sz + 'px';
+                    particle.style.background = coralColors[Math.floor(Math.random() * coralColors.length)];
+                    particle.style.boxShadow = `0 0 ${sz * 1.5}px ${particle.style.background}`;
+                    particle.style.animationDuration = coralDur + 's';
+                    particle.style.animationDelay = -(Math.random() * coralDur) + 's';
+                } else if (zenState.theme === 'aurora-borealis') {
+                    const aw = 80 + Math.random() * 200;
+                    const ah = 20 + Math.random() * 60;
+                    const auroraDur = 5 + Math.random() * 10;
+                    const hue = 140 + Math.random() * 120;
+                    particle.style.width = aw + 'px';
+                    particle.style.height = ah + 'px';
+                    particle.style.top = (Math.random() * 70) + '%';
+                    particle.style.left = (Math.random() * 100) + '%';
+                    particle.style.background = `radial-gradient(ellipse, hsla(${hue},100%,65%,0.35) 0%, transparent 70%)`;
+                    particle.style.filter = `blur(${4 + Math.random() * 8}px)`;
+                    particle.style.animationDuration = auroraDur + 's';
+                    particle.style.animationDelay = -(Math.random() * auroraDur) + 's';
+                } else if (zenState.theme === 'lava-drip') {
+                    const lw = 6 + Math.random() * 14;
+                    const lh = lw * (1.2 + Math.random());
+                    const lavaDur = 1.5 + Math.random() * 2.5;
+                    const lavaHue = Math.random() < 0.6 ? 15 : 0;
+                    particle.style.width = lw + 'px';
+                    particle.style.height = lh + 'px';
+                    particle.style.background = `radial-gradient(ellipse at 40% 30%, hsl(${lavaHue + 40},100%,70%), hsl(${lavaHue},100%,40%), hsl(${lavaHue - 10},80%,20%))`;
+                    particle.style.animationDuration = lavaDur + 's';
+                    particle.style.animationDelay = -(Math.random() * lavaDur) + 's';
+                } else if (zenState.theme === 'void-whisper') {
+                    const vsz = 30 + Math.random() * 90;
+                    const vDur = 4 + Math.random() * 8;
+                    const vx = (Math.random() - 0.5) * 160;
+                    const vy = (Math.random() - 0.5) * 120;
+                    particle.style.width = vsz + 'px';
+                    particle.style.height = vsz + 'px';
+                    particle.style.top = (20 + Math.random() * 60) + '%';
+                    particle.style.left = (10 + Math.random() * 80) + '%';
+                    particle.style.setProperty('--vx', vx + 'px');
+                    particle.style.setProperty('--vy', vy + 'px');
+                    particle.style.animationDuration = vDur + 's';
+                    particle.style.animationDelay = -(Math.random() * vDur) + 's';
+                } else if (zenState.theme === 'crystal-cave') {
+                    const csz = 10 + Math.random() * 28;
+                    const cDur = 3 + Math.random() * 6;
+                    const cHue = 180 + Math.random() * 120;
+                    particle.style.width = csz + 'px';
+                    particle.style.height = csz * (1.5 + Math.random()) + 'px';
+                    particle.style.top = (10 + Math.random() * 80) + '%';
+                    particle.style.left = (5 + Math.random() * 90) + '%';
+                    particle.style.background = `linear-gradient(135deg, hsla(${cHue},100%,85%,0.7), hsla(${cHue + 40},80%,60%,0.4), hsla(${cHue + 80},100%,80%,0.6))`;
+                    particle.style.boxShadow = `0 0 10px hsla(${cHue},100%,80%,0.5), 0 0 20px hsla(${cHue + 60},100%,60%,0.3)`;
+                    particle.style.animationDuration = cDur + 's';
+                    particle.style.animationDelay = -(Math.random() * cDur) + 's';
+                } else if (zenState.theme === 'monsoon') {
+                    const mLen = 20 + Math.random() * 60;
+                    const mDur = 0.3 + Math.random() * 0.6;
+                    particle.style.height = mLen + 'px';
+                    particle.style.animationDuration = mDur + 's';
+                    particle.style.animationDelay = -(Math.random() * mDur) + 's';
+                    particle.style.opacity = (0.3 + Math.random() * 0.5).toString();
+                } else if (zenState.theme === 'bioluminescence') {
+                    const bioColors = [
+                        'radial-gradient(circle, rgba(0,255,160,0.6) 0%, transparent 70%)',
+                        'radial-gradient(circle, rgba(0,200,255,0.6) 0%, transparent 70%)',
+                        'radial-gradient(circle, rgba(100,255,80,0.6) 0%, transparent 70%)',
+                        'radial-gradient(circle, rgba(160,0,255,0.4) 0%, transparent 70%)'
+                    ];
+                    const bsz = 8 + Math.random() * 30;
+                    const bDur = 3 + Math.random() * 6;
+                    const bRiseDur = 6 + Math.random() * 10;
+                    particle.style.width = bsz + 'px';
+                    particle.style.height = bsz + 'px';
+                    particle.style.background = bioColors[Math.floor(Math.random() * bioColors.length)];
+                    particle.style.boxShadow = `0 0 ${bsz}px rgba(0,255,160,0.4)`;
+                    particle.style.animationDuration = `${bDur}s, ${bRiseDur}s`;
+                    particle.style.animationDelay = `${-(Math.random() * bDur)}s, ${-(Math.random() * bRiseDur)}s`;
+                } else if (zenState.theme === 'galactic-drift') {
+                    const gsz = 60 + Math.random() * 180;
+                    const gDur = 8 + Math.random() * 15;
+                    const gHue = Math.random() < 0.5 ? (260 + Math.random() * 60) : (180 + Math.random() * 60);
+                    const nx = (Math.random() - 0.5) * 200;
+                    const ny = (Math.random() - 0.5) * 150;
+                    particle.style.width = gsz + 'px';
+                    particle.style.height = gsz + 'px';
+                    particle.style.top = (Math.random() * 90) + '%';
+                    particle.style.left = (Math.random() * 90) + '%';
+                    particle.style.background = `radial-gradient(ellipse, hsla(${gHue},80%,60%,0.25) 0%, hsla(${gHue + 40},60%,40%,0.1) 50%, transparent 80%)`;
+                    particle.style.filter = `blur(${6 + Math.random() * 12}px)`;
+                    particle.style.setProperty('--nx', nx + 'px');
+                    particle.style.setProperty('--ny', ny + 'px');
+                    particle.style.animationDuration = gDur + 's';
+                    particle.style.animationDelay = -(Math.random() * gDur) + 's';
+                } else if (zenState.theme === 'ink-drop') {
+                    const inkColors = [
+                        'radial-gradient(circle, rgba(30,30,50,0.9) 0%, transparent 70%)',
+                        'radial-gradient(circle, rgba(60,40,80,0.7) 0%, transparent 70%)',
+                        'radial-gradient(circle, rgba(0,20,40,0.8) 0%, transparent 70%)'
+                    ];
+                    const isz = 20 + Math.random() * 60;
+                    const iDur = 1.5 + Math.random() * 2.5;
+                    particle.style.width = isz + 'px';
+                    particle.style.height = isz + 'px';
+                    particle.style.top = (10 + Math.random() * 80) + '%';
+                    particle.style.left = (5 + Math.random() * 90) + '%';
+                    particle.style.background = inkColors[Math.floor(Math.random() * inkColors.length)];
+                    particle.style.animationDuration = iDur + 's';
+                    particle.style.animationDelay = -(Math.random() * iDur) + 's';
+                } else if (zenState.theme === 'candlelight') {
+                    const fw = 4 + Math.random() * 12;
+                    const fh = fw * (1.4 + Math.random() * 0.8);
+                    const fDur = 0.4 + Math.random() * 0.6;
+                    const warmHue = 20 + Math.random() * 20; // orange to yellow
+                    particle.style.width = fw + 'px';
+                    particle.style.height = fh + 'px';
+                    particle.style.top = (30 + Math.random() * 50) + '%';
+                    particle.style.left = (5 + Math.random() * 90) + '%';
+                    particle.style.background = `radial-gradient(ellipse at 50% 80%, hsl(${warmHue + 10},100%,90%) 0%, hsl(${warmHue},100%,65%) 40%, hsl(${warmHue - 15},90%,35%) 80%, transparent 100%)`;
+                    particle.style.boxShadow = `0 0 ${fw * 2}px hsl(${warmHue},100%,60%), 0 0 ${fw * 5}px hsl(${warmHue - 10},100%,40%)`;
+                    particle.style.animationDuration = fDur + 's';
+                    particle.style.animationDelay = -(Math.random() * fDur) + 's';
+                } else if (zenState.theme === 'tesla-coil') {
+                    const ssz = 3 + Math.random() * 8;
+                    const sDur = 0.5 + Math.random() * 1.5;
+                    const angle = Math.random() * Math.PI * 2;
+                    const dist = 80 + Math.random() * 180;
+                    const sx = Math.cos(angle) * dist;
+                    const sy = Math.sin(angle) * dist;
+                    const sparkColors = ['rgba(120,180,255,0.9)', 'rgba(200,230,255,0.9)', 'rgba(80,120,255,0.9)', 'rgba(255,255,255,1)'];
+                    particle.style.width = ssz + 'px';
+                    particle.style.height = ssz + 'px';
+                    // All sparks originate near dead center
+                    particle.style.top = (45 + Math.random() * 10) + '%';
+                    particle.style.left = (45 + Math.random() * 10) + '%';
+                    particle.style.background = sparkColors[Math.floor(Math.random() * sparkColors.length)];
+                    particle.style.boxShadow = `0 0 ${ssz * 3}px rgba(120,200,255,0.8)`;
+                    particle.style.setProperty('--sx', sx + 'px');
+                    particle.style.setProperty('--sy', sy + 'px');
+                    particle.style.animationDuration = sDur + 's';
+                    particle.style.animationDelay = -(Math.random() * sDur) + 's';
+                } else if (zenState.theme === 'deep-current') {
+                    const csz = 15 + Math.random() * 50;
+                    const cDur = 6 + Math.random() * 10;
+                    const angle = (Math.random() - 0.5) * 0.8; // mostly horizontal
+                    const speed = 60 + Math.random() * 120;
+                    const cx = Math.cos(angle) * speed;
+                    const cy = Math.sin(angle) * speed - 20;
+                    const depthHue = 200 + Math.random() * 40;
+                    particle.style.width = csz + 'px';
+                    particle.style.height = csz * 0.6 + 'px';
+                    particle.style.top = (Math.random() * 90) + '%';
+                    particle.style.left = (Math.random() * 90) + '%';
+                    particle.style.background = `radial-gradient(ellipse, hsla(${depthHue},80%,55%,0.4) 0%, transparent 70%)`;
+                    particle.style.filter = `blur(${2 + Math.random() * 4}px)`;
+                    particle.style.setProperty('--cx', cx + 'px');
+                    particle.style.setProperty('--cy', cy + 'px');
+                    particle.style.animationDuration = cDur + 's';
+                    particle.style.animationDelay = -(Math.random() * cDur) + 's';
+                } else if (zenState.theme === 'mushroom-spores') {
+                    const msz = 3 + Math.random() * 10;
+                    const mDur = 4 + Math.random() * 8;
+                    const mWobble = 1.5 + Math.random() * 2;
+                    const sporeColors = [
+                        `rgba(180,255,120,0.7)`, `rgba(220,255,80,0.6)`,
+                        `rgba(120,255,180,0.6)`, `rgba(255,220,80,0.5)`
+                    ];
+                    particle.style.width = msz + 'px';
+                    particle.style.height = msz + 'px';
+                    particle.style.background = sporeColors[Math.floor(Math.random() * sporeColors.length)];
+                    particle.style.boxShadow = `0 0 ${msz * 2}px rgba(180,255,120,0.5)`;
+                    particle.style.animationDuration = `${mDur}s, ${mWobble}s`;
+                    particle.style.animationDelay = `${-(Math.random() * mDur)}s, ${-(Math.random() * mWobble)}s`;
+                    particle.style.left = (5 + Math.random() * 90) + '%';
+                } else if (zenState.theme === 'saturn-ring') {
+                    const ringCount = 3; // 3 distinct rings
+                    const ring = Math.floor(Math.random() * ringCount);
+                    const radii = [80, 130, 180];
+                    const ringColors = [
+                        `rgba(220,180,100,0.6)`, `rgba(200,160,120,0.5)`, `rgba(180,140,80,0.4)`
+                    ];
+                    const rsz = 3 + Math.random() * 5;
+                    const rDur = (8 + ring * 4 + Math.random() * 4);
+                    particle.style.width = rsz + 'px';
+                    particle.style.height = rsz + 'px';
+                    particle.style.background = ringColors[ring];
+                    particle.style.boxShadow = `0 0 ${rsz * 2}px ${ringColors[ring]}`;
+                    particle.style.setProperty('--ro', radii[ring] + 'px');
+                    particle.style.animationDuration = rDur + 's';
+                    particle.style.animationDelay = -(Math.random() * rDur) + 's';
+                } else if (zenState.theme === 'meteor-shower') {
+                    const mw = 1 + Math.random() * 2;
+                    const mLen = 40 + Math.random() * 120;
+                    const mDur = 2.5 + Math.random() * 1.5;
+                    const mHue = 200 + Math.random() * 60;
+                    particle.style.width = mw + 'px';
+                    particle.style.height = mLen + 'px';
+                    particle.style.left = (Math.random() * 120 - 20) + '%';
+                    particle.style.background = `linear-gradient(to bottom, hsla(${mHue},100%,90%,0), hsla(${mHue},100%,80%,0.9), white)`;
+                    particle.style.boxShadow = `0 0 4px white`;
+                    particle.style.animationDuration = mDur + 's';
+                    particle.style.animationDelay = -(Math.random() * mDur) + 's';
+                } else if (zenState.theme === 'tornado') {
+                    const dsz = 3 + Math.random() * 10;
+                    const dDur = 1.5 + Math.random() * 3;
+                    const tx = (Math.random() - 0.5) * 200;
+                    const ty = -(60 + Math.random() * 160);
+                    const debrisColors = ['rgba(160,150,140,0.8)', 'rgba(120,110,100,0.7)', 'rgba(180,170,150,0.6)', 'rgba(80,80,70,0.9)'];
+                    particle.style.width = dsz + 'px';
+                    particle.style.height = dsz * (0.3 + Math.random()) + 'px';
+                    particle.style.top = (30 + Math.random() * 40) + '%';
+                    particle.style.left = (30 + Math.random() * 40) + '%';
+                    particle.style.background = debrisColors[Math.floor(Math.random() * debrisColors.length)];
+                    particle.style.setProperty('--tx', tx + 'px');
+                    particle.style.setProperty('--ty', ty + 'px');
+                    particle.style.animationDuration = dDur + 's';
+                    particle.style.animationDelay = -(Math.random() * dDur) + 's';
+                } else if (zenState.theme === 'blood-moon') {
+                    const bw = 4 + Math.random() * 10;
+                    const bh = bw * (1.5 + Math.random());
+                    const bDur = 2 + Math.random() * 4;
+                    const bHue = Math.random() > 0.8 ? 15 : 0; // mostly red, occasional orange
+                    particle.style.width = bw + 'px';
+                    particle.style.height = bh + 'px';
+                    particle.style.background = `radial-gradient(ellipse at 40% 20%, hsl(${bHue + 10},100%,70%) 0%, hsl(${bHue},100%,35%) 60%, hsl(${bHue - 5},80%,15%) 100%)`;
+                    particle.style.boxShadow = `0 0 ${bw}px rgba(200,20,20,0.6)`;
+                    particle.style.animationDuration = bDur + 's';
+                    particle.style.animationDelay = -(Math.random() * bDur) + 's';
+                } else if (zenState.theme === 'fireworks') {
+                    // Seed particle at random position — real bursts spawn on keypress
+                    const fwsz = 2 + Math.random() * 4;
+                    particle.style.width = fwsz + 'px';
+                    particle.style.height = fwsz + 'px';
+                    particle.style.top = (10 + Math.random() * 80) + '%';
+                    particle.style.left = (5 + Math.random() * 90) + '%';
+                    particle.style.background = `hsl(${Math.random() * 360},100%,70%)`;
+                    particle.style.animationDuration = (2 + Math.random() * 4) + 's';
+                    particle.style.animationDelay = -(Math.random() * 4) + 's';
+                } else if (zenState.theme === 'evergreen') {
+                    const esz = 10 + Math.random() * 40;
+                    const eDur = 5 + Math.random() * 8;
+                    const eWobble = 1.5 + Math.random() * 2;
+                    const greenHue = 110 + Math.random() * 40;
+                    particle.style.width = esz + 'px';
+                    particle.style.height = esz * 0.5 + 'px';
+                    particle.style.background = `radial-gradient(ellipse, hsla(${greenHue},80%,55%,0.5) 0%, transparent 70%)`;
+                    particle.style.filter = `blur(${2 + Math.random() * 4}px)`;
+                    particle.style.left = (Math.random() * 100) + '%';
+                    particle.style.animationDuration = `${eDur}s, ${eWobble}s`;
+                    particle.style.animationDelay = `${-(Math.random() * eDur)}s, ${-(Math.random() * eWobble)}s`;
+                } else if (zenState.theme === 'golden-curtain') {
+                    const cw = 2 + Math.random() * 8;
+                    const cLen = 80 + Math.random() * 200;
+                    const cDur = 3 + Math.random() * 5;
+                    const warmHue = 40 + Math.random() * 20;
+                    particle.style.width = cw + 'px';
+                    particle.style.height = cLen + 'px';
+                    particle.style.left = (Math.random() * 100) + '%';
+                    particle.style.background = `linear-gradient(to bottom, transparent, hsla(${warmHue},100%,65%,0.7), hsla(${warmHue - 10},90%,45%,0.4), transparent)`;
+                    particle.style.boxShadow = `0 0 ${cw * 3}px hsla(${warmHue},100%,60%,0.3)`;
+                    particle.style.animationDuration = cDur + 's';
+                    particle.style.animationDelay = -(Math.random() * cDur) + 's';
+                } else if (zenState.theme === 'permafrost') {
+                    const isz = 10 + Math.random() * 30;
+                    const iDur = 3 + Math.random() * 6;
+                    const iceHue = 185 + Math.random() * 30;
+                    particle.style.width = isz + 'px';
+                    particle.style.height = isz + 'px';
+                    particle.style.top = (5 + Math.random() * 85) + '%';
+                    particle.style.left = (5 + Math.random() * 90) + '%';
+                    particle.style.background = `linear-gradient(135deg, hsla(${iceHue},100%,90%,0.8), hsla(${iceHue + 20},80%,70%,0.4), hsla(${iceHue},100%,95%,0.9))`;
+                    particle.style.boxShadow = `0 0 8px hsla(${iceHue},100%,85%,0.4)`;
+                    particle.style.animationDuration = iDur + 's';
+                    particle.style.animationDelay = -(Math.random() * iDur) + 's';
+                } else if (zenState.theme === 'mountain-fog') {
+                    const fsz = 100 + Math.random() * 250;
+                    const fDur = 8 + Math.random() * 15;
+                    const fx = (Math.random() - 0.5) * 80;
+                    const fx2 = (Math.random() - 0.5) * 80;
+                    particle.style.width = fsz + 'px';
+                    particle.style.height = fsz * 0.4 + 'px';
+                    particle.style.top = (20 + Math.random() * 60) + '%';
+                    particle.style.left = (Math.random() * 100) + '%';
+                    particle.style.background = `radial-gradient(ellipse, rgba(180,190,200,0.15) 0%, transparent 70%)`;
+                    particle.style.filter = `blur(${10 + Math.random() * 20}px)`;
+                    particle.style.setProperty('--fx', fx + 'px');
+                    particle.style.setProperty('--fx2', fx2 + 'px');
+                    particle.style.animationDuration = fDur + 's';
+                    particle.style.animationDelay = -(Math.random() * fDur) + 's';
+                } else if (zenState.theme === 'prism-break') {
+                    const psz = 4 + Math.random() * 10;
+                    const pDur = 2 + Math.random() * 5;
+                    const pHueDur = 2 + Math.random() * 4;
+                    const py = -(30 + Math.random() * 100);
+                    particle.style.width = psz + 'px';
+                    particle.style.height = psz + 'px';
+                    particle.style.top = (20 + Math.random() * 60) + '%';
+                    particle.style.left = (Math.random() * 100) + '%';
+                    particle.style.background = `hsl(${Math.random() * 360},100%,70%)`;
+                    particle.style.boxShadow = `0 0 ${psz * 2}px currentColor`;
+                    particle.style.setProperty('--py', py + 'px');
+                    particle.style.animationDuration = `${pDur}s, ${pHueDur}s`;
+                    particle.style.animationDelay = `${-(Math.random() * pDur)}s, ${-(Math.random() * pHueDur)}s`;
+                } else if (zenState.theme === 'shadow-realm') {
+                    const shsz = 40 + Math.random() * 100;
+                    const shDur = 3 + Math.random() * 7;
+                    const shHue = 260 + Math.random() * 80;
+                    const shx = (Math.random() - 0.5) * 60;
+                    const shy = (Math.random() - 0.5) * 40;
+                    particle.style.width = shsz + 'px';
+                    particle.style.height = shsz + 'px';
+                    particle.style.top = (10 + Math.random() * 80) + '%';
+                    particle.style.left = (5 + Math.random() * 90) + '%';
+                    particle.style.background = `radial-gradient(ellipse, hsla(${shHue},60%,30%,0.5) 0%, hsla(${shHue + 30},40%,15%,0.2) 50%, transparent 80%)`;
+                    particle.style.filter = `blur(${4 + Math.random() * 8}px)`;
+                    particle.style.setProperty('--shx', shx + 'px');
+                    particle.style.setProperty('--shy', shy + 'px');
+                    particle.style.animationDuration = shDur + 's';
+                    particle.style.animationDelay = -(Math.random() * shDur) + 's';
+                }
+            }
+
+            container.appendChild(particle);
         }
     }
 
@@ -4559,6 +5436,9 @@ function setupSettingsListeners() {
         if (zenState.timerInterval) clearInterval(zenState.timerInterval);
         if (zenState._escHandler) {
             document.removeEventListener('keydown', zenState._escHandler);
+        }
+        if (zenState._typeHandler) {
+            document.removeEventListener('keydown', zenState._typeHandler);
         }
         zenState.startTime = null;
         codingState.mode = null;

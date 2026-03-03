@@ -3403,11 +3403,13 @@
         transform: translateY(0);
     }
 }
+
 /* Hide scrollbar on coding screens */
 .coding-screen::-webkit-scrollbar {
     width: 0;
     display: none;
 }
+
 .coding-screen {
     scrollbar-width: none;
 }
@@ -3416,48 +3418,1458 @@
    ZEN GARDEN MODE
    ---------------------------------------------- */
 
+/* Theme Variables */
+#coding-zen-board.theme-spring-rain {
+    --zen-bg: #0a0f0d;
+    --zen-primary: 138, 196, 165;
+    /* #8ac4a5 */
+    --zen-text-muted: 200, 215, 210;
+    --zen-wrong: 255, 130, 110;
+    --zen-glow-alpha: 0.04;
+    --zen-still-alpha: 0.3;
+}
+
+#coding-zen-board.theme-autumn-drift {
+    --zen-bg: #120c08;
+    --zen-primary: 217, 119, 67;
+    /* Warm orange/rust */
+    --zen-text-muted: 220, 200, 180;
+    --zen-wrong: 255, 100, 100;
+    --zen-glow-alpha: 0.04;
+    --zen-still-alpha: 0.3;
+}
+
+#coding-zen-board.theme-midnight-snow {
+    --zen-bg: #050a15;
+    --zen-primary: 200, 220, 255;
+    /* Ice blue/white */
+    --zen-text-muted: 150, 180, 220;
+    --zen-wrong: 255, 100, 100;
+    --zen-glow-alpha: 0.04;
+    --zen-still-alpha: 0.3;
+}
+
+#coding-zen-board.theme-sakura-blossom {
+    --zen-bg: #1a050f;
+    --zen-primary: 255, 183, 197;
+    /* Sakura pink */
+    --zen-text-muted: 220, 160, 180;
+    --zen-wrong: 200, 50, 50;
+    --zen-glow-alpha: 0.05;
+    --zen-still-alpha: 0.4;
+}
+
+#coding-zen-board.theme-stardust {
+    --zen-bg: #000000;
+    --zen-primary: 255, 235, 150;
+    /* Starlight yellow */
+    --zen-text-muted: 180, 180, 200;
+    --zen-wrong: 255, 80, 80;
+    --zen-glow-alpha: 0.03;
+    --zen-still-alpha: 0.5;
+}
+
+#coding-zen-board.theme-abyssal-depths {
+    --zen-bg: #020f14;
+    --zen-primary: 64, 180, 210;
+    /* Deep teal/cyan */
+    --zen-text-muted: 100, 150, 180;
+    --zen-wrong: 255, 80, 120;
+    --zen-glow-alpha: 0.05;
+    --zen-still-alpha: 0.35;
+}
+
+#coding-zen-board.theme-ember-glow {
+    --zen-bg: #111111;
+    --zen-primary: 255, 100, 40;
+    /* Fire orange/red */
+    --zen-text-muted: 180, 150, 140;
+    --zen-wrong: 200, 50, 50;
+    --zen-glow-alpha: 0.06;
+    --zen-still-alpha: 0.4;
+}
+
+#coding-zen-board.theme-synthwave-grid {
+    --zen-bg: #050510;
+    --zen-primary: 255, 0, 150;
+    /* Hot pink */
+    --zen-text-muted: 0, 255, 255;
+    /* Cyan */
+    --zen-wrong: 255, 50, 50;
+    --zen-glow-alpha: 0.08;
+    --zen-still-alpha: 0.6;
+}
+
+#coding-zen-board.theme-fireflies {
+    --zen-bg: #051008;
+    --zen-primary: 150, 255, 100;
+    /* Lime green */
+    --zen-text-muted: 120, 180, 130;
+    --zen-wrong: 255, 100, 100;
+    --zen-glow-alpha: 0.04;
+    --zen-still-alpha: 0.4;
+}
+
+#coding-zen-board.theme-desert-sand {
+    --zen-bg: #141008;
+    --zen-primary: 220, 180, 120;
+    /* Sand beige */
+    --zen-text-muted: 180, 150, 110;
+    --zen-wrong: 255, 80, 80;
+    --zen-glow-alpha: 0.05;
+    --zen-still-alpha: 0.4;
+}
+
+#coding-zen-board.theme-quantum-float {
+    --zen-bg: #0a0515;
+    --zen-primary: 180, 100, 255;
+    /* Purple */
+    --zen-text-muted: 150, 120, 200;
+    --zen-wrong: 255, 80, 150;
+    --zen-glow-alpha: 0.05;
+    --zen-still-alpha: 0.5;
+}
+
+#coding-zen-board.theme-golden-hour {
+    --zen-bg: #1a1005;
+    --zen-primary: 255, 190, 80;
+    /* Amber gold */
+    --zen-text-muted: 210, 160, 100;
+    --zen-wrong: 255, 80, 80;
+    --zen-glow-alpha: 0.06;
+    --zen-still-alpha: 0.5;
+}
+
+/* ── NEON RAIN ─────────────────────────────────────────────── */
+#coding-zen-board.theme-neon-rain {
+    --zen-bg: #020209;
+    --zen-primary: 0, 255, 200;
+    --zen-text-muted: 0, 230, 180;
+    --zen-wrong: 255, 50, 100;
+    --zen-glow-alpha: 0.07;
+    --zen-still-alpha: 0.5;
+}
+
+.zen-neon-streak {
+    position: absolute;
+    top: -80px;
+    width: 1px;
+    border-radius: 1px;
+    opacity: 0;
+    animation: zenNeonFall linear infinite;
+}
+
+@keyframes zenNeonFall {
+    0% {
+        opacity: 0;
+        transform: translateY(0);
+    }
+
+    5% {
+        opacity: 1;
+    }
+
+    95% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(110vh);
+    }
+}
+
+/* ── CORAL REEF ────────────────────────────────────────────── */
+#coding-zen-board.theme-coral-reef {
+    --zen-bg: #010d12;
+    --zen-primary: 255, 120, 80;
+    --zen-text-muted: 255, 180, 140;
+    --zen-wrong: 255, 50, 50;
+    --zen-glow-alpha: 0.06;
+    --zen-still-alpha: 0.4;
+}
+
+.zen-coral {
+    position: absolute;
+    bottom: -20px;
+    border-radius: 50%;
+    animation: zenCoralRise linear infinite, zenCoralHue 8s linear infinite;
+}
+
+@keyframes zenCoralRise {
+    to {
+        bottom: 110vh;
+    }
+}
+
+@keyframes zenCoralHue {
+    0% {
+        filter: hue-rotate(0deg) brightness(1.2);
+    }
+
+    100% {
+        filter: hue-rotate(360deg) brightness(1.5);
+    }
+}
+
+/* ── AURORA BOREALIS ───────────────────────────────────────── */
+#coding-zen-board.theme-aurora-borealis {
+    --zen-bg: #010810;
+    --zen-primary: 80, 255, 180;
+    --zen-text-muted: 120, 220, 200;
+    --zen-wrong: 255, 80, 160;
+    --zen-glow-alpha: 0.06;
+    --zen-still-alpha: 0.4;
+}
+
+.zen-aurora {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0;
+    animation: zenAuroraWave ease-in-out infinite alternate;
+}
+
+@keyframes zenAuroraWave {
+    0% {
+        opacity: 0;
+        transform: translateX(-40px) scaleY(0.8);
+        filter: hue-rotate(0deg);
+    }
+
+    50% {
+        opacity: 0.35;
+    }
+
+    100% {
+        opacity: 0.1;
+        transform: translateX(40px) scaleY(1.3);
+        filter: hue-rotate(180deg);
+    }
+}
+
+/* ── LAVA DRIP ─────────────────────────────────────────────── */
+#coding-zen-board.theme-lava-drip {
+    --zen-bg: #120505;
+    --zen-primary: 255, 80, 20;
+    --zen-text-muted: 255, 160, 100;
+    --zen-wrong: 200, 20, 20;
+    --zen-glow-alpha: 0.08;
+    --zen-still-alpha: 0.45;
+}
+
+.zen-lava {
+    position: absolute;
+    top: -20px;
+    border-radius: 0 0 60% 60%;
+    animation: zenLavaDrip ease-in infinite;
+    box-shadow: 0 0 10px rgba(255, 80, 20, 0.6), 0 0 20px rgba(255, 40, 0, 0.4);
+    transition: transform 0.3s ease-out;
+}
+
+@keyframes zenLavaDrip {
+    0% {
+        transform: scaleY(0.5);
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 1;
+        transform: scaleY(1);
+    }
+
+    90% {
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(110vh) scaleY(2);
+        opacity: 0;
+    }
+}
+
+/* ── VOID WHISPER ──────────────────────────────────────────── */
+#coding-zen-board.theme-void-whisper {
+    --zen-bg: #04010a;
+    --zen-primary: 160, 80, 255;
+    --zen-text-muted: 180, 130, 220;
+    --zen-wrong: 255, 60, 140;
+    --zen-glow-alpha: 0.06;
+    --zen-still-alpha: 0.4;
+}
+
+.zen-void {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(160, 80, 255, 0.5) 0%, rgba(80, 0, 160, 0.1) 60%, transparent 80%);
+    animation: zenVoidOrbit ease-in-out infinite alternate;
+    transition: transform 0.8s cubic-bezier(0.2, 1.5, 0.6, 1), opacity 0.6s ease;
+}
+
+@keyframes zenVoidOrbit {
+    0% {
+        transform: translate(0px, 0px) rotate(0deg) scale(0.7);
+        opacity: 0.1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+
+    100% {
+        transform: translate(var(--vx, 30px), var(--vy, -20px)) rotate(360deg) scale(1.2);
+        opacity: 0.2;
+    }
+}
+
+/* ── THEME SWATCH BUTTONS ──────────────────────────────────── */
+.zen-theme-btn[data-theme="neon-rain"] {
+    background-color: #00ffc8;
+    background-image: linear-gradient(135deg, #00ffc8, #003050);
+}
+
+.zen-theme-btn[data-theme="coral-reef"] {
+    background-color: #ff7850;
+    background-image: linear-gradient(135deg, #ff7850, #00667a);
+}
+
+.zen-theme-btn[data-theme="aurora-borealis"] {
+    background-color: #50ffb4;
+    background-image: linear-gradient(135deg, #50ffb4 0%, #0050a0 50%, #a000ff 100%);
+}
+
+.zen-theme-btn[data-theme="lava-drip"] {
+    background-color: #ff5014;
+    background-image: linear-gradient(135deg, #ff5014, #500000);
+}
+
+.zen-theme-btn[data-theme="void-whisper"] {
+    background-color: #a050ff;
+    background-image: linear-gradient(135deg, #a050ff, #04010a);
+}
+
+/* ── CRYSTAL CAVE ───────────────────────────────────────────── */
+#coding-zen-board.theme-crystal-cave {
+    --zen-bg: #020510;
+    --zen-primary: 180, 220, 255;
+    --zen-text-muted: 160, 210, 255;
+    --zen-wrong: 255, 100, 160;
+    --zen-glow-alpha: 0.06;
+    --zen-still-alpha: 0.4;
+}
+
+.zen-crystal {
+    position: absolute;
+    clip-path: polygon(50% 0%, 80% 30%, 100% 70%, 60% 100%, 40% 100%, 0% 70%, 20% 30%);
+    animation: zenCrystalFloat ease-in-out infinite alternate;
+    transition: transform 0.3s cubic-bezier(0.2, 1.5, 0.5, 1);
+}
+
+@keyframes zenCrystalFloat {
+    0% {
+        transform: translateY(0px) rotate(0deg);
+        opacity: 0.2;
+        filter: hue-rotate(0deg) brightness(1);
+    }
+
+    100% {
+        transform: translateY(-20px) rotate(15deg);
+        opacity: 0.8;
+        filter: hue-rotate(60deg) brightness(2);
+    }
+}
+
+/* ── MONSOON ────────────────────────────────────────────────── */
+#coding-zen-board.theme-monsoon {
+    --zen-bg: #04080f;
+    --zen-primary: 130, 170, 220;
+    --zen-text-muted: 140, 180, 220;
+    --zen-wrong: 255, 120, 80;
+    --zen-glow-alpha: 0.04;
+    --zen-still-alpha: 0.35;
+}
+
+.zen-monsoon-drop {
+    position: absolute;
+    top: -60px;
+    width: 1px;
+    border-radius: 1px;
+    background: linear-gradient(to bottom, transparent, rgba(130, 200, 255, 0.6), transparent);
+    animation: zenMonsoonFall linear infinite;
+    transform: rotate(20deg);
+}
+
+@keyframes zenMonsoonFall {
+    to {
+        transform: rotate(20deg) translateY(130vh);
+    }
+}
+
+.zen-lightning-flash {
+    position: fixed;
+    inset: 0;
+    background: rgba(180, 220, 255, 0.15);
+    pointer-events: none;
+    z-index: 5;
+    opacity: 0;
+    transition: opacity 0.05s;
+}
+
+/* ── BIOLUMINESCENCE ────────────────────────────────────────── */
+#coding-zen-board.theme-bioluminescence {
+    --zen-bg: #000a08;
+    --zen-primary: 0, 255, 160;
+    --zen-text-muted: 80, 220, 180;
+    --zen-wrong: 255, 80, 120;
+    --zen-glow-alpha: 0.07;
+    --zen-still-alpha: 0.4;
+}
+
+.zen-bio {
+    position: absolute;
+    border-radius: 50%;
+    animation: zenBioPulse ease-in-out infinite alternate, zenBioRise linear infinite;
+}
+
+@keyframes zenBioPulse {
+    0% {
+        opacity: 0.05;
+        transform: scale(0.7);
+    }
+
+    100% {
+        opacity: 0.65;
+        transform: scale(1.3);
+    }
+}
+
+@keyframes zenBioRise {
+    0% {
+        bottom: -20px;
+    }
+
+    100% {
+        bottom: 110vh;
+    }
+}
+
+/* ── GALACTIC DRIFT ─────────────────────────────────────────── */
+#coding-zen-board.theme-galactic-drift {
+    --zen-bg: #010005;
+    --zen-primary: 200, 160, 255;
+    --zen-text-muted: 180, 150, 230;
+    --zen-wrong: 255, 80, 100;
+    --zen-glow-alpha: 0.05;
+    --zen-still-alpha: 0.4;
+}
+
+.zen-nebula {
+    position: absolute;
+    border-radius: 50%;
+    animation: zenNebulaOrbit ease-in-out infinite alternate;
+}
+
+@keyframes zenNebulaOrbit {
+    0% {
+        transform: translate(0px, 0px) rotate(0deg) scale(0.8);
+        opacity: 0.08;
+        filter: hue-rotate(0deg);
+    }
+
+    100% {
+        transform: translate(var(--nx, 40px), var(--ny, -30px)) rotate(180deg) scale(1.2);
+        opacity: 0.3;
+        filter: hue-rotate(120deg);
+    }
+}
+
+/* ── INK DROP ───────────────────────────────────────────────── */
+#coding-zen-board.theme-ink-drop {
+    --zen-bg: #0a0a0a;
+    --zen-primary: 200, 200, 220;
+    --zen-text-muted: 180, 180, 200;
+    --zen-wrong: 180, 60, 60;
+    --zen-glow-alpha: 0.03;
+    --zen-still-alpha: 0.3;
+}
+
+.zen-ink {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0;
+    animation: zenInkBloom ease-out infinite;
+}
+
+@keyframes zenInkBloom {
+    0% {
+        transform: scale(0);
+        opacity: 0.8;
+    }
+
+    60% {
+        opacity: 0.3;
+    }
+
+    100% {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
+/* ── SWATCH BUTTONS ─────────────────────────────────────────── */
+.zen-theme-btn[data-theme="crystal-cave"] {
+    background-color: #b4dcff;
+    background-image: linear-gradient(135deg, #b4dcff, #1040a0, #ff80c8);
+}
+
+.zen-theme-btn[data-theme="monsoon"] {
+    background-color: #82aadc;
+    background-image: linear-gradient(135deg, #82aadc, #040810);
+}
+
+.zen-theme-btn[data-theme="bioluminescence"] {
+    background-color: #00ff9a;
+    background-image: linear-gradient(135deg, #00ff9a, #000a08);
+}
+
+.zen-theme-btn[data-theme="galactic-drift"] {
+    background-color: #c8a0ff;
+    background-image: linear-gradient(135deg, #c8a0ff, #600090, #010005);
+}
+
+.zen-theme-btn[data-theme="ink-drop"] {
+    background-color: #c8c8dc;
+    background-image: linear-gradient(135deg, #c8c8dc, #0a0a0a);
+}
+
+/* ── CANDLELIGHT ─────────────────────────────────────────────── */
+#coding-zen-board.theme-candlelight {
+    --zen-bg: #0d0800;
+    --zen-primary: 255, 180, 60;
+    --zen-text-muted: 240, 200, 140;
+    --zen-wrong: 220, 60, 60;
+    --zen-glow-alpha: 0.08;
+    --zen-still-alpha: 0.45;
+}
+
+.zen-candle-flame {
+    position: absolute;
+    border-radius: 50% 50% 30% 30%;
+    animation: zenFlameFlicker ease-in-out infinite alternate;
+    filter: blur(1px);
+}
+
+@keyframes zenFlameFlicker {
+    0% {
+        transform: scaleX(1) scaleY(1) rotate(-2deg);
+        opacity: 0.5;
+        filter: blur(1px) brightness(1);
+    }
+
+    33% {
+        transform: scaleX(0.85) scaleY(1.15) rotate(3deg);
+        opacity: 0.9;
+        filter: blur(0.5px) brightness(1.4);
+    }
+
+    66% {
+        transform: scaleX(1.1) scaleY(0.9) rotate(-1deg);
+        opacity: 0.7;
+        filter: blur(1.5px) brightness(1.1);
+    }
+
+    100% {
+        transform: scaleX(0.9) scaleY(1.2) rotate(2deg);
+        opacity: 1;
+        filter: blur(0.5px) brightness(1.6);
+    }
+}
+
+/* ── TESLA COIL ──────────────────────────────────────────────── */
+#coding-zen-board.theme-tesla-coil {
+    --zen-bg: #010108;
+    --zen-primary: 120, 180, 255;
+    --zen-text-muted: 160, 200, 255;
+    --zen-wrong: 255, 60, 60;
+    --zen-glow-alpha: 0.07;
+    --zen-still-alpha: 0.45;
+}
+
+.zen-spark {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0;
+    animation: zenSparkShoot linear infinite;
+}
+
+@keyframes zenSparkShoot {
+    0% {
+        transform: translate(0, 0) scale(1);
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 0.9;
+    }
+
+    80% {
+        opacity: 0.6;
+    }
+
+    100% {
+        transform: translate(var(--sx, 80px), var(--sy, -80px)) scale(0.1);
+        opacity: 0;
+    }
+}
+
+/* ── DEEP CURRENT ────────────────────────────────────────────── */
+#coding-zen-board.theme-deep-current {
+    --zen-bg: #000812;
+    --zen-primary: 30, 120, 200;
+    --zen-text-muted: 80, 160, 220;
+    --zen-wrong: 255, 80, 80;
+    --zen-glow-alpha: 0.05;
+    --zen-still-alpha: 0.35;
+}
+
+.zen-current {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0;
+    animation: zenCurrentFlow ease-in-out infinite;
+}
+
+@keyframes zenCurrentFlow {
+    0% {
+        opacity: 0;
+        transform: translateX(0) translateY(0) scale(0.5);
+    }
+
+    15% {
+        opacity: 0.5;
+    }
+
+    50% {
+        opacity: 0.25;
+        transform: translateX(var(--cx, 60px)) translateY(var(--cy, -20px)) scale(1.2);
+    }
+
+    85% {
+        opacity: 0.4;
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateX(calc(var(--cx, 60px)*2)) translateY(var(--cy, -20px)) scale(0.3);
+    }
+}
+
+/* ── MUSHROOM SPORES ─────────────────────────────────────────── */
+#coding-zen-board.theme-mushroom-spores {
+    --zen-bg: #050a02;
+    --zen-primary: 180, 255, 120;
+    --zen-text-muted: 160, 220, 120;
+    --zen-wrong: 255, 80, 120;
+    --zen-glow-alpha: 0.05;
+    --zen-still-alpha: 0.4;
+}
+
+.zen-spore {
+    position: absolute;
+    border-radius: 50%;
+    animation: zenSporeRise ease-out infinite, zenSporeWobble ease-in-out infinite alternate;
+}
+
+@keyframes zenSporeRise {
+    0% {
+        bottom: -10px;
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 0.8;
+    }
+
+    90% {
+        opacity: 0.4;
+    }
+
+    100% {
+        bottom: 110vh;
+        opacity: 0;
+    }
+}
+
+@keyframes zenSporeWobble {
+    from {
+        transform: translateX(-12px) scale(0.9);
+    }
+
+    to {
+        transform: translateX(12px) scale(1.1);
+    }
+}
+
+/* ── SATURN RING ─────────────────────────────────────────────── */
+#coding-zen-board.theme-saturn-ring {
+    --zen-bg: #060408;
+    --zen-primary: 220, 180, 120;
+    --zen-text-muted: 200, 170, 130;
+    --zen-wrong: 255, 100, 60;
+    --zen-glow-alpha: 0.05;
+    --zen-still-alpha: 0.4;
+}
+
+.zen-ring-particle {
+    position: absolute;
+    border-radius: 50%;
+    animation: zenRingOrbit linear infinite;
+    top: 50%;
+    left: 50%;
+}
+
+@keyframes zenRingOrbit {
+    0% {
+        transform: rotateX(75deg) rotateZ(0deg) translateX(var(--ro, 120px)) scale(0.6);
+        opacity: 0.1;
+    }
+
+    25% {
+        opacity: 0.6;
+    }
+
+    50% {
+        opacity: 0.1;
+    }
+
+    75% {
+        opacity: 0.6;
+    }
+
+    100% {
+        transform: rotateX(75deg) rotateZ(360deg) translateX(var(--ro, 120px)) scale(0.6);
+        opacity: 0.1;
+    }
+}
+
+/* ── SWATCH BUTTONS ─────────────────────────────────────────── */
+.zen-theme-btn[data-theme="candlelight"] {
+    background-color: #ffb43c;
+    background-image: linear-gradient(135deg, #ffb43c, #3d1800);
+}
+
+.zen-theme-btn[data-theme="tesla-coil"] {
+    background-color: #78b4ff;
+    background-image: linear-gradient(135deg, #78b4ff, #010108, #ff4040);
+}
+
+.zen-theme-btn[data-theme="deep-current"] {
+    background-color: #1e78c8;
+    background-image: linear-gradient(135deg, #1e78c8, #000812);
+}
+
+.zen-theme-btn[data-theme="mushroom-spores"] {
+    background-color: #b4ff78;
+    background-image: linear-gradient(135deg, #b4ff78, #050a02);
+}
+
+.zen-theme-btn[data-theme="saturn-ring"] {
+    background-color: #dcb478;
+    background-image: linear-gradient(135deg, #dcb478, #060408, #a080d0);
+}
+
+/* ── METEOR SHOWER ──────────────────────────────────────────── */
+#coding-zen-board.theme-meteor-shower {
+    --zen-bg: #02020a;
+    --zen-primary: 200, 210, 255;
+    --zen-text-muted: 180, 190, 240;
+    --zen-wrong: 255, 80, 80;
+    --zen-glow-alpha: 0.04;
+    --zen-still-alpha: 0.4;
+}
+
+.zen-meteor {
+    position: absolute;
+    top: -10px;
+    border-radius: 2px;
+    animation: zenMeteorFall linear infinite;
+}
+
+@keyframes zenMeteorFall {
+    0% {
+        opacity: 0;
+        transform: rotate(35deg) translateY(0)
+    }
+
+    5% {
+        opacity: 1
+    }
+
+    90% {
+        opacity: 0.8
+    }
+
+    100% {
+        opacity: 0;
+        transform: rotate(35deg) translateY(130vh)
+    }
+}
+
+/* ── TORNADO ────────────────────────────────────────────────── */
+#coding-zen-board.theme-tornado {
+    --zen-bg: #080808;
+    --zen-primary: 180, 180, 200;
+    --zen-text-muted: 160, 160, 180;
+    --zen-wrong: 255, 120, 60;
+    --zen-glow-alpha: 0.04;
+    --zen-still-alpha: 0.35;
+}
+
+.zen-debris {
+    position: absolute;
+    border-radius: 2px;
+    animation: zenDebrisSpin linear infinite;
+}
+
+@keyframes zenDebrisSpin {
+    0% {
+        transform: translate(0, 0) rotate(0deg) scale(1);
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 0.8;
+    }
+
+    50% {
+        transform: translate(var(--tx, 40px), var(--ty, -80px)) rotate(180deg) scale(0.6);
+        opacity: 0.6;
+    }
+
+    100% {
+        transform: translate(0, calc(var(--ty, -80px)*2)) rotate(360deg) scale(0.2);
+        opacity: 0;
+    }
+}
+
+/* ── BLOOD MOON ─────────────────────────────────────────────── */
+#coding-zen-board.theme-blood-moon {
+    --zen-bg: #0a0000;
+    --zen-primary: 200, 30, 30;
+    --zen-text-muted: 220, 80, 80;
+    --zen-wrong: 255, 200, 50;
+    --zen-glow-alpha: 0.08;
+    --zen-still-alpha: 0.4;
+}
+
+.zen-blood-drop {
+    position: absolute;
+    top: -20px;
+    border-radius: 0 0 60% 60% / 0 0 80% 80%;
+    animation: zenBloodDrip ease-in infinite;
+}
+
+@keyframes zenBloodDrip {
+    0% {
+        transform: scaleY(0.3);
+        opacity: 0
+    }
+
+    8% {
+        opacity: 0.9;
+        transform: scaleY(1)
+    }
+
+    90% {
+        opacity: 0.7
+    }
+
+    100% {
+        transform: translateY(110vh) scaleY(1.5);
+        opacity: 0
+    }
+}
+
+/* ── FIREWORKS ──────────────────────────────────────────────── */
+#coding-zen-board.theme-fireworks {
+    --zen-bg: #000005;
+    --zen-primary: 255, 220, 100;
+    --zen-text-muted: 255, 200, 120;
+    --zen-wrong: 255, 60, 60;
+    --zen-glow-alpha: 0.05;
+    --zen-still-alpha: 0.4;
+}
+
+.zen-firework {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0;
+    animation: zenFireworkIdle ease-in-out infinite alternate;
+}
+
+@keyframes zenFireworkIdle {
+    0% {
+        opacity: 0.05;
+        transform: scale(0.5)
+    }
+
+    100% {
+        opacity: 0.15;
+        transform: scale(1)
+    }
+}
+
+/* ── EVERGREEN ──────────────────────────────────────────────── */
+#coding-zen-board.theme-evergreen {
+    --zen-bg: #020a03;
+    --zen-primary: 60, 200, 80;
+    --zen-text-muted: 80, 190, 100;
+    --zen-wrong: 255, 100, 80;
+    --zen-glow-alpha: 0.05;
+    --zen-still-alpha: 0.4;
+}
+
+.zen-mist {
+    position: absolute;
+    border-radius: 50%;
+    animation: zenMistRise ease-out infinite, zenMistWobble ease-in-out infinite alternate;
+}
+
+@keyframes zenMistRise {
+    0% {
+        bottom: -10px;
+        opacity: 0
+    }
+
+    15% {
+        opacity: 0.6
+    }
+
+    85% {
+        opacity: 0.2
+    }
+
+    100% {
+        bottom: 110vh;
+        opacity: 0
+    }
+}
+
+@keyframes zenMistWobble {
+    from {
+        transform: translateX(-20px) scaleX(0.8)
+    }
+
+    to {
+        transform: translateX(20px) scaleX(1.2)
+    }
+}
+
+/* ── GOLDEN CURTAIN ─────────────────────────────────────────── */
+#coding-zen-board.theme-golden-curtain {
+    --zen-bg: #0d0900;
+    --zen-primary: 255, 200, 60;
+    --zen-text-muted: 220, 180, 80;
+    --zen-wrong: 255, 60, 60;
+    --zen-glow-alpha: 0.07;
+    --zen-still-alpha: 0.45;
+}
+
+.zen-curtain {
+    position: absolute;
+    top: -120px;
+    border-radius: 1px;
+    animation: zenCurtainFall ease-in-out infinite;
+}
+
+@keyframes zenCurtainFall {
+    0% {
+        transform: translateY(0) scaleX(1);
+        opacity: 0
+    }
+
+    10% {
+        opacity: 0.7
+    }
+
+    50% {
+        transform: translateY(55vh) scaleX(0.85);
+        opacity: 0.5
+    }
+
+    90% {
+        opacity: 0.3
+    }
+
+    100% {
+        transform: translateY(110vh) scaleX(1.1);
+        opacity: 0
+    }
+}
+
+/* ── PERMAFROST ─────────────────────────────────────────────── */
+#coding-zen-board.theme-permafrost {
+    --zen-bg: #010810;
+    --zen-primary: 200, 240, 255;
+    --zen-text-muted: 160, 210, 240;
+    --zen-wrong: 255, 100, 130;
+    --zen-glow-alpha: 0.05;
+    --zen-still-alpha: 0.4;
+}
+
+.zen-ice {
+    position: absolute;
+    clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+    animation: zenIceGrow ease-in-out infinite alternate;
+}
+
+@keyframes zenIceGrow {
+    0% {
+        transform: scale(0.3) rotate(0deg);
+        opacity: 0;
+        filter: brightness(1)
+    }
+
+    50% {
+        opacity: 0.7
+    }
+
+    100% {
+        transform: scale(1) rotate(30deg);
+        opacity: 0.2;
+        filter: brightness(2) saturate(0)
+    }
+}
+
+/* ── MOUNTAIN FOG ───────────────────────────────────────────── */
+#coding-zen-board.theme-mountain-fog {
+    --zen-bg: #080a0c;
+    --zen-primary: 180, 190, 200;
+    --zen-text-muted: 160, 170, 185;
+    --zen-wrong: 255, 100, 80;
+    --zen-glow-alpha: 0.03;
+    --zen-still-alpha: 0.3;
+}
+
+.zen-fog {
+    position: absolute;
+    border-radius: 50%;
+    animation: zenFogDrift ease-in-out infinite alternate;
+}
+
+@keyframes zenFogDrift {
+    0% {
+        transform: translateX(var(--fx, -40px)) scaleY(0.6);
+        opacity: 0.02
+    }
+
+    100% {
+        transform: translateX(var(--fx2, 40px)) scaleY(1);
+        opacity: 0.12
+    }
+}
+
+/* ── PRISM BREAK ────────────────────────────────────────────── */
+#coding-zen-board.theme-prism-break {
+    --zen-bg: #020005;
+    --zen-primary: 255, 255, 255;
+    --zen-text-muted: 220, 220, 255;
+    --zen-wrong: 255, 80, 80;
+    --zen-glow-alpha: 0.04;
+    --zen-still-alpha: 0.4;
+}
+
+.zen-prism {
+    position: absolute;
+    border-radius: 50%;
+    animation: zenPrismArc ease-in-out infinite alternate, zenPrismHue 4s linear infinite;
+}
+
+@keyframes zenPrismArc {
+    0% {
+        transform: translateY(0) scale(0.7);
+        opacity: 0.1
+    }
+
+    100% {
+        transform: translateY(var(--py, -60px)) scale(1.2);
+        opacity: 0.8
+    }
+}
+
+@keyframes zenPrismHue {
+    0% {
+        filter: hue-rotate(0deg) brightness(1.5)
+    }
+
+    100% {
+        filter: hue-rotate(360deg) brightness(2)
+    }
+}
+
+/* ── SHADOW REALM ───────────────────────────────────────────── */
+#coding-zen-board.theme-shadow-realm {
+    --zen-bg: #000000;
+    --zen-primary: 120, 60, 180;
+    --zen-text-muted: 140, 80, 200;
+    --zen-wrong: 200, 40, 80;
+    --zen-glow-alpha: 0.06;
+    --zen-still-alpha: 0.35;
+}
+
+.zen-shadow {
+    position: absolute;
+    border-radius: 40% 60% 70% 30% / 30% 50% 50% 70%;
+    animation: zenShadowMorph ease-in-out infinite alternate;
+}
+
+@keyframes zenShadowMorph {
+    0% {
+        transform: translate(0, 0) scale(0.6) rotate(0deg);
+        opacity: 0.05;
+        border-radius: 40% 60% 70% 30%/30% 50% 50% 70%;
+    }
+
+    100% {
+        transform: translate(var(--shx, 20px), var(--shy, -15px)) scale(1.1) rotate(120deg);
+        opacity: 0.35;
+        border-radius: 70% 30% 30% 70%/70% 30% 70% 30%;
+    }
+}
+
+/* ── SWATCH BUTTONS ─────────────────────────────────────────── */
+.zen-theme-btn[data-theme="meteor-shower"] {
+    background: linear-gradient(135deg, #c8d2ff, #02020a);
+}
+
+.zen-theme-btn[data-theme="tornado"] {
+    background: linear-gradient(135deg, #b4b4c8, #080808);
+}
+
+.zen-theme-btn[data-theme="blood-moon"] {
+    background: linear-gradient(135deg, #c81e1e, #0a0000, #ff8c00);
+}
+
+.zen-theme-btn[data-theme="fireworks"] {
+    background: linear-gradient(135deg, #ffdc64, #ff3c3c, #3c3cff, #000005);
+}
+
+.zen-theme-btn[data-theme="evergreen"] {
+    background: linear-gradient(135deg, #3cc850, #020a03);
+}
+
+.zen-theme-btn[data-theme="golden-curtain"] {
+    background: linear-gradient(135deg, #ffc83c, #3d2000);
+}
+
+.zen-theme-btn[data-theme="permafrost"] {
+    background: linear-gradient(135deg, #c8f0ff, #010810);
+}
+
+.zen-theme-btn[data-theme="mountain-fog"] {
+    background: linear-gradient(135deg, #b4bec8, #080a0c);
+}
+
+.zen-theme-btn[data-theme="prism-break"] {
+    background: linear-gradient(135deg, #ff0050, #ffff00, #00ffff, #8000ff);
+}
+
+.zen-theme-btn[data-theme="shadow-realm"] {
+    background: linear-gradient(135deg, #783cb4, #000000);
+}
+
+/* Default fallback */
+#coding-zen-board {
+    --zen-bg: #0a0f0d;
+    --zen-primary: 138, 196, 165;
+    --zen-text-muted: 200, 215, 210;
+    --zen-wrong: 255, 130, 110;
+    --zen-glow-alpha: 0.04;
+    --zen-still-alpha: 0.3;
+}
+
 /* Mode card styling */
-.cmc-zen { border-color: rgba(138, 196, 165, 0.15); }
-.cmc-zen:hover { border-color: rgba(138, 196, 165, 0.5); box-shadow: 0 8px 40px rgba(138, 196, 165, 0.12); }
-.cmc-zen-icon i { color: #8ac4a5; text-shadow: 0 0 20px rgba(138, 196, 165, 0.5); }
-.cmc-tag-zen { border-color: rgba(138, 196, 165, 0.3); color: #8ac4a5; }
-.cmc-zen .cmc-number { color: rgba(138, 196, 165, 0.25); }
-.cmc-zen .cmc-title { color: #8ac4a5; }
+.cmc-zen {
+    border-color: rgba(138, 196, 165, 0.15);
+}
+
+.cmc-zen:hover {
+    border-color: rgba(138, 196, 165, 0.5);
+    box-shadow: 0 8px 40px rgba(138, 196, 165, 0.12);
+}
+
+.cmc-zen-icon i {
+    color: #8ac4a5;
+    text-shadow: 0 0 20px rgba(138, 196, 165, 0.5);
+}
+
+.cmc-tag-zen {
+    border-color: rgba(138, 196, 165, 0.3);
+    color: #8ac4a5;
+}
+
+.cmc-zen .cmc-number {
+    color: rgba(138, 196, 165, 0.25);
+}
+
+.cmc-zen .cmc-title {
+    color: #8ac4a5;
+}
 
 /* Board */
 #coding-zen-board {
-    background: #0a0f0d;
+    background: var(--zen-bg);
     position: relative;
     overflow: hidden;
     justify-content: center;
+    transition: background-color 1.5s ease;
 }
 
-/* Rain layer */
-.zen-rain {
+/* Particles Container */
+.zen-particles {
     position: absolute;
     inset: 0;
     pointer-events: none;
     z-index: 0;
+    overflow: hidden;
 }
+
+/* Raindrop */
 .zen-raindrop {
     position: absolute;
     top: -20px;
     width: 1px;
-    background: linear-gradient(to bottom, transparent, rgba(138, 196, 165, 0.25));
+    background: linear-gradient(to bottom, transparent, rgba(var(--zen-primary), 0.25));
     animation: zenRainFall linear infinite;
 }
+
 @keyframes zenRainFall {
-    to { transform: translateY(110vh); }
+    to {
+        transform: translateY(110vh);
+    }
+}
+
+/* Maple Leaf (Autumn Drift) */
+.zen-leaf {
+    position: absolute;
+    top: -30px;
+    width: 12px;
+    height: 12px;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23d97743" opacity="0.6"><path d="M17 3L15 8L19 11L14 13L16 19L12 16L8 19L10 13L5 11L9 8L7 3L11 6L12 2L13 6L17 3Z"/></svg>') no-repeat center center;
+    background-size: contain;
+    animation: zenLeafFall linear infinite, zenLeafSway 4s ease-in-out infinite alternate;
+    transition: transform 1.5s cubic-bezier(0.1, 0.8, 0.2, 1);
+}
+
+@keyframes zenLeafFall {
+    to {
+        top: 110vh;
+    }
+}
+
+@keyframes zenLeafSway {
+    from {
+        transform: translateX(-15px) rotate(-15deg);
+    }
+
+    to {
+        transform: translateX(15px) rotate(15deg);
+    }
+}
+
+/* Midnight Snow */
+.zen-snow {
+    position: absolute;
+    top: -20px;
+    width: 6px;
+    height: 6px;
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+    animation: zenSnowFall linear infinite, zenSnowSway 3s ease-in-out infinite alternate;
+}
+
+@keyframes zenSnowFall {
+    to {
+        top: 110vh;
+    }
+}
+
+@keyframes zenSnowSway {
+    from {
+        transform: translateX(-10px);
+    }
+
+    to {
+        transform: translateX(10px);
+    }
+}
+
+/* Sakura Blossom */
+.zen-sakura {
+    position: absolute;
+    top: -30px;
+    width: 14px;
+    height: 14px;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23ffb7c5" opacity="0.8"><path d="M12 2C12 2 15 5 15 9C15 13 12 16 12 16C12 16 9 13 9 9C9 5 12 2 12 2Z"/></svg>') no-repeat center center;
+    background-size: contain;
+    animation: zenLeafFall linear infinite, zenLeafSway 5s ease-in-out infinite alternate;
+}
+
+/* Stardust */
+.zen-star {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: #ffeb96;
+    border-radius: 50%;
+    box-shadow: 0 0 8px #ffeb96;
+    animation: zenStarTwinkle 4s ease-in-out infinite alternate;
+}
+
+@keyframes zenStarTwinkle {
+    0% {
+        opacity: 0.1;
+        transform: scale(0.5);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1.5);
+    }
+}
+
+/* Abyssal Depths */
+.zen-bubble {
+    position: absolute;
+    bottom: -30px;
+    border: 1px solid rgba(64, 180, 210, 0.6);
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.2), transparent);
+    animation: zenBubbleRise linear infinite, zenSnowSway 2s ease-in-out infinite alternate;
+}
+
+@keyframes zenBubbleRise {
+    to {
+        bottom: 110vh;
+    }
+}
+
+/* Ember Glow */
+.zen-ember {
+    position: absolute;
+    bottom: -20px;
+    width: 3px;
+    height: 3px;
+    background: #ff6428;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #ff6428, 0 0 20px #ff0000;
+    animation: zenBubbleRise linear infinite, zenSnowSway 1.5s ease-in-out infinite alternate;
+}
+
+/* Synthwave Grid */
+.zen-synth {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #00ffff;
+    transform: rotate(45deg);
+    animation: zenSynthFloat 10s linear infinite;
+}
+
+@keyframes zenSynthFloat {
+    0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 0;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+
+    100% {
+        transform: translateY(-100vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* Fireflies */
+.zen-firefly {
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    background: #96ff64;
+    border-radius: 50%;
+    box-shadow: 0 0 15px #96ff64;
+    animation: zenFireflyTwinkle 3s ease-in-out infinite alternate;
+    transition: transform 2s ease-in-out;
+}
+
+@keyframes zenFireflyTwinkle {
+    0% {
+        opacity: 0.1;
+        box-shadow: 0 0 5px #96ff64;
+    }
+
+    100% {
+        opacity: 0.8;
+        box-shadow: 0 0 20px #96ff64;
+    }
+}
+
+/* Desert Sand */
+.zen-sand {
+    position: absolute;
+    top: -10px;
+    width: 2px;
+    height: 2px;
+    background: #dcb478;
+    animation: zenSandBlow linear infinite;
+}
+
+@keyframes zenSandBlow {
+    to {
+        transform: translate(110vw, 110vh);
+    }
+}
+
+/* Quantum Float */
+.zen-quantum {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border: 1px solid rgba(180, 100, 255, 0.4);
+    border-radius: 50%;
+    animation: zenQuantumOrbit 5s linear infinite;
+}
+
+@keyframes zenQuantumOrbit {
+    0% {
+        transform: rotateX(70deg) rotateZ(0deg);
+    }
+
+    100% {
+        transform: rotateX(70deg) rotateZ(360deg);
+    }
+}
+
+/* Golden Hour */
+.zen-gold-dust {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: radial-gradient(circle, rgba(255, 190, 80, 0.6) 0%, transparent 60%);
+    border-radius: 50%;
+    animation: zenStarTwinkle 6s ease-in-out infinite alternate;
 }
 
 /* Ambient glow */
 .zen-ambient-glow {
     position: absolute;
     inset: 0;
-    background: radial-gradient(ellipse at 50% 80%, rgba(138, 196, 165, 0.04) 0%, transparent 60%);
+    background: radial-gradient(ellipse at 50% 80%, rgba(var(--zen-primary), var(--zen-glow-alpha)) 0%, transparent 60%);
     pointer-events: none;
     z-index: 0;
-    transition: opacity 2s ease;
+    transition: all 2s ease;
 }
 
 /* Zen content */
@@ -3479,20 +4891,21 @@
     font-size: 0.85rem;
     letter-spacing: 3px;
     text-transform: uppercase;
-    color: rgba(138, 196, 165, 0.35);
+    color: rgba(var(--zen-primary), 0.35);
     margin-bottom: 32px;
     text-align: center;
-    transition: opacity 0.8s ease;
+    transition: opacity 0.8s ease, color 1.5s ease;
 }
 
 /* Buffer wrapper */
 .zen-buffer-wrap {
     width: 100%;
-    background: rgba(138, 196, 165, 0.02);
-    border: 1px solid rgba(138, 196, 165, 0.06);
+    background: rgba(var(--zen-primary), 0.02);
+    border: 1px solid rgba(var(--zen-primary), 0.06);
     border-radius: 16px;
     padding: 40px 48px;
     position: relative;
+    transition: background-color 1.5s ease, border-color 1.5s ease;
 }
 
 /* Buffer text */
@@ -3507,16 +4920,39 @@
     word-break: break-word;
 }
 
-.zen-buffer::-webkit-scrollbar { width: 0; display: none; }
+.zen-buffer::-webkit-scrollbar {
+    width: 0;
+    display: none;
+}
 
-.zen-buffer .code-char { color: rgba(200, 215, 210, 0.12); transition: color 0.3s ease, text-shadow 0.5s ease; }
-.zen-buffer .code-char.typed { color: rgba(200, 215, 210, 0.85); }
-.zen-buffer .code-char.cursor { border-left: 2px solid rgba(138, 196, 165, 0.5); animation: zenCursorPulse 2s ease-in-out infinite; }
-.zen-buffer .code-char.wrong { color: rgba(255, 130, 110, 0.5); }
+.zen-buffer .code-char {
+    color: rgba(var(--zen-text-muted), 0.12);
+    transition: color 0.3s ease, text-shadow 0.5s ease;
+}
+
+.zen-buffer .code-char.typed {
+    color: rgba(var(--zen-text-muted), 0.85);
+}
+
+.zen-buffer .code-char.cursor {
+    border-left: 2px solid rgba(var(--zen-primary), 0.5);
+    animation: zenCursorPulse 2s ease-in-out infinite;
+}
+
+.zen-buffer .code-char.wrong {
+    color: rgba(var(--zen-wrong), 0.5);
+}
 
 @keyframes zenCursorPulse {
-    0%, 100% { border-color: rgba(138, 196, 165, 0.5); }
-    50% { border-color: rgba(138, 196, 165, 0.15); }
+
+    0%,
+    100% {
+        border-color: rgba(var(--zen-primary), 0.5);
+    }
+
+    50% {
+        border-color: rgba(var(--zen-primary), 0.15);
+    }
 }
 
 /* Stillness counter */
@@ -3527,12 +4963,18 @@
     gap: 10px;
     font-family: 'Cormorant Garamond', 'Georgia', serif;
     font-size: 1rem;
-    color: rgba(138, 196, 165, 0.3);
+    color: rgba(var(--zen-primary), var(--zen-still-alpha));
     letter-spacing: 2px;
     transition: color 1s ease;
 }
-.zen-stillness i { font-size: 0.9rem; }
-.zen-stillness-label { font-size: 0.85rem; }
+
+.zen-stillness i {
+    font-size: 0.9rem;
+}
+
+.zen-stillness-label {
+    font-size: 0.85rem;
+}
 
 /* ESC hint */
 .zen-escape-hint {
@@ -3543,13 +4985,177 @@
     font-family: 'JetBrains Mono', monospace;
     font-size: 0.65rem;
     letter-spacing: 2px;
-    color: rgba(138, 196, 165, 0.15);
+    color: rgba(var(--zen-primary), 0.15);
     z-index: 1;
+    transition: color 1.5s ease;
 }
+
 .zen-escape-hint kbd {
-    background: rgba(138, 196, 165, 0.08);
-    border: 1px solid rgba(138, 196, 165, 0.15);
+    background: rgba(var(--zen-primary), 0.08);
+    border: 1px solid rgba(var(--zen-primary), 0.15);
     border-radius: 3px;
     padding: 1px 5px;
     font-family: inherit;
+    transition: background-color 1.5s ease, border-color 1.5s ease;
+}
+
+/* Theme Selector UI */
+.zen-theme-wrapper {
+    position: absolute;
+    bottom: 24px;
+    right: 24px;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+}
+
+.zen-theme-toggle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(var(--zen-primary), 0.1);
+    border: 1px solid rgba(var(--zen-primary), 0.3);
+    color: rgba(var(--zen-primary), 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(4px);
+}
+
+.zen-theme-toggle:hover {
+    background: rgba(var(--zen-primary), 0.2);
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(var(--zen-primary), 0.2);
+}
+
+.zen-theme-menu {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 12px;
+    background: rgba(10, 15, 13, 0.95);
+    padding: 20px;
+    border-radius: 24px;
+    border: 1px solid rgba(var(--zen-primary), 0.2);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(20px);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(10px) scale(0.95);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1000;
+}
+
+.zen-theme-menu.open {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+
+.zen-theme-btn {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+    background-size: cover;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+}
+
+.zen-theme-btn:hover {
+    transform: scale(1.1);
+}
+
+.zen-theme-btn.active {
+    border-color: rgba(255, 255, 255, 0.8);
+    transform: scale(1.1);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+}
+
+.zen-theme-btn[data-theme="spring-rain"] {
+    background-color: #8ac4a5;
+    background-image: linear-gradient(135deg, #8ac4a5, #4a7c59);
+}
+
+.zen-theme-btn[data-theme="autumn-drift"] {
+    background-color: #d97743;
+    background-image: linear-gradient(135deg, #d97743, #8c3b19);
+}
+
+.zen-theme-btn[data-theme="midnight-snow"] {
+    background-color: #c8dcff;
+    background-image: linear-gradient(135deg, #c8dcff, #4a648c);
+}
+
+.zen-theme-btn[data-theme="sakura-blossom"] {
+    background-color: #ffb7c5;
+    background-image: linear-gradient(135deg, #ffb7c5, #8c4a5c);
+}
+
+.zen-theme-btn[data-theme="stardust"] {
+    background-color: #ffeb96;
+    background-image: linear-gradient(135deg, #ffeb96, #8c7c3b);
+}
+
+.zen-theme-btn[data-theme="abyssal-depths"] {
+    background-color: #40b4d2;
+    background-image: linear-gradient(135deg, #40b4d2, #185a6e);
+}
+
+.zen-theme-btn[data-theme="ember-glow"] {
+    background-color: #ff6428;
+    background-image: linear-gradient(135deg, #ff6428, #8c2a10);
+}
+
+.zen-theme-btn[data-theme="synthwave-grid"] {
+    background-color: #ff0096;
+    background-image: linear-gradient(135deg, #ff0096, #00ffff);
+}
+
+.zen-theme-btn[data-theme="fireflies"] {
+    background-color: #96ff64;
+    background-image: linear-gradient(135deg, #96ff64, #3a6e28);
+}
+
+.zen-theme-btn[data-theme="desert-sand"] {
+    background-color: #dcb478;
+    background-image: linear-gradient(135deg, #dcb478, #785a30);
+}
+
+.zen-theme-btn[data-theme="quantum-float"] {
+    background-color: #b464ff;
+    background-image: linear-gradient(135deg, #b464ff, #4a2878);
+}
+
+.zen-theme-btn[data-theme="golden-hour"] {
+    background-color: #ffbe50;
+    background-image: linear-gradient(135deg, #ffbe50, #8c5a1e);
+}
+
+/* Tooltip for themes */
+.zen-theme-btn::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-8px);
+    background: rgba(0, 0, 0, 0.8);
+    color: rgba(255, 255, 255, 0.8);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+}
+
+.zen-theme-btn:hover::after {
+    opacity: 1;
 }
