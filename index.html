@@ -1013,6 +1013,16 @@
                         </div>
                         <div class="mode-status">Active</div>
                     </div>
+
+                    <!-- Zen Garden Mode -->
+                    <div class="mode-card active" id="zen-mode-card">
+                        <div class="mode-icon"><i class="ri-leaf-line"></i></div>
+                        <div class="mode-info">
+                            <h3>Zen Garden</h3>
+                            <p>Endless focus. Type poetry & philosophy.</p>
+                        </div>
+                        <div class="mode-status">Active</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1280,6 +1290,14 @@
                     <p class="cmc-desc">Mock interview grind. Problem on left, type the solution on right.</p>
                     <div class="cmc-tag">INTERVIEW PREP</div>
                 </div>
+
+                <div class="coding-mode-card cmc-breach" id="terminal-breach-card">
+                    <div class="cmc-number">04</div>
+                    <div class="cmc-icon cmc-breach-icon"><i class="ri-terminal-box-line"></i></div>
+                    <h3 class="cmc-title">TERMINAL_BREACH</h3>
+                    <p class="cmc-desc">Type real shell commands &amp; Python security scripts. Feel like a hacker.</p>
+                    <div class="cmc-tag cmc-tag-breach">HACKER MODE</div>
+                </div>
             </div>
 
             <button class="coding-exit-btn" id="coding-exit-btn">
@@ -1496,7 +1514,7 @@
                         <h2 class="dsa-problem-title" id="dsa-title">Problem Title</h2>
                         <div class="dsa-meta">
                             <span class="dsa-difficulty" id="dsa-difficulty">EASY</span>
-                            <span class="dsa-tag"><i class="ri-price-tag-3-line"></i> Topics</span>
+                            <div class="dsa-topics" id="dsa-topics"></div>
                         </div>
                     </div>
                     <div class="dsa-problem-body" id="dsa-description"></div>
@@ -1576,6 +1594,187 @@
                         EXIT</button>
                 </div>
             </div>
+        </div>
+
+
+        <!-- SCREEN 6: TERMINAL_BREACH MISSION PICKER -->
+        <div class="coding-screen hidden" id="coding-breach-select">
+            <div class="coding-header">
+                <button class="coding-back-btn" id="coding-breach-back"><i class="ri-arrow-left-s-line"></i></button>
+                <div>
+                    <h2 class="coding-setup-title breach-title">CHOOSE YOUR MISSION</h2>
+                    <p class="coding-setup-subtitle">infiltrate the system</p>
+                </div>
+            </div>
+            <div class="coding-algo-grid" id="coding-breach-grid">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+
+        <!-- GAME BOARD: TERMINAL_BREACH -->
+        <div class="coding-screen hidden" id="coding-breach-board">
+            <!-- Matrix Rain Canvas (behind everything) -->
+            <canvas id="breach-matrix-canvas"></canvas>
+
+            <!-- Full terminal emulator window -->
+            <div class="term-window">
+
+                <!-- Title bar (like real terminal) -->
+                <div class="term-titlebar">
+                    <div class="term-titlebar-dots">
+                        <span class="term-dot term-dot-close"></span>
+                        <span class="term-dot term-dot-min"></span>
+                        <span class="term-dot term-dot-max"></span>
+                    </div>
+                    <div class="term-titlebar-title">root@zen: ~/exploits</div>
+                    <div class="term-titlebar-stats">
+                        <span class="term-stat-label">WPM</span>
+                        <span class="term-stat-val" id="breach-wpm">0</span>
+                        <span class="term-stat-sep">│</span>
+                        <span class="term-stat-label">ACC</span>
+                        <span class="term-stat-val" id="breach-accuracy">100%</span>
+                        <span class="term-stat-sep">│</span>
+                        <span class="term-diff" id="breach-difficulty">EASY</span>
+                    </div>
+                </div>
+
+                <!-- Menu bar -->
+                <div class="term-menubar">
+                    <span class="term-menu-item">File</span>
+                    <span class="term-menu-item">Actions</span>
+                    <span class="term-menu-item">Edit</span>
+                    <span class="term-menu-item">View</span>
+                    <span class="term-menu-item">Help</span>
+                    <div class="term-menu-right">
+                        <button class="term-abort-btn" id="breach-exit-btn">[^C] ABORT</button>
+                    </div>
+                </div>
+
+                <!-- Terminal body -->
+                <div class="term-body">
+
+                    <!-- Mission context lines (displayed like previous commands) -->
+                    <div class="term-history">
+                        <div class="term-history-line">
+                            <span class="term-prompt-user">root@zen</span><span class="term-prompt-colon">:</span><span
+                                class="term-prompt-path">~</span><span class="term-prompt-dollar">$</span>
+                            <span class="term-cmd"># <span id="breach-description">Mission objective</span></span>
+                        </div>
+                        <div class="term-history-line">
+                            <span class="term-prompt-user">root@zen</span><span class="term-prompt-colon">:</span><span
+                                class="term-prompt-path">~</span><span class="term-prompt-dollar">$</span>
+                            <span class="term-cmd">nmap -sV <span id="breach-target-ip">192.168.1.1</span> -p <span
+                                    id="breach-proto">22</span></span>
+                        </div>
+                        <div class="term-output-line">Starting scan... host is up (<span class="term-val">0.0042s</span>
+                            latency)</div>
+                        <div class="term-output-line">PORT STATE SERVICE VERSION</div>
+                        <div class="term-output-line"><span class="term-val" id="breach-port-info">22/tcp open ssh
+                                OpenSSH 8.9</span></div>
+                        <div class="term-history-line">
+                            <span class="term-prompt-user">root@zen</span><span class="term-prompt-colon">:</span><span
+                                class="term-prompt-path">~</span><span class="term-prompt-dollar">$</span>
+                            <span class="term-cmd"># Type the payload below to deploy</span>
+                        </div>
+                    </div>
+
+                    <!-- Active prompt + typing area -->
+                    <div class="term-active-prompt">
+                        <span class="term-prompt-user">root@zen</span><span class="term-prompt-colon">:</span><span
+                            class="term-prompt-path">~</span><span class="term-prompt-dollar">$</span>
+                    </div>
+                    <div class="breach-code-area">
+                        <div class="coding-buffer breach-buffer-inner" id="breach-buffer"></div>
+                    </div>
+                    <input type="text" id="breach-input" class="coding-hidden-input" autocomplete="off"
+                        spellcheck="false" autocapitalize="off">
+                </div>
+
+                <!-- Bottom status bar -->
+                <div class="term-statusbar">
+                    <div class="term-progress-ascii" id="breach-progress-ascii">[ ] 0%</div>
+                    <div class="term-log" id="breach-log"></div>
+                </div>
+
+                <!-- Hidden elements for JS -->
+                <span id="breach-title" style="display:none"></span>
+                <span id="breach-category" style="display:none"></span>
+
+                <!-- Abort Overlay -->
+                <div class="breach-abort-overlay hidden" id="breach-abort-overlay">
+                    <div class="breach-abort-glitch" data-text="HACK ABORTED">HACK ABORTED</div>
+                    <div class="breach-abort-sub">^C Process terminated by operator</div>
+                    <div class="breach-abort-bar">████████████████████████ SIGNAL 2 (SIGINT)</div>
+                </div>
+
+                <!-- Breach Complete/Failed Overlay -->
+                <div class="breach-complete-overlay hidden" id="breach-complete-overlay">
+                    <div class="breach-complete-scanlines"></div>
+                    <div class="breach-complete-content">
+                        <div class="breach-complete-glitch" data-text="BREACH COMPLETE">BREACH COMPLETE</div>
+                        <div class="breach-complete-sub">root@target:~$ access_granted --full-control</div>
+                        <div class="breach-complete-stats">
+                            <div class="breach-stat-box">
+                                <div class="breach-stat-label">SPEED</div>
+                                <div class="breach-stat-number" id="bc-wpm">0</div>
+                                <div class="breach-stat-unit">WPM</div>
+                            </div>
+                            <div class="breach-stat-box">
+                                <div class="breach-stat-label">PRECISION</div>
+                                <div class="breach-stat-number" id="bc-accuracy">100%</div>
+                                <div class="breach-stat-unit">ACC</div>
+                            </div>
+                            <div class="breach-stat-box">
+                                <div class="breach-stat-label">DATA</div>
+                                <div class="breach-stat-number" id="bc-chars">0</div>
+                                <div class="breach-stat-unit">CHARS</div>
+                            </div>
+                            <div class="breach-stat-box">
+                                <div class="breach-stat-label">RANK</div>
+                                <div class="breach-stat-number breach-rank-val" id="bc-rank">S+</div>
+                                <div class="breach-stat-unit">GRADE</div>
+                            </div>
+                        </div>
+                        <div class="breach-complete-log" id="bc-log-output"></div>
+                        <div class="breach-complete-actions">
+                            <button class="breach-btn-retry" id="bc-retry-btn">↻ RETRY MISSION</button>
+                            <button class="breach-btn-exit" id="bc-exit-btn">◀ SELECT MISSION</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- GAME BOARD: ZEN_GARDEN -->
+        <div class="coding-screen hidden" id="coding-zen-board">
+            <!-- Rain particles layer -->
+            <div class="zen-rain" id="zen-rain"></div>
+
+            <!-- Ambient glow -->
+            <div class="zen-ambient-glow"></div>
+
+            <!-- Zen content -->
+            <div class="zen-content">
+                <!-- Source attribution -->
+                <div class="zen-source" id="zen-source"></div>
+
+                <!-- The typing area -->
+                <div class="zen-buffer-wrap">
+                    <div class="coding-buffer zen-buffer" id="zen-buffer"></div>
+                    <input type="text" class="coding-hidden-input" id="zen-input" autocomplete="off" autocorrect="off"
+                        autocapitalize="off" spellcheck="false">
+                </div>
+
+                <!-- Stillness counter -->
+                <div class="zen-stillness" id="zen-stillness">
+                    <i class="ri-leaf-line"></i>
+                    <span id="zen-time">0:00</span>
+                    <span class="zen-stillness-label">of stillness</span>
+                </div>
+            </div>
+
+            <!-- ESC hint -->
+            <div class="zen-escape-hint">press <kbd>ESC</kbd> to leave the garden</div>
         </div>
 
     </div>

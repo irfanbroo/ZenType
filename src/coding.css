@@ -271,9 +271,10 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: safe center;
     padding: 30px;
     box-sizing: border-box;
+    overflow-y: auto;
 }
 
 .coding-screen.hidden {
@@ -2390,12 +2391,30 @@
     background: rgba(255, 55, 95, 0.12);
 }
 
-.dsa-tag {
-    font-size: 0.72rem;
-    color: rgba(255, 255, 255, 0.4);
+.dsa-topics {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    gap: 4px;
+    gap: 6px;
+}
+
+.dsa-topic-chip {
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(0, 255, 65, 0.65);
+    background: rgba(0, 255, 65, 0.06);
+    border: 1px solid rgba(0, 255, 65, 0.15);
+    border-radius: 20px;
+    padding: 2px 9px;
+    white-space: nowrap;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.dsa-topic-chip:hover {
+    background: rgba(0, 255, 65, 0.12);
+    border-color: rgba(0, 255, 65, 0.3);
 }
 
 .dsa-problem-body {
@@ -2483,4 +2502,1054 @@
 
 .dsa-code-area .coding-buffer {
     min-height: 100%;
+}
+
+/* ═══════════════════════════════════════════════════════════
+
+/* ═══════════════════════════════════════════════════════════════
+   TERMINAL_BREACH — LINUX TERMINAL EMULATOR THEME
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── BASE ── */
+#coding-breach-board {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: #1c1c1c;
+    overflow: hidden;
+    display: flex;
+    align-items: stretch;
+    padding: 0;
+}
+
+#coding-breach-board.hidden {
+    display: none !important;
+}
+
+#breach-matrix-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.05;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* ── TERMINAL WINDOW ── */
+.term-window {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: #1c1c1c;
+}
+
+/* ── TITLE BAR ── */
+.term-titlebar {
+    display: flex;
+    align-items: center;
+    padding: 6px 12px;
+    background: #2d2d2d;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    flex-shrink: 0;
+    gap: 12px;
+}
+
+.term-titlebar-dots {
+    display: flex;
+    gap: 6px;
+}
+
+.term-dot {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+}
+
+.term-dot-close {
+    background: #ff5f56;
+}
+
+.term-dot-min {
+    background: #ffbd2e;
+}
+
+.term-dot-max {
+    background: #27c93f;
+}
+
+.term-titlebar-title {
+    flex: 1;
+    text-align: center;
+    font-family: 'Courier New', monospace;
+    font-size: 0.72rem;
+    color: rgba(255, 255, 255, 0.45);
+    letter-spacing: 0.03em;
+}
+
+.term-titlebar-stats {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.6rem;
+}
+
+.term-stat-label {
+    color: rgba(255, 255, 255, 0.25);
+    letter-spacing: 0.06em;
+}
+
+.term-stat-val {
+    color: rgba(0, 255, 65, 0.9);
+    font-weight: 700;
+    min-width: 25px;
+}
+
+.term-stat-sep {
+    color: rgba(255, 255, 255, 0.1);
+}
+
+.term-diff {
+    font-weight: 700;
+    font-size: 0.55rem;
+    letter-spacing: 0.08em;
+    padding: 1px 6px;
+    border-radius: 2px;
+}
+
+.term-diff.easy {
+    color: #27c93f;
+    background: rgba(39, 201, 63, 0.1);
+    border: 1px solid rgba(39, 201, 63, 0.2);
+}
+
+.term-diff.medium {
+    color: #ffbd2e;
+    background: rgba(255, 189, 46, 0.1);
+    border: 1px solid rgba(255, 189, 46, 0.2);
+}
+
+.term-diff.hard {
+    color: #ff5f56;
+    background: rgba(255, 95, 86, 0.1);
+    border: 1px solid rgba(255, 95, 86, 0.2);
+}
+
+/* ── MENU BAR ── */
+.term-menubar {
+    display: flex;
+    align-items: center;
+    padding: 3px 12px;
+    background: #262626;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    flex-shrink: 0;
+    gap: 2px;
+}
+
+.term-menu-item {
+    font-family: 'Courier New', monospace;
+    font-size: 0.65rem;
+    color: rgba(255, 255, 255, 0.35);
+    padding: 2px 8px;
+    cursor: default;
+    border-radius: 3px;
+}
+
+.term-menu-item:hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.term-menu-right {
+    margin-left: auto;
+}
+
+.term-abort-btn {
+    background: none;
+    border: 1px solid rgba(255, 95, 86, 0.3);
+    color: rgba(255, 95, 86, 0.6);
+    font-family: 'Courier New', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.06em;
+    padding: 1px 7px;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.2s;
+}
+
+.term-abort-btn:hover {
+    background: rgba(255, 95, 86, 0.1);
+    border-color: rgba(255, 95, 86, 0.6);
+    color: rgba(255, 95, 86, 1);
+}
+
+/* ── TERMINAL BODY ── */
+.term-body {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 12px 14px 6px;
+    font-family: 'Hack', 'DejaVu Sans Mono', 'Consolas', monospace;
+    font-size: 1.15rem;
+    line-height: 1.65;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+/* History lines (fake previous commands) */
+.term-history {
+    flex-shrink: 0;
+    margin-bottom: 6px;
+}
+
+.term-history-line {
+    display: flex;
+    align-items: baseline;
+    gap: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.term-output-line {
+    color: rgba(255, 255, 255, 0.55);
+    padding-left: 0;
+    white-space: nowrap;
+}
+
+.term-val {
+    color: rgba(0, 255, 65, 0.85);
+}
+
+.term-cmd {
+    color: rgba(255, 255, 255, 0.8);
+    margin-left: 6px;
+}
+
+/* Prompt colors — same across all prompts */
+.term-prompt-user {
+    color: #27c93f;
+    font-weight: 700;
+}
+
+.term-prompt-colon {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.term-prompt-path {
+    color: #5c94e8;
+    font-weight: 600;
+}
+
+.term-prompt-dollar {
+    color: rgba(255, 255, 255, 0.5);
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.term-prompt-hash {
+    color: rgba(255, 255, 255, 0.5);
+    margin-left: 1px;
+}
+
+/* Active prompt (before typing area) */
+.term-active-prompt {
+    flex-shrink: 0;
+    display: flex;
+    align-items: baseline;
+    gap: 0;
+    margin-bottom: 2px;
+}
+
+/* Code typing area */
+.breach-code-area {
+    flex: 1;
+    display: flex;
+    padding: 0 0 0 0;
+    overflow: hidden;
+    min-height: 0;
+}
+
+.breach-buffer-inner {
+    flex: 1;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    font-family: 'Hack', 'DejaVu Sans Mono', 'Consolas', monospace !important;
+    font-size: 1.15rem !important;
+    line-height: 1.65 !important;
+    color: rgba(255, 255, 255, 0.85) !important;
+    overflow-y: auto;
+    overflow-x: hidden;
+    white-space: pre-wrap;
+    width: 100%;
+}
+
+/* Cursor */
+.breach-buffer-inner .code-char.cursor {
+    background: none !important;
+    box-shadow: none !important;
+    border: none !important;
+    color: rgba(255, 255, 255, 0.9) !important;
+    text-decoration: underline !important;
+    text-decoration-color: rgba(255, 255, 255, 0.7) !important;
+    text-underline-offset: 3px !important;
+    animation: termCursor 1s step-end infinite;
+}
+
+@keyframes termCursor {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.3;
+    }
+}
+
+.breach-buffer-inner .code-char.typed {
+    color: rgba(0, 255, 65, 0.9) !important;
+}
+
+.breach-buffer-inner .code-char.wrong {
+    color: rgba(255, 95, 86, 0.9) !important;
+    text-decoration: underline wavy rgba(255, 95, 86, 0.5) !important;
+}
+
+/* Syntax colors */
+.breach-buffer-inner .kw-keyword {
+    color: rgba(92, 148, 232, 0.9) !important;
+}
+
+.breach-buffer-inner .kw-function {
+    color: rgba(39, 201, 63, 0.85) !important;
+}
+
+.breach-buffer-inner .kw-string {
+    color: rgba(255, 189, 46, 0.8) !important;
+}
+
+.breach-buffer-inner .kw-number {
+    color: rgba(180, 120, 255, 0.85) !important;
+}
+
+.breach-buffer-inner .kw-comment {
+    color: rgba(255, 255, 255, 0.25) !important;
+}
+
+.breach-buffer-inner .kw-operator {
+    color: rgba(255, 160, 60, 0.8) !important;
+}
+
+/* ── STATUS BAR (bottom) ── */
+.term-statusbar {
+    flex-shrink: 0;
+    padding: 5px 14px 6px;
+    background: #262626;
+    border-top: 1px solid rgba(255, 255, 255, 0.04);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.term-progress-ascii {
+    font-family: 'Courier New', monospace;
+    font-size: 0.65rem;
+    color: rgba(0, 255, 65, 0.65);
+    letter-spacing: 0.02em;
+    font-weight: 600;
+    white-space: pre;
+}
+
+.term-log {
+    font-family: 'Courier New', monospace;
+    font-size: 0.58rem;
+    color: rgba(255, 255, 255, 0.2);
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ── MODE CARD ── */
+.cmc-breach {
+    border-color: rgba(39, 201, 63, 0.2);
+    background: linear-gradient(135deg, rgba(39, 201, 63, 0.04) 0%, rgba(0, 0, 0, 0) 60%);
+}
+
+.cmc-breach:hover {
+    border-color: rgba(39, 201, 63, 0.5);
+    box-shadow: 0 0 20px rgba(39, 201, 63, 0.1), 0 8px 32px rgba(0, 0, 0, 0.4);
+    transform: translateY(-4px);
+}
+
+.cmc-breach-icon i {
+    color: rgba(39, 201, 63, 0.8);
+}
+
+.cmc-tag-breach {
+    color: rgba(39, 201, 63, 0.9);
+    border-color: rgba(39, 201, 63, 0.3);
+    background: rgba(39, 201, 63, 0.07);
+}
+
+.breach-title {
+    color: rgba(39, 201, 63, 0.9) !important;
+}
+
+#coding-breach-select .coding-setup-title {
+    color: rgba(39, 201, 63, 0.9);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   OVERLAYS (ABORT / COMPLETE / FAILED)
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── HACK ABORTED ── */
+.breach-abort-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 100;
+    background: rgba(0, 0, 0, 0.92);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+}
+
+.breach-abort-overlay.hidden {
+    display: none !important;
+}
+
+.breach-abort-overlay.active {
+    display: flex !important;
+    opacity: 1;
+    pointer-events: all;
+    animation: abortFlash 0.15s ease-out 3;
+}
+
+@keyframes abortFlash {
+    0% {
+        background: rgba(255, 40, 40, 0.25);
+    }
+
+    100% {
+        background: rgba(0, 0, 0, 0.92);
+    }
+}
+
+.breach-abort-glitch {
+    font-family: 'Courier New', monospace;
+    font-size: 3rem;
+    font-weight: 900;
+    color: rgba(255, 50, 50, 1);
+    text-shadow: 0 0 20px rgba(255, 50, 50, 0.7), 0 0 60px rgba(255, 50, 50, 0.3);
+    letter-spacing: 0.2em;
+    position: relative;
+    animation: glitchShake 0.1s infinite;
+}
+
+.breach-abort-glitch::before,
+.breach-abort-glitch::after {
+    content: attr(data-text);
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.breach-abort-glitch::before {
+    color: rgba(0, 255, 255, 0.7);
+    animation: glitchLeft 0.3s infinite;
+    clip-path: inset(0 0 60% 0);
+}
+
+.breach-abort-glitch::after {
+    color: rgba(255, 0, 100, 0.7);
+    animation: glitchRight 0.3s infinite;
+    clip-path: inset(40% 0 0 0);
+}
+
+@keyframes glitchShake {
+    0% {
+        transform: translate(0)
+    }
+
+    25% {
+        transform: translate(-2px, 1px)
+    }
+
+    50% {
+        transform: translate(2px, -1px)
+    }
+
+    75% {
+        transform: translate(-1px, -2px)
+    }
+
+    100% {
+        transform: translate(1px, 2px)
+    }
+}
+
+@keyframes glitchLeft {
+    0% {
+        transform: translateX(0)
+    }
+
+    33% {
+        transform: translateX(-4px)
+    }
+
+    66% {
+        transform: translateX(3px)
+    }
+
+    100% {
+        transform: translateX(0)
+    }
+}
+
+@keyframes glitchRight {
+    0% {
+        transform: translateX(0)
+    }
+
+    33% {
+        transform: translateX(4px)
+    }
+
+    66% {
+        transform: translateX(-3px)
+    }
+
+    100% {
+        transform: translateX(0)
+    }
+}
+
+.breach-abort-sub {
+    font-family: 'Courier New', monospace;
+    font-size: 0.8rem;
+    color: rgba(255, 50, 50, 0.5);
+    letter-spacing: 0.15em;
+}
+
+.breach-abort-bar {
+    font-family: 'Courier New', monospace;
+    font-size: 0.65rem;
+    color: rgba(255, 50, 50, 0.3);
+    letter-spacing: 0.1em;
+    margin-top: 8px;
+}
+
+/* ── BREACH COMPLETE ── */
+.breach-complete-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 99;
+    background: rgba(0, 0, 0, 0.95);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+}
+
+.breach-complete-overlay.hidden {
+    display: none !important;
+}
+
+.breach-complete-overlay.active {
+    display: flex !important;
+    opacity: 1;
+    pointer-events: all;
+}
+
+.breach-complete-scanlines {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 255, 65, 0.03) 2px, rgba(0, 255, 65, 0.03) 4px);
+}
+
+.breach-complete-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    z-index: 1;
+    animation: bcFadeUp 0.6s ease-out;
+}
+
+@keyframes bcFadeUp {
+    0% {
+        opacity: 0;
+        transform: translateY(20px)
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0)
+    }
+}
+
+.breach-complete-glitch {
+    font-family: 'Courier New', monospace;
+    font-size: 2.6rem;
+    font-weight: 900;
+    color: rgba(0, 255, 65, 1);
+    text-shadow: 0 0 20px rgba(0, 255, 65, 0.6), 0 0 60px rgba(0, 255, 65, 0.2);
+    letter-spacing: 0.15em;
+    animation: bcGlitch 3s ease-in-out infinite;
+}
+
+@keyframes bcGlitch {
+
+    0%,
+    90%,
+    100% {
+        transform: translate(0);
+        text-shadow: 0 0 20px rgba(0, 255, 65, 0.6)
+    }
+
+    92% {
+        transform: translate(-3px, 1px);
+        text-shadow: 3px 0 rgba(0, 255, 255, 0.5), -3px 0 rgba(255, 0, 100, 0.5)
+    }
+
+    94% {
+        transform: translate(3px, -1px);
+        text-shadow: -3px 0 rgba(0, 255, 255, 0.5), 3px 0 rgba(255, 0, 100, 0.5)
+    }
+
+    96% {
+        transform: translate(0)
+    }
+}
+
+.breach-complete-sub {
+    font-family: 'Courier New', monospace;
+    font-size: 0.75rem;
+    color: rgba(0, 255, 65, 0.4);
+    letter-spacing: 0.1em;
+    margin-top: -12px;
+}
+
+.breach-complete-stats {
+    display: flex;
+    gap: 24px;
+    margin-top: 8px;
+}
+
+.breach-stat-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 14px 24px;
+    border: 1px solid rgba(0, 255, 65, 0.15);
+    background: rgba(0, 255, 65, 0.03);
+    border-radius: 4px;
+    min-width: 90px;
+    animation: bcStatPop 0.5s ease-out backwards;
+}
+
+.breach-stat-box:nth-child(1) {
+    animation-delay: 0.2s
+}
+
+.breach-stat-box:nth-child(2) {
+    animation-delay: 0.35s
+}
+
+.breach-stat-box:nth-child(3) {
+    animation-delay: 0.5s
+}
+
+.breach-stat-box:nth-child(4) {
+    animation-delay: 0.65s
+}
+
+@keyframes bcStatPop {
+    0% {
+        opacity: 0;
+        transform: scale(0.8)
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1)
+    }
+}
+
+.breach-stat-label {
+    font-family: 'Courier New', monospace;
+    font-size: 0.55rem;
+    color: rgba(0, 255, 65, 0.35);
+    letter-spacing: 0.15em;
+}
+
+.breach-stat-number {
+    font-family: 'Courier New', monospace;
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: rgba(0, 255, 65, 0.95);
+    text-shadow: 0 0 12px rgba(0, 255, 65, 0.4);
+    line-height: 1;
+}
+
+.breach-stat-unit {
+    font-family: 'Courier New', monospace;
+    font-size: 0.5rem;
+    color: rgba(0, 255, 65, 0.25);
+    letter-spacing: 0.2em;
+}
+
+.breach-rank-val {
+    color: rgba(0, 220, 255, 1) !important;
+    text-shadow: 0 0 15px rgba(0, 220, 255, 0.5) !important;
+}
+
+.breach-complete-log {
+    font-family: 'Courier New', monospace;
+    font-size: 0.68rem;
+    color: rgba(0, 255, 65, 0.55);
+    letter-spacing: 0.04em;
+    text-align: left;
+    width: 100%;
+    max-width: 420px;
+    min-height: 70px;
+    padding: 8px 12px;
+    border-left: 2px solid rgba(0, 255, 65, 0.15);
+}
+
+.bc-log-line {
+    padding: 2px 0;
+    animation: bcLogFade 0.3s ease-out;
+}
+
+@keyframes bcLogFade {
+    0% {
+        opacity: 0;
+        transform: translateX(-10px)
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateX(0)
+    }
+}
+
+.breach-complete-actions {
+    display: flex;
+    gap: 16px;
+    margin-top: 8px;
+    animation: bcFadeUp 0.8s ease-out 1s backwards;
+}
+
+.breach-btn-retry,
+.breach-btn-exit {
+    font-family: 'Courier New', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    padding: 8px 22px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.breach-btn-retry {
+    background: rgba(0, 255, 65, 0.1);
+    border: 1px solid rgba(0, 255, 65, 0.35);
+    color: rgba(0, 255, 65, 0.9);
+}
+
+.breach-btn-retry:hover {
+    background: rgba(0, 255, 65, 0.2);
+    border-color: rgba(0, 255, 65, 0.7);
+    box-shadow: 0 0 15px rgba(0, 255, 65, 0.15);
+}
+
+.breach-btn-exit {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.breach-btn-exit:hover {
+    background: rgba(255, 255, 255, 0.07);
+    border-color: rgba(255, 255, 255, 0.25);
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* ── BREACH FAILED ── */
+.breach-complete-overlay.breach-failed .breach-complete-glitch {
+    color: rgba(255, 50, 50, 1);
+    text-shadow: 0 0 20px rgba(255, 50, 50, 0.6), 0 0 60px rgba(255, 50, 50, 0.2);
+}
+
+.breach-complete-overlay.breach-failed .breach-complete-sub {
+    color: rgba(255, 50, 50, 0.4);
+}
+
+.breach-complete-overlay.breach-failed .breach-stat-box {
+    border-color: rgba(255, 50, 50, 0.15);
+    background: rgba(255, 50, 50, 0.03);
+}
+
+.breach-complete-overlay.breach-failed .breach-stat-number {
+    color: rgba(255, 50, 50, 0.9);
+    text-shadow: 0 0 12px rgba(255, 50, 50, 0.4);
+}
+
+.breach-complete-overlay.breach-failed .breach-stat-label,
+.breach-complete-overlay.breach-failed .breach-stat-unit {
+    color: rgba(255, 50, 50, 0.3);
+}
+
+.breach-complete-overlay.breach-failed .breach-rank-val {
+    color: rgba(255, 50, 50, 1) !important;
+    text-shadow: 0 0 15px rgba(255, 50, 50, 0.5) !important;
+}
+
+.breach-complete-overlay.breach-failed .breach-complete-log {
+    border-left-color: rgba(255, 50, 50, 0.2);
+    color: rgba(255, 50, 50, 0.5);
+}
+
+.breach-complete-overlay.breach-failed .breach-complete-scanlines {
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255, 50, 50, 0.03) 2px, rgba(255, 50, 50, 0.03) 4px);
+}
+
+.breach-complete-overlay.breach-failed .breach-btn-retry {
+    background: rgba(255, 50, 50, 0.1);
+    border-color: rgba(255, 50, 50, 0.35);
+    color: rgba(255, 50, 50, 0.9);
+}
+
+.breach-complete-overlay.breach-failed .breach-btn-retry:hover {
+    background: rgba(255, 50, 50, 0.2);
+    border-color: rgba(255, 50, 50, 0.7);
+    box-shadow: 0 0 15px rgba(255, 50, 50, 0.15);
+}
+
+/* -- LESSON TEXT -- */
+.term-lesson-text {
+    color: rgba(255, 200, 60, 0.7);
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    padding: 4px 0;
+    max-width: 95%;
+}
+
+/* -- LIVE TERMINAL OUTPUT -- */
+.term-live-output {
+    flex-shrink: 0;
+    padding: 8px 0 4px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    margin-top: 8px;
+}
+
+.term-live-line {
+    font-family: 'Hack', 'DejaVu Sans Mono', 'Consolas', monospace;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.7);
+    white-space: pre-wrap;
+    animation: termLineAppear 0.15s ease-out;
+}
+
+.term-out-success {
+    color: #27c93f;
+}
+
+.term-out-alert {
+    color: #ffbd2e;
+}
+
+.term-out-fail {
+    color: #ff5f56;
+}
+
+.term-out-info {
+    color: #5c94e8;
+}
+
+@keyframes termLineAppear {
+    from {
+        opacity: 0;
+        transform: translateY(2px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+/* Hide scrollbar on coding screens */
+.coding-screen::-webkit-scrollbar {
+    width: 0;
+    display: none;
+}
+.coding-screen {
+    scrollbar-width: none;
+}
+
+/* ----------------------------------------------
+   ZEN GARDEN MODE
+   ---------------------------------------------- */
+
+/* Mode card styling */
+.cmc-zen { border-color: rgba(138, 196, 165, 0.15); }
+.cmc-zen:hover { border-color: rgba(138, 196, 165, 0.5); box-shadow: 0 8px 40px rgba(138, 196, 165, 0.12); }
+.cmc-zen-icon i { color: #8ac4a5; text-shadow: 0 0 20px rgba(138, 196, 165, 0.5); }
+.cmc-tag-zen { border-color: rgba(138, 196, 165, 0.3); color: #8ac4a5; }
+.cmc-zen .cmc-number { color: rgba(138, 196, 165, 0.25); }
+.cmc-zen .cmc-title { color: #8ac4a5; }
+
+/* Board */
+#coding-zen-board {
+    background: #0a0f0d;
+    position: relative;
+    overflow: hidden;
+    justify-content: center;
+}
+
+/* Rain layer */
+.zen-rain {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+}
+.zen-raindrop {
+    position: absolute;
+    top: -20px;
+    width: 1px;
+    background: linear-gradient(to bottom, transparent, rgba(138, 196, 165, 0.25));
+    animation: zenRainFall linear infinite;
+}
+@keyframes zenRainFall {
+    to { transform: translateY(110vh); }
+}
+
+/* Ambient glow */
+.zen-ambient-glow {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 80%, rgba(138, 196, 165, 0.04) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+    transition: opacity 2s ease;
+}
+
+/* Zen content */
+.zen-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 700px;
+    padding: 0 24px;
+}
+
+/* Source text */
+.zen-source {
+    font-family: 'Cormorant Garamond', 'Georgia', serif;
+    font-size: 0.85rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(138, 196, 165, 0.35);
+    margin-bottom: 32px;
+    text-align: center;
+    transition: opacity 0.8s ease;
+}
+
+/* Buffer wrapper */
+.zen-buffer-wrap {
+    width: 100%;
+    background: rgba(138, 196, 165, 0.02);
+    border: 1px solid rgba(138, 196, 165, 0.06);
+    border-radius: 16px;
+    padding: 40px 48px;
+    position: relative;
+}
+
+/* Buffer text */
+.zen-buffer {
+    font-family: 'Cormorant Garamond', 'Georgia', serif;
+    font-size: 1.4rem;
+    line-height: 2.2;
+    min-height: 120px;
+    max-height: 350px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.zen-buffer::-webkit-scrollbar { width: 0; display: none; }
+
+.zen-buffer .code-char { color: rgba(200, 215, 210, 0.12); transition: color 0.3s ease, text-shadow 0.5s ease; }
+.zen-buffer .code-char.typed { color: rgba(200, 215, 210, 0.85); }
+.zen-buffer .code-char.cursor { border-left: 2px solid rgba(138, 196, 165, 0.5); animation: zenCursorPulse 2s ease-in-out infinite; }
+.zen-buffer .code-char.wrong { color: rgba(255, 130, 110, 0.5); }
+
+@keyframes zenCursorPulse {
+    0%, 100% { border-color: rgba(138, 196, 165, 0.5); }
+    50% { border-color: rgba(138, 196, 165, 0.15); }
+}
+
+/* Stillness counter */
+.zen-stillness {
+    margin-top: 40px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Cormorant Garamond', 'Georgia', serif;
+    font-size: 1rem;
+    color: rgba(138, 196, 165, 0.3);
+    letter-spacing: 2px;
+    transition: color 1s ease;
+}
+.zen-stillness i { font-size: 0.9rem; }
+.zen-stillness-label { font-size: 0.85rem; }
+
+/* ESC hint */
+.zen-escape-hint {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 2px;
+    color: rgba(138, 196, 165, 0.15);
+    z-index: 1;
+}
+.zen-escape-hint kbd {
+    background: rgba(138, 196, 165, 0.08);
+    border: 1px solid rgba(138, 196, 165, 0.15);
+    border-radius: 3px;
+    padding: 1px 5px;
+    font-family: inherit;
 }

@@ -20,8 +20,9 @@ fn set_discord_presence(
 ) {
     let start = discord.start_time;
     if let Ok(mut guard) = discord.client.lock() {
-        if let Some(client) = guard.as_mut() {
-            let _ = client.set_activity(
+        // Helper closure to build the activity
+        let build_activity = |client: &mut DiscordIpcClient| {
+            client.set_activity(
                 activity::Activity::new()
                     .details("Discipline Meets Speed")
                     .state(&state_text)
@@ -34,7 +35,24 @@ fn set_discord_presence(
                         activity::Timestamps::new()
                             .start(start),
                     ),
-            );
+            )
+        };
+
+        let needs_reconnect = if let Some(client) = guard.as_mut() {
+            build_activity(client).is_err()
+        } else {
+            true
+        };
+
+        if needs_reconnect {
+            // Drop old client, create fresh connection and retry
+            *guard = None;
+            if let Ok(mut new_client) = DiscordIpcClient::new("1475312349484159147") {
+                if new_client.connect().is_ok() {
+                    let _ = build_activity(&mut new_client);
+                    *guard = Some(new_client);
+                }
+            }
         }
     }
 }

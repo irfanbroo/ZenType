@@ -4300,10 +4300,21 @@ input:checked+.slider::before {
     border-color: rgba(255, 255, 255, 0.2);
 }
 
+#zen-mode-card:hover:not(.disabled) {
+    border-color: rgba(138, 196, 165, 0.5);
+    box-shadow: 0 10px 30px rgba(138, 196, 165, 0.2);
+}
+
 .mode-card.active {
     background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(0, 0, 0, 0.2));
     border-color: var(--accent-gold);
     box-shadow: 0 0 20px rgba(255, 215, 0, 0.1);
+}
+
+#zen-mode-card.active {
+    background: linear-gradient(135deg, rgba(138, 196, 165, 0.1), rgba(0, 0, 0, 0.2));
+    border-color: #8ac4a5;
+    box-shadow: 0 0 20px rgba(138, 196, 165, 0.15);
 }
 
 .mode-card.disabled {
@@ -4320,6 +4331,16 @@ input:checked+.slider::before {
 
 .mode-card.active .mode-icon {
     color: var(--accent-gold);
+}
+
+#zen-mode-card.active .mode-icon {
+    color: #8ac4a5;
+    text-shadow: 0 0 15px rgba(138, 196, 165, 0.4);
+}
+
+#zen-mode-card.active .mode-status {
+    color: #8ac4a5;
+    background: rgba(138, 196, 165, 0.15);
 }
 
 .mode-info h3 {
