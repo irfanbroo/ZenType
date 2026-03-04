@@ -4428,7 +4428,706 @@ function setupSettingsListeners() {
         { text: "No snowflake ever falls in the wrong place.", author: "Zen Proverb" },
         { text: "The way out is through.", author: "Robert Frost" },
         { text: "Two roads diverged in a wood and I took the one less traveled by.", author: "Robert Frost" },
-        { text: "We do not see things as they are. We see things as we are.", author: "Anais Nin" }
+        { text: "We do not see things as they are. We see things as we are.", author: "Anais Nin" },
+        { text: "He who has a why to live can bear almost any how.", author: "Friedrich Nietzsche" },
+        { text: "That which does not kill us makes us stronger.", author: "Friedrich Nietzsche" },
+        { text: "Happiness is not something ready-made. It comes from your own actions.", author: "Dalai Lama" },
+        { text: "The best revenge is massive success.", author: "Frank Sinatra" },
+        { text: "It is during our darkest moments that we must focus to see the light.", author: "Aristotle" },
+        { text: "The unexamined life is not worth living.", author: "Plato" },
+        { text: "I think, therefore I am.", author: "René Descartes" },
+        { text: "To be yourself in a world that is constantly trying to make you something else is the greatest accomplishment.", author: "Ralph Waldo Emerson" },
+        { text: "Not all those who wander are lost.", author: "J.R.R. Tolkien" },
+        { text: "The only thing we have to fear is fear itself.", author: "Franklin D. Roosevelt" },
+        { text: "Stars cannot shine without darkness.", author: "D.T. Suzuki" },
+        { text: "Out of clutter, find simplicity. From discord, find harmony. In the middle of difficulty, lies opportunity.", author: "Albert Einstein" },
+        { text: "Imagination is more important than knowledge. Knowledge is limited. Imagination encircles the world.", author: "Albert Einstein" },
+        { text: "A ship in harbor is safe, but that is not what ships are built for.", author: "John A. Shedd" },
+        { text: "One day or day one. You decide.", author: "Paulo Coelho" },
+        { text: "The man who moves a mountain begins by carrying away small stones.", author: "Confucius" },
+        { text: "Act without expectation.", author: "Lao Tzu" },
+        { text: "Life shrinks or expands in proportion to one's courage.", author: "Anais Nin" },
+        { text: "The purpose of life is a life of purpose.", author: "Robert Byrne" },
+        { text: "We suffer more often in imagination than in reality.", author: "Seneca" },
+        { text: "It is not that we have a short time to live, but that we waste a great deal of it.", author: "Seneca" },
+        { text: "Luck is what happens when preparation meets opportunity.", author: "Seneca" },
+        { text: "Difficulties strengthen the mind as labor does the body.", author: "Seneca" },
+        { text: "No man is free who is not master of himself.", author: "Epictetus" },
+        { text: "First say to yourself what you would be, and then do what you have to do.", author: "Epictetus" },
+        { text: "It is impossible for a man to learn what he thinks he already knows.", author: "Epictetus" },
+        { text: "Man is not worried by real problems so much as by his imagined anxieties about real problems.", author: "Epictetus" },
+        { text: "How long are you going to wait before you demand the best for yourself?", author: "Epictetus" },
+        { text: "I went to the woods because I wished to live deliberately.", author: "Henry David Thoreau" },
+        { text: "Our life is frittered away by detail. Simplify, simplify.", author: "Henry David Thoreau" },
+        { text: "What lies behind us and what lies before us are tiny matters compared to what lies within us.", author: "Ralph Waldo Emerson" },
+        { text: "Go confidently in the direction of your dreams. Live the life you have imagined.", author: "Henry David Thoreau" },
+        { text: "Every moment is a fresh beginning.", author: "T.S. Eliot" },
+        { text: "Only those who will risk going too far can possibly find out how far one can go.", author: "T.S. Eliot" },
+        { text: "You must be the change you wish to see in the world.", author: "Mahatma Gandhi" },
+        { text: "Live as if you were to die tomorrow. Learn as if you were to live forever.", author: "Mahatma Gandhi" },
+        { text: "The best way out is always through.", author: "Robert Frost" },
+        { text: "In three words I can sum up everything I have learned about life: it goes on.", author: "Robert Frost" },
+        { text: "There is a crack in everything. That is how the light gets in.", author: "Leonard Cohen" },
+        { text: "The world breaks everyone, and afterward, some are strong at the broken places.", author: "Ernest Hemingway" },
+        { text: "There is nothing noble in being superior to your fellow man. True nobility is being superior to your former self.", author: "Ernest Hemingway" },
+        { text: "Every saint has a past and every sinner has a future.", author: "Oscar Wilde" },
+        { text: "Be yourself. Everyone else is already taken.", author: "Oscar Wilde" },
+        { text: "To live is the rarest thing in the world. Most people exist, that is all.", author: "Oscar Wilde" },
+        { text: "Pain and suffering are always inevitable for a large intelligence and a deep heart.", author: "Fyodor Dostoevsky" },
+        { text: "The soul is healed by being with children.", author: "Fyodor Dostoevsky" },
+        { text: "The cave you fear to enter holds the treasure you seek.", author: "Joseph Campbell" },
+        { text: "Follow your bliss and the universe will open doors where there were only walls.", author: "Joseph Campbell" },
+        { text: "A path is made by walking on it.", author: "Zhuangzi" },
+        { text: "Muddy water, let stand, becomes clear.", author: "Lao Tzu" },
+        { text: "There is no greater agony than bearing an untold story inside you.", author: "Maya Angelou" },
+        { text: "If you are always trying to be normal, you will never know how amazing you can be.", author: "Maya Angelou" },
+        { text: "Do not go where the path may lead. Go instead where there is no path and leave a trail.", author: "Ralph Waldo Emerson" },
+        { text: "Think lightly of yourself and deeply of the world.", author: "Miyamoto Musashi" },
+        { text: "There is nothing outside of yourself that can ever enable you to get better, stronger, richer, quicker, or smarter. Everything is within.", author: "Miyamoto Musashi" },
+        { text: "In the midst of chaos, there is also opportunity.", author: "Sun Tzu" },
+        { text: "Victorious warriors win first and then go to war, while defeated warriors go to war first and then seek to win.", author: "Sun Tzu" },
+        { text: "Smooth seas do not make skillful sailors.", author: "African Proverb" },
+        { text: "However long the night, the dawn will break.", author: "African Proverb" },
+        { text: "If you want to go fast, go alone. If you want to go far, go together.", author: "African Proverb" },
+        { text: "This too shall pass.", author: "Persian Proverb" },
+        { text: "I have not failed. I have just found ten thousand ways that do not work.", author: "Thomas Edison" },
+        { text: "The measure of intelligence is the ability to change.", author: "Albert Einstein" },
+        { text: "Strive not to be a success, but rather to be of value.", author: "Albert Einstein" },
+        { text: "Where there is ruin, there is hope for a treasure.", author: "Rumi" },
+        { text: "Raise your words, not your voice. It is rain that grows flowers, not thunder.", author: "Rumi" },
+        { text: "Do not be satisfied with the stories that come before you. Unfold your own myth.", author: "Rumi" },
+        { text: "The lion does not turn around when a small dog barks.", author: "African Proverb" },
+        { text: "Start where you are. Use what you have. Do what you can.", author: "Arthur Ashe" },
+        { text: "The only limit to our realization of tomorrow will be our doubts of today.", author: "Franklin D. Roosevelt" },
+        { text: "Don't count the days. Make the days count.", author: "Muhammad Ali" },
+        { text: "Float like a butterfly, sting like a bee.", author: "Muhammad Ali" },
+        { text: "He who is not courageous enough to take risks will accomplish nothing in life.", author: "Muhammad Ali" },
+        { text: "The man who has no imagination has no wings.", author: "Muhammad Ali" },
+        { text: "Success is not final, failure is not fatal. It is the courage to continue that counts.", author: "Winston Churchill" },
+        { text: "If you are going through hell, keep going.", author: "Winston Churchill" },
+        { text: "We make a living by what we get, but we make a life by what we give.", author: "Winston Churchill" },
+        { text: "The pessimist sees difficulty in every opportunity. The optimist sees opportunity in every difficulty.", author: "Winston Churchill" },
+        { text: "Everything you can imagine is real.", author: "Pablo Picasso" },
+        { text: "Every child is an artist. The problem is how to remain an artist once we grow up.", author: "Pablo Picasso" },
+        { text: "Action is the foundational key to all success.", author: "Pablo Picasso" },
+        { text: "The meaning of life is to find your gift. The purpose of life is to give it away.", author: "Pablo Picasso" },
+        { text: "It always seems impossible until it is done.", author: "Nelson Mandela" },
+        { text: "Education is the most powerful weapon which you can use to change the world.", author: "Nelson Mandela" },
+        { text: "I learned that courage was not the absence of fear, but the triumph over it.", author: "Nelson Mandela" },
+        { text: "A winner is a dreamer who never gives up.", author: "Nelson Mandela" },
+        { text: "Do what you can, with what you have, where you are.", author: "Theodore Roosevelt" },
+        { text: "Believe you can and you are halfway there.", author: "Theodore Roosevelt" },
+        { text: "It is hard to fail, but it is worse never to have tried to succeed.", author: "Theodore Roosevelt" },
+        { text: "Knowing is not enough, we must apply. Willing is not enough, we must do.", author: "Bruce Lee" },
+        { text: "Be water, my friend.", author: "Bruce Lee" },
+        { text: "Absorb what is useful, discard what is useless, and add what is specifically your own.", author: "Bruce Lee" },
+        { text: "The key to immortality is first living a life worth remembering.", author: "Bruce Lee" },
+        { text: "Do not pray for an easy life. Pray for the strength to endure a difficult one.", author: "Bruce Lee" },
+        { text: "Mistakes are the portals of discovery.", author: "James Joyce" },
+        { text: "Turn your wounds into wisdom.", author: "Oprah Winfrey" },
+        { text: "The biggest adventure you can take is to live the life of your dreams.", author: "Oprah Winfrey" },
+        { text: "We delight in the beauty of the butterfly, but rarely admit the changes it has gone through to achieve that beauty.", author: "Maya Angelou" },
+        { text: "Nothing is impossible. The word itself says I am possible.", author: "Audrey Hepburn" },
+        { text: "The most courageous act is still to think for yourself. Aloud.", author: "Coco Chanel" },
+        { text: "Life is either a daring adventure or nothing at all.", author: "Helen Keller" },
+        { text: "The only thing worse than being blind is having sight but no vision.", author: "Helen Keller" },
+        { text: "Keep your face always toward the sunshine and shadows will fall behind you.", author: "Walt Whitman" },
+        { text: "Do I contradict myself? Very well then, I contradict myself. I am large, I contain multitudes.", author: "Walt Whitman" },
+        { text: "Whatever you are, be a good one.", author: "Abraham Lincoln" },
+        { text: "The best way to predict the future is to create it.", author: "Abraham Lincoln" },
+        { text: "In the end, it is not the years in your life that count. It is the life in your years.", author: "Abraham Lincoln" },
+        { text: "Try not to become a man of success. Rather become a man of value.", author: "Albert Einstein" },
+        { text: "Logic will get you from A to B. Imagination will take you everywhere.", author: "Albert Einstein" },
+        { text: "Life is what happens when you are busy making other plans.", author: "John Lennon" },
+        { text: "You may say I am a dreamer, but I am not the only one.", author: "John Lennon" },
+        { text: "And in the end, the love you take is equal to the love you make.", author: "The Beatles" },
+        { text: "The world is full of magic things, patiently waiting for our senses to grow sharper.", author: "W.B. Yeats" },
+        { text: "I have spread my dreams under your feet. Tread softly because you tread on my dreams.", author: "W.B. Yeats" },
+        { text: "Hope is the thing with feathers that perches in the soul.", author: "Emily Dickinson" },
+        { text: "Forever is composed of nows.", author: "Emily Dickinson" },
+        { text: "I dwell in possibility.", author: "Emily Dickinson" },
+        { text: "The creation of a thousand forests is in one acorn.", author: "Ralph Waldo Emerson" },
+        { text: "Nothing great was ever achieved without enthusiasm.", author: "Ralph Waldo Emerson" },
+        { text: "What we achieve inwardly will change outer reality.", author: "Plutarch" },
+        { text: "No great mind has ever existed without a touch of madness.", author: "Aristotle" },
+        { text: "Knowing yourself is the beginning of all wisdom.", author: "Aristotle" },
+        { text: "Quality is not an act, it is a habit.", author: "Aristotle" },
+        { text: "The energy of the mind is the essence of life.", author: "Aristotle" },
+        { text: "Well begun is half done.", author: "Aristotle" },
+        { text: "If opportunity does not knock, build a door.", author: "Milton Berle" },
+        { text: "What we think, we become.", author: "Buddha" },
+        { text: "Peace comes from within. Do not seek it without.", author: "Buddha" },
+        { text: "Three things cannot be long hidden: the sun, the moon, and the truth.", author: "Buddha" },
+        { text: "Better than a thousand hollow words is one word that brings peace.", author: "Buddha" },
+        { text: "You yourself, as much as anybody in the entire universe, deserve your love and affection.", author: "Buddha" },
+        { text: "A thousand-mile journey begins beneath your feet.", author: "Lao Tzu" },
+        { text: "The wise man is one who knows what he does not know.", author: "Lao Tzu" },
+        { text: "Mastering others is strength. Mastering yourself is true power.", author: "Lao Tzu" },
+        { text: "Care about what other people think and you will always be their prisoner.", author: "Lao Tzu" },
+        { text: "When you realize nothing is lacking, the whole world belongs to you.", author: "Lao Tzu" },
+        { text: "The eye sees only what the mind is prepared to comprehend.", author: "Robertson Davies" },
+        { text: "What the caterpillar calls the end of the world, the master calls a butterfly.", author: "Richard Bach" },
+        { text: "One must still have chaos in oneself to be able to give birth to a dancing star.", author: "Friedrich Nietzsche" },
+        { text: "Without music, life would be a mistake.", author: "Friedrich Nietzsche" },
+        { text: "And those who were seen dancing were thought to be insane by those who could not hear the music.", author: "Friedrich Nietzsche" },
+        { text: "Doubt is an uncomfortable condition, but certainty is a ridiculous one.", author: "Voltaire" },
+        { text: "Judge a man by his questions rather than by his answers.", author: "Voltaire" },
+        { text: "The secret of getting ahead is getting started.", author: "Mark Twain" },
+        { text: "Whenever you find yourself on the side of the majority, it is time to pause and reflect.", author: "Mark Twain" },
+        { text: "Twenty years from now you will be more disappointed by the things you did not do than by the ones you did.", author: "Mark Twain" },
+        { text: "The two most important days in your life are the day you are born and the day you find out why.", author: "Mark Twain" },
+        { text: "If you tell the truth, you do not have to remember anything.", author: "Mark Twain" },
+        { text: "I am not what happened to me. I am what I choose to become.", author: "Carl Jung" },
+        { text: "Who looks outside, dreams. Who looks inside, awakes.", author: "Carl Jung" },
+        { text: "Until you make the unconscious conscious, it will direct your life and you will call it fate.", author: "Carl Jung" },
+        { text: "The privilege of a lifetime is to become who you truly are.", author: "Carl Jung" },
+        { text: "Between stimulus and response there is a space. In that space is our power to choose our response.", author: "Viktor Frankl" },
+        { text: "When we are no longer able to change a situation, we are challenged to change ourselves.", author: "Viktor Frankl" },
+        { text: "Everything can be taken from a man but one thing: the last of the human freedoms — to choose one's attitude.", author: "Viktor Frankl" },
+        { text: "Forget safety. Live where you fear to live. Destroy your reputation. Be notorious.", author: "Rumi" },
+        { text: "The garden of the world has no limits except in your mind.", author: "Rumi" },
+        { text: "Silence is the language of God. All else is poor translation.", author: "Rumi" },
+        { text: "You were born with wings. Why prefer to crawl through life?", author: "Rumi" },
+        { text: "Let yourself be silently drawn by the strange pull of what you really love. It will not lead you astray.", author: "Rumi" },
+        { text: "Respond to every call that excites your spirit.", author: "Rumi" },
+        { text: "Travel light, live light, spread the light, be the light.", author: "Yogi Bhajan" },
+        { text: "The only person you are destined to become is the person you decide to be.", author: "Ralph Waldo Emerson" },
+        { text: "The wound is the place where the light enters you.", author: "Rumi" },
+        { text: "Be patient. Everything comes to you in the right moment.", author: "Buddha" },
+        { text: "With the new day comes new strength and new thoughts.", author: "Eleanor Roosevelt" },
+        { text: "The future belongs to those who believe in the beauty of their dreams.", author: "Eleanor Roosevelt" },
+        { text: "No one can make you feel inferior without your consent.", author: "Eleanor Roosevelt" },
+        { text: "The best and most beautiful things in the world cannot be seen or even touched. They must be felt with the heart.", author: "Helen Keller" },
+        { text: "Courage is not the absence of fear. It is acting in spite of it.", author: "Mark Twain" },
+        { text: "Stay hungry, stay foolish.", author: "Steve Jobs" },
+        { text: "Your time is limited. Do not waste it living someone else's life.", author: "Steve Jobs" },
+        { text: "Innovation distinguishes between a leader and a follower.", author: "Steve Jobs" },
+        { text: "Have the courage to follow your heart and intuition. They somehow already know what you truly want to become.", author: "Steve Jobs" },
+        { text: "The people who are crazy enough to think they can change the world are the ones who do.", author: "Steve Jobs" },
+        { text: "Simplicity is the ultimate form of sophistication.", author: "Clare Boothe Luce" },
+        { text: "In a gentle way, you can shake the world.", author: "Mahatma Gandhi" },
+        { text: "Strength does not come from physical capacity. It comes from an indomitable will.", author: "Mahatma Gandhi" },
+        { text: "The weak can never forgive. Forgiveness is the attribute of the strong.", author: "Mahatma Gandhi" },
+        { text: "An eye for an eye only ends up making the whole world blind.", author: "Mahatma Gandhi" },
+        { text: "First they ignore you, then they laugh at you, then they fight you, then you win.", author: "Mahatma Gandhi" },
+        { text: "Darkness cannot drive out darkness. Only light can do that.", author: "Martin Luther King Jr." },
+        { text: "Injustice anywhere is a threat to justice everywhere.", author: "Martin Luther King Jr." },
+        { text: "The time is always right to do what is right.", author: "Martin Luther King Jr." },
+        { text: "Our lives begin to end the day we become silent about things that matter.", author: "Martin Luther King Jr." },
+        { text: "Faith is taking the first step even when you cannot see the whole staircase.", author: "Martin Luther King Jr." },
+        { text: "Intelligence plus character — that is the goal of true education.", author: "Martin Luther King Jr." },
+        { text: "Only in the darkness can you see the stars.", author: "Martin Luther King Jr." },
+        { text: "We must accept finite disappointment but never lose infinite hope.", author: "Martin Luther King Jr." },
+        { text: "The greatest glory in living lies not in never falling, but in rising every time we fall.", author: "Nelson Mandela" },
+        { text: "Do not judge me by my successes. Judge me by how many times I fell down and got back up again.", author: "Nelson Mandela" },
+        { text: "May your choices reflect your hopes, not your fears.", author: "Nelson Mandela" },
+        { text: "What counts in life is not the mere fact that we have lived.", author: "Nelson Mandela" },
+        { text: "There is no passion to be found playing small — in settling for a life that is less than the one you are capable of living.", author: "Nelson Mandela" },
+        { text: "Life is ten percent what happens to you and ninety percent how you respond to it.", author: "Lou Holtz" },
+        { text: "The mind is not a vessel to be filled but a fire to be kindled.", author: "Plutarch" },
+        { text: "Expect nothing. Appreciate everything.", author: "Zen Proverb" },
+        { text: "Let go or be dragged.", author: "Zen Proverb" },
+        { text: "The obstacle in the path becomes the path. Never forget, within every obstacle is an opportunity to improve our condition.", author: "Ryan Holiday" },
+        { text: "Ego is the enemy.", author: "Ryan Holiday" },
+        { text: "Stillness is the key.", author: "Ryan Holiday" },
+        { text: "You could leave life right now. Let that determine what you do and say and think.", author: "Marcus Aurelius" },
+        { text: "The impediment to action advances action. What stands in the way becomes the way.", author: "Marcus Aurelius" },
+        { text: "When you arise in the morning, think of what a precious privilege it is to be alive.", author: "Marcus Aurelius" },
+        { text: "Very little is needed to make a happy life. It is all within yourself, in your way of thinking.", author: "Marcus Aurelius" },
+        { text: "Accept the things to which fate binds you, and love the people with whom fate brings you together.", author: "Marcus Aurelius" },
+        { text: "Dwell on the beauty of life. Watch the stars, and see yourself running with them.", author: "Marcus Aurelius" },
+        { text: "Loss is nothing else but change, and change is nature's delight.", author: "Marcus Aurelius" },
+        { text: "True happiness is to enjoy the present without anxious dependence upon the future.", author: "Seneca" },
+        { text: "As is a tale, so is life: not how long it is, but how good it is, is what matters.", author: "Seneca" },
+        { text: "Hang on to your youthful enthusiasms — you will be able to use them better when you are older.", author: "Seneca" },
+        { text: "Sometimes even to live is an act of courage.", author: "Seneca" },
+        { text: "Begin at once to live, and count each separate day as a separate life.", author: "Seneca" },
+        { text: "A gem cannot be polished without friction, nor a man perfected without trials.", author: "Seneca" },
+        { text: "Life is long if you know how to use it.", author: "Seneca" },
+        { text: "He who fears death will never do anything worthy of a man who is alive.", author: "Seneca" },
+        { text: "Where fear is, happiness is not.", author: "Seneca" },
+        { text: "All cruelty springs from weakness.", author: "Seneca" },
+        { text: "What need is there to weep over parts of life? The whole of it calls for tears.", author: "Seneca" },
+        { text: "To be everywhere is to be nowhere.", author: "Seneca" },
+        { text: "Throw me to the wolves and I will return leading the pack.", author: "Seneca" },
+        { text: "It does not matter how slowly you go as long as you do not stop.", author: "Confucius" },
+        { text: "Our greatest glory is not in never falling, but in rising every time we fall.", author: "Confucius" },
+        { text: "Everything has beauty, but not everyone sees it.", author: "Confucius" },
+        { text: "Real knowledge is to know the extent of one's ignorance.", author: "Confucius" },
+        { text: "The funniest people are the saddest ones.", author: "Confucius" },
+        { text: "Study the past if you would define the future.", author: "Confucius" },
+        { text: "When it is obvious that goals cannot be reached, don't adjust the goals, adjust the action steps.", author: "Confucius" },
+        { text: "It is not the mountain we conquer, but ourselves.", author: "Edmund Hillary" },
+        { text: "The greatest wealth is to live content with little.", author: "Plato" },
+        { text: "Wise men speak because they have something to say. Fools because they have to say something.", author: "Plato" },
+        { text: "Courage is knowing what not to fear.", author: "Plato" },
+        { text: "Human behavior flows from three main sources: desire, emotion, and knowledge.", author: "Plato" },
+        { text: "Do not spoil what you have by desiring what you have not.", author: "Epicurus" },
+        { text: "Not what we have but what we enjoy constitutes our abundance.", author: "Epicurus" },
+        { text: "He who is not satisfied with a little is satisfied with nothing.", author: "Epicurus" },
+        { text: "Death does not concern us, because as long as we exist, death is not here.", author: "Epicurus" },
+        { text: "The art of living well and the art of dying well are one.", author: "Epicurus" },
+        { text: "If you wish to be a writer, write.", author: "Epictetus" },
+        { text: "Make the best use of what is in your power, and take the rest as it happens.", author: "Epictetus" },
+        { text: "Only the educated are free.", author: "Epictetus" },
+        { text: "It is not things that disturb us, but our judgments about things.", author: "Epictetus" },
+        { text: "Other people's views and troubles can be contagious. Don't sabotage yourself by unwittingly adopting negative, unproductive attitudes.", author: "Epictetus" },
+        { text: "Don't explain your philosophy. Embody it.", author: "Epictetus" },
+        { text: "You become what you give your attention to.", author: "Epictetus" },
+        { text: "Wealth consists not in having great possessions, but in having few wants.", author: "Epictetus" },
+        { text: "Circumstances don't make the man, they only reveal him to himself.", author: "Epictetus" },
+        { text: "Caretake this moment. Immerse yourself in its particulars.", author: "Epictetus" },
+        { text: "The soul becomes dyed with the color of its thoughts.", author: "Marcus Aurelius" },
+        { text: "The things you think about determine the quality of your mind.", author: "Marcus Aurelius" },
+        { text: "Time is a river, a violent current of events, glimpsed once and already carried past us, and another follows and is gone.", author: "Marcus Aurelius" },
+        { text: "Do every act of your life as though it were the very last act of your life.", author: "Marcus Aurelius" },
+        { text: "If it is not right, do not do it. If it is not true, do not say it.", author: "Marcus Aurelius" },
+        { text: "How much more grievous are the consequences of anger than the causes of it.", author: "Marcus Aurelius" },
+        { text: "Receive without conceit, release without struggle.", author: "Marcus Aurelius" },
+        { text: "Almost nothing material is needed for a happy life, for he who has understood existence.", author: "Marcus Aurelius" },
+        { text: "Choose not to be harmed and you won't feel harmed. Don't feel harmed and you haven't been.", author: "Marcus Aurelius" },
+        { text: "Never esteem anything as of advantage to you that will make you break your word or lose your self-respect.", author: "Marcus Aurelius" },
+        { text: "Adapt yourself to the things among which your lot has been cast, and love sincerely the fellow creatures with whom destiny has ordained that you shall live.", author: "Marcus Aurelius" },
+        { text: "Be tolerant with others and strict with yourself.", author: "Marcus Aurelius" },
+        { text: "No man is happy who does not think himself so.", author: "Publilius Syrus" },
+        { text: "A bird sitting on a tree is never afraid of the branch breaking, because its trust is not on the branch but on its own wings.", author: "Charlie Wardle" },
+        { text: "The only way to make sense out of change is to plunge into it, move with it, and join the dance.", author: "Alan Watts" },
+        { text: "Muddy water is best cleared by leaving it alone.", author: "Alan Watts" },
+        { text: "The meaning of life is just to be alive. It is so plain and so obvious and so simple.", author: "Alan Watts" },
+        { text: "You are the universe experiencing itself.", author: "Alan Watts" },
+        { text: "A man who dares to waste one hour of time has not discovered the value of life.", author: "Charles Darwin" },
+        { text: "I have no special talents. I am only passionately curious.", author: "Albert Einstein" },
+        { text: "The desire for safety stands against every great and noble enterprise.", author: "Tacitus" },
+        { text: "We are what we repeatedly do. Excellence then is not an act, but a habit.", author: "Will Durant" },
+        { text: "I am the master of my fate, I am the captain of my soul.", author: "William Ernest Henley" },
+        { text: "Out of the night that covers me, black as the pit from pole to pole, I thank whatever gods may be for my unconquerable soul.", author: "William Ernest Henley" },
+        { text: "There are years that ask questions and years that answer.", author: "Zora Neale Hurston" },
+        { text: "Ships don't sink because of the water around them. Ships sink because of the water that gets in them.", author: "Unknown" },
+        { text: "A smooth sea never made a skilled sailor.", author: "Franklin D. Roosevelt" },
+        { text: "The scariest moment is always just before you start.", author: "Stephen King" },
+        { text: "Get busy living, or get busy dying.", author: "Stephen King" },
+        { text: "Don't let the noise of others' opinions drown out your own inner voice.", author: "Steve Jobs" },
+        { text: "Death is very likely the single best invention of life. It is life's change agent.", author: "Steve Jobs" },
+        { text: "Remembering that you are going to die is the best way I know to avoid the trap of thinking you have something to lose.", author: "Steve Jobs" },
+        { text: "Here's to the crazy ones. The misfits. The rebels. The troublemakers. The round pegs in square holes.", author: "Steve Jobs" },
+        { text: "The sword that kills is also the sword that gives life.", author: "Yagyu Munenori" },
+        { text: "Fixedness of position is death. Fluidity is life.", author: "Miyamoto Musashi" },
+        { text: "In strategy your spiritual bearing must not be any different from normal.", author: "Miyamoto Musashi" },
+        { text: "Today is victory over yourself of yesterday. Tomorrow is your victory over lesser men.", author: "Miyamoto Musashi" },
+        { text: "Do nothing that is of no use.", author: "Miyamoto Musashi" },
+        { text: "Perceive that which cannot be seen with the eye.", author: "Miyamoto Musashi" },
+        { text: "Respect Buddha and the gods without counting on their help.", author: "Miyamoto Musashi" },
+        { text: "All men can see these tactics whereby I conquer, but what none can see is the strategy out of which victory is evolved.", author: "Sun Tzu" },
+        { text: "Appear weak when you are strong and strong when you are weak.", author: "Sun Tzu" },
+        { text: "The supreme art of war is to subdue the enemy without fighting.", author: "Sun Tzu" },
+        { text: "Let your plans be dark and impenetrable as night, and when you move, fall like a thunderbolt.", author: "Sun Tzu" },
+        { text: "Every battle is won before it is ever fought.", author: "Sun Tzu" },
+        { text: "Opportunities multiply as they are seized.", author: "Sun Tzu" },
+        { text: "The roots of education are bitter, but the fruit is sweet.", author: "Aristotle" },
+        { text: "I fear not the man who has practiced ten thousand kicks once, but I fear the man who has practiced one kick ten thousand times.", author: "Bruce Lee" },
+        { text: "If you spend too much time thinking about a thing, you will never get it done.", author: "Bruce Lee" },
+        { text: "A wise man can learn more from a foolish question than a fool can learn from a wise answer.", author: "Bruce Lee" },
+        { text: "Empty your cup so that it may be filled. Become devoid to gain totality.", author: "Bruce Lee" },
+        { text: "Ever tried. Ever failed. No matter. Try again. Fail again. Fail better.", author: "Samuel Beckett" },
+        { text: "In the depth of winter, I finally learned that within me there lay an invincible summer.", author: "Albert Camus" },
+        { text: "Man is the only creature who refuses to be what he is.", author: "Albert Camus" },
+        { text: "Should I kill myself, or have a cup of coffee?", author: "Albert Camus" },
+        { text: "The only way to deal with an unfree world is to become so absolutely free that your very existence is an act of rebellion.", author: "Albert Camus" },
+        { text: "You will never be happy if you continue to search for what happiness consists of.", author: "Albert Camus" },
+        { text: "Man is condemned to be free. Because once thrown into the world, he is responsible for everything he does.", author: "Jean-Paul Sartre" },
+        { text: "Freedom is what we do with what is done to us.", author: "Jean-Paul Sartre" },
+        { text: "Hell is other people.", author: "Jean-Paul Sartre" },
+        { text: "If you are lonely when you are alone, you are in bad company.", author: "Jean-Paul Sartre" },
+        { text: "To love is to recognize yourself in another.", author: "Eckhart Tolle" },
+        { text: "Realize deeply that the present moment is all you ever have.", author: "Eckhart Tolle" },
+        { text: "Life is the dancer and you are the dance.", author: "Eckhart Tolle" },
+        { text: "What a liberation to realize that the voice in my head is not who I am.", author: "Eckhart Tolle" },
+        { text: "Wherever you are, be there totally.", author: "Eckhart Tolle" },
+        { text: "The primary cause of unhappiness is never the situation but your thoughts about it.", author: "Eckhart Tolle" },
+        { text: "Those who know do not speak. Those who speak do not know.", author: "Lao Tzu" },
+        { text: "Great acts are made up of small deeds.", author: "Lao Tzu" },
+        { text: "Stop leaving and you will arrive. Stop searching and you will see.", author: "Lao Tzu" },
+        { text: "At the center of your being you have the answer. You know who you are and you know what you want.", author: "Lao Tzu" },
+        { text: "If you correct your mind, the rest of your life will fall into place.", author: "Lao Tzu" },
+        { text: "Respond intelligently even to unintelligent treatment.", author: "Lao Tzu" },
+        { text: "Life is a series of natural and spontaneous changes. Don't resist them — that only creates sorrow.", author: "Lao Tzu" },
+        { text: "When the student is ready, the teacher will appear. When the student is truly ready, the teacher will disappear.", author: "Lao Tzu" },
+        { text: "The universe is under no obligation to make sense to you.", author: "Neil deGrasse Tyson" },
+        { text: "We are all just walking each other home.", author: "Ram Dass" },
+        { text: "Be here now.", author: "Ram Dass" },
+        { text: "The game is not about becoming somebody, it is about becoming nobody.", author: "Ram Dass" },
+        { text: "As long as the mind is enslaved, the body can never be free.", author: "Martin Luther King Jr." },
+        { text: "The question is not whether we will be extremists, but what kind of extremists we will be.", author: "Martin Luther King Jr." },
+        { text: "What does not destroy me makes me stronger.", author: "Friedrich Nietzsche" },
+        { text: "He who has a why to live for can bear almost any how.", author: "Friedrich Nietzsche" },
+        { text: "There is always some madness in love. But there is also always some reason in madness.", author: "Friedrich Nietzsche" },
+        { text: "Become who you are.", author: "Friedrich Nietzsche" },
+        { text: "God is dead. God remains dead. And we have killed him.", author: "Friedrich Nietzsche" },
+        { text: "The snake which cannot cast its skin has to die.", author: "Friedrich Nietzsche" },
+        { text: "Man is a rope stretched between the animal and the superhuman — a rope over an abyss.", author: "Friedrich Nietzsche" },
+        { text: "I am a forest and a night of dark trees. But he who is not afraid of my darkness will find banks full of roses under my cypresses.", author: "Friedrich Nietzsche" },
+        { text: "Invisible threads are the strongest ties.", author: "Friedrich Nietzsche" },
+        { text: "One ought to hold on to one's heart, for if one lets it go, one soon loses control of the head too.", author: "Friedrich Nietzsche" },
+        { text: "You have your way. I have my way. As for the right way, the correct way, and the only way, it does not exist.", author: "Friedrich Nietzsche" },
+        { text: "The higher we soar, the smaller we appear to those who cannot fly.", author: "Friedrich Nietzsche" },
+        { text: "Beware that, when fighting monsters, you yourself do not become a monster. For when you gaze long into the abyss, the abyss gazes also into you.", author: "Friedrich Nietzsche" },
+        { text: "No tree, it is said, can grow to heaven unless its roots reach down to hell.", author: "Carl Jung" },
+        { text: "Your visions will become clear only when you can look into your own heart.", author: "Carl Jung" },
+        { text: "People will do anything, no matter how absurd, to avoid facing their own souls.", author: "Carl Jung" },
+        { text: "Everything that irritates us about others can lead us to an understanding of ourselves.", author: "Carl Jung" },
+        { text: "The most terrifying thing is to accept oneself completely.", author: "Carl Jung" },
+        { text: "What you resist, persists.", author: "Carl Jung" },
+        { text: "Where love rules, there is no will to power, and where power predominates, love is lacking.", author: "Carl Jung" },
+        { text: "Loneliness does not come from having no people around you, but from being unable to communicate the things that seem important to you.", author: "Carl Jung" },
+        { text: "Thinking is difficult, that is why most people judge.", author: "Carl Jung" },
+        { text: "The meeting of two personalities is like the contact of two chemical substances. If there is any reaction, both are transformed.", author: "Carl Jung" },
+        { text: "Show me a sane man and I will cure him for you.", author: "Carl Jung" },
+        { text: "We cannot change anything until we accept it. Condemnation does not liberate, it oppresses.", author: "Carl Jung" },
+        { text: "The shoe that fits one person pinches another. There is no recipe for living that suits all cases.", author: "Carl Jung" },
+        { text: "One does not become enlightened by imagining figures of light, but by making the darkness conscious.", author: "Carl Jung" },
+        { text: "In all chaos there is a cosmos, in all disorder a secret order.", author: "Carl Jung" },
+        { text: "Normality is a paved road. It's comfortable to walk, but no flowers grow on it.", author: "Vincent van Gogh" },
+        { text: "I would rather die of passion than of boredom.", author: "Vincent van Gogh" },
+        { text: "What would life be if we had no courage to attempt anything?", author: "Vincent van Gogh" },
+        { text: "Great things are not done by impulse, but by a series of small things brought together.", author: "Vincent van Gogh" },
+        { text: "I put my heart and my soul into my work, and have lost my mind in the process.", author: "Vincent van Gogh" },
+        { text: "If you hear a voice within you say you cannot paint, then by all means paint, and that voice will be silenced.", author: "Vincent van Gogh" },
+        { text: "The purpose of our lives is to be happy.", author: "Dalai Lama" },
+        { text: "If you think you are too small to make a difference, try sleeping with a mosquito.", author: "Dalai Lama" },
+        { text: "Be kind whenever possible. It is always possible.", author: "Dalai Lama" },
+        { text: "Choose to be optimistic, it feels better.", author: "Dalai Lama" },
+        { text: "The planet does not need more successful people. It desperately needs more peacemakers, healers, restorers, storytellers, and lovers of every kind.", author: "Dalai Lama" },
+        { text: "An open heart is an open mind.", author: "Dalai Lama" },
+        { text: "Old friends pass away, new friends appear. It is just like the days.", author: "Dalai Lama" },
+        { text: "There are only two days in the year that nothing can be done. One is called yesterday and the other is called tomorrow.", author: "Dalai Lama" },
+        { text: "Know the rules well, so you can break them effectively.", author: "Dalai Lama" },
+        { text: "Where ignorance is our master, there is no possibility of real peace.", author: "Dalai Lama" },
+        { text: "Give the ones you love wings to fly, roots to come back, and reasons to stay.", author: "Dalai Lama" },
+        { text: "True change is within. Leave the outside as it is.", author: "Dalai Lama" },
+        { text: "The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.", author: "Albert Einstein" },
+        { text: "Anyone who has never made a mistake has never tried anything new.", author: "Albert Einstein" },
+        { text: "A person who never made a mistake never tried anything new.", author: "Albert Einstein" },
+        { text: "The important thing is not to stop questioning. Curiosity has its own reason for existing.", author: "Albert Einstein" },
+        { text: "Creativity is intelligence having fun.", author: "Albert Einstein" },
+        { text: "Look deep into nature, and then you will understand everything better.", author: "Albert Einstein" },
+        { text: "In the middle of every difficulty lies opportunity.", author: "Albert Einstein" },
+        { text: "The only source of knowledge is experience.", author: "Albert Einstein" },
+        { text: "Peace cannot be kept by force. It can only be achieved by understanding.", author: "Albert Einstein" },
+        { text: "Life is like riding a bicycle. To keep your balance, you must keep moving.", author: "Albert Einstein" },
+        { text: "There are two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.", author: "Albert Einstein" },
+        { text: "The definition of insanity is doing the same thing over and over again and expecting different results.", author: "Albert Einstein" },
+        { text: "Weak people revenge. Strong people forgive. Intelligent people ignore.", author: "Albert Einstein" },
+        { text: "I speak to everyone in the same way, whether he is the garbage man or the president of the university.", author: "Albert Einstein" },
+        { text: "Reality is merely an illusion, albeit a very persistent one.", author: "Albert Einstein" },
+        { text: "A question that sometimes drives me hazy: am I or are the others crazy?", author: "Albert Einstein" },
+        { text: "The only thing that interferes with my learning is my education.", author: "Albert Einstein" },
+        { text: "Few are those who see with their own eyes and feel with their own hearts.", author: "Albert Einstein" },
+        { text: "The true sign of intelligence is not knowledge but imagination.", author: "Albert Einstein" },
+        { text: "A clever person solves a problem. A wise person avoids it.", author: "Albert Einstein" },
+        { text: "Black holes are where God divided by zero.", author: "Albert Einstein" },
+        { text: "Great spirits have always encountered violent opposition from mediocre minds.", author: "Albert Einstein" },
+        { text: "I'd rather be an optimist and a fool than a pessimist and right.", author: "Albert Einstein" },
+        { text: "All religions, arts, and sciences are branches of the same tree.", author: "Albert Einstein" },
+        { text: "It is the supreme art of the teacher to awaken joy in creative expression and knowledge.", author: "Albert Einstein" },
+        { text: "Joy in looking and comprehending is nature's most beautiful gift.", author: "Albert Einstein" },
+        { text: "We cannot solve our problems with the same thinking we used when we created them.", author: "Albert Einstein" },
+        { text: "If I had an hour to solve a problem I'd spend 55 minutes thinking about the problem and five minutes thinking about solutions.", author: "Albert Einstein" },
+        { text: "Once you stop learning, you start dying.", author: "Albert Einstein" },
+        { text: "Not everything that can be counted counts, and not everything that counts can be counted.", author: "William Bruce Cameron" },
+        { text: "The mind that opens to a new idea never returns to its original size.", author: "Albert Einstein" },
+        { text: "Do what is right, not what is easy nor what is popular.", author: "Roy T. Bennett" },
+        { text: "Instead of worrying about what you cannot control, shift your energy to what you can create.", author: "Roy T. Bennett" },
+        { text: "Be mindful. Be grateful. Be positive. Be true. Be kind.", author: "Roy T. Bennett" },
+        { text: "Don't be pushed around by the fears in your mind. Be led by the dreams in your heart.", author: "Roy T. Bennett" },
+        { text: "Never lose hope. Storms make people stronger and never last forever.", author: "Roy T. Bennett" },
+        { text: "Don't waste your time in anger, regrets, worries, and grudges. Life is too short to be unhappy.", author: "Roy T. Bennett" },
+        { text: "No matter how much suffering you went through, you never wanted to let go of those memories.", author: "Haruki Murakami" },
+        { text: "Pain is inevitable. Suffering is optional.", author: "Haruki Murakami" },
+        { text: "And once the storm is over, you won't remember how you made it through, how you managed to survive. But one thing is certain. When you come out of the storm, you won't be the same person who walked in.", author: "Haruki Murakami" },
+        { text: "Whatever it is you're seeking won't come in the form you're expecting.", author: "Haruki Murakami" },
+        { text: "If you only read the books that everyone else is reading, you can only think what everyone else is thinking.", author: "Haruki Murakami" },
+        { text: "Every one of us is losing something precious to us. Lost opportunities, lost possibilities, feelings we can never get back again.", author: "Haruki Murakami" },
+        { text: "Closing your eyes isn't going to change anything. Nothing's going to disappear just because you can't see what's going on.", author: "Haruki Murakami" },
+        { text: "Don't feel sorry for yourself. Only arseholes do that.", author: "Haruki Murakami" },
+        { text: "Deep in the human unconscious is a pervasive need for a logical universe that makes sense. But the real universe is always one step beyond logic.", author: "Frank Herbert" },
+        { text: "I must not fear. Fear is the mind-killer. Fear is the little-death that brings total obliteration.", author: "Frank Herbert" },
+        { text: "The mystery of life isn't a problem to solve, but a reality to experience.", author: "Frank Herbert" },
+        { text: "Without change, something sleeps inside us, and seldom awakens. The sleeper must awaken.", author: "Frank Herbert" },
+        { text: "There is no real ending. It's just the place where you stop the story.", author: "Frank Herbert" },
+        { text: "It is so easy to be wrong — and to persist in being wrong — when the costs of being wrong are paid by others.", author: "Thomas Sowell" },
+        { text: "The problem isn't that Johnny can't read. The problem isn't even that Johnny can't think. The problem is that Johnny doesn't know what thinking is.", author: "Thomas Sowell" },
+        { text: "People who enjoy meetings should not be in charge of anything.", author: "Thomas Sowell" },
+        { text: "It is hard to imagine a more stupid or more dangerous way of making decisions than by putting those decisions in the hands of people who pay no price for being wrong.", author: "Thomas Sowell" },
+        { text: "When you want to help people, you tell them the truth. When you want to help yourself, you tell them what they want to hear.", author: "Thomas Sowell" },
+        { text: "The art of war is of vital importance to the State. It is a matter of life and death.", author: "Sun Tzu" },
+        { text: "Know yourself and you will win all battles.", author: "Sun Tzu" },
+        { text: "Strategy without tactics is the slowest route to victory. Tactics without strategy is the noise before defeat.", author: "Sun Tzu" },
+        { text: "Do not repeat the tactics which have gained you one victory, but let your methods be regulated by the infinite variety of circumstances.", author: "Sun Tzu" },
+        { text: "If you know the enemy and know yourself, you need not fear the result of a hundred battles.", author: "Sun Tzu" },
+        { text: "Supreme excellence consists in breaking the enemy's resistance without fighting.", author: "Sun Tzu" },
+        { text: "There is no instance of a nation benefiting from prolonged warfare.", author: "Sun Tzu" },
+        { text: "The wise warrior avoids the battle.", author: "Sun Tzu" },
+        { text: "Treat your men as you would your own beloved sons. And they will follow you into the deepest valley.", author: "Sun Tzu" },
+        { text: "Old age is no place for sissies.", author: "Bette Davis" },
+        { text: "People often say that motivation doesn't last. Well, neither does bathing — that's why we recommend it daily.", author: "Zig Ziglar" },
+        { text: "The only difference between a good day and a bad day is your attitude.", author: "Dennis S. Brown" },
+        { text: "You miss one hundred percent of the shots you don't take.", author: "Wayne Gretzky" },
+        { text: "Whether you think you can or you think you can't, you're right.", author: "Henry Ford" },
+        { text: "When everything seems to be going against you, remember that the airplane takes off against the wind, not with it.", author: "Henry Ford" },
+        { text: "Don't find fault, find a remedy.", author: "Henry Ford" },
+        { text: "Anyone who stops learning is old, whether at twenty or eighty. Anyone who keeps learning stays young.", author: "Henry Ford" },
+        { text: "Coming together is a beginning. Keeping together is progress. Working together is success.", author: "Henry Ford" },
+        { text: "Vision without execution is just hallucination.", author: "Henry Ford" },
+        { text: "If everyone is moving forward together, then success takes care of itself.", author: "Henry Ford" },
+        { text: "Failure is simply the opportunity to begin again, this time more intelligently.", author: "Henry Ford" },
+        { text: "You can't build a reputation on what you are going to do.", author: "Henry Ford" },
+        { text: "Quality means doing it right when no one is looking.", author: "Henry Ford" },
+        { text: "Nothing in life is to be feared, it is only to be understood. Now is the time to understand more, so that we may fear less.", author: "Marie Curie" },
+        { text: "Be less curious about people and more curious about ideas.", author: "Marie Curie" },
+        { text: "You cannot hope to build a better world without improving the individuals.", author: "Marie Curie" },
+        { text: "One never notices what has been done. One can only see what remains to be done.", author: "Marie Curie" },
+        { text: "I was taught that the way of progress was neither swift nor easy.", author: "Marie Curie" },
+        { text: "We must have perseverance and above all confidence in ourselves.", author: "Marie Curie" },
+        { text: "I never dreamed about success. I worked for it.", author: "Estee Lauder" },
+        { text: "The question isn't who is going to let me. It's who is going to stop me.", author: "Ayn Rand" },
+        { text: "Do not let your fire go out, spark by irreplaceable spark.", author: "Ayn Rand" },
+        { text: "The ladder of success is best climbed by stepping on the rungs of opportunity.", author: "Ayn Rand" },
+        { text: "A creative man is motivated by the desire to achieve, not by the desire to beat others.", author: "Ayn Rand" },
+        { text: "Learn the rules like a pro, so you can break them like an artist.", author: "Pablo Picasso" },
+        { text: "Good artists copy, great artists steal.", author: "Pablo Picasso" },
+        { text: "Art washes away from the soul the dust of everyday life.", author: "Pablo Picasso" },
+        { text: "Inspiration exists, but it has to find you working.", author: "Pablo Picasso" },
+        { text: "Art is a lie that makes us realize truth.", author: "Pablo Picasso" },
+        { text: "I am always doing that which I cannot do, in order that I may learn how to do it.", author: "Pablo Picasso" },
+        { text: "Others have seen what is and asked why. I have seen what could be and asked why not.", author: "Pablo Picasso" },
+        { text: "Everything you can imagine is real.", author: "Pablo Picasso" },
+        { text: "If you want something you've never had, you must be willing to do something you've never done.", author: "Thomas Jefferson" },
+        { text: "Honesty is the first chapter in the book of wisdom.", author: "Thomas Jefferson" },
+        { text: "Nothing can stop the man with the right mental attitude from achieving his goal.", author: "Thomas Jefferson" },
+        { text: "I find that the harder I work, the more luck I seem to have.", author: "Thomas Jefferson" },
+        { text: "In matters of style, swim with the current. In matters of principle, stand like a rock.", author: "Thomas Jefferson" },
+        { text: "Don't talk about what you have done or what you are going to do.", author: "Thomas Jefferson" },
+        { text: "I like the dreams of the future better than the history of the past.", author: "Thomas Jefferson" },
+        { text: "Walking is the best possible exercise. Habituate yourself to walk very far.", author: "Thomas Jefferson" },
+        { text: "We hold these truths to be self-evident: that all men are created equal.", author: "Thomas Jefferson" },
+        { text: "Power concedes nothing without a demand. It never did and it never will.", author: "Frederick Douglass" },
+        { text: "If there is no struggle, there is no progress.", author: "Frederick Douglass" },
+        { text: "Once you learn to read, you will be forever free.", author: "Frederick Douglass" },
+        { text: "I prefer to be true to myself, even at the hazard of incurring the ridicule of others.", author: "Frederick Douglass" },
+        { text: "It is easier to build strong children than to repair broken men.", author: "Frederick Douglass" },
+        { text: "A gentleman is one who puts more into the world than he takes out.", author: "George Bernard Shaw" },
+        { text: "Life isn't about finding yourself. Life is about creating yourself.", author: "George Bernard Shaw" },
+        { text: "Progress is impossible without change, and those who cannot change their minds cannot change anything.", author: "George Bernard Shaw" },
+        { text: "Those who can't change their minds can't change anything.", author: "George Bernard Shaw" },
+        { text: "People who say it cannot be done should not interrupt those who are doing it.", author: "George Bernard Shaw" },
+        { text: "The single biggest problem in communication is the illusion that it has taken place.", author: "George Bernard Shaw" },
+        { text: "Beware of false knowledge, it is more dangerous than ignorance.", author: "George Bernard Shaw" },
+        { text: "Write it. Shoot it. Publish it. Crochet it, sauté it, whatever. Make.", author: "Joss Whedon" },
+        { text: "I can be changed by what happens to me. But I refuse to be reduced by it.", author: "Maya Angelou" },
+        { text: "Success is liking yourself, liking what you do, and liking how you do it.", author: "Maya Angelou" },
+        { text: "When someone shows you who they are, believe them the first time.", author: "Maya Angelou" },
+        { text: "You alone are enough. You have nothing to prove to anybody.", author: "Maya Angelou" },
+        { text: "Life is not measured by the number of breaths we take, but by the moments that take our breath away.", author: "Maya Angelou" },
+        { text: "Try to be a rainbow in someone's cloud.", author: "Maya Angelou" },
+        { text: "Still I rise.", author: "Maya Angelou" },
+        { text: "Prejudice is a burden that confuses the past, threatens the future, and renders the present inaccessible.", author: "Maya Angelou" },
+        { text: "My mission in life is not merely to survive, but to thrive.", author: "Maya Angelou" },
+        { text: "If I am not good to myself, how can I expect anyone else to be good to me?", author: "Maya Angelou" },
+        { text: "You cannot swim for new horizons until you have courage to lose sight of the shore.", author: "William Faulkner" },
+        { text: "The past is never dead. It's not even past.", author: "William Faulkner" },
+        { text: "Don't bother just to be better than your contemporaries or predecessors. Try to be better than yourself.", author: "William Faulkner" },
+        { text: "Always dream and shoot higher than you know you can do.", author: "William Faulkner" },
+        { text: "Never be afraid to sit awhile and think.", author: "Lorraine Hansberry" },
+        { text: "The most common way people give up their power is by thinking they don't have any.", author: "Alice Walker" },
+        { text: "The most beautiful things in the world cannot be seen or even touched, they must be felt with the heart.", author: "Antoine de Saint-Exupery" },
+        { text: "It is only with the heart that one can see rightly. What is essential is invisible to the eye.", author: "Antoine de Saint-Exupery" },
+        { text: "If you want to build a ship, don't drum up the men to gather wood, divide the work, and give orders. Instead, teach them to yearn for the vast and endless sea.", author: "Antoine de Saint-Exupery" },
+        { text: "A goal without a plan is just a wish.", author: "Antoine de Saint-Exupery" },
+        { text: "You become responsible forever for what you have tamed.", author: "Antoine de Saint-Exupery" },
+        { text: "What saves a man is to take a step. Then another step.", author: "Antoine de Saint-Exupery" },
+        { text: "Grown-ups never understand anything by themselves, and it is tiresome for children to be always and forever explaining things to them.", author: "Antoine de Saint-Exupery" },
+        { text: "What makes the desert beautiful is that somewhere it hides a well.", author: "Antoine de Saint-Exupery" },
+        { text: "All grown-ups were once children, but only few of them remember it.", author: "Antoine de Saint-Exupery" },
+        { text: "Words are a pretext. It is the inner bond that draws one person to another, not words.", author: "Rumi" },
+        { text: "The only lasting beauty is the beauty of the heart.", author: "Rumi" },
+        { text: "Be like a tree and let the dead leaves drop.", author: "Rumi" },
+        { text: "Don't grieve. Anything you lose comes round in another form.", author: "Rumi" },
+        { text: "Lovers don't finally meet somewhere. They're in each other all along.", author: "Rumi" },
+        { text: "The soul has been given its own ears to hear things the mind does not understand.", author: "Rumi" },
+        { text: "In your light I learn how to love. In your beauty, how to make poems.", author: "Rumi" },
+        { text: "Love is the bridge between you and everything.", author: "Rumi" },
+        { text: "Stop acting so small. You are the universe in ecstatic motion.", author: "Rumi" },
+        { text: "Sell your cleverness and buy bewilderment.", author: "Rumi" },
+        { text: "Ignore those that make you fearful and sad, that degrade you back towards disease and death.", author: "Rumi" },
+        { text: "Why do you stay in prison when the door is so wide open?", author: "Rumi" },
+        { text: "The minute I heard my first love story, I started looking for you.", author: "Rumi" },
+        { text: "Set your life on fire. Seek those who fan your flames.", author: "Rumi" },
+        { text: "Everything in the universe is within you. Ask all from yourself.", author: "Rumi" },
+        { text: "My soul is from elsewhere, I'm sure of that, and I intend to end up there.", author: "Rumi" },
+        { text: "Travel brings power and love back into your life.", author: "Rumi" },
+        { text: "Run from what's comfortable. Forget safety. Live where you fear to live.", author: "Rumi" },
+        { text: "Dance until you shatter yourself.", author: "Rumi" },
+        { text: "Your heart knows the way. Run in that direction.", author: "Rumi" },
+        { text: "What hurts you, blesses you. Darkness is your candle.", author: "Rumi" },
+        { text: "I want to sing like the birds sing, not worrying about who hears or what they think.", author: "Rumi" },
+        { text: "You think you are alive because you breathe air? Shame on you, that you are alive in such a limited way.", author: "Rumi" },
+        { text: "Only from the heart can you touch the sky.", author: "Rumi" },
+        { text: "Out beyond ideas of wrongdoing and rightdoing, there is a field. I will meet you there.", author: "Rumi" },
+        { text: "When you do things from your soul, you feel a river moving in you, a joy.", author: "Rumi" },
+        { text: "Take someone who doesn't keep score, who's not looking to be richer, or afraid of losing. Who has not the slightest interest even in his own personality. He's free.", author: "Rumi" },
+        { text: "I belong to no religion. My religion is love. Every heart is my temple.", author: "Rumi" },
+        { text: "Work on yourself. Every day. Until the day you die.", author: "Osho" },
+        { text: "Experience life in all possible ways: good-bad, bitter-sweet, dark-light, summer-winter.", author: "Osho" },
+        { text: "The real question is not whether life exists after death. The real question is whether you are alive before death.", author: "Osho" },
+        { text: "Creativity is the greatest rebellion in existence.", author: "Osho" },
+        { text: "If you love a flower, don't pick it up. Because if you pick it up it dies and it ceases to be what you love.", author: "Osho" },
+        { text: "Be realistic. Plan for a miracle.", author: "Osho" },
+        { text: "Sadness gives depth. Happiness gives height. Sadness gives roots. Happiness gives branches.", author: "Osho" },
+        { text: "A certain darkness is needed to see the stars.", author: "Osho" },
+        { text: "Don't seek, don't search, don't ask, don't knock, don't demand — relax.", author: "Osho" },
+        { text: "I am the wisest man alive, for I know one thing, and that is that I know nothing.", author: "Socrates" },
+        { text: "The secret of change is to focus all of your energy not on fighting the old, but on building the new.", author: "Socrates" },
+        { text: "Educating the mind without educating the heart is no education at all.", author: "Aristotle" },
+        { text: "Happiness depends upon ourselves.", author: "Aristotle" },
+        { text: "It is the mark of an educated mind to be able to entertain a thought without accepting it.", author: "Aristotle" },
+        { text: "The whole is greater than the sum of its parts.", author: "Aristotle" },
+        { text: "What is a friend? A single soul dwelling in two bodies.", author: "Aristotle" },
+        { text: "Patience is bitter, but its fruit is sweet.", author: "Aristotle" },
+        { text: "Pleasure in the job puts perfection in the work.", author: "Aristotle" },
+        { text: "I count him braver who overcomes his desires than him who conquers his enemies.", author: "Aristotle" },
+        { text: "The roots of education are bitter, but the fruit is sweet.", author: "Aristotle" },
+        { text: "A friend to all is a friend to none.", author: "Aristotle" },
+        { text: "Hope is a waking dream.", author: "Aristotle" },
+        { text: "It is not enough to win a war. It is more important to organize the peace.", author: "Aristotle" },
+        { text: "The more you know, the more you realize you don't know.", author: "Aristotle" },
+        { text: "He is no fool who gives what he cannot keep to gain what he cannot lose.", author: "Jim Elliot" },
+        { text: "I've learned that people will forget what you said, people will forget what you did, but people will never forget how you made them feel.", author: "Maya Angelou" },
+        { text: "Anyone who lives within their means suffers from a lack of imagination.", author: "Oscar Wilde" },
+        { text: "I have nothing to declare except my genius.", author: "Oscar Wilde" },
+        { text: "We are all in the gutter, but some of us are looking at the stars.", author: "Oscar Wilde" },
+        { text: "A cynic is a man who knows the price of everything and the value of nothing.", author: "Oscar Wilde" },
+        { text: "To define is to limit.", author: "Oscar Wilde" },
+        { text: "The truth is rarely pure and never simple.", author: "Oscar Wilde" },
+        { text: "I can resist everything except temptation.", author: "Oscar Wilde" },
+        { text: "Man is least himself when he talks in his own person. Give him a mask, and he will tell you the truth.", author: "Oscar Wilde" },
+        { text: "Experience is simply the name we give our mistakes.", author: "Oscar Wilde" },
+        { text: "Conformity is the jailer of freedom and the enemy of growth.", author: "John F. Kennedy" },
+        { text: "Those who dare to fail miserably can achieve greatly.", author: "John F. Kennedy" },
+        { text: "Ask not what your country can do for you — ask what you can do for your country.", author: "John F. Kennedy" },
+        { text: "Efforts and courage are not enough without purpose and direction.", author: "John F. Kennedy" },
+        { text: "Change is the law of life. And those who look only to the past or present are certain to miss the future.", author: "John F. Kennedy" },
+        { text: "Things do not happen. Things are made to happen.", author: "John F. Kennedy" },
+        { text: "A man may die, nations may rise and fall, but an idea lives on.", author: "John F. Kennedy" },
+        { text: "We choose to go to the moon not because it is easy, but because it is hard.", author: "John F. Kennedy" },
+        { text: "The greatest enemy of knowledge is not ignorance, it is the illusion of knowledge.", author: "Daniel J. Boorstin" },
+        { text: "Not until we are lost do we begin to understand ourselves.", author: "Henry David Thoreau" },
+        { text: "The cost of a thing is the amount of life which is required to be exchanged for it.", author: "Henry David Thoreau" },
+        { text: "Rather than love, than money, than fame, give me truth.", author: "Henry David Thoreau" },
+        { text: "All good things are wild and free.", author: "Henry David Thoreau" },
+        { text: "Things do not change; we change.", author: "Henry David Thoreau" },
+        { text: "Disobedience is the true foundation of liberty.", author: "Henry David Thoreau" },
+        { text: "How vain it is to sit down to write when you have not stood up to live.", author: "Henry David Thoreau" },
+        { text: "Success usually comes to those who are too busy to be looking for it.", author: "Henry David Thoreau" },
+        { text: "The price of anything is the amount of life you exchange for it.", author: "Henry David Thoreau" },
+        { text: "It's not what you look at that matters, it's what you see.", author: "Henry David Thoreau" },
+        { text: "If a man does not keep pace with his companions, perhaps it is because he hears a different drummer.", author: "Henry David Thoreau" },
+        { text: "As a single footstep will not make a path on the earth, so a single thought will not make a pathway in the mind.", author: "Henry David Thoreau" },
+        { text: "Dreams are the touchstones of our character.", author: "Henry David Thoreau" },
+        { text: "Happiness is like a butterfly, the more you chase it, the more it will elude you.", author: "Henry David Thoreau" },
+        { text: "I know of no more encouraging fact than the unquestionable ability of man to elevate his life by a conscious endeavor.", author: "Henry David Thoreau" },
+        { text: "A man is rich in proportion to the number of things he can afford to let alone.", author: "Henry David Thoreau" },
+        { text: "What you get by achieving your goals is not as important as what you become by achieving your goals.", author: "Zig Ziglar" },
+        { text: "You were born to win, but to be a winner, you must plan to win, prepare to win, and expect to win.", author: "Zig Ziglar" },
+        { text: "You don't have to be great to start, but you have to start to be great.", author: "Zig Ziglar" },
+        { text: "Lack of direction, not lack of time, is the problem. We all have twenty-four hour days.", author: "Zig Ziglar" },
+        { text: "Your attitude, not your aptitude, will determine your altitude.", author: "Zig Ziglar" },
+        { text: "When obstacles arise, you change your direction to reach your goal. You do not change your decision to get there.", author: "Zig Ziglar" },
+        { text: "You don't build a business. You build people, and people build the business.", author: "Zig Ziglar" },
+        { text: "If you can dream it, you can achieve it.", author: "Zig Ziglar" },
+        { text: "The chief danger in life is that you may take too many precautions.", author: "Alfred Adler" },
+        { text: "Everything can be taken from a man but one thing — the freedom to choose his attitude in any given set of circumstances.", author: "Viktor Frankl" },
+        { text: "Those who have a why to live can bear with almost any how.", author: "Viktor Frankl" },
+        { text: "The last of human freedoms — the ability to choose one's attitude in a given set of circumstances.", author: "Viktor Frankl" },
+        { text: "What is to give light must endure burning.", author: "Viktor Frankl" },
+        { text: "An abnormal reaction to an abnormal situation is normal behavior.", author: "Viktor Frankl" },
+        { text: "Live as if you were living already for the second time.", author: "Viktor Frankl" },
+        { text: "Challenging the meaning of life is the truest expression of the state of being human.", author: "Viktor Frankl" },
+        { text: "For success, attitude is equally as important as ability.", author: "Walter Scott" },
+        { text: "There is nothing permanent except change.", author: "Heraclitus" },
+        { text: "No man ever steps in the same river twice, for it is not the same river and he is not the same man.", author: "Heraclitus" },
+        { text: "Character is destiny.", author: "Heraclitus" },
+        { text: "The soul is dyed the color of its thoughts.", author: "Heraclitus" },
+        { text: "Big jobs usually go to the men who prove their ability to outgrow small ones.", author: "Ralph Waldo Emerson" },
+        { text: "Life is a journey, not a destination.", author: "Ralph Waldo Emerson" },
+        { text: "What lies behind us and what lies ahead of us are tiny matters compared to what lives within us.", author: "Ralph Waldo Emerson" },
+        { text: "For every minute you are angry you lose sixty seconds of happiness.", author: "Ralph Waldo Emerson" },
+        { text: "To be great is to be misunderstood.", author: "Ralph Waldo Emerson" },
+        { text: "Dare to live the life you have dreamed for yourself. Go forward and make your dreams come true.", author: "Ralph Waldo Emerson" },
+        { text: "The earth laughs in flowers.", author: "Ralph Waldo Emerson" },
+        { text: "It is not the length of life, but the depth.", author: "Ralph Waldo Emerson" },
+        { text: "Every wall is a door.", author: "Ralph Waldo Emerson" },
+        { text: "Always do what you are afraid to do.", author: "Ralph Waldo Emerson" },
+        { text: "A hero is no braver than an ordinary man, but he is brave five minutes longer.", author: "Ralph Waldo Emerson" },
+        { text: "All I have seen teaches me to trust the Creator for all I have not seen.", author: "Ralph Waldo Emerson" },
+        { text: "Write it on your heart that every day is the best day in the year.", author: "Ralph Waldo Emerson" },
+        { text: "What we fear doing most is usually what we most need to do.", author: "Tim Ferriss" },
+        { text: "Focus on being productive instead of busy.", author: "Tim Ferriss" },
+        { text: "A person's success in life can usually be measured by the number of uncomfortable conversations he or she is willing to have.", author: "Tim Ferriss" },
+        { text: "If you let your learning lead to knowledge, you become a fool. If you let your learning lead to action, you become wealthy.", author: "Jim Rohn" },
+        { text: "Either you run the day, or the day runs you.", author: "Jim Rohn" },
+        { text: "If you are not willing to risk the usual, you will have to settle for the ordinary.", author: "Jim Rohn" },
+        { text: "Discipline is the bridge between goals and accomplishment.", author: "Jim Rohn" },
+        { text: "Formal education will make you a living. Self-education will make you a fortune.", author: "Jim Rohn" },
+        { text: "You are the average of the five people you spend the most time with.", author: "Jim Rohn" },
+        { text: "Don't wish it were easier. Wish you were better.", author: "Jim Rohn" },
+        { text: "Take care of your body. It's the only place you have to live.", author: "Jim Rohn" },
+        { text: "Success is nothing more than a few simple disciplines, practiced every day.", author: "Jim Rohn" },
+        { text: "We must all suffer one of two things: the pain of discipline or the pain of regret.", author: "Jim Rohn" },
+        { text: "Motivation is what gets you started. Habit is what keeps you going.", author: "Jim Rohn" },
+        { text: "The only person you should try to be better than is the person you were yesterday.", author: "Unknown" },
+        { text: "The best view comes after the hardest climb.", author: "Unknown" },
+        { text: "Be so good they can't ignore you.", author: "Steve Martin" },
+        { text: "Hard choices, easy life. Easy choices, hard life.", author: "Jerzy Gregorek" },
+        { text: "Make each day your masterpiece.", author: "John Wooden" },
+        { text: "Don't let what you cannot do interfere with what you can do.", author: "John Wooden" },
+        { text: "It's what you learn after you know it all that counts.", author: "John Wooden" },
+        { text: "Talent is God given. Be humble. Fame is man-given. Be grateful. Conceit is self-given. Be careful.", author: "John Wooden" },
+        { text: "Success is peace of mind, which is a direct result of self-satisfaction in knowing you did your best.", author: "John Wooden" },
+        { text: "The most important thing is to try and inspire people so that they can be great in whatever they want to do.", author: "Kobe Bryant" },
+        { text: "Everything negative — pressure, challenges — is all an opportunity for me to rise.", author: "Kobe Bryant" },
+        { text: "I can't relate to lazy people. We don't speak the same language. I don't understand you. I don't want to understand you.", author: "Kobe Bryant" },
+        { text: "Job finished? I don't think so.", author: "Kobe Bryant" },
+        { text: "If you're afraid to fail, then you're probably going to fail.", author: "Kobe Bryant" },
+        { text: "The moment you give up is the moment you let someone else win.", author: "Kobe Bryant" },
+        { text: "Haters are a good problem to have. Nobody hates the good ones. They hate the great ones.", author: "Kobe Bryant" },
+        { text: "I'll do whatever it takes to win games, whether it's sitting on a bench waving a towel or hitting the game-winning shot.", author: "Kobe Bryant" },
+        { text: "My brain cannot process failure. It will not process failure.", author: "Kobe Bryant" },
+        { text: "Rest at the end, not in the middle.", author: "Kobe Bryant" },
+        { text: "I don't want to be the next Michael Jordan, I only want to be Kobe Bryant.", author: "Kobe Bryant" },
+        { text: "Some people want it to happen, some wish it would happen, others make it happen.", author: "Michael Jordan" },
+        { text: "I've missed more than nine thousand shots in my career. I've lost almost three hundred games. I've failed over and over and over again in my life. And that is why I succeed.", author: "Michael Jordan" },
+        { text: "I play to win, whether during practice or a real game.", author: "Michael Jordan" },
+        { text: "My attitude is that if you push me towards something that you think is a weakness, then I will turn that perceived weakness into a strength.", author: "Michael Jordan" },
+        { text: "If you quit once it becomes a habit. Never quit.", author: "Michael Jordan" },
+        { text: "Obstacles don't have to stop you. If you run into a wall, don't turn around and give up. Figure out how to climb it.", author: "Michael Jordan" },
+        { text: "Champions do not become champions when they win the event, but in the hours, weeks, months, and years they spend preparing for it.", author: "T. Alan Armstrong" },
+        { text: "The only impossible journey is the one you never begin.", author: "Tony Robbins" },
+        { text: "Setting goals is the first step in turning the invisible into the visible.", author: "Tony Robbins" },
+        { text: "It is in your moments of decision that your destiny is shaped.", author: "Tony Robbins" },
+        { text: "Stay committed to your decisions, but stay flexible in your approach.", author: "Tony Robbins" },
+        { text: "The path to success is to take massive, determined action.", author: "Tony Robbins" },
+        { text: "Where focus goes, energy flows.", author: "Tony Robbins" },
+        { text: "The quality of your life is the quality of your relationships.", author: "Tony Robbins" },
+        { text: "Trade your expectations for appreciation and the world changes instantly.", author: "Tony Robbins" },
+        { text: "It is what it is. But it will become what you make it.", author: "Pat Summit" },
+        { text: "Nobody cares how much you know until they know how much you care.", author: "Theodore Roosevelt" },
+        { text: "In any moment of decision, the best thing you can do is the right thing. The worst thing you can do is nothing.", author: "Theodore Roosevelt" },
+        { text: "Comparison is the thief of joy.", author: "Theodore Roosevelt" },
+        { text: "Speak softly and carry a big stick.", author: "Theodore Roosevelt" },
+        { text: "Keep your eyes on the stars, and your feet on the ground.", author: "Theodore Roosevelt" },
+        { text: "The credit belongs to the man who is actually in the arena.", author: "Theodore Roosevelt" },
+        { text: "Knowing what must be done does away with fear.", author: "Rosa Parks" },
+        { text: "Each person must live their life as a model for others.", author: "Rosa Parks" }
     ];
 
     let zenState = {
@@ -4437,7 +5136,7 @@ function setupSettingsListeners() {
         timerInterval: null,
         contentIndex: 0,
         shuffled: [],
-        theme: 'spring-rain',
+        theme: localStorage.getItem('zenGardenTheme') || 'autumn-drift',
         _escHandler: null,
         _typeHandler: null
     };
@@ -4483,12 +5182,18 @@ function setupSettingsListeners() {
         }
 
         const themeBtns = document.querySelectorAll('.zen-theme-btn');
+        // Sync active highlight with stored theme
+        themeBtns.forEach(b => b.classList.remove('active'));
+        const activeBtn = document.querySelector(`.zen-theme-btn[data-theme="${zenState.theme}"]`);
+        if (activeBtn) activeBtn.classList.add('active');
+
         themeBtns.forEach(btn => {
             btn.onclick = (e) => {
                 e.stopPropagation();
                 themeBtns.forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 zenState.theme = btn.dataset.theme;
+                localStorage.setItem('zenGardenTheme', zenState.theme);
 
                 if (board) board.className = 'coding-screen theme-' + zenState.theme;
                 startZenParticles();
@@ -4786,17 +5491,6 @@ function setupSettingsListeners() {
                             setTimeout(() => { p.style.filter = ''; p.style.transition = 'filter 0.4s'; }, 100);
                         }
                     });
-                } else if (theme === 'tornado') {
-                    // Intensify: speed up all debris and widen the vortex
-                    document.querySelectorAll('.zen-debris').forEach(p => {
-                        const faster = (0.5 + Math.random() * 1) + 's';
-                        p.style.animationDuration = faster;
-                        const tx = (Math.random() - 0.5) * 300;
-                        const ty = -(80 + Math.random() * 200);
-                        p.style.setProperty('--tx', tx + 'px');
-                        p.style.setProperty('--ty', ty + 'px');
-                        setTimeout(() => { p.style.animationDuration = (1.5 + Math.random() * 3) + 's'; }, 600);
-                    });
                 } else if (theme === 'blood-moon') {
                     // Drip surge: accelerate and redden all drops
                     document.querySelectorAll('.zen-blood-drop').forEach(p => {
@@ -4897,16 +5591,70 @@ function setupSettingsListeners() {
                             p.style.opacity = '0.1';
                         }, 150);
                     });
+                } else if (theme === 'enchanted-garden') {
+                    document.querySelectorAll('.zen-garden-leaf').forEach(p => {
+                        const currentTx = parseFloat(p.dataset.tx || 0);
+                        const newTx = currentTx + (20 + Math.random() * 30);
+                        p.dataset.tx = newTx;
+                        p.style.transform = `translateX(${newTx}px) rotate(${Math.random() * 180}deg)`;
+                    });
+                } else if (theme === 'tidal-wave') {
+                    document.querySelectorAll('.zen-tide').forEach(p => {
+                        p.style.transition = 'transform 0.5s ease-out, opacity 0.5s';
+                        p.style.transform = `translateY(-${40 + Math.random() * 60}px) scaleX(1.5)`;
+                        p.style.opacity = '0.4';
+                        setTimeout(() => { p.style.transform = ''; p.style.opacity = ''; p.style.transition = 'transform 2s, opacity 2s'; }, 500);
+                    });
+                } else if (theme === 'plasma-storm') {
+                    document.querySelectorAll('.zen-plasma').forEach(p => {
+                        if (Math.random() > 0.3) {
+                            p.style.transition = 'filter 0.1s, transform 0.2s';
+                            p.style.filter = 'brightness(4) hue-rotate(90deg)';
+                            p.style.transform = `translate(${(Math.random() - 0.5) * 100}px, ${(Math.random() - 0.5) * 100}px) scale(1.8)`;
+                            setTimeout(() => { p.style.filter = ''; p.style.transform = ''; p.style.transition = 'filter 0.6s, transform 1s'; }, 150);
+                        }
+                    });
+                } else if (theme === 'butterfly') {
+                    document.querySelectorAll('.zen-butterfly').forEach(p => {
+                        if (Math.random() > 0.4) {
+                            p.style.transition = 'transform 0.3s cubic-bezier(0.1, 1.5, 0.5, 1)';
+                            p.style.transform = `translate(${(Math.random() - 0.5) * 150}px, ${-(50 + Math.random() * 100)}px) rotate(${Math.random() * 30 - 15}deg)`;
+                            setTimeout(() => { p.style.transform = ''; p.style.transition = 'transform 2s ease-in-out'; }, 300);
+                        }
+                    });
+                } else if (theme === 'nebula') {
+                    document.querySelectorAll('.zen-nebula-cloud').forEach(p => {
+                        p.style.transition = 'filter 0.2s, opacity 0.2s';
+                        p.style.filter = 'brightness(2.5) saturate(2)';
+                        p.style.opacity = '0.5';
+                        setTimeout(() => { p.style.filter = ''; p.style.opacity = ''; p.style.transition = 'filter 1s, opacity 1s'; }, 200);
+                    });
                 }
             }
         };
         document.addEventListener('keydown', zenState._typeHandler);
 
-        // ESC to exit
+        // ESC to exit, TAB to skip to next quote
         if (zenState._escHandler) document.removeEventListener('keydown', zenState._escHandler);
         zenState._escHandler = function (e) {
             if (e.key === 'Escape' && zenState.active) {
                 exitZenGarden();
+            } else if (e.key === 'Tab' && zenState.active) {
+                e.preventDefault();
+                // Fade out current quote and load next
+                const bufferWrap = document.querySelector('.zen-buffer-wrap');
+                if (bufferWrap) {
+                    bufferWrap.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                    bufferWrap.style.opacity = '0';
+                    bufferWrap.style.transform = 'translateY(-8px)';
+                    setTimeout(() => {
+                        loadNextZenQuote();
+                        bufferWrap.style.opacity = '1';
+                        bufferWrap.style.transform = 'translateY(0)';
+                    }, 300);
+                } else {
+                    loadNextZenQuote();
+                }
             }
         };
         document.addEventListener('keydown', zenState._escHandler);
@@ -5019,10 +5767,21 @@ function setupSettingsListeners() {
             'permafrost': { cls: 'zen-ice', count: 20 },
             'mountain-fog': { cls: 'zen-fog', count: 12 },
             'prism-break': { cls: 'zen-prism', count: 40 },
-            'shadow-realm': { cls: 'zen-shadow', count: 18 }
+            'shadow-realm': { cls: 'zen-shadow', count: 18 },
+            'enchanted-garden': { cls: 'zen-garden-leaf', count: 30 },
+            'tidal-wave': { cls: 'zen-tide', count: 15 },
+            'plasma-storm': { cls: 'zen-plasma', count: 12 },
+            'butterfly': { cls: 'zen-butterfly', count: 14 },
+            'nebula': { cls: 'zen-nebula-cloud', count: 10 },
+            'zen-ripples': { cls: 'zen-ripple', count: 15 },
+            'celestial-map': { cls: 'zen-constellation', count: 50 },
+            'volcanic-ash': { cls: 'zen-ash', count: 60 },
+            'pixel-rain': { cls: 'zen-pixel', count: 80 },
+            'astral-rings': { cls: 'zen-astral', count: 12 },
+            'solar-winds': { cls: 'zen-solar-particle', count: 60 }
         };
 
-        const config = themeConfig[zenState.theme] || themeConfig['spring-rain'];
+        const config = themeConfig[zenState.theme] || themeConfig['autumn-drift'];
 
         for (let i = 0; i < config.count; i++) {
             const particle = document.createElement('div');
@@ -5060,7 +5819,7 @@ function setupSettingsListeners() {
                 particle.style.top = y + '%';
                 particle.style.animationDelay = delay + 's';
                 particle.style.animationDuration = dur + 's';
-            } else if (zenState.theme === 'abyssal-depths' || zenState.theme === 'ember-glow') {
+            } else if (zenState.theme === 'abyssal-depths') {
                 particle.style.left = x + '%';
                 const animDur = dur + 2;
                 // Use negative delay to pre-spread particles across screen height from spawn
@@ -5068,11 +5827,22 @@ function setupSettingsListeners() {
                 const preOffset = -(Math.random() * animDur);
                 particle.style.animationDelay = preOffset + 's';
                 particle.style.animationDuration = animDur + 's';
-                const size = zenState.theme === 'abyssal-depths' ? (8 * scale) : (3 * scale);
+                const size = (8 * scale);
                 particle.style.width = size + 'px';
                 particle.style.height = size + 'px';
                 // Also stagger starting ty for physics calcs
                 particle.dataset.ty = -(Math.random() * 200);
+            } else if (zenState.theme === 'ember-glow') {
+                particle.style.left = x + '%';
+                const animDur = dur + 2;
+                // Positive delay so embers visibly rise from the bottom when first entering the theme
+                const staggerDelay = Math.random() * animDur;
+                particle.style.animationDelay = staggerDelay + 's';
+                particle.style.animationDuration = animDur + 's';
+                const size = (3 * scale);
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+                particle.dataset.ty = 0;
             } else {
                 particle.style.left = x + '%';
                 particle.style.animationDuration = dur + 's';
@@ -5424,6 +6194,198 @@ function setupSettingsListeners() {
                     particle.style.setProperty('--shy', shy + 'px');
                     particle.style.animationDuration = shDur + 's';
                     particle.style.animationDelay = -(Math.random() * shDur) + 's';
+                } else if (zenState.theme === 'enchanted-garden') {
+                    const leafColors = ['#228b22', '#2e8b57', '#3cb371', '#6b8e23', '#556b2f', '#8fbc8f'];
+                    const leafSvgs = [
+                        `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='${encodeURIComponent(leafColors[Math.floor(Math.random() * leafColors.length)])}' d='M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22l1-2.3A4.49 4.49 0 0 0 8 20c4 0 6-2 8-5s2-5 2-5-1-1-1-2z'/></svg>")`,
+                        `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='${encodeURIComponent(leafColors[Math.floor(Math.random() * leafColors.length)])}' d='M6.05 8.05a7 7 0 0 0 9.9 9.9L17 17l2-2-1.05-1.05a7 7 0 0 0-9.9-9.9L7 5 5 7z'/></svg>")`
+                    ];
+                    const lsz = 16 + Math.random() * 20;
+                    const lDur = 6 + Math.random() * 8;
+                    particle.style.width = lsz + 'px';
+                    particle.style.height = lsz + 'px';
+                    particle.style.left = (Math.random() * 100) + '%';
+                    particle.style.background = leafSvgs[Math.floor(Math.random() * leafSvgs.length)];
+                    particle.style.backgroundSize = 'contain';
+                    particle.style.backgroundRepeat = 'no-repeat';
+                    particle.style.opacity = (0.5 + Math.random() * 0.4).toString();
+                    particle.style.animationDuration = lDur + 's';
+                    particle.style.animationDelay = (Math.random() * lDur) + 's';
+                } else if (zenState.theme === 'tidal-wave') {
+                    const tw = 80 + Math.random() * 200;
+                    const th = 40 + Math.random() * 100;
+                    const tDur = 5 + Math.random() * 10;
+                    const tHue = 190 + Math.random() * 40;
+                    particle.style.width = tw + 'px';
+                    particle.style.height = th + 'px';
+                    particle.style.top = (50 + Math.random() * 50) + '%';
+                    particle.style.left = (Math.random() * 100) + '%';
+                    particle.style.setProperty('--tc', `hsla(${tHue}, 70%, 40%, 0.2)`);
+                    particle.style.setProperty('--tb', (8 + Math.random() * 15) + 'px');
+                    particle.style.setProperty('--twx', ((Math.random() - 0.5) * 200) + 'px');
+                    particle.style.setProperty('--twy', ((Math.random() - 0.5) * 80) + 'px');
+                    particle.style.animationDuration = tDur + 's';
+                    particle.style.animationDelay = -(Math.random() * tDur) + 's';
+                } else if (zenState.theme === 'plasma-storm') {
+                    const psz = 8 + Math.random() * 25;
+                    const pDur = 4 + Math.random() * 8;
+                    const pHue = Math.random() * 360;
+                    particle.style.width = psz + 'px';
+                    particle.style.height = psz + 'px';
+                    particle.style.top = (10 + Math.random() * 80) + '%';
+                    particle.style.left = (10 + Math.random() * 80) + '%';
+                    particle.style.background = `radial-gradient(circle, hsla(${pHue},100%,70%,0.8), hsla(${pHue + 60},100%,50%,0.3), transparent)`;
+                    particle.style.boxShadow = `0 0 ${psz}px hsla(${pHue},100%,60%,0.5)`;
+                    particle.style.setProperty('--px1', ((Math.random() - 0.5) * 300) + 'px');
+                    particle.style.setProperty('--py1', ((Math.random() - 0.5) * 300) + 'px');
+                    particle.style.setProperty('--px2', ((Math.random() - 0.5) * 300) + 'px');
+                    particle.style.setProperty('--py2', ((Math.random() - 0.5) * 300) + 'px');
+                    particle.style.setProperty('--px3', ((Math.random() - 0.5) * 300) + 'px');
+                    particle.style.setProperty('--py3', ((Math.random() - 0.5) * 300) + 'px');
+                    particle.style.animationDuration = pDur + 's';
+                    particle.style.animationDelay = -(Math.random() * pDur) + 's';
+                } else if (zenState.theme === 'butterfly') {
+                    const bsz = 12 + Math.random() * 18;
+                    const bDur = 12 + Math.random() * 20;
+                    const bHue1 = Math.floor(Math.random() * 360);
+                    const bHue2 = bHue1 + 30 + Math.floor(Math.random() * 60);
+                    particle.style.setProperty('--bsz', bsz + 'px');
+                    particle.style.setProperty('--bc1', `hsla(${bHue1},80%,60%,0.8)`);
+                    particle.style.setProperty('--bc2', `hsla(${bHue2},80%,50%,0.7)`);
+                    particle.style.setProperty('--by', (Math.random() * 80) + 'vh');
+                    particle.style.setProperty('--by2', ((Math.random() - 0.5) * 30) + 'vh');
+                    particle.style.setProperty('--bang', (Math.random() * 20 - 10) + 'deg');
+                    particle.style.top = '0';
+                    particle.style.animationDuration = bDur + 's';
+                    particle.style.animationDelay = -(Math.random() * bDur) + 's';
+                } else if (zenState.theme === 'nebula') {
+                    const nsz = 100 + Math.random() * 300;
+                    const nDur = 8 + Math.random() * 15;
+                    const nHue = Math.floor(Math.random() * 360);
+                    particle.style.width = nsz + 'px';
+                    particle.style.height = nsz * (0.5 + Math.random() * 0.5) + 'px';
+                    particle.style.top = (Math.random() * 90) + '%';
+                    particle.style.left = (Math.random() * 90) + '%';
+                    particle.style.background = `radial-gradient(ellipse, hsla(${nHue},70%,40%,0.3), hsla(${nHue + 40},50%,20%,0.1), transparent 70%)`;
+                    particle.style.setProperty('--nb', (15 + Math.random() * 30) + 'px');
+                    particle.style.setProperty('--nx', ((Math.random() - 0.5) * 150) + 'px');
+                    particle.style.setProperty('--ny', ((Math.random() - 0.5) * 100) + 'px');
+                    particle.style.setProperty('--no1', (0.1 + Math.random() * 0.2).toString());
+                    particle.style.setProperty('--no2', (0.2 + Math.random() * 0.3).toString());
+                    particle.style.animationDuration = nDur + 's';
+                    particle.style.animationDelay = -(Math.random() * nDur) + 's';
+                } else if (zenState.theme === 'zen-ripples') {
+                    const rsz = 10 + Math.random() * 20;
+                    const rDur = 4 + Math.random() * 6;
+                    const rHue = 170 + Math.random() * 30;
+                    particle.style.width = rsz + 'px';
+                    particle.style.height = rsz + 'px';
+                    particle.style.top = (10 + Math.random() * 80) + '%';
+                    particle.style.left = (5 + Math.random() * 90) + '%';
+                    particle.style.borderColor = `hsla(${rHue}, 50%, 60%, 0.5)`;
+                    particle.style.animationDuration = rDur + 's';
+                    particle.style.animationDelay = -(Math.random() * rDur) + 's';
+                } else if (zenState.theme === 'celestial-map') {
+                    const ssz = 1 + Math.random() * 3;
+
+                    // 20% chance to be an aggressive "twinkler"
+                    const isTwinkler = Math.random() < 0.2;
+
+                    // Twinklers move slightly faster and pulse much quicker
+                    const sDur = isTwinkler ? (0.5 + Math.random() * 1.5) : (3 + Math.random() * 5);
+                    const mDur = isTwinkler ? (15 + Math.random() * 20) : (25 + Math.random() * 40);
+
+                    particle.style.width = ssz + 'px';
+                    particle.style.height = ssz + 'px';
+                    particle.style.top = (5 + Math.random() * 90) + '%';
+                    particle.style.left = '110vw'; // Start off-screen right
+                    particle.style.setProperty('--ca', (Math.random() * 360) + 'deg');
+
+                    // Only some non-twinkling stars get connector lines
+                    if (isTwinkler || Math.random() > 0.3) particle.style.setProperty('--ca', 'none');
+
+                    const pulseAnim = isTwinkler ? 'zenStarTwinkle' : 'zenStarPulse';
+
+                    // Combine pulse/twinkle and drift animations
+                    particle.style.animation = `${pulseAnim} ${sDur}s ease-in-out infinite alternate, zenConstellationDrift ${mDur}s linear infinite`;
+
+                    // Negative delay to start them scattered across the screen
+                    particle.style.animationDelay = `-${Math.random() * sDur}s, -${Math.random() * mDur}s`;
+                } else if (zenState.theme === 'volcanic-ash') {
+                    const asz = 2 + Math.random() * 5;
+                    const aDur = 4 + Math.random() * 6;
+                    const ashGray = Math.floor(40 + Math.random() * 80);
+                    particle.style.width = asz + 'px';
+                    particle.style.height = asz + 'px';
+                    particle.style.left = (Math.random() * 100) + '%';
+                    particle.style.background = `rgba(${ashGray},${ashGray - 10},${ashGray - 20},${0.3 + Math.random() * 0.5})`;
+                    particle.style.animationDuration = aDur + 's';
+                    particle.style.animationDelay = (Math.random() * aDur) + 's';
+                    particle.style.opacity = (0.3 + Math.random() * 0.4).toString();
+                } else if (zenState.theme === 'pixel-rain') {
+                    const psz = 3 + Math.random() * 5;
+                    const pDur = 1 + Math.random() * 3;
+                    const pHue = 120 + Math.random() * 40;
+                    particle.style.width = psz + 'px';
+                    particle.style.height = psz + 'px';
+                    particle.style.left = (Math.random() * 100) + '%';
+                    particle.style.background = `hsla(${pHue},100%,${40 + Math.random() * 30}%,${0.3 + Math.random() * 0.5})`;
+                    particle.style.boxShadow = `0 0 ${psz}px hsla(${pHue},100%,50%,0.4)`;
+                    particle.style.animationDuration = pDur + 's';
+                    particle.style.animationDelay = -(Math.random() * pDur) + 's';
+                } else if (zenState.theme === 'astral-rings') {
+                    const arsz = 20 + Math.random() * 40;
+                    const arDur = 4 + Math.random() * 8;
+                    const arHue = 260 + Math.random() * 80;
+                    particle.style.width = arsz + 'px';
+                    particle.style.height = arsz + 'px';
+                    particle.style.top = (20 + Math.random() * 60) + '%';
+                    particle.style.left = (20 + Math.random() * 60) + '%';
+                    particle.style.borderColor = `hsla(${arHue},70%,60%,0.5)`;
+                    particle.style.boxShadow = `0 0 ${arsz / 3}px hsla(${arHue},80%,50%,0.3), inset 0 0 ${arsz / 4}px hsla(${arHue},60%,40%,0.15)`;
+                    particle.style.animationDuration = arDur + 's';
+                    particle.style.animationDelay = -(Math.random() * arDur) + 's';
+                } else if (zenState.theme === 'solar-winds') {
+                    // Mix of fast flares and ambient dust
+                    const isFlare = Math.random() < 0.15; // 15% flares
+
+                    if (isFlare) {
+                        particle.classList.add('zen-solar-flare');
+                        const fsz = 2 + Math.random() * 3;
+                        const fDur = 1.5 + Math.random() * 2.5; // Fast, but not overwhelming
+
+                        particle.style.width = fsz + 'px';
+                        particle.style.height = fsz + 'px';
+
+                        // Spawn randomly along top and right taking advantage of CSS translates
+                        if (Math.random() > 0.5) {
+                            particle.style.top = '-10%';
+                            particle.style.left = (Math.random() * 100) + '%';
+                        } else {
+                            particle.style.top = (Math.random() * 100) + '%';
+                            particle.style.left = '110%';
+                        }
+
+                        particle.style.setProperty('--cx', '-120vw');
+                        particle.style.setProperty('--cy', '120vh');
+                        particle.style.setProperty('--flen', (60 + Math.random() * 120) + 'px');
+
+                        particle.style.animationDuration = fDur + 's';
+                        particle.style.animationDelay = (Math.random() * 15) + 's';
+                    } else {
+                        particle.classList.add('zen-solar-dust');
+                        const dsz = 1 + Math.random() * 3;
+                        const dDur = 8 + Math.random() * 15; // Slower drift
+                        const pDur = 1 + Math.random() * 3; // Fast pulse
+
+                        particle.style.width = dsz + 'px';
+                        particle.style.height = dsz + 'px';
+                        particle.style.top = (Math.random() * 100) + '%';
+                        particle.style.left = (Math.random() * 100) + '%';
+
+                        particle.style.animation = `zenSolarPulse ${pDur}s ease-in-out infinite alternate, zenSolarDrift ${dDur}s linear infinite`;
+                        particle.style.animationDelay = `-${Math.random() * pDur}s, -${Math.random() * dDur}s`;
+                    }
                 }
             }
 
