@@ -108,6 +108,24 @@ const wallpapers = [
         tint: 'dark',
         opacity: 15
     },
+    {
+        id: 'bat',
+        isVideo: true,
+        category: 'aesthetic-videos',
+        url: 'videos/bat.mp4',
+        thumb: 'videos/thumbs/bat-thumb.png',
+        tint: 'dark',
+        opacity: 15
+    },
+    {
+        id: 'tanjiro',
+        isVideo: true,
+        category: 'aesthetic-videos',
+        url: 'videos/tanjiro.mp4',
+        thumb: 'videos/thumbs/tanjiro-thumb.png',
+        tint: 'dark',
+        opacity: 15
+    },
 
 
 
@@ -148,6 +166,15 @@ const wallpapers = [
     { id: 'girl-3', isVideo: false, category: 'aesthetic', url: 'images/girl-3.png', thumb: 'images/girl-3.png', tint: 'dark', opacity: 15 },
 
     // ═══ CARS ═══
+    {
+        id: 'f1',
+        isVideo: true,
+        category: 'cars',
+        url: 'videos/f1.mp4',
+        thumb: 'videos/thumbs/f1-thumb.png',
+        tint: 'dark',
+        opacity: 15
+    },
     {
         id: 'i_dowt_it',
         isVideo: true,
@@ -198,7 +225,8 @@ let userConfig = {
     showTrackSelector: true,
     comboSound: true,
     pitchShift: true,
-    wallpaperAudio: true // Default to true
+    wallpaperAudio: true, // Default to true
+    instantLegend: false // When true, all keystrokes register as correct
 };
 
 const UI = {
@@ -1792,18 +1820,318 @@ function loopKeypressParticles() {
         p.y += p.vy;
         p.vy += p.gravity || 0;
         p.life -= p.decay;
-        p.size *= 0.94;
 
-        if (p.life <= 0 || p.size < 0.1) {
+        // Custom physics during life
+        if (p.shape === 'rings') {
+            p.size += 1.5; // Rings expand outwards
+        } else if (p.shape === 'snow' || p.shape === 'leaves' || p.shape === 'petals') {
+            p.x += Math.sin(p.life * 10) * (p.shape === 'leaves' ? 1.5 : (p.shape === 'petals' ? 1.2 : 0.5)); // Drifting sway
+            if (p.shape === 'snow') p.size -= 0.02; // Slow melt shrink
+        } else if (p.shape === 'ghosts') {
+            p.x += Math.sin(p.life * 5) * 1.0; // Slower wavy float
+            p.size += 0.05; // Slightly expand as they rise
+        } else if (p.shape === 'bokeh') {
+            p.size += 0.1; // Expand gently
+        } else if (p.shape === 'fire') {
+            p.size *= 0.92; // Shrinks faster
+        } else if (p.shape === 'hexagons' || p.shape === 'crosses' || p.shape === 'leaves' || p.shape === 'petals' || p.shape === 'polygons') {
+            p.rot = (p.rot || 0) + (p.vx > 0 ? 0.05 : -0.05); // Spin based on direction
+            if (p.shape !== 'petals') p.size *= 0.95;
+        } else if (p.shape === 'lines' || p.shape === 'sparks') {
+            p.size *= 0.90; // Fade out fast
+        } else if (p.shape === 'dust') {
+            p.x += (Math.random() - 0.5) * 0.5; // random jitter walk
+            p.y += (Math.random() - 0.5) * 0.5;
+        } else if (p.shape === 'swirls') {
+            p.rot = (p.rot || 0) + 0.15;
+            p.x += Math.cos(p.rot) * 2;
+            p.y += Math.sin(p.rot) * 2;
+        } else if (p.shape === 'lightning') {
+            p.x += (Math.random() - 0.5) * 4;
+            p.y += (Math.random() - 0.5) * 4;
+            p.size *= 0.8; // flashes out fast
+        } else if (p.shape === 'orbs') {
+            // High gravity handles movement, just drift size smoothly
+            p.size *= 0.99;
+        } else if (p.shape === 'gems' || p.shape === 'diamonds') {
+            p.rot = (p.rot || 0) + (p.vx > 0 ? 0.08 : -0.08);
+            p.size *= 0.96;
+        } else if (p.shape === 'waves') {
+            p.y += Math.sin(p.life * 15) * 2; // Fast snake wave
+            p.size *= 0.95;
+        } else if (p.shape === 'pulse') {
+            p.size = p.baseSize + Math.sin(p.life * 20) * (p.baseSize * 0.5); // size throbs
+            p.life -= p.decay * 0.5; // lasts longer to show pulse
+        } else if (p.shape === 'confetti') {
+            p.rot = (p.rot || 0) + (p.vx > 0 ? 0.2 : -0.2); // wild spin
+            p.x += Math.sin(p.life * 5) * 2; // paper flutter
+        } else {
+            p.size *= 0.94; // Default shrink
+        }
+
+        if (p.life <= 0 || (p.shape !== 'rings' && p.shape !== 'lines' && p.size < 0.1)) {
             keyParticles.splice(i, 1);
             continue;
         }
 
-        keyCtx.beginPath();
-        keyCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
         const { r, g, b } = hexToRgb(p.color);
-        keyCtx.fillStyle = `rgba(${r}, ${g}, ${b}, ${p.life})`;
-        keyCtx.fill();
+        const rgba = `rgba(${r}, ${g}, ${b}, ${p.life})`;
+
+        if (p.shape === 'bubbles' || p.shape === 'rings') {
+            keyCtx.beginPath();
+            keyCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            keyCtx.strokeStyle = rgba;
+            keyCtx.lineWidth = p.shape === 'rings' ? 2 * p.life : 1.5;
+            keyCtx.stroke();
+            if (p.shape === 'bubbles') {
+                keyCtx.fillStyle = `rgba(${r}, ${g}, ${b}, ${p.life * 0.2})`;
+                keyCtx.fill();
+            }
+        } else if (p.shape === 'digital') {
+            keyCtx.fillStyle = rgba;
+            // Draw a rectangle stretched in direction
+            const width = Math.abs(p.vx) > Math.abs(p.vy) ? p.size * 3 : p.size;
+            const height = Math.abs(p.vy) >= Math.abs(p.vx) ? p.size * 3 : p.size;
+            keyCtx.fillRect(p.x - width / 2, p.y - height / 2, width, height);
+        } else if (p.shape === 'binary') {
+            keyCtx.font = `${Math.floor(p.size * 4)}px var(--font-main, monospace)`;
+            keyCtx.fillStyle = rgba;
+            keyCtx.fillText(p.char, p.x, p.y);
+        } else if (p.shape === 'triangles') {
+            keyCtx.beginPath();
+            const rot = p.life * 5; // Spin effect
+            for (let j = 0; j < 3; j++) {
+                const angle = rot + (j * Math.PI * 2 / 3);
+                const tx = p.x + Math.cos(angle) * p.size * 1.5;
+                const ty = p.y + Math.sin(angle) * p.size * 1.5;
+                if (j === 0) keyCtx.moveTo(tx, ty);
+                else keyCtx.lineTo(tx, ty);
+            }
+            keyCtx.closePath();
+            keyCtx.fillStyle = rgba;
+            keyCtx.fill();
+        } else if (p.shape === 'hexagons') {
+            keyCtx.save();
+            keyCtx.translate(p.x, p.y);
+            keyCtx.rotate(p.rot || 0);
+            keyCtx.beginPath();
+            for (let j = 0; j < 6; j++) {
+                const angle = j * Math.PI / 3;
+                const tx = Math.cos(angle) * p.size;
+                const ty = Math.sin(angle) * p.size;
+                if (j === 0) keyCtx.moveTo(tx, ty);
+                else keyCtx.lineTo(tx, ty);
+            }
+            keyCtx.closePath();
+            keyCtx.fillStyle = rgba;
+            keyCtx.fill();
+            keyCtx.restore();
+        } else if (p.shape === 'crescents') {
+            keyCtx.save();
+            keyCtx.translate(p.x, p.y);
+            // Slowly rotate the crescent over its life
+            keyCtx.rotate((1 - p.life) * 3);
+            keyCtx.beginPath();
+            // Outer arc
+            keyCtx.arc(0, 0, p.size, Math.PI * 0.5, Math.PI * 1.5, false);
+            // Inner arc to cut it out
+            keyCtx.arc(p.size * 0.4, 0, p.size * 0.9, Math.PI * 1.5, Math.PI * 0.5, true);
+            keyCtx.closePath();
+            keyCtx.fillStyle = rgba;
+            keyCtx.fill();
+            keyCtx.restore();
+        } else if (p.shape === 'droplets') {
+            keyCtx.save();
+            keyCtx.translate(p.x, p.y);
+            // Point droplet upwards always (falling down)
+            keyCtx.beginPath();
+            keyCtx.arc(0, 0, p.size, 0, Math.PI);
+            keyCtx.lineTo(0, -p.size * 2);
+            keyCtx.closePath();
+            keyCtx.fillStyle = rgba;
+            keyCtx.fill();
+            keyCtx.restore();
+        } else if (p.shape === 'crosses') {
+            keyCtx.save();
+            keyCtx.translate(p.x, p.y);
+            keyCtx.rotate(p.rot || 0);
+            keyCtx.strokeStyle = rgba;
+            keyCtx.lineWidth = 1.5;
+            keyCtx.beginPath();
+            keyCtx.moveTo(-p.size, 0); keyCtx.lineTo(p.size, 0);
+            keyCtx.moveTo(0, -p.size); keyCtx.lineTo(0, p.size);
+            keyCtx.stroke();
+            keyCtx.restore();
+        } else if (p.shape === 'lines') {
+            keyCtx.beginPath();
+            keyCtx.moveTo(p.x, p.y);
+            // Draw a trailing line behind the particle based on velocity
+            keyCtx.lineTo(p.x - p.vx * 3, p.y - p.vy * 3);
+            keyCtx.strokeStyle = rgba;
+            keyCtx.lineWidth = 2;
+            keyCtx.stroke();
+        } else if (p.shape === 'leaves') {
+            keyCtx.save();
+            keyCtx.translate(p.x, p.y);
+            keyCtx.rotate(p.rot || 0);
+            keyCtx.beginPath();
+            keyCtx.ellipse(0, 0, p.size, p.size * 2, 0, 0, Math.PI * 2);
+            keyCtx.fillStyle = rgba;
+            keyCtx.fill();
+            keyCtx.restore();
+        } else if (p.shape === 'runes' || p.shape === 'notes') {
+            keyCtx.font = `${Math.floor(p.size * 5)}px var(--font-main, monospace)`;
+            keyCtx.fillStyle = rgba;
+            keyCtx.fillText(p.char, p.x, p.y);
+        } else if (p.shape === 'sparks') {
+            keyCtx.fillStyle = rgba;
+            keyCtx.fillRect(p.x, p.y, p.size * 1.5, p.size * 3); // simple falling streak
+        } else if (p.shape === 'comets') {
+            keyCtx.beginPath();
+            keyCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            keyCtx.fillStyle = rgba;
+            keyCtx.fill();
+            // Tail
+            keyCtx.beginPath();
+            keyCtx.moveTo(p.x, p.y);
+            keyCtx.lineTo(p.x - p.vx * 4, p.y - p.vy * 4);
+            keyCtx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${p.life * 0.5})`;
+            keyCtx.lineWidth = p.size;
+            keyCtx.stroke();
+        } else if (p.shape === 'polygons') {
+            keyCtx.save();
+            keyCtx.translate(p.x, p.y);
+            keyCtx.rotate(p.rot || 0);
+            keyCtx.beginPath();
+            const sides = p.sides || 3;
+            for (let j = 0; j < sides; j++) {
+                const angle = j * 2 * Math.PI / sides;
+                const tx = Math.cos(angle) * p.size;
+                const ty = Math.sin(angle) * p.size;
+                if (j === 0) keyCtx.moveTo(tx, ty);
+                else keyCtx.lineTo(tx, ty);
+            }
+            keyCtx.closePath();
+            keyCtx.fillStyle = rgba;
+            keyCtx.fill();
+            keyCtx.restore();
+        } else if (p.shape === 'dust') {
+            keyCtx.fillStyle = rgba;
+            keyCtx.fillRect(p.x, p.y, p.size, p.size);
+        } else if (p.shape === 'ghosts' || p.shape === 'bokeh') {
+            keyCtx.beginPath();
+            keyCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            // Softer look for ghosts and bokeh
+            keyCtx.fillStyle = `rgba(${r}, ${g}, ${b}, ${p.shape === 'ghosts' ? p.life * 0.6 : p.life * 0.4})`;
+            keyCtx.fill();
+        } else if (p.shape === 'petals') {
+            keyCtx.save();
+            keyCtx.translate(p.x, p.y);
+            keyCtx.rotate(p.rot || 0);
+            keyCtx.beginPath();
+            keyCtx.ellipse(0, 0, p.size * 0.6, p.size, 0, 0, Math.PI * 2);
+            keyCtx.fillStyle = rgba;
+            keyCtx.fill();
+            keyCtx.restore();
+        } else if (p.shape === 'gems') {
+            keyCtx.save();
+            keyCtx.translate(p.x, p.y);
+            keyCtx.rotate(p.rot || 0);
+            keyCtx.beginPath();
+            keyCtx.moveTo(0, -p.size);
+            keyCtx.lineTo(p.size * 0.5, 0);
+            keyCtx.lineTo(0, p.size);
+            keyCtx.lineTo(-p.size * 0.5, 0);
+            keyCtx.closePath();
+            keyCtx.fillStyle = rgba;
+            keyCtx.fill();
+            keyCtx.restore();
+        } else if (p.shape === 'orbs') {
+            keyCtx.save();
+            keyCtx.globalCompositeOperation = 'lighter'; // Additive blending
+            const grad = keyCtx.createRadialGradient(Math.max(0, p.x), Math.max(0, p.y), 0, Math.max(0, p.x), Math.max(0, p.y), Math.max(0.1, p.size));
+            grad.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${p.life * 0.8})`);
+            grad.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
+            keyCtx.fillStyle = grad;
+            keyCtx.beginPath();
+            keyCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            keyCtx.fill();
+            keyCtx.restore();
+        } else if (p.shape === 'swirls') {
+            keyCtx.save();
+            keyCtx.translate(p.x, p.y);
+            keyCtx.rotate(p.rot || 0);
+            keyCtx.beginPath();
+            keyCtx.arc(0, 0, p.size, 0, Math.PI);
+            keyCtx.strokeStyle = rgba;
+            keyCtx.lineWidth = 1.5;
+            keyCtx.stroke();
+            keyCtx.restore();
+        } else if (p.shape === 'lightning') {
+            keyCtx.save();
+            keyCtx.beginPath();
+            keyCtx.moveTo(p.x, p.y);
+            let lx = p.x, ly = p.y;
+            for (let k = 0; k < 4; k++) {
+                lx += (Math.random() - 0.5) * p.size * 2;
+                ly += (Math.random() - 0.5) * p.size * 2;
+                keyCtx.lineTo(lx, ly);
+            }
+            keyCtx.strokeStyle = rgba;
+            keyCtx.lineWidth = Math.max(1, p.life * 2);
+            keyCtx.stroke();
+            keyCtx.restore();
+        } else if (p.shape === 'pixels') {
+            keyCtx.fillStyle = rgba;
+            const pxSize = Math.max(1, Math.floor(p.size));
+            keyCtx.fillRect(Math.floor(p.x), Math.floor(p.y), pxSize, pxSize);
+        } else if (p.shape === 'skulls') {
+            keyCtx.font = `${Math.floor(p.size * 4)}px var(--font-main, monospace)`;
+            keyCtx.fillStyle = rgba;
+            keyCtx.fillText('☠', p.x, p.y);
+        } else if (p.shape === 'diamonds') {
+            keyCtx.save();
+            keyCtx.translate(p.x, p.y);
+            keyCtx.rotate(p.rot || 0);
+            keyCtx.beginPath();
+            keyCtx.moveTo(0, -p.size * 1.5);
+            keyCtx.lineTo(p.size * 0.8, 0);
+            keyCtx.lineTo(0, p.size * 1.5);
+            keyCtx.lineTo(-p.size * 0.8, 0);
+            keyCtx.closePath();
+            keyCtx.fillStyle = rgba;
+            keyCtx.fill();
+            keyCtx.restore();
+        } else if (p.shape === 'waves') {
+            keyCtx.beginPath();
+            keyCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            keyCtx.fillStyle = rgba;
+            keyCtx.fill();
+        } else if (p.shape === 'pulse') {
+            keyCtx.beginPath();
+            keyCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            // double stroke effect
+            keyCtx.fillStyle = rgba;
+            keyCtx.fill();
+            keyCtx.beginPath();
+            keyCtx.arc(p.x, p.y, p.size * 1.5, 0, Math.PI * 2);
+            keyCtx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${p.life * 0.3})`;
+            keyCtx.lineWidth = 1;
+            keyCtx.stroke();
+        } else if (p.shape === 'confetti') {
+            keyCtx.save();
+            keyCtx.translate(p.x, p.y);
+            keyCtx.rotate(p.rot || 0);
+            keyCtx.fillStyle = rgba;
+            keyCtx.fillRect(-p.size, -p.size * 0.5, p.size * 2, p.size); // Rectangular confetti
+            keyCtx.restore();
+        } else {
+            // default / fire / snow
+            keyCtx.beginPath();
+            keyCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            keyCtx.fillStyle = rgba;
+            keyCtx.fill();
+        }
     }
 
     // Only keep looping if there are particles to render; stop when idle
@@ -1819,19 +2147,296 @@ function spawnKeypressParticles(x, y) {
 
     const count = 4 + Math.random() * 6;
     const color = userConfig.particleColor || '#ffd700';
+    const shape = userConfig.particleShape || 'default';
 
     for (let i = 0; i < count; i++) {
         const angle = Math.random() * Math.PI * 2;
-        const speed = 2 + Math.random() * 5;
+
+        let speed = 2 + Math.random() * 5;
+        let pColor = color; // Allow shape to safely override base config color
+        let life = 1.0;
+        let decay = 0.03 + Math.random() * 0.05;
+        let size = 2 + Math.random() * 3;
+        let vx = Math.cos(angle) * speed;
+        let vy = Math.sin(angle) * speed;
+        let gravity = 0;
+        let char = '';
+        let sides = undefined;
+
+        // Custom behaviors based on shape
+        if (shape === 'bubbles') {
+            speed = 1.5 + Math.random() * 2;
+            vx = Math.cos(angle) * speed * 0.5; // less horizontal
+            vy = -Math.abs(Math.sin(angle) * speed) - 1; // fly upwards
+            gravity = -0.05; // float up faster
+            size = 3 + Math.random() * 5;
+        } else if (shape === 'digital') {
+            speed = 3 + Math.random() * 7;
+            const dirs = [[0, -1], [0, 1], [1, 0], [-1, 0]];
+            const d = dirs[Math.floor(Math.random() * dirs.length)];
+            vx = d[0] * speed;
+            vy = d[1] * speed;
+            size = 1 + Math.random() * 2;
+            decay = 0.04 + Math.random() * 0.06;
+        } else if (shape === 'fire') {
+            speed = 1 + Math.random() * 3;
+            vx = (Math.random() - 0.5) * 2;
+            vy = -speed - 1; // Always fly upwards
+            gravity = -0.08;
+            size = 4 + Math.random() * 5; // Starts larger
+            decay = 0.04 + Math.random() * 0.04;
+            // Pick a random hot color (or fallback)
+            const fireColors = ['#ff4500', '#ff8c00', '#ffd700', '#ff0000'];
+            pColor = fireColors[Math.floor(Math.random() * fireColors.length)];
+        } else if (shape === 'snow') {
+            speed = 0.5 + Math.random();
+            vx = 0; // Gentle sway handled directly in physics loop
+            vy = speed; // Fall down gently
+            gravity = 0.02;
+            size = 1.5 + Math.random() * 2.5;
+            decay = 0.01 + Math.random() * 0.015; // Lasts longer
+            pColor = '#ffffff'; // Always crisp white snow
+        } else if (shape === 'binary') {
+            speed = 1 + Math.random() * 3;
+            vx = (Math.random() - 0.5) * 1.5;
+            vy = (Math.random() - 0.5) * 1.5 - 1; // Float up slightly at first
+            gravity = 0.05; // Then tumble down
+            size = 3 + Math.random() * 4;
+            decay = 0.02 + Math.random() * 0.03;
+            pColor = '#00ff41'; // Matrix green
+            char = Math.random() > 0.5 ? '1' : '0';
+        } else if (shape === 'rings') {
+            speed = 0;
+            vx = 0; vy = 0; // Stationary
+            size = 1; // Starts tiny, expands in canvas drawing loop
+            decay = 0.03 + Math.random() * 0.04;
+            gravity = 0;
+        } else if (shape === 'triangles') {
+            speed = 4 + Math.random() * 6;
+            vx = Math.cos(angle) * speed;
+            vy = Math.sin(angle) * speed;
+            size = 3 + Math.random() * 4;
+            gravity = 0.1; // Projectile arc trajectory
+            decay = 0.02 + Math.random() * 0.03;
+        } else if (shape === 'hexagons') {
+            speed = 2 + Math.random() * 3;
+            vx = Math.cos(angle) * speed;
+            vy = Math.sin(angle) * speed;
+            size = 4 + Math.random() * 3;
+            gravity = 0.05;
+            decay = 0.02 + Math.random() * 0.02;
+        } else if (shape === 'crescents') {
+            speed = 1 + Math.random() * 2;
+            vx = Math.cos(angle) * speed * 0.5 + 0.5; // Drift right slightly
+            vy = -0.5 - Math.random() * 1.5; // Float up
+            size = 4 + Math.random() * 4;
+            gravity = 0;
+            decay = 0.015 + Math.random() * 0.01; // Last longer
+            pColor = '#f0e68c'; // Pale moon yellow
+        } else if (shape === 'droplets') {
+            speed = 1 + Math.random() * 2;
+            vx = (Math.random() - 0.5) * 1;
+            vy = -2 - Math.random() * 3; // Initial splash upwards
+            size = 2 + Math.random() * 2;
+            gravity = 0.2; // Heavy gravity so they fall fast
+            decay = 0.02 + Math.random() * 0.02;
+            pColor = '#00bfff'; // Deep sky blue
+        } else if (shape === 'crosses') {
+            speed = 2 + Math.random() * 5;
+            vx = Math.cos(angle) * speed;
+            vy = Math.sin(angle) * speed;
+            size = 3 + Math.random() * 3;
+            gravity = 0.05;
+            decay = 0.02 + Math.random() * 0.03;
+        } else if (shape === 'lines') {
+            speed = 6 + Math.random() * 8; // Very fast
+            vx = Math.cos(angle) * speed;
+            vy = Math.sin(angle) * speed;
+            size = 1; // Size doesn't matter much for lines, velocity determines length
+            gravity = 0.1;
+            decay = 0.05 + Math.random() * 0.05; // Fade fast
+        } else if (shape === 'leaves') {
+            speed = 1 + Math.random() * 2;
+            vx = (Math.random() - 0.5) * 2;
+            vy = 1 + Math.random() * 2; // fall down gently
+            size = 3 + Math.random() * 3;
+            gravity = 0.02;
+            decay = 0.01 + Math.random() * 0.01;
+            const leafColors = ['#228b22', '#32cd32', '#ff8c00', '#ffd700'];
+            pColor = leafColors[Math.floor(Math.random() * leafColors.length)];
+        } else if (shape === 'runes') {
+            speed = 1 + Math.random() * 2;
+            vx = (Math.random() - 0.5) * 1.5;
+            vy = -1 - Math.random() * 2;
+            gravity = -0.02; // float up slowly
+            size = 2 + Math.random() * 3;
+            decay = 0.015 + Math.random() * 0.02;
+            const runes = ['ᚠ', 'ᚢ', 'ᚦ', 'ᚨ', 'ᚱ', 'ᚲ', 'ᚷ', 'ᚹ', 'ᚺ', 'ᚾ', 'ᛁ', 'ᛃ', 'ᛇ', 'ᛈ', 'ᛉ', 'ᛊ', 'ᛏ', 'ᛒ', 'ᛖ', 'ᛗ', 'ᛚ', 'ᛜ', 'ᛟ', 'ᛞ'];
+            char = runes[Math.floor(Math.random() * runes.length)];
+            pColor = '#ffaa00'; // glowing magic gold/orange
+        } else if (shape === 'notes') {
+            speed = 2 + Math.random() * 3;
+            vx = Math.cos(angle) * speed;
+            vy = Math.sin(angle) * speed - 2;
+            gravity = 0.05;
+            size = 3 + Math.random() * 4;
+            decay = 0.02 + Math.random() * 0.02;
+            const notes = ['♩', '♪', '♫', '♬', '♭', '♮', '♯'];
+            char = notes[Math.floor(Math.random() * notes.length)];
+        } else if (shape === 'sparks') {
+            speed = 4 + Math.random() * 8;
+            vx = Math.cos(angle) * speed;
+            vy = Math.sin(angle) * speed - 3;
+            size = 1.5 + Math.random() * 1.5;
+            gravity = 0.4; // Very heavy
+            decay = 0.03 + Math.random() * 0.04;
+            pColor = '#ffe600'; // bright welding yellow
+        } else if (shape === 'comets') {
+            speed = 5 + Math.random() * 7;
+            vx = Math.cos(angle) * speed;
+            vy = Math.sin(angle) * speed;
+            size = 2 + Math.random() * 3;
+            gravity = 0.1;
+            decay = 0.02 + Math.random() * 0.03;
+            pColor = '#00ffff'; // cyan comets
+        } else if (shape === 'polygons') {
+            speed = 2 + Math.random() * 4;
+            vx = Math.cos(angle) * speed;
+            vy = Math.sin(angle) * speed;
+            size = 3 + Math.random() * 4;
+            gravity = 0.05;
+            decay = 0.02 + Math.random() * 0.02;
+            sides = 3 + Math.floor(Math.random() * 4); // 3 to 6 sides
+        } else if (shape === 'dust') {
+            speed = 0.2 + Math.random() * 0.8;
+            vx = (Math.random() - 0.5) * speed;
+            vy = (Math.random() - 0.5) * speed;
+            size = 0.5 + Math.random() * 1.5;
+            gravity = 0;
+            decay = 0.005 + Math.random() * 0.01; // Lives very long
+            pColor = '#e0e0e0';
+        } else if (shape === 'ghosts') {
+            speed = 0.5 + Math.random() * 1.5;
+            vx = (Math.random() - 0.5) * 1;
+            vy = -1 - Math.random() * 2; // Float up
+            size = 4 + Math.random() * 6;
+            gravity = -0.01; // Negative gravity
+            decay = 0.01 + Math.random() * 0.015;
+            pColor = '#d0f0ff'; // Ethereal pale blue
+        } else if (shape === 'petals') {
+            speed = 1 + Math.random() * 2;
+            vx = (Math.random() - 0.5) * 2;
+            vy = 1 + Math.random() * 2; // Drift down
+            size = 2.5 + Math.random() * 3.5;
+            gravity = 0.01;
+            decay = 0.01 + Math.random() * 0.01;
+            const petalColors = ['#ffb7c5', '#ffc0cb', '#ff69b4', '#ff1493'];
+            pColor = petalColors[Math.floor(Math.random() * petalColors.length)];
+        } else if (shape === 'bokeh') {
+            speed = 0.2 + Math.random() * 1;
+            vx = (Math.random() - 0.5) * speed;
+            vy = (Math.random() - 0.5) * speed;
+            size = 6 + Math.random() * 10; // Large
+            gravity = 0;
+            decay = 0.01 + Math.random() * 0.02;
+        } else if (shape === 'gems') {
+            speed = 2 + Math.random() * 3;
+            vx = Math.cos(angle) * speed;
+            vy = Math.sin(angle) * speed;
+            size = 3 + Math.random() * 4;
+            gravity = 0.05;
+            decay = 0.02 + Math.random() * 0.02;
+            const gemColors = ['#ff00ff', '#00ffff', '#ff00aa', '#00aaff'];
+            pColor = gemColors[Math.floor(Math.random() * gemColors.length)];
+        } else if (shape === 'orbs') {
+            speed = 0.5 + Math.random();
+            vx = (Math.random() - 0.5) * speed;
+            vy = -0.5 - Math.random() * 1;
+            size = 10 + Math.random() * 15; // Very large, soft
+            gravity = -0.01;
+            decay = 0.01 + Math.random() * 0.02;
+            const orbColors = ['#ff6600', '#00ffaa', '#ee00ff', '#00aaff'];
+            pColor = orbColors[Math.floor(Math.random() * orbColors.length)];
+        } else if (shape === 'swirls') {
+            speed = 1 + Math.random() * 3;
+            vx = Math.cos(angle) * speed;
+            vy = Math.sin(angle) * speed;
+            size = 2 + Math.random() * 3;
+            gravity = 0.02;
+            decay = 0.015 + Math.random() * 0.02;
+        } else if (shape === 'lightning') {
+            speed = 0;
+            vx = 0;
+            vy = 0;
+            size = 5 + Math.random() * 10;
+            gravity = 0;
+            decay = 0.05 + Math.random() * 0.05; // Quick flash
+            pColor = '#e0f0ff';
+        } else if (shape === 'pixels') {
+            speed = 3 + Math.random() * 5;
+            vx = Math.cos(angle) * speed;
+            vy = Math.sin(angle) * speed;
+            size = 2 + Math.random() * 4;
+            gravity = 0.1;
+            decay = 0.02 + Math.random() * 0.03;
+            pColor = '#00ff00'; // Retro CRT green
+        } else if (shape === 'skulls') {
+            speed = 1 + Math.random() * 3;
+            vx = Math.cos(angle) * speed;
+            vy = Math.sin(angle) * speed - 1;
+            size = 3 + Math.random() * 3;
+            gravity = -0.05; // Souls float up
+            decay = 0.015 + Math.random() * 0.02;
+            pColor = '#aaaaaa'; // Bone gray
+        } else if (shape === 'diamonds') {
+            speed = 3 + Math.random() * 5;
+            vx = Math.cos(angle) * speed;
+            vy = Math.sin(angle) * speed;
+            size = 3 + Math.random() * 4;
+            gravity = 0.1;
+            decay = 0.02 + Math.random() * 0.03;
+            pColor = '#4488ff'; // Sapphire blue
+        } else if (shape === 'waves') {
+            speed = 2 + Math.random() * 4;
+            vx = Math.cos(angle) * speed;
+            vy = Math.sin(angle) * speed;
+            size = 2 + Math.random() * 2;
+            gravity = 0.05;
+            decay = 0.02 + Math.random() * 0.02;
+            pColor = '#00ddff'; // Wave water blue
+        } else if (shape === 'pulse') {
+            speed = 0.5 + Math.random() * 2;
+            vx = Math.cos(angle) * speed;
+            vy = Math.sin(angle) * speed;
+            size = 4 + Math.random() * 3;
+            gravity = 0;
+            decay = 0.01 + Math.random() * 0.01;
+            pColor = '#ff3333'; // Thumping red heart
+        } else if (shape === 'confetti') {
+            speed = 2 + Math.random() * 6;
+            vx = (Math.random() - 0.5) * speed;
+            vy = -3 - Math.random() * 5; // Pop upwards!
+            size = 2 + Math.random() * 3;
+            gravity = 0.15; // float down like paper
+            decay = 0.01 + Math.random() * 0.02;
+            const confColors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
+            pColor = confColors[Math.floor(Math.random() * confColors.length)];
+        }
+
         keyParticles.push({
             x: x,
             y: y,
-            vx: Math.cos(angle) * speed,
-            vy: Math.sin(angle) * speed,
-            life: 1.0,
-            decay: 0.03 + Math.random() * 0.05,
-            size: 2 + Math.random() * 3,
-            color: color
+            vx: vx,
+            vy: vy,
+            life: life,
+            decay: decay,
+            size: size,
+            baseSize: size, // Save base size for pulsing
+            color: pColor,
+            gravity: gravity,
+            shape: shape,
+            char: char,
+            sides: sides // Capture sides if defined
         });
     }
     // Restart the render loop if it was idle
@@ -1938,6 +2543,12 @@ function initTheme() {
     document.documentElement.style.setProperty('--font-main', `var(--font-${font})`);
     document.querySelectorAll('.font-btn').forEach(btn =>
         btn.classList.toggle('active', btn.dataset.font === font)
+    );
+
+    // Apply Particle Shape Toggle UI
+    const shape = userConfig.particleShape || 'default';
+    document.querySelectorAll('.shape-btn').forEach(btn =>
+        btn.classList.toggle('active', btn.dataset.particleShape === shape)
     );
 }
 
@@ -9869,6 +10480,22 @@ function setupSettingsListeners() {
         });
     }
 
+    const shapeOptions = document.querySelector('.particle-shape-options');
+    if (shapeOptions) {
+        shapeOptions.addEventListener('click', (e) => {
+            const btn = e.target.closest('.shape-btn');
+            if (!btn) return;
+            userConfig.particleShape = btn.dataset.particleShape;
+
+            // Immediately update visually
+            document.querySelectorAll('.shape-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            applyTheme();
+            saveConfig();
+        });
+    }
+
     // Combo Sound Controls
     const comboToggle = document.getElementById('combo-sound-toggle');
     const pitchToggle = document.getElementById('pitch-shift-toggle');
@@ -9898,6 +10525,18 @@ function setupSettingsListeners() {
         pitchToggle.addEventListener('change', (e) => {
             userConfig.pitchShift = e.target.checked;
             saveConfig();
+        });
+    }
+
+    // Instant Legend Toggle
+    const instantLegendToggle = document.getElementById('instant-legend-toggle');
+    if (instantLegendToggle) {
+        instantLegendToggle.checked = userConfig.instantLegend === true;
+        instantLegendToggle.addEventListener('change', (e) => {
+            userConfig.instantLegend = e.target.checked;
+            saveConfig();
+            // Reset current game so the new mode takes effect cleanly
+            initGame();
         });
     }
 
@@ -10118,17 +10757,19 @@ UI.input.addEventListener('input', (e) => {
 
     if (typedVal.endsWith(' ')) {
         const trimmedVal = typedVal.trim();
-        let wordCorrect = trimmedVal === currentWordStr;
+        let wordCorrect = userConfig.instantLegend ? true : (trimmedVal === currentWordStr);
 
-        [...trimmedVal].forEach((char, i) => {
-            if (i < currentWordStr.length && char === currentWordStr[i]) {
-                state.correctChars++;
-            }
-        });
-        // Add +1 for the space if the word was fully correct (standard WPM rule)
-        // Or if we just want to count the space as a keystroke? 
-        // Usually space is a char. If word is correct, space is correct.
-        if (wordCorrect) state.correctChars++;
+        if (userConfig.instantLegend) {
+            // Instant Legend: count all typed chars as correct
+            state.correctChars += Math.min(trimmedVal.length, currentWordStr.length);
+        } else {
+            [...trimmedVal].forEach((char, i) => {
+                if (i < currentWordStr.length && char === currentWordStr[i]) {
+                    state.correctChars++;
+                }
+            });
+        }
+        if (wordCorrect) state.correctChars++; // +1 for the space
 
         state.totalCharsTyped += trimmedVal.length + 1;
         state.currWordIndex++;
@@ -10159,7 +10800,9 @@ UI.input.addEventListener('input', (e) => {
         const char = typedVal[i];
         const letterSpan = letters[i];
         if (char == null) { }
-        else if (char === letterSpan.innerText) {
+        else if (userConfig.instantLegend) {
+            letterSpan.classList.add('correct'); // Instant Legend: always correct
+        } else if (char === letterSpan.innerText) {
             letterSpan.classList.add('correct');
         } else {
             letterSpan.classList.add('incorrect');
@@ -10285,8 +10928,8 @@ function endGame() {
     // Draw Graph
     drawResultChart(state.wpmHistory);
 
-    // Save stats if user is logged in
-    if (window.updateUserStats) {
+    // Save stats if user is logged in — skip if Instant Legend is active
+    if (window.updateUserStats && !userConfig.instantLegend) {
         window.updateUserStats(netWpm, finalTimeMin * 60);
     }
 
@@ -10875,9 +11518,16 @@ function updateCaretPosition() {
     }
 
     caret.style.transform = `translate(${targetLeft}px, ${targetTop}px)`;
-    caret.style.animation = 'none';
-    caret.offsetHeight;
-    caret.style.animation = 'blink 1s infinite';
+    const caretStyle = userConfig.caretStyle || 'line';
+
+    // Carets that animate #caret itself instead of ::before
+    const ignoreBlink = ['heartbeat', 'pulse', 'neon', 'ripple', 'breathe', 'bounce', 'glitch', 'static', 'wave', 'comet'];
+
+    if (!ignoreBlink.includes(caretStyle)) {
+        caret.style.animation = 'none';
+        void caret.offsetWidth;
+        caret.style.animation = 'blink 1s infinite';
+    }
 
     // Trail follows with delay (CSS transition handles the smooth lag)
     if (caretTrail) {

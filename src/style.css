@@ -1,4 +1,4 @@
-﻿:root {
+:root {
     --panel-bg: 20, 20, 30;
     --panel-opacity: 0.6;
     --text-main: rgba(255, 255, 255, 0.9);
@@ -1534,6 +1534,664 @@ body[data-caret="beam"] #caret::after {
     transform: translateX(-50%);
 }
 
+/* Pulse — smooth double-heartbeat on the bar */
+body[data-caret="pulse"] #caret {
+    width: 3px;
+    height: 1.4em;
+    background: transparent !important;
+    box-shadow: none !important;
+    animation: none !important;
+    overflow: visible;
+}
+
+body[data-caret="pulse"] #caret::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--caret-color, var(--accent-gold));
+    border-radius: 2px;
+    box-shadow: 0 0 6px var(--caret-color, var(--accent-gold));
+    animation: pulse-beat 1.4s ease-in-out infinite;
+}
+
+@keyframes pulse-beat {
+
+    0%,
+    100% {
+        transform: scaleY(1);
+        opacity: 0.65;
+        box-shadow: 0 0 4px var(--caret-color, var(--accent-gold));
+    }
+
+    14% {
+        transform: scaleY(1.45);
+        opacity: 1;
+        box-shadow: 0 0 16px var(--caret-color, var(--accent-gold)), 0 0 30px var(--caret-color, var(--accent-gold));
+    }
+
+    28% {
+        transform: scaleY(1);
+        opacity: 0.65;
+        box-shadow: 0 0 4px var(--caret-color, var(--accent-gold));
+    }
+
+    42% {
+        transform: scaleY(1.22);
+        opacity: 0.9;
+        box-shadow: 0 0 10px var(--caret-color, var(--accent-gold));
+    }
+
+    60% {
+        transform: scaleY(1);
+        opacity: 0.65;
+        box-shadow: 0 0 4px var(--caret-color, var(--accent-gold));
+    }
+}
+
+/* Ripple — bar stays solid, concentric rings expand out on each keystroke */
+body[data-caret="ripple"] #caret {
+    width: 2px;
+    height: 1.4em;
+    background: var(--caret-color, var(--accent-gold));
+    border-radius: 1px;
+    box-shadow: 0 0 5px var(--caret-color, var(--accent-gold));
+    animation: blink 1s infinite;
+    overflow: visible;
+}
+
+body[data-caret="ripple"] #caret::before,
+body[data-caret="ripple"] #caret::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    border: 1.5px solid var(--caret-color, var(--accent-gold));
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0;
+    animation: ripple-expand 1.8s ease-out infinite;
+    pointer-events: none;
+}
+
+body[data-caret="ripple"] #caret::after {
+    animation-delay: 0.6s;
+}
+
+@keyframes ripple-expand {
+    0% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 0.7;
+    }
+
+    100% {
+        transform: translate(-50%, -50%) scale(9);
+        opacity: 0;
+    }
+}
+
+/* Neon — glowing bar, randomly flickers off like a broken sign */
+body[data-caret="neon"] #caret {
+    width: 3px;
+    height: 1.4em;
+    background: transparent !important;
+    box-shadow: none !important;
+    animation: none !important;
+    overflow: visible;
+}
+
+body[data-caret="neon"] #caret::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--caret-color, var(--accent-gold));
+    border-radius: 1px;
+    animation: neon-flicker 3.5s steps(1, end) infinite;
+}
+
+@keyframes neon-flicker {
+
+    /* Long comfortable hold — nothing happens for a while */
+    0%,
+    55%,
+    100% {
+        opacity: 1;
+        box-shadow: 0 0 4px var(--caret-color, var(--accent-gold)), 0 0 14px var(--caret-color, var(--accent-gold)), 0 0 28px var(--caret-color, var(--accent-gold));
+    }
+
+    /* Single quick stutter mid-way — feels like a loose connection */
+    56% {
+        opacity: 0.06;
+        box-shadow: none;
+    }
+
+    57% {
+        opacity: 1;
+        box-shadow: 0 0 4px var(--caret-color, var(--accent-gold)), 0 0 10px var(--caret-color, var(--accent-gold));
+    }
+
+    /* Long stable hold again */
+    58%,
+    74% {
+        opacity: 1;
+        box-shadow: 0 0 4px var(--caret-color, var(--accent-gold)), 0 0 14px var(--caret-color, var(--accent-gold)), 0 0 28px var(--caret-color, var(--accent-gold));
+    }
+
+    /* Chaotic panic — multiple rapid flickers close together */
+    75% {
+        opacity: 0.04;
+        box-shadow: none;
+    }
+
+    76% {
+        opacity: 1;
+        box-shadow: 0 0 3px var(--caret-color, var(--accent-gold));
+    }
+
+    77% {
+        opacity: 0.06;
+        box-shadow: none;
+    }
+
+    78% {
+        opacity: 0.7;
+        box-shadow: 0 0 6px var(--caret-color, var(--accent-gold)), 0 0 16px var(--caret-color, var(--accent-gold));
+    }
+
+    79% {
+        opacity: 0.02;
+        box-shadow: none;
+    }
+
+    80% {
+        opacity: 1;
+        box-shadow: 0 0 4px var(--caret-color, var(--accent-gold)), 0 0 14px var(--caret-color, var(--accent-gold)), 0 0 28px var(--caret-color, var(--accent-gold));
+    }
+
+    /* Back to solid, holds until loop */
+    81%,
+    99% {
+        opacity: 1;
+        box-shadow: 0 0 4px var(--caret-color, var(--accent-gold)), 0 0 14px var(--caret-color, var(--accent-gold)), 0 0 28px var(--caret-color, var(--accent-gold));
+    }
+}
+
+/* Breathe — slow calm horizontal expand like deep breathing */
+body[data-caret="breathe"] #caret {
+    width: 3px;
+    height: 1.4em;
+    background: transparent !important;
+    box-shadow: none !important;
+    animation: none !important;
+    overflow: visible;
+}
+
+body[data-caret="breathe"] #caret::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--caret-color, var(--accent-gold));
+    border-radius: 2px;
+    transform-origin: center;
+    animation: breathe-in 2.8s ease-in-out infinite;
+}
+
+@keyframes breathe-in {
+
+    0%,
+    100% {
+        transform: scaleX(1) scaleY(1);
+        opacity: 0.55;
+        box-shadow: 0 0 3px var(--caret-color, var(--accent-gold));
+    }
+
+    45% {
+        transform: scaleX(3.5) scaleY(1);
+        opacity: 1;
+        box-shadow: 0 0 18px var(--caret-color, var(--accent-gold)), 0 0 35px var(--caret-color, var(--accent-gold));
+    }
+
+    55% {
+        transform: scaleX(3.5) scaleY(1);
+        opacity: 1;
+        box-shadow: 0 0 18px var(--caret-color, var(--accent-gold)), 0 0 35px var(--caret-color, var(--accent-gold));
+    }
+}
+
+/* Bounce — bar bounces up with a squish on landing */
+body[data-caret="bounce"] #caret {
+    width: 3px;
+    height: 1.4em;
+    background: transparent !important;
+    box-shadow: none !important;
+    animation: none !important;
+    overflow: visible;
+}
+
+body[data-caret="bounce"] #caret::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--caret-color, var(--accent-gold));
+    border-radius: 2px;
+    box-shadow: 0 0 6px var(--caret-color, var(--accent-gold));
+    transform-origin: bottom center;
+    animation: caret-bounce 0.9s cubic-bezier(0.36, 0, 0.66, -0.3) infinite;
+}
+
+@keyframes caret-bounce {
+
+    0%,
+    100% {
+        transform: translateY(0) scaleY(1);
+        opacity: 0.85;
+    }
+
+    35% {
+        transform: translateY(-8px) scaleY(1.1);
+        opacity: 1;
+        box-shadow: 0 0 12px var(--caret-color, var(--accent-gold));
+    }
+
+    70% {
+        transform: translateY(0) scaleY(0.75);
+        opacity: 0.9;
+        box-shadow: 0 0 8px var(--caret-color, var(--accent-gold));
+    }
+
+    85% {
+        transform: translateY(0) scaleY(1.05);
+        opacity: 0.85;
+    }
+}
+
+/* Orbit — a glowing dot circles the caret like a planet */
+body[data-caret="orbit"] #caret {
+    width: 2px;
+    height: 1.4em;
+    background: transparent !important;
+    box-shadow: none !important;
+    animation: none !important;
+    overflow: visible;
+}
+
+body[data-caret="orbit"] #caret::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--caret-color, var(--accent-gold));
+    border-radius: 1px;
+    box-shadow: 0 0 5px var(--caret-color, var(--accent-gold));
+    opacity: 0.8;
+}
+
+body[data-caret="orbit"] #caret::after {
+    content: '';
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--caret-color, var(--accent-gold));
+    box-shadow: 0 0 8px var(--caret-color, var(--accent-gold)), 0 0 16px var(--caret-color, var(--accent-gold));
+    top: 50%;
+    left: 50%;
+    margin: -2.5px 0 0 -2.5px;
+    animation: orbit-spin 1.6s linear infinite;
+}
+
+@keyframes orbit-spin {
+    0% {
+        transform: rotate(0deg) translateX(10px);
+    }
+
+    100% {
+        transform: rotate(360deg) translateX(10px);
+    }
+}
+
+/* Glitch — digital corruption, bar jumps and splits */
+body[data-caret="glitch"] #caret {
+    width: 3px;
+    height: 1.4em;
+    background: transparent !important;
+    box-shadow: none !important;
+    animation: none !important;
+    overflow: visible;
+}
+
+body[data-caret="glitch"] #caret::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--caret-color, var(--accent-gold));
+    border-radius: 1px;
+    animation: glitch-main 3s steps(1, end) infinite;
+}
+
+body[data-caret="glitch"] #caret::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: #ff3366;
+    border-radius: 1px;
+    mix-blend-mode: screen;
+    animation: glitch-split 3s steps(1, end) infinite;
+    opacity: 0;
+}
+
+@keyframes glitch-main {
+
+    0%,
+    80%,
+    100% {
+        transform: translateX(0) scaleY(1);
+        opacity: 1;
+    }
+
+    81% {
+        transform: translateX(3px) scaleY(0.5) translateY(3px);
+        opacity: 1;
+    }
+
+    82% {
+        transform: translateX(-4px);
+        opacity: 0.8;
+        clip-path: inset(30% 0 30% 0);
+    }
+
+    83% {
+        transform: translateX(2px) scaleY(1.3);
+        opacity: 1;
+        clip-path: none;
+    }
+
+    84% {
+        transform: translateX(-2px);
+        opacity: 0.9;
+    }
+
+    85% {
+        transform: translateX(0) scaleY(1);
+        opacity: 1;
+    }
+}
+
+@keyframes glitch-split {
+
+    0%,
+    80%,
+    86%,
+    100% {
+        opacity: 0;
+    }
+
+    81% {
+        transform: translateX(4px);
+        opacity: 0.7;
+    }
+
+    82% {
+        transform: translateX(-3px);
+        opacity: 0.5;
+    }
+
+    83% {
+        opacity: 0;
+    }
+
+    84% {
+        transform: translateX(5px);
+        opacity: 0.6;
+    }
+
+    85% {
+        opacity: 0;
+    }
+}
+
+/* Radar — sweep arm rotates around a solid bar */
+body[data-caret="radar"] #caret {
+    width: 2px;
+    height: 1.4em;
+    background: transparent !important;
+    box-shadow: none !important;
+    animation: none !important;
+    overflow: visible;
+}
+
+body[data-caret="radar"] #caret::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--caret-color, var(--accent-gold));
+    border-radius: 1px;
+    box-shadow: 0 0 5px var(--caret-color, var(--accent-gold));
+    opacity: 0.85;
+}
+
+body[data-caret="radar"] #caret::after {
+    content: '';
+    position: absolute;
+    width: 14px;
+    height: 1.5px;
+    background: linear-gradient(to right, var(--caret-color, var(--accent-gold)), transparent);
+    top: 50%;
+    left: 1px;
+    margin-top: -0.75px;
+    transform-origin: 0 center;
+    box-shadow: 0 0 4px var(--caret-color, var(--accent-gold));
+    animation: radar-sweep 2.2s linear infinite;
+}
+
+@keyframes radar-sweep {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Static — rapid TV-noise stepping */
+body[data-caret="static"] #caret {
+    width: 3px;
+    height: 1.4em;
+    background: transparent !important;
+    box-shadow: none !important;
+    animation: none !important;
+    overflow: visible;
+}
+
+body[data-caret="static"] #caret::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--caret-color, var(--accent-gold));
+    border-radius: 1px;
+    animation: tv-static 0.09s steps(1, end) infinite;
+}
+
+@keyframes tv-static {
+    0% {
+        opacity: 1;
+        transform: scaleY(1) translateY(0);
+        box-shadow: 0 0 5px var(--caret-color, var(--accent-gold));
+    }
+
+    12% {
+        opacity: 0.25;
+        transform: scaleY(0.7) translateY(2px);
+        box-shadow: none;
+    }
+
+    25% {
+        opacity: 1;
+        transform: scaleY(1.15) translateY(-1px);
+        box-shadow: 0 0 10px var(--caret-color, var(--accent-gold));
+    }
+
+    37% {
+        opacity: 0.6;
+        transform: scaleY(0.85) translateY(1px);
+        box-shadow: none;
+    }
+
+    50% {
+        opacity: 0.1;
+        transform: scaleY(1.2) translateY(2px);
+        box-shadow: none;
+    }
+
+    62% {
+        opacity: 0.95;
+        transform: scaleY(1) translateY(0);
+        box-shadow: 0 0 7px var(--caret-color, var(--accent-gold));
+    }
+
+    75% {
+        opacity: 0.35;
+        transform: scaleY(0.8) translateY(-2px);
+        box-shadow: none;
+    }
+
+    87% {
+        opacity: 1;
+        transform: scaleY(1.05) translateY(0);
+        box-shadow: 0 0 5px var(--caret-color, var(--accent-gold));
+    }
+}
+
+/* Wave — bar sways and skews like a flag in the wind */
+body[data-caret="wave"] #caret {
+    width: 3px;
+    height: 1.4em;
+    background: transparent !important;
+    box-shadow: none !important;
+    animation: none !important;
+    overflow: visible;
+}
+
+body[data-caret="wave"] #caret::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--caret-color, var(--accent-gold));
+    border-radius: 2px;
+    box-shadow: 0 0 5px var(--caret-color, var(--accent-gold));
+    transform-origin: bottom center;
+    animation: wave-sway 1.4s ease-in-out infinite;
+}
+
+@keyframes wave-sway {
+
+    0%,
+    100% {
+        transform: skewX(0deg) scaleX(1);
+        opacity: 0.85;
+    }
+
+    20% {
+        transform: skewX(10deg) scaleX(0.88);
+        opacity: 1;
+        box-shadow: 0 0 10px var(--caret-color, var(--accent-gold));
+    }
+
+    40% {
+        transform: skewX(-8deg) scaleX(1.12);
+        opacity: 0.9;
+    }
+
+    60% {
+        transform: skewX(6deg) scaleX(0.92);
+        opacity: 1;
+        box-shadow: 0 0 8px var(--caret-color, var(--accent-gold));
+    }
+
+    80% {
+        transform: skewX(-4deg) scaleX(1.05);
+        opacity: 0.88;
+    }
+}
+
+/* Comet — bar sweeps in from above with a bright glowing head */
+body[data-caret="comet"] #caret {
+    width: 2px;
+    height: 1.4em;
+    background: transparent !important;
+    box-shadow: none !important;
+    animation: none !important;
+    overflow: visible;
+}
+
+body[data-caret="comet"] #caret::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, white 0%, var(--caret-color, var(--accent-gold)) 35%, transparent 100%);
+    border-radius: 1px;
+    animation: comet-fall 1.6s ease-in-out infinite;
+}
+
+body[data-caret="comet"] #caret::after {
+    content: '';
+    position: absolute;
+    left: -1px;
+    top: -10px;
+    width: 4px;
+    height: 10px;
+    background: linear-gradient(to bottom, transparent, var(--caret-color, var(--accent-gold)));
+    border-radius: 2px;
+    opacity: 0.45;
+    animation: comet-trail 1.6s ease-in-out infinite;
+}
+
+@keyframes comet-fall {
+    0% {
+        transform: translateY(-10px);
+        opacity: 0;
+    }
+
+    25% {
+        transform: translateY(0);
+        opacity: 1;
+        box-shadow: 0 0 10px var(--caret-color, var(--accent-gold)), 0 0 22px var(--caret-color, var(--accent-gold));
+    }
+
+    75% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(8px);
+        opacity: 0;
+    }
+}
+
+@keyframes comet-trail {
+    0% {
+        transform: translateY(-10px);
+        opacity: 0;
+    }
+
+    25% {
+        transform: translateY(0);
+        opacity: 0.45;
+    }
+
+    75% {
+        transform: translateY(0);
+        opacity: 0.45;
+    }
+
+    100% {
+        transform: translateY(8px);
+        opacity: 0;
+    }
+}
+
 /* Off */
 body[data-caret="off"] #caret {
     display: none;
@@ -1556,7 +2214,8 @@ body[data-caret="off"] #caret {
 }
 
 .caret-btn,
-.font-btn {
+.font-btn,
+.shape-btn {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -1576,7 +2235,8 @@ body[data-caret="off"] #caret {
 }
 
 .caret-btn:hover,
-.font-btn:hover {
+.font-btn:hover,
+.shape-btn:hover {
     background: rgba(255, 255, 255, 0.06);
     color: var(--text-main);
     transform: translateY(-2px);
@@ -1585,7 +2245,8 @@ body[data-caret="off"] #caret {
 }
 
 .caret-btn.active,
-.font-btn.active {
+.font-btn.active,
+.shape-btn.active {
     background: var(--accent-gold);
     color: #000;
     border-color: var(--accent-gold);
@@ -1604,7 +2265,8 @@ body[data-caret="off"] #caret {
 }
 
 .caret-btn.active .btn-icon,
-.font-btn.active .btn-icon {
+.font-btn.active .btn-icon,
+.shape-btn.active .btn-icon {
     opacity: 1;
 }
 
@@ -1613,7 +2275,8 @@ body[data-caret="off"] #caret {
 }
 
 .caret-btn.active .btn-label,
-.font-btn.active .btn-label {
+.font-btn.active .btn-label,
+.shape-btn.active .btn-label {
     opacity: 1;
     font-weight: 800;
 }
