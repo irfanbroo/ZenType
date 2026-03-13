@@ -10940,6 +10940,9 @@ function endGame() {
     animateValue(UI.finalAcc, 0, accuracy, 1500, "%");
 
     discordPresence.setConcluded(netWpm, accuracy);
+
+    // Feed the Progress widget
+    if (window.onTestComplete) window.onTestComplete(netWpm);
 }
 
 const rankQuotes = {

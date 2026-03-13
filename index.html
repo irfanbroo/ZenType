@@ -756,7 +756,292 @@
                         </div>
                     </div>
 
+                    <!-- Bottom-Left Widget Picker -->
+                    <div class="settings-group"
+                        style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1);">
+                        <div class="section-header">
+                            <i class="ri-layout-bottom-line section-icon"></i>
+                            <label class="section-label">BOTTOM-LEFT WIDGET</label>
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="shape-btn widget-pick-btn active" data-widget="visualizer"
+                                style="flex: 0 0 auto; padding: 6px 14px; font-size: 0.8rem;"
+                                onclick="setFooterWidget('visualizer')">
+                                <i class="ri-rhythm-line" style="margin-right: 4px; font-size: 0.85rem;"></i>
+                                Visualizer
+                            </button>
+                            <button class="shape-btn widget-pick-btn" data-widget="ticker"
+                                style="flex: 0 0 auto; padding: 6px 14px; font-size: 0.8rem;"
+                                onclick="setFooterWidget('ticker')">
+                                <i class="ri-speed-line" style="margin-right: 4px; font-size: 0.85rem;"></i>
+                                Live Stats
+                            </button>
+                            <button class="shape-btn widget-pick-btn" data-widget="progress"
+                                style="flex: 0 0 auto; padding: 6px 14px; font-size: 0.8rem;"
+                                onclick="setFooterWidget('progress')">
+                                <i class="ri-line-chart-line" style="margin-right: 4px; font-size: 0.85rem;"></i>
+                                Progress
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Keystroke Visualizer Style (only shown when widget=visualizer) -->
+                    <div id="viz-settings-section" class="settings-group"
+                        style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1);">
+                        <div class="section-header">
+                            <i class="ri-rhythm-line section-icon"></i>
+                            <label class="section-label">VISUALIZER</label>
+                        </div>
+                        <div class="viz-style-options"
+                            style="display: flex; gap: 8px; flex-wrap: nowrap; overflow-x: auto; padding-bottom: 8px; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.2) transparent;">
+                            <button class="shape-btn viz-style-btn active" data-viz-style="equalizer"
+                                style="flex: 0 0 auto; padding: 6px 12px; font-size: 0.8rem;"
+                                onclick="setVisualizerStyle('equalizer')">
+                                <i class="ri-equalizer-line" style="margin-right: 4px; font-size: 0.85rem;"></i>
+                                Equalizer
+                            </button>
+                            <button class="shape-btn viz-style-btn" data-viz-style="mirrored"
+                                style="flex: 0 0 auto; padding: 6px 12px; font-size: 0.8rem;"
+                                onclick="setVisualizerStyle('mirrored')">
+                                <i class="ri-reflect-line" style="margin-right: 4px; font-size: 0.85rem;"></i>
+                                Mirrored
+                            </button>
+                            <button class="shape-btn viz-style-btn" data-viz-style="circular"
+                                style="flex: 0 0 auto; padding: 6px 12px; font-size: 0.8rem;"
+                                onclick="setVisualizerStyle('circular')">
+                                <i class="ri-donut-chart-line" style="margin-right: 4px; font-size: 0.85rem;"></i>
+                                Circular
+                            </button>
+                            <button class="shape-btn viz-style-btn" data-viz-style="heartbeat"
+                                style="flex: 0 0 auto; padding: 6px 12px; font-size: 0.8rem;"
+                                onclick="setVisualizerStyle('heartbeat')">
+                                <i class="ri-heart-pulse-line" style="margin-right: 4px; font-size: 0.85rem;"></i>
+                                Heartbeat
+                            </button>
+                            <button class="shape-btn viz-style-btn" data-viz-style="wave"
+                                style="flex: 0 0 auto; padding: 6px 12px; font-size: 0.8rem;"
+                                onclick="setVisualizerStyle('wave')">
+                                <i class="ri-water-flash-line" style="margin-right: 4px; font-size: 0.85rem;"></i>
+                                Wave
+                            </button>
+
+                            <button class="shape-btn viz-style-btn" data-viz-style="spectrum"
+                                style="flex: 0 0 auto; padding: 6px 12px; font-size: 0.8rem;"
+                                onclick="setVisualizerStyle('spectrum')">
+                                <i class="ri-rainbow-line" style="margin-right: 4px; font-size: 0.85rem;"></i>
+                                Spectrum
+                            </button>
+                            <button class="shape-btn viz-style-btn" data-viz-style="rain"
+                                style="flex: 0 0 auto; padding: 6px 12px; font-size: 0.8rem;"
+                                onclick="setVisualizerStyle('rain')">
+                                <i class="ri-rainy-line" style="margin-right: 4px; font-size: 0.85rem;"></i>
+                                Rain
+                            </button>
+                            <button class="shape-btn viz-style-btn" data-viz-style="pulse"
+                                style="flex: 0 0 auto; padding: 6px 12px; font-size: 0.8rem;"
+                                onclick="setVisualizerStyle('pulse')">
+                                <i class="ri-radio-button-line" style="margin-right: 4px; font-size: 0.85rem;"></i>
+                                Pulse
+                            </button>
+                            <button class="shape-btn viz-style-btn" data-viz-style="ember"
+                                style="flex: 0 0 auto; padding: 6px 12px; font-size: 0.8rem;"
+                                onclick="setVisualizerStyle('ember')">
+                                <i class="ri-fire-line" style="margin-right: 4px; font-size: 0.85rem;"></i>
+                                Ember
+                            </button>
+                        </div>
+                        <div id="viz-color-row" style="display: flex; align-items: center; gap: 10px; margin-top: 12px; flex-wrap: wrap;">
+                            <label class="section-label" style="font-size: 0.75rem; margin-right: 4px;">COLOR</label>
+                            <button class="color-dot viz-color-dot active" data-viz-color="" style="--dot-color: var(--accent-gold, #ffd700);" title="Default (Accent)" onclick="resetVisualizerColor(); document.querySelectorAll('.viz-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
+                            <button class="color-dot viz-color-dot" data-viz-color="#00d4ff" style="--dot-color: #00d4ff;" title="Cyan" onclick="setVisualizerColor('#00d4ff'); document.querySelectorAll('.viz-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
+                            <button class="color-dot viz-color-dot" data-viz-color="#ff6bca" style="--dot-color: #ff6bca;" title="Pink" onclick="setVisualizerColor('#ff6bca'); document.querySelectorAll('.viz-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
+                            <button class="color-dot viz-color-dot" data-viz-color="#39ff14" style="--dot-color: #39ff14;" title="Neon Green" onclick="setVisualizerColor('#39ff14'); document.querySelectorAll('.viz-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
+                            <button class="color-dot viz-color-dot" data-viz-color="#bf5fff" style="--dot-color: #bf5fff;" title="Purple" onclick="setVisualizerColor('#bf5fff'); document.querySelectorAll('.viz-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
+                            <button class="color-dot viz-color-dot" data-viz-color="#ff4444" style="--dot-color: #ff4444;" title="Red" onclick="setVisualizerColor('#ff4444'); document.querySelectorAll('.viz-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
+                            <button class="color-dot viz-color-dot" data-viz-color="#ffffff" style="--dot-color: #ffffff;" title="White" onclick="setVisualizerColor('#ffffff'); document.querySelectorAll('.viz-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
+                            <div class="color-picker-wrap">
+                                <input type="color" id="viz-color-picker" value="#ffd700" title="Custom Color" onchange="setVisualizerColor(this.value); document.querySelectorAll('.viz-color-dot').forEach(b=>b.classList.remove('active'));">
+                                <i class="ri-add-line"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Live Stats Ticker Color (only shown when widget=ticker) -->
+                    <div id="ticker-color-row" class="settings-group" style="display: none; margin-top: 2rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1);">
+                        <div class="section-header">
+                            <i class="ri-speed-line section-icon"></i>
+                            <label class="section-label">STATS COLOR</label>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                            <button class="color-dot ticker-color-dot active" data-ticker-color="" style="--dot-color: var(--accent-gold, #ffd700);" title="Default (Accent)" onclick="resetTickerColor(); document.querySelectorAll('.ticker-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
+                            <button class="color-dot ticker-color-dot" data-ticker-color="#00d4ff" style="--dot-color: #00d4ff;" title="Cyan" onclick="setTickerColor('#00d4ff'); document.querySelectorAll('.ticker-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
+                            <button class="color-dot ticker-color-dot" data-ticker-color="#ff6bca" style="--dot-color: #ff6bca;" title="Pink" onclick="setTickerColor('#ff6bca'); document.querySelectorAll('.ticker-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
+                            <button class="color-dot ticker-color-dot" data-ticker-color="#39ff14" style="--dot-color: #39ff14;" title="Neon Green" onclick="setTickerColor('#39ff14'); document.querySelectorAll('.ticker-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
+                            <button class="color-dot ticker-color-dot" data-ticker-color="#bf5fff" style="--dot-color: #bf5fff;" title="Purple" onclick="setTickerColor('#bf5fff'); document.querySelectorAll('.ticker-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
+                            <button class="color-dot ticker-color-dot" data-ticker-color="#ff4444" style="--dot-color: #ff4444;" title="Red" onclick="setTickerColor('#ff4444'); document.querySelectorAll('.ticker-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
+                            <button class="color-dot ticker-color-dot" data-ticker-color="#ffffff" style="--dot-color: #ffffff;" title="White" onclick="setTickerColor('#ffffff'); document.querySelectorAll('.ticker-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
+                            <div class="color-picker-wrap">
+                                <input type="color" id="ticker-color-picker" value="#ffd700" title="Custom Color" onchange="setTickerColor(this.value); document.querySelectorAll('.ticker-color-dot').forEach(b=>b.classList.remove('active'));">
+                                <i class="ri-add-line"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Progress Widget Theme (only shown when widget=progress) -->
+                    <div id="progress-theme-row" class="settings-group" style="display: none; margin-top: 2rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1);">
+                        <div class="section-header">
+                            <i class="ri-palette-line section-icon"></i>
+                            <label class="section-label">PROGRESS STYLE</label>
+                        </div>
+                        <div style="display: flex; gap: 8px; flex-wrap: nowrap; overflow-x: auto; padding-bottom: 8px; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.2) transparent;">
+                            <button class="shape-btn progress-theme-btn active" data-progress-theme="clean"
+                                style="flex: 0 0 auto; padding: 6px 12px; font-size: 0.8rem;"
+                                onclick="setProgressTheme('clean')">
+                                Clean
+                            </button>
+                            <button class="shape-btn progress-theme-btn" data-progress-theme="glass"
+                                style="flex: 0 0 auto; padding: 6px 12px; font-size: 0.8rem;"
+                                onclick="setProgressTheme('glass')">
+                                Glass
+                            </button>
+                            <button class="shape-btn progress-theme-btn" data-progress-theme="neon"
+                                style="flex: 0 0 auto; padding: 6px 12px; font-size: 0.8rem;"
+                                onclick="setProgressTheme('neon')">
+                                Neon
+                            </button>
+                            <button class="shape-btn progress-theme-btn" data-progress-theme="minimal"
+                                style="flex: 0 0 auto; padding: 6px 12px; font-size: 0.8rem;"
+                                onclick="setProgressTheme('minimal')">
+                                Minimal
+                            </button>
+                            <button class="shape-btn progress-theme-btn" data-progress-theme="retro"
+                                style="flex: 0 0 auto; padding: 6px 12px; font-size: 0.8rem;"
+                                onclick="setProgressTheme('retro')">
+                                Retro
+                            </button>
+                            <button class="shape-btn progress-theme-btn" data-progress-theme="hologram"
+                                style="flex: 0 0 auto; padding: 6px 12px; font-size: 0.8rem;"
+                                onclick="setProgressTheme('hologram')">
+                                Hologram
+                            </button>
+                            <button class="shape-btn progress-theme-btn" data-progress-theme="vapor"
+                                style="flex: 0 0 auto; padding: 6px 12px; font-size: 0.8rem;"
+                                onclick="setProgressTheme('vapor')">
+                                Vapor
+                            </button>
+                            <button class="shape-btn progress-theme-btn" data-progress-theme="ember"
+                                style="flex: 0 0 auto; padding: 6px 12px; font-size: 0.8rem;"
+                                onclick="setProgressTheme('ember')">
+                                Ember
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Progress Widget Color (only shown when widget=progress) -->
+                    <div id="progress-color-row" class="settings-group" style="display: none; margin-top: 2rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1);">
+                        <div class="section-header">
+                            <i class="ri-line-chart-line section-icon"></i>
+                            <label class="section-label">PROGRESS COLOR</label>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                            <button class="color-dot progress-color-dot active" data-progress-color="" style="--dot-color: var(--accent-gold, #ffd700);" title="Default (Accent)" onclick="resetProgressColor(); document.querySelectorAll('.progress-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
+                            <button class="color-dot progress-color-dot" data-progress-color="#00d4ff" style="--dot-color: #00d4ff;" title="Cyan" onclick="setProgressColor('#00d4ff'); document.querySelectorAll('.progress-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
+                            <button class="color-dot progress-color-dot" data-progress-color="#ff6bca" style="--dot-color: #ff6bca;" title="Pink" onclick="setProgressColor('#ff6bca'); document.querySelectorAll('.progress-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
+                            <button class="color-dot progress-color-dot" data-progress-color="#39ff14" style="--dot-color: #39ff14;" title="Neon Green" onclick="setProgressColor('#39ff14'); document.querySelectorAll('.progress-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
+                            <button class="color-dot progress-color-dot" data-progress-color="#bf5fff" style="--dot-color: #bf5fff;" title="Purple" onclick="setProgressColor('#bf5fff'); document.querySelectorAll('.progress-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
+                            <button class="color-dot progress-color-dot" data-progress-color="#ff4444" style="--dot-color: #ff4444;" title="Red" onclick="setProgressColor('#ff4444'); document.querySelectorAll('.progress-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
+                            <button class="color-dot progress-color-dot" data-progress-color="#ffffff" style="--dot-color: #ffffff;" title="White" onclick="setProgressColor('#ffffff'); document.querySelectorAll('.progress-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
+                            <div class="color-picker-wrap">
+                                <input type="color" id="progress-color-picker" value="#ffd700" title="Custom Color" onchange="setProgressColor(this.value); document.querySelectorAll('.progress-color-dot').forEach(b=>b.classList.remove('active'));">
+                                <i class="ri-add-line"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sparkline Settings (only shown when widget=progress) -->
+                    <div id="sparkline-settings-row" class="settings-group" style="display: none; margin-top: 2rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1);">
+                        <div class="section-header" style="display: flex; justify-content: space-between; align-items: center;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <i class="ri-line-chart-line section-icon"></i>
+                                <label class="section-label">SPARKLINE</label>
+                            </div>
+                            <label class="toggle-switch" style="margin: 0;">
+                                <input type="checkbox" id="sparkline-toggle" checked onchange="toggleSparkline(this.checked)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div id="sparkline-style-buttons" style="display: flex; gap: 8px; flex-wrap: nowrap; overflow-x: auto; padding-bottom: 8px; margin-top: 8px; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.2) transparent;">
+                            <button class="shape-btn sparkline-style-btn active" data-sparkline-style="line"
+                                style="flex: 0 0 auto; padding: 6px 12px; font-size: 0.8rem;"
+                                onclick="setSparklineStyle('line')">
+                                Line
+                            </button>
+                            <button class="shape-btn sparkline-style-btn" data-sparkline-style="bars"
+                                style="flex: 0 0 auto; padding: 6px 12px; font-size: 0.8rem;"
+                                onclick="setSparklineStyle('bars')">
+                                Bars
+                            </button>
+                            <button class="shape-btn sparkline-style-btn" data-sparkline-style="dots"
+                                style="flex: 0 0 auto; padding: 6px 12px; font-size: 0.8rem;"
+                                onclick="setSparklineStyle('dots')">
+                                Dots
+                            </button>
+                            <button class="shape-btn sparkline-style-btn" data-sparkline-style="pulse"
+                                style="flex: 0 0 auto; padding: 6px 12px; font-size: 0.8rem;"
+                                onclick="setSparklineStyle('pulse')">
+                                Pulse
+                            </button>
+                            <button class="shape-btn sparkline-style-btn" data-sparkline-style="steps"
+                                style="flex: 0 0 auto; padding: 6px 12px; font-size: 0.8rem;"
+                                onclick="setSparklineStyle('steps')">
+                                Steps
+                            </button>
+                            <button class="shape-btn sparkline-style-btn" data-sparkline-style="wave"
+                                style="flex: 0 0 auto; padding: 6px 12px; font-size: 0.8rem;"
+                                onclick="setSparklineStyle('wave')">
+                                Wave
+                            </button>
+                            <button class="shape-btn sparkline-style-btn" data-sparkline-style="mountain"
+                                style="flex: 0 0 auto; padding: 6px 12px; font-size: 0.8rem;"
+                                onclick="setSparklineStyle('mountain')">
+                                Mountain
+                            </button>
+                            <button class="shape-btn sparkline-style-btn" data-sparkline-style="needle"
+                                style="flex: 0 0 auto; padding: 6px 12px; font-size: 0.8rem;"
+                                onclick="setSparklineStyle('needle')">
+                                Needle
+                            </button>
+                            <button class="shape-btn sparkline-style-btn" data-sparkline-style="scatter"
+                                style="flex: 0 0 auto; padding: 6px 12px; font-size: 0.8rem;"
+                                onclick="setSparklineStyle('scatter')">
+                                Scatter
+                            </button>
+                            <button class="shape-btn sparkline-style-btn" data-sparkline-style="area"
+                                style="flex: 0 0 auto; padding: 6px 12px; font-size: 0.8rem;"
+                                onclick="setSparklineStyle('area')">
+                                Area
+                            </button>
+                        </div>
+                        <div style="margin-top: 12px;">
+                            <label class="section-label" style="font-size: 0.65rem; margin-bottom: 6px; display: block; opacity: 0.5;">SPARKLINE COLOR</label>
+                            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                                <button class="color-dot sparkline-color-dot active" data-sparkline-color="" style="--dot-color: var(--accent-gold, #ffd700);" title="Default (Match Progress)" onclick="resetSparklineColor(); document.querySelectorAll('.sparkline-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
+                                <button class="color-dot sparkline-color-dot" data-sparkline-color="#00d4ff" style="--dot-color: #00d4ff;" title="Cyan" onclick="setSparklineColor('#00d4ff'); document.querySelectorAll('.sparkline-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
+                                <button class="color-dot sparkline-color-dot" data-sparkline-color="#ff6bca" style="--dot-color: #ff6bca;" title="Pink" onclick="setSparklineColor('#ff6bca'); document.querySelectorAll('.sparkline-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
+                                <button class="color-dot sparkline-color-dot" data-sparkline-color="#39ff14" style="--dot-color: #39ff14;" title="Neon Green" onclick="setSparklineColor('#39ff14'); document.querySelectorAll('.sparkline-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
+                                <button class="color-dot sparkline-color-dot" data-sparkline-color="#bf5fff" style="--dot-color: #bf5fff;" title="Purple" onclick="setSparklineColor('#bf5fff'); document.querySelectorAll('.sparkline-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
+                                <button class="color-dot sparkline-color-dot" data-sparkline-color="#ff4444" style="--dot-color: #ff4444;" title="Red" onclick="setSparklineColor('#ff4444'); document.querySelectorAll('.sparkline-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
+                                <button class="color-dot sparkline-color-dot" data-sparkline-color="#ffffff" style="--dot-color: #ffffff;" title="White" onclick="setSparklineColor('#ffffff'); document.querySelectorAll('.sparkline-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
+                                <div class="color-picker-wrap">
+                                    <input type="color" id="sparkline-color-picker" value="#ffd700" title="Custom Color" onchange="setSparklineColor(this.value); document.querySelectorAll('.sparkline-color-dot').forEach(b=>b.classList.remove('active'));">
+                                    <i class="ri-add-line"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
+
 
 
             </div>
@@ -1148,10 +1433,64 @@
     </div>
 
     <footer class="site-footer">
-        <div class="footer-info">
-            <span class="copyright">© 2026 ZenType</span>
-            <span class="separator">•</span>
-            <span class="app-desc">Minimalist typing practice tool designed to improve speed and accuracy.</span>
+        <div class="footer-widget-area" id="footer-widget-area">
+            <div class="footer-widget footer-widget-visualizer active" id="widget-visualizer">
+                <canvas id="keystroke-visualizer" width="280" height="40"></canvas>
+            </div>
+            <div class="footer-widget footer-widget-ticker" id="widget-ticker">
+                <div class="live-ticker">
+                    <span class="ticker-stat">
+                        <span class="ticker-value" id="ticker-wpm">0</span>
+                        <span class="ticker-label">WPM</span>
+                    </span>
+                    <span class="ticker-dot">·</span>
+                    <span class="ticker-stat ticker-rank" id="ticker-rank-wrap">
+                        <span class="ticker-rank-icon" id="ticker-rank-icon">🥉</span>
+                        <span class="ticker-rank-label" id="ticker-rank-label">Bronze</span>
+                    </span>
+                    <span class="ticker-dot">·</span>
+                    <span class="ticker-stat ticker-flow" id="ticker-flow-wrap">
+                        <span class="ticker-flow-icon" id="ticker-flow-icon">🧊</span>
+                        <span class="ticker-flow-label" id="ticker-flow-label">Cold</span>
+                    </span>
+                </div>
+            </div>
+            <div class="footer-widget footer-widget-progress" id="widget-progress">
+                <div class="progress-display" id="progress-display">
+                    <!-- Main WPM + Delta -->
+                    <div class="progress-core">
+                        <div class="progress-main">
+                            <span class="progress-wpm" id="progress-wpm">—</span>
+                            <span class="progress-wpm-label">WPM</span>
+                        </div>
+                        <div class="progress-delta" id="progress-delta">
+                            <span class="progress-arrow" id="progress-arrow"></span>
+                            <span class="progress-diff" id="progress-diff"></span>
+                        </div>
+                    </div>
+                    <!-- PB + Streak -->
+                    <div class="progress-meta">
+                        <div class="progress-pb" id="progress-pb">
+                            <span class="progress-pb-icon">👑</span>
+                            <span class="progress-pb-val" id="progress-pb-val">—</span>
+                        </div>
+                        <div class="progress-streak" id="progress-streak">
+                            <span class="progress-streak-fire" id="progress-streak-fire">🔥</span>
+                            <span class="progress-streak-val" id="progress-streak-val">0</span>
+                        </div>
+                    </div>
+                    <!-- Sparkline -->
+                    <div class="progress-sparkline-wrap" id="progress-sparkline-wrap" style="display: none;">
+                        <canvas id="progress-sparkline" width="200" height="24"></canvas>
+                    </div>
+                    <!-- Target + Message -->
+                    <div class="progress-footer-row">
+                        <span class="progress-message" id="progress-message">Complete a test</span>
+                    </div>
+                    <!-- NEW PB badge (hidden by default) -->
+                    <div class="progress-pb-badge" id="progress-pb-badge">NEW PB!</div>
+                </div>
+            </div>
         </div>
         <div class="footer-links">
             <a href="#" class="footer-link-pill" id="modes-btn">
@@ -2264,6 +2603,8 @@
     </div>
 
     <script type="module" src="/src/window-controls.js"></script>
+    <script src="/src/keystroke-visualizer.js"></script>
+    <script src="/src/footer-widget.js"></script>
 </body>
 
 </html>

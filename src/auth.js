@@ -1174,6 +1174,9 @@ function initAuth() {
             if (authUI.userInitial) authUI.userInitial.innerText = email.charAt(0).toUpperCase();
             if (authUI.openBtn) authUI.openBtn.classList.add('logged-in');
 
+            // Tie progress PB to this user
+            if (window.setProgressUserId) window.setProgressUserId(session.user.id);
+
             fetchUserStats(); // Load stats on login
         } else {
             // Logged Out
@@ -1183,6 +1186,9 @@ function initAuth() {
             authUI.loginContainer.classList.remove('hidden');
             authUI.signupContainer.classList.add('hidden');
             if (authUI.openBtn) authUI.openBtn.classList.remove('logged-in');
+
+            // Reset to guest PB
+            if (window.setProgressUserId) window.setProgressUserId('');
         }
     }
 
