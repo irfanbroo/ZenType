@@ -96,16 +96,25 @@
         wrap.style.display = '';
 
         const dpr = window.devicePixelRatio || 1;
-        const rect = canvas.getBoundingClientRect();
-        if (rect.width === 0) return;
-        canvas.width = rect.width * dpr;
-        canvas.height = rect.height * dpr;
+        
+        // Prevent canvas internal size from inflating the parent
+        const cssWidth = wrap.clientWidth || 60;
+        const cssHeight = wrap.clientHeight || 24;
+        
+        if (cssWidth === 0) return;
+        
+        // Lock CSS sizes
+        canvas.style.width = cssWidth + 'px';
+        canvas.style.height = cssHeight + 'px';
+        
+        canvas.width = cssWidth * dpr;
+        canvas.height = cssHeight * dpr;
         const ctx = canvas.getContext('2d');
         ctx.setTransform(1, 0, 0, 1, 0, 0);
         ctx.scale(dpr, dpr);
 
-        const W = rect.width;
-        const H = rect.height;
+        const W = cssWidth;
+        const H = cssHeight;
         const pad = 4;
 
         ctx.clearRect(0, 0, W, H);

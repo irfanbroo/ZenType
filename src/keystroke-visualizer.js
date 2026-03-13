@@ -44,13 +44,26 @@
     let W, H;
     function resizeCanvas() {
         const dpr = window.devicePixelRatio || 1;
-        const rect = canvas.getBoundingClientRect();
-        canvas.width = rect.width * dpr;
-        canvas.height = rect.height * dpr;
+        
+        // Prevent canvas internal size from inflating the rect by locking CSS size or reading parent
+        const parent = canvas.parentElement;
+        const rect = parent.getBoundingClientRect();
+        
+        // If parent has padding, we might want just clientWidth/clientHeight or assume it's snug
+        // Let's lock the canvas CSS size to the measured parent size
+        const cssWidth = rect.width || 280;
+        const cssHeight = rect.height || 40;
+        
+        canvas.style.width = cssWidth + 'px';
+        canvas.style.height = cssHeight + 'px';
+
+        canvas.width = cssWidth * dpr;
+        canvas.height = cssHeight * dpr;
+        
         ctx.setTransform(1, 0, 0, 1, 0, 0);
         ctx.scale(dpr, dpr);
-        W = rect.width;
-        H = rect.height;
+        W = cssWidth;
+        H = cssHeight;
     }
 
     // ══════════════════════════════════════════════════════════
