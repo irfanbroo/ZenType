@@ -756,6 +756,7 @@
                         </div>
                     </div>
 
+
                     <!-- Bottom-Left Widget Picker -->
                     <div class="settings-group"
                         style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1);">
@@ -850,50 +851,84 @@
                                 Ember
                             </button>
                         </div>
-                        <div id="viz-color-row" style="display: flex; align-items: center; gap: 10px; margin-top: 12px; flex-wrap: wrap;">
+                        <div id="viz-color-row"
+                            style="display: flex; align-items: center; gap: 10px; margin-top: 12px; flex-wrap: wrap;">
                             <label class="section-label" style="font-size: 0.75rem; margin-right: 4px;">COLOR</label>
-                            <button class="color-dot viz-color-dot active" data-viz-color="" style="--dot-color: var(--accent-gold, #ffd700);" title="Default (Accent)" onclick="resetVisualizerColor(); document.querySelectorAll('.viz-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
-                            <button class="color-dot viz-color-dot" data-viz-color="#00d4ff" style="--dot-color: #00d4ff;" title="Cyan" onclick="setVisualizerColor('#00d4ff'); document.querySelectorAll('.viz-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
-                            <button class="color-dot viz-color-dot" data-viz-color="#ff6bca" style="--dot-color: #ff6bca;" title="Pink" onclick="setVisualizerColor('#ff6bca'); document.querySelectorAll('.viz-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
-                            <button class="color-dot viz-color-dot" data-viz-color="#39ff14" style="--dot-color: #39ff14;" title="Neon Green" onclick="setVisualizerColor('#39ff14'); document.querySelectorAll('.viz-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
-                            <button class="color-dot viz-color-dot" data-viz-color="#bf5fff" style="--dot-color: #bf5fff;" title="Purple" onclick="setVisualizerColor('#bf5fff'); document.querySelectorAll('.viz-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
-                            <button class="color-dot viz-color-dot" data-viz-color="#ff4444" style="--dot-color: #ff4444;" title="Red" onclick="setVisualizerColor('#ff4444'); document.querySelectorAll('.viz-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
-                            <button class="color-dot viz-color-dot" data-viz-color="#ffffff" style="--dot-color: #ffffff;" title="White" onclick="setVisualizerColor('#ffffff'); document.querySelectorAll('.viz-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
+                            <button class="color-dot viz-color-dot active" data-viz-color=""
+                                style="--dot-color: var(--accent-gold, #ffd700);" title="Default (Accent)"
+                                onclick="resetVisualizerColor(); document.querySelectorAll('.viz-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
+                            <button class="color-dot viz-color-dot" data-viz-color="#00d4ff"
+                                style="--dot-color: #00d4ff;" title="Cyan"
+                                onclick="setVisualizerColor('#00d4ff'); document.querySelectorAll('.viz-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
+                            <button class="color-dot viz-color-dot" data-viz-color="#ff6bca"
+                                style="--dot-color: #ff6bca;" title="Pink"
+                                onclick="setVisualizerColor('#ff6bca'); document.querySelectorAll('.viz-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
+                            <button class="color-dot viz-color-dot" data-viz-color="#39ff14"
+                                style="--dot-color: #39ff14;" title="Neon Green"
+                                onclick="setVisualizerColor('#39ff14'); document.querySelectorAll('.viz-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
+                            <button class="color-dot viz-color-dot" data-viz-color="#bf5fff"
+                                style="--dot-color: #bf5fff;" title="Purple"
+                                onclick="setVisualizerColor('#bf5fff'); document.querySelectorAll('.viz-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
+                            <button class="color-dot viz-color-dot" data-viz-color="#ff4444"
+                                style="--dot-color: #ff4444;" title="Red"
+                                onclick="setVisualizerColor('#ff4444'); document.querySelectorAll('.viz-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
+                            <button class="color-dot viz-color-dot" data-viz-color="#ffffff"
+                                style="--dot-color: #ffffff;" title="White"
+                                onclick="setVisualizerColor('#ffffff'); document.querySelectorAll('.viz-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
                             <div class="color-picker-wrap">
-                                <input type="color" id="viz-color-picker" value="#ffd700" title="Custom Color" onchange="setVisualizerColor(this.value); document.querySelectorAll('.viz-color-dot').forEach(b=>b.classList.remove('active'));">
+                                <input type="color" id="viz-color-picker" value="#ffd700" title="Custom Color"
+                                    onchange="setVisualizerColor(this.value); document.querySelectorAll('.viz-color-dot').forEach(b=>b.classList.remove('active'));">
                                 <i class="ri-add-line"></i>
                             </div>
                         </div>
                     </div>
 
                     <!-- Live Stats Ticker Color (only shown when widget=ticker) -->
-                    <div id="ticker-color-row" class="settings-group" style="display: none; margin-top: 2rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1);">
+                    <div id="ticker-color-row" class="settings-group"
+                        style="display: none; margin-top: 2rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1);">
                         <div class="section-header">
                             <i class="ri-speed-line section-icon"></i>
                             <label class="section-label">STATS COLOR</label>
                         </div>
                         <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-                            <button class="color-dot ticker-color-dot active" data-ticker-color="" style="--dot-color: var(--accent-gold, #ffd700);" title="Default (Accent)" onclick="resetTickerColor(); document.querySelectorAll('.ticker-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
-                            <button class="color-dot ticker-color-dot" data-ticker-color="#00d4ff" style="--dot-color: #00d4ff;" title="Cyan" onclick="setTickerColor('#00d4ff'); document.querySelectorAll('.ticker-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
-                            <button class="color-dot ticker-color-dot" data-ticker-color="#ff6bca" style="--dot-color: #ff6bca;" title="Pink" onclick="setTickerColor('#ff6bca'); document.querySelectorAll('.ticker-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
-                            <button class="color-dot ticker-color-dot" data-ticker-color="#39ff14" style="--dot-color: #39ff14;" title="Neon Green" onclick="setTickerColor('#39ff14'); document.querySelectorAll('.ticker-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
-                            <button class="color-dot ticker-color-dot" data-ticker-color="#bf5fff" style="--dot-color: #bf5fff;" title="Purple" onclick="setTickerColor('#bf5fff'); document.querySelectorAll('.ticker-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
-                            <button class="color-dot ticker-color-dot" data-ticker-color="#ff4444" style="--dot-color: #ff4444;" title="Red" onclick="setTickerColor('#ff4444'); document.querySelectorAll('.ticker-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
-                            <button class="color-dot ticker-color-dot" data-ticker-color="#ffffff" style="--dot-color: #ffffff;" title="White" onclick="setTickerColor('#ffffff'); document.querySelectorAll('.ticker-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
+                            <button class="color-dot ticker-color-dot active" data-ticker-color=""
+                                style="--dot-color: var(--accent-gold, #ffd700);" title="Default (Accent)"
+                                onclick="resetTickerColor(); document.querySelectorAll('.ticker-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
+                            <button class="color-dot ticker-color-dot" data-ticker-color="#00d4ff"
+                                style="--dot-color: #00d4ff;" title="Cyan"
+                                onclick="setTickerColor('#00d4ff'); document.querySelectorAll('.ticker-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
+                            <button class="color-dot ticker-color-dot" data-ticker-color="#ff6bca"
+                                style="--dot-color: #ff6bca;" title="Pink"
+                                onclick="setTickerColor('#ff6bca'); document.querySelectorAll('.ticker-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
+                            <button class="color-dot ticker-color-dot" data-ticker-color="#39ff14"
+                                style="--dot-color: #39ff14;" title="Neon Green"
+                                onclick="setTickerColor('#39ff14'); document.querySelectorAll('.ticker-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
+                            <button class="color-dot ticker-color-dot" data-ticker-color="#bf5fff"
+                                style="--dot-color: #bf5fff;" title="Purple"
+                                onclick="setTickerColor('#bf5fff'); document.querySelectorAll('.ticker-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
+                            <button class="color-dot ticker-color-dot" data-ticker-color="#ff4444"
+                                style="--dot-color: #ff4444;" title="Red"
+                                onclick="setTickerColor('#ff4444'); document.querySelectorAll('.ticker-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
+                            <button class="color-dot ticker-color-dot" data-ticker-color="#ffffff"
+                                style="--dot-color: #ffffff;" title="White"
+                                onclick="setTickerColor('#ffffff'); document.querySelectorAll('.ticker-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
                             <div class="color-picker-wrap">
-                                <input type="color" id="ticker-color-picker" value="#ffd700" title="Custom Color" onchange="setTickerColor(this.value); document.querySelectorAll('.ticker-color-dot').forEach(b=>b.classList.remove('active'));">
+                                <input type="color" id="ticker-color-picker" value="#ffd700" title="Custom Color"
+                                    onchange="setTickerColor(this.value); document.querySelectorAll('.ticker-color-dot').forEach(b=>b.classList.remove('active'));">
                                 <i class="ri-add-line"></i>
                             </div>
                         </div>
                     </div>
 
                     <!-- Progress Widget Theme (only shown when widget=progress) -->
-                    <div id="progress-theme-row" class="settings-group" style="display: none; margin-top: 2rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1);">
+                    <div id="progress-theme-row" class="settings-group"
+                        style="display: none; margin-top: 2rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1);">
                         <div class="section-header">
                             <i class="ri-palette-line section-icon"></i>
                             <label class="section-label">PROGRESS STYLE</label>
                         </div>
-                        <div style="display: flex; gap: 8px; flex-wrap: nowrap; overflow-x: auto; padding-bottom: 8px; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.2) transparent;">
+                        <div
+                            style="display: flex; gap: 8px; flex-wrap: nowrap; overflow-x: auto; padding-bottom: 8px; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.2) transparent;">
                             <button class="shape-btn progress-theme-btn active" data-progress-theme="clean"
                                 style="flex: 0 0 auto; padding: 6px 12px; font-size: 0.8rem;"
                                 onclick="setProgressTheme('clean')">
@@ -938,39 +973,59 @@
                     </div>
 
                     <!-- Progress Widget Color (only shown when widget=progress) -->
-                    <div id="progress-color-row" class="settings-group" style="display: none; margin-top: 2rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1);">
+                    <div id="progress-color-row" class="settings-group"
+                        style="display: none; margin-top: 2rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1);">
                         <div class="section-header">
                             <i class="ri-line-chart-line section-icon"></i>
                             <label class="section-label">PROGRESS COLOR</label>
                         </div>
                         <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-                            <button class="color-dot progress-color-dot active" data-progress-color="" style="--dot-color: var(--accent-gold, #ffd700);" title="Default (Accent)" onclick="resetProgressColor(); document.querySelectorAll('.progress-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
-                            <button class="color-dot progress-color-dot" data-progress-color="#00d4ff" style="--dot-color: #00d4ff;" title="Cyan" onclick="setProgressColor('#00d4ff'); document.querySelectorAll('.progress-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
-                            <button class="color-dot progress-color-dot" data-progress-color="#ff6bca" style="--dot-color: #ff6bca;" title="Pink" onclick="setProgressColor('#ff6bca'); document.querySelectorAll('.progress-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
-                            <button class="color-dot progress-color-dot" data-progress-color="#39ff14" style="--dot-color: #39ff14;" title="Neon Green" onclick="setProgressColor('#39ff14'); document.querySelectorAll('.progress-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
-                            <button class="color-dot progress-color-dot" data-progress-color="#bf5fff" style="--dot-color: #bf5fff;" title="Purple" onclick="setProgressColor('#bf5fff'); document.querySelectorAll('.progress-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
-                            <button class="color-dot progress-color-dot" data-progress-color="#ff4444" style="--dot-color: #ff4444;" title="Red" onclick="setProgressColor('#ff4444'); document.querySelectorAll('.progress-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
-                            <button class="color-dot progress-color-dot" data-progress-color="#ffffff" style="--dot-color: #ffffff;" title="White" onclick="setProgressColor('#ffffff'); document.querySelectorAll('.progress-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
+                            <button class="color-dot progress-color-dot active" data-progress-color=""
+                                style="--dot-color: var(--accent-gold, #ffd700);" title="Default (Accent)"
+                                onclick="resetProgressColor(); document.querySelectorAll('.progress-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
+                            <button class="color-dot progress-color-dot" data-progress-color="#00d4ff"
+                                style="--dot-color: #00d4ff;" title="Cyan"
+                                onclick="setProgressColor('#00d4ff'); document.querySelectorAll('.progress-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
+                            <button class="color-dot progress-color-dot" data-progress-color="#ff6bca"
+                                style="--dot-color: #ff6bca;" title="Pink"
+                                onclick="setProgressColor('#ff6bca'); document.querySelectorAll('.progress-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
+                            <button class="color-dot progress-color-dot" data-progress-color="#39ff14"
+                                style="--dot-color: #39ff14;" title="Neon Green"
+                                onclick="setProgressColor('#39ff14'); document.querySelectorAll('.progress-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
+                            <button class="color-dot progress-color-dot" data-progress-color="#bf5fff"
+                                style="--dot-color: #bf5fff;" title="Purple"
+                                onclick="setProgressColor('#bf5fff'); document.querySelectorAll('.progress-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
+                            <button class="color-dot progress-color-dot" data-progress-color="#ff4444"
+                                style="--dot-color: #ff4444;" title="Red"
+                                onclick="setProgressColor('#ff4444'); document.querySelectorAll('.progress-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
+                            <button class="color-dot progress-color-dot" data-progress-color="#ffffff"
+                                style="--dot-color: #ffffff;" title="White"
+                                onclick="setProgressColor('#ffffff'); document.querySelectorAll('.progress-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
                             <div class="color-picker-wrap">
-                                <input type="color" id="progress-color-picker" value="#ffd700" title="Custom Color" onchange="setProgressColor(this.value); document.querySelectorAll('.progress-color-dot').forEach(b=>b.classList.remove('active'));">
+                                <input type="color" id="progress-color-picker" value="#ffd700" title="Custom Color"
+                                    onchange="setProgressColor(this.value); document.querySelectorAll('.progress-color-dot').forEach(b=>b.classList.remove('active'));">
                                 <i class="ri-add-line"></i>
                             </div>
                         </div>
                     </div>
 
                     <!-- Sparkline Settings (only shown when widget=progress) -->
-                    <div id="sparkline-settings-row" class="settings-group" style="display: none; margin-top: 2rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1);">
-                        <div class="section-header" style="display: flex; justify-content: space-between; align-items: center;">
+                    <div id="sparkline-settings-row" class="settings-group"
+                        style="display: none; margin-top: 2rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1);">
+                        <div class="section-header"
+                            style="display: flex; justify-content: space-between; align-items: center;">
                             <div style="display: flex; align-items: center; gap: 8px;">
                                 <i class="ri-line-chart-line section-icon"></i>
                                 <label class="section-label">SPARKLINE</label>
                             </div>
                             <label class="toggle-switch" style="margin: 0;">
-                                <input type="checkbox" id="sparkline-toggle" checked onchange="toggleSparkline(this.checked)">
+                                <input type="checkbox" id="sparkline-toggle" checked
+                                    onchange="toggleSparkline(this.checked)">
                                 <span class="toggle-slider"></span>
                             </label>
                         </div>
-                        <div id="sparkline-style-buttons" style="display: flex; gap: 8px; flex-wrap: nowrap; overflow-x: auto; padding-bottom: 8px; margin-top: 8px; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.2) transparent;">
+                        <div id="sparkline-style-buttons"
+                            style="display: flex; gap: 8px; flex-wrap: nowrap; overflow-x: auto; padding-bottom: 8px; margin-top: 8px; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.2) transparent;">
                             <button class="shape-btn sparkline-style-btn active" data-sparkline-style="line"
                                 style="flex: 0 0 auto; padding: 6px 12px; font-size: 0.8rem;"
                                 onclick="setSparklineStyle('line')">
@@ -1023,17 +1078,34 @@
                             </button>
                         </div>
                         <div style="margin-top: 12px;">
-                            <label class="section-label" style="font-size: 0.65rem; margin-bottom: 6px; display: block; opacity: 0.5;">SPARKLINE COLOR</label>
+                            <label class="section-label"
+                                style="font-size: 0.65rem; margin-bottom: 6px; display: block; opacity: 0.5;">SPARKLINE
+                                COLOR</label>
                             <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-                                <button class="color-dot sparkline-color-dot active" data-sparkline-color="" style="--dot-color: var(--accent-gold, #ffd700);" title="Default (Match Progress)" onclick="resetSparklineColor(); document.querySelectorAll('.sparkline-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
-                                <button class="color-dot sparkline-color-dot" data-sparkline-color="#00d4ff" style="--dot-color: #00d4ff;" title="Cyan" onclick="setSparklineColor('#00d4ff'); document.querySelectorAll('.sparkline-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
-                                <button class="color-dot sparkline-color-dot" data-sparkline-color="#ff6bca" style="--dot-color: #ff6bca;" title="Pink" onclick="setSparklineColor('#ff6bca'); document.querySelectorAll('.sparkline-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
-                                <button class="color-dot sparkline-color-dot" data-sparkline-color="#39ff14" style="--dot-color: #39ff14;" title="Neon Green" onclick="setSparklineColor('#39ff14'); document.querySelectorAll('.sparkline-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
-                                <button class="color-dot sparkline-color-dot" data-sparkline-color="#bf5fff" style="--dot-color: #bf5fff;" title="Purple" onclick="setSparklineColor('#bf5fff'); document.querySelectorAll('.sparkline-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
-                                <button class="color-dot sparkline-color-dot" data-sparkline-color="#ff4444" style="--dot-color: #ff4444;" title="Red" onclick="setSparklineColor('#ff4444'); document.querySelectorAll('.sparkline-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
-                                <button class="color-dot sparkline-color-dot" data-sparkline-color="#ffffff" style="--dot-color: #ffffff;" title="White" onclick="setSparklineColor('#ffffff'); document.querySelectorAll('.sparkline-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
+                                <button class="color-dot sparkline-color-dot active" data-sparkline-color=""
+                                    style="--dot-color: var(--accent-gold, #ffd700);" title="Default (Match Progress)"
+                                    onclick="resetSparklineColor(); document.querySelectorAll('.sparkline-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
+                                <button class="color-dot sparkline-color-dot" data-sparkline-color="#00d4ff"
+                                    style="--dot-color: #00d4ff;" title="Cyan"
+                                    onclick="setSparklineColor('#00d4ff'); document.querySelectorAll('.sparkline-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
+                                <button class="color-dot sparkline-color-dot" data-sparkline-color="#ff6bca"
+                                    style="--dot-color: #ff6bca;" title="Pink"
+                                    onclick="setSparklineColor('#ff6bca'); document.querySelectorAll('.sparkline-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
+                                <button class="color-dot sparkline-color-dot" data-sparkline-color="#39ff14"
+                                    style="--dot-color: #39ff14;" title="Neon Green"
+                                    onclick="setSparklineColor('#39ff14'); document.querySelectorAll('.sparkline-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
+                                <button class="color-dot sparkline-color-dot" data-sparkline-color="#bf5fff"
+                                    style="--dot-color: #bf5fff;" title="Purple"
+                                    onclick="setSparklineColor('#bf5fff'); document.querySelectorAll('.sparkline-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
+                                <button class="color-dot sparkline-color-dot" data-sparkline-color="#ff4444"
+                                    style="--dot-color: #ff4444;" title="Red"
+                                    onclick="setSparklineColor('#ff4444'); document.querySelectorAll('.sparkline-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
+                                <button class="color-dot sparkline-color-dot" data-sparkline-color="#ffffff"
+                                    style="--dot-color: #ffffff;" title="White"
+                                    onclick="setSparklineColor('#ffffff'); document.querySelectorAll('.sparkline-color-dot').forEach(b=>b.classList.remove('active')); this.classList.add('active');"></button>
                                 <div class="color-picker-wrap">
-                                    <input type="color" id="sparkline-color-picker" value="#ffd700" title="Custom Color" onchange="setSparklineColor(this.value); document.querySelectorAll('.sparkline-color-dot').forEach(b=>b.classList.remove('active'));">
+                                    <input type="color" id="sparkline-color-picker" value="#ffd700" title="Custom Color"
+                                        onchange="setSparklineColor(this.value); document.querySelectorAll('.sparkline-color-dot').forEach(b=>b.classList.remove('active'));">
                                     <i class="ri-add-line"></i>
                                 </div>
                             </div>

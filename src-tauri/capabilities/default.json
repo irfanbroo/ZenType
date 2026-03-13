@@ -11,6 +11,8 @@
         "core:window:allow-maximize",
         "core:window:allow-close",
         "core:window:allow-toggle-maximize",
-        "core:window:default"
+        "core:window:default",
+        "core:window:allow-set-fullscreen",
+        "core:window:allow-is-fullscreen"
     ]
 }

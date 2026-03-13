@@ -66,6 +66,11 @@ fn clear_discord_presence(discord: tauri::State<DiscordClient>) {
     }
 }
 
+#[tauri::command]
+fn set_fullscreen(window: tauri::WebviewWindow, fullscreen: bool) {
+    let _ = window.set_fullscreen(fullscreen);
+}
+
 fn main() {
     let start_time = SystemTime::now()
         .duration_since(UNIX_EPOCH)
@@ -106,7 +111,8 @@ fn main() {
         })
         .invoke_handler(tauri::generate_handler![
             set_discord_presence,
-            clear_discord_presence
+            clear_discord_presence,
+            set_fullscreen
         ])
         .setup(|app| {
             #[cfg(desktop)]

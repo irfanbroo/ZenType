@@ -10540,6 +10540,8 @@ function setupSettingsListeners() {
         });
     }
 
+
+
     const colorOptions = document.querySelector('.color-options');
     if (colorOptions) {
         colorOptions.addEventListener('click', (e) => {
@@ -10642,6 +10644,8 @@ function initGame() {
     state.currWordIndex = 0;
     state.correctChars = 0;
     state.totalCharsTyped = 0;
+    state.rawKeystrokes = 0;      // every char key pressed (MonkeyType-style accuracy tracking)
+    state.correctKeystrokes = 0;  // keys that were correct at the moment of pressing
     state.timeLeft = state.timeLimit;
     state.isActive = false;
     state.startTime = null;
@@ -10742,6 +10746,35 @@ function appendWords(count = 30) {
 // --- INPUT HANDLER ---
 
 let hasError = false;
+
+// MonkeyType-style accuracy: count every keystroke as it happens,
+// including ones the user later backspaces — so corrections don't hide errors.
+UI.input.addEventListener('keydown', (e) => {
+    if (!state.isActive) return; // only track while test is running
+
+    const key = e.key;
+
+    // Ignore non-character keys (Backspace, Shift, Tab, Enter, arrow keys, etc.)
+    // A real character key has key.length === 1
+    if (key.length !== 1) return;
+
+    // Ignore space here — space is the word-submit key, not a "typing" accuracy event
+    if (key === ' ') return;
+
+    state.rawKeystrokes++;
+
+    if (userConfig.instantLegend) {
+        // Instant Legend mode: every keystroke counts as correct
+        state.correctKeystrokes++;
+    } else {
+        const currentInput = UI.input.value; // value BEFORE this keypress
+        const currentWordStr = state.words[state.currWordIndex];
+        const charIndex = currentInput.length; // position we are about to fill
+        if (currentWordStr && charIndex < currentWordStr.length && key === currentWordStr[charIndex]) {
+            state.correctKeystrokes++;
+        }
+    }
+});
 
 UI.input.addEventListener('input', (e) => {
     if (!state.isActive && state.timeLeft > 0) startTimer();
@@ -10898,7 +10931,12 @@ function endGame() {
     const finalTimeMin = state.timeLimit / 60;
 
     const netWpm = Math.round((state.correctChars / 5) / finalTimeMin);
-    const accuracy = state.totalCharsTyped > 0 ? Math.round((state.correctChars / state.totalCharsTyped) * 100) : 0;
+    // Accuracy is tracked via raw keystrokes (MonkeyType-style): every key press
+    // counts, including ones that were later backspaced — so corrections don't
+    // inflate the score the way the old word-level method did.
+    const accuracy = state.rawKeystrokes > 0
+        ? Math.round((state.correctKeystrokes / state.rawKeystrokes) * 100)
+        : 0;
 
     // UI.finalWpm.innerText = netWpm; // Removed static assignment
     // UI.finalAcc.innerText = accuracy + "%"; // Removed static assignment
@@ -10942,7 +10980,7 @@ function endGame() {
     discordPresence.setConcluded(netWpm, accuracy);
 
     // Feed the Progress widget
-    if (window.onTestComplete) window.onTestComplete(netWpm);
+    if (window.onTestComplete) window.onTestComplete(netWpm, accuracy);
 }
 
 const rankQuotes = {
