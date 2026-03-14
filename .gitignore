@@ -1,16 +1,25 @@
+# Node.js
 node_modules/
-.DS_Store
-.env
-config.js
-
-# Tauri / Rust Build Artifacts
-src-tauri/target/
-*.pdb
-*.dll
-*.exe
-
-# Exported Build Folders (Steam, itch.io, etc.)
-steam-build*/
-*-build/
 dist/
 build/
+.env
+
+# Tauri/Rust
+src-tauri/target/
+src-tauri/binaries/
+
+# OS/System
+.DS_Store
+Thumbs.db
+
+# Project Builds
+steam-build*/
+*.exe
+*.msi
+*.deb
+*.app
+*.zip
+
+# Local config
+config.js
+.vscode/

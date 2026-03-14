@@ -2720,14 +2720,19 @@
                     <button id="dev-note-mistakes-btn" class="guide-link-btn">
                         <i class="ri-error-warning-line"></i> Common Mistakes (Beginner to Pro)
                     </button>
-                    <button id="dev-note-philosophy-btn" class="guide-link-btn">
-                        <i class="ri-leaf-line"></i> The 1% Habit
-                    </button>
+                    <div style="display: flex; gap: 10px; width: 100%;">
+                        <button id="dev-note-philosophy-btn" class="guide-link-btn">
+                            <i class="ri-leaf-line"></i> The 1% Habit
+                        </button>
+                        <button id="dev-note-path-btn" class="guide-link-btn">
+                            <i class="ri-meteor-line"></i> Walk the Path with Me
+                        </button>
+                    </div>
                 </div>
             </div>
 
             <!-- View 2: Advice -->
-            <div id="dev-note-advice-view" class="dev-note-view hidden">
+            <div id="dev-note-advice-view" class="dev-note-view hidden wide-view">
                 <div class="advice-content">
                     <p id="dev-note-advice-text" class="advice-text"></p>
                 </div>
@@ -2739,17 +2744,23 @@
             </div>
 
             <!-- View 3: Guide -->
-            <div id="dev-note-guide-view" class="dev-note-view hidden">
+            <div id="dev-note-guide-view" class="dev-note-view hidden wide-view">
                 <div class="advice-content">
                     <h3 class="guide-title">The Home Row Strategy</h3>
                     <div class="guide-image-container">
                         <img src="/assets/home_row_guide.png" alt="Keyboard Hand Placement Guide" class="guide-image">
                     </div>
                     <p class="advice-text" style="text-align: left;">
-                        Proper typing starts with the <strong>Home Row</strong>. Rest your left fingers simultaneously on <span>A</span> (Pinky), <span>S</span> (Ring), <span>D</span> (Middle), <span>F</span> (Index) and your right fingers on <span>J</span> (Index), <span>K</span> (Middle), <span>L</span> (Ring), <span>;</span> (Pinky). Your thumbs rest gently on the spacebar.<br><br>
-                        Every key on the keyboard is assigned to a specific finger. After reaching up or down to press a key, your finger should always return back to its home position.<br><br>
+                        Proper typing starts with the <strong>Home Row</strong>. Rest your left fingers simultaneously
+                        on <span>A</span> (Pinky), <span>S</span> (Ring), <span>D</span> (Middle), <span>F</span>
+                        (Index) and your right fingers on <span>J</span> (Index), <span>K</span> (Middle),
+                        <span>L</span> (Ring), <span>;</span> (Pinky). Your thumbs rest gently on the spacebar.<br><br>
+                        Every key on the keyboard is assigned to a specific finger. After reaching up or down to press a
+                        key, your finger should always return back to its home position.<br><br>
                         <strong>Ready to learn?</strong><br>
-                        Open <span class="hl-dojo">Dojo Mode</span> to start your interactive training. The Dojo provides live on-screen hand guides and color-coded keys to teach you exactly which finger to use for every letter.
+                        Open <span class="hl-dojo">Dojo Mode</span> to start your interactive training. The Dojo
+                        provides live on-screen hand guides and color-coded keys to teach you exactly which finger to
+                        use for every letter.
                     </p>
                 </div>
                 <div class="advice-actions">
@@ -2760,16 +2771,19 @@
             </div>
 
             <!-- View 4: General Advice -->
-            <div id="dev-note-general-view" class="dev-note-view hidden">
+            <div id="dev-note-general-view" class="dev-note-view hidden wide-view">
                 <div class="advice-content" style="padding: 15px; max-height: 400px; overflow-y: auto;">
                     <h3 class="guide-title" style="margin-bottom: 20px;">Rules of Speed</h3>
-                    
+
                     <div class="tips-container">
-                        <div class="tip-card" onclick="document.getElementById('dev-note-guide-back').click(); document.getElementById('dev-note-guide-btn').click();" style="cursor: pointer;">
+                        <div class="tip-card"
+                            onclick="document.getElementById('dev-note-guide-back').click(); document.getElementById('dev-note-guide-btn').click();"
+                            style="cursor: pointer;">
                             <i class="ri-keyboard-line tip-icon" style="color: #ff5252;"></i>
                             <div class="tip-text">
                                 <h4>Trust the Board</h4>
-                                <p>Looking down resets your visual tracking. Trust your hands. <u>Review the Home Row Strategy</u>.</p>
+                                <p>Looking down resets your visual tracking. Trust your hands. <u>Review the Home Row
+                                        Strategy</u>.</p>
                             </div>
                         </div>
 
@@ -2777,7 +2791,8 @@
                             <i class="ri-focus-3-line tip-icon" style="color: #ffd700;"></i>
                             <div class="tip-text">
                                 <h4>Accuracy First</h4>
-                                <p>Backspaces destroy WPM. Never practice to type faster until you can type at 98%+ accuracy. Master <span class="hl-hagakure">Hagakure Mode</span>.</p>
+                                <p>Backspaces destroy WPM. Never practice to type faster until you can type at 98%+
+                                    accuracy. Master <span class="hl-hagakure">Hagakure Mode</span>.</p>
                             </div>
                         </div>
 
@@ -2785,7 +2800,8 @@
                             <i class="ri-eye-line tip-icon" style="color: #00d4ff;"></i>
                             <div class="tip-text">
                                 <h4>Read Ahead</h4>
-                                <p>Don't stare at the word you're typing. Let muscle memory execute the current word while your eyes scan the next 2 words.</p>
+                                <p>Don't stare at the word you're typing. Let muscle memory execute the current word
+                                    while your eyes scan the next 2 words.</p>
                             </div>
                         </div>
 
@@ -2793,7 +2809,8 @@
                             <i class="ri-pulse-line tip-icon" style="color: #b388ff;"></i>
                             <div class="tip-text">
                                 <h4>Relentless Pacing</h4>
-                                <p>Sprint-and-pause typing ruins averages. Use <span class="hl-shadow">Shadow Mode</span> to train a metronomic, entirely consistent rhythm.</p>
+                                <p>Sprint-and-pause typing ruins averages. Use <span class="hl-shadow">Shadow
+                                        Mode</span> to train a metronomic, entirely consistent rhythm.</p>
                             </div>
                         </div>
 
@@ -2801,7 +2818,8 @@
                             <i class="ri-body-scan-line tip-icon" style="color: #4caf50;"></i>
                             <div class="tip-text">
                                 <h4>Ergonomic Posture</h4>
-                                <p>Keep your wrists floating or resting lightly on a pad. Feet flat, back straight. Tension in your shoulders creates typos in your fingers.</p>
+                                <p>Keep your wrists floating or resting lightly on a pad. Feet flat, back straight.
+                                    Tension in your shoulders creates typos in your fingers.</p>
                             </div>
                         </div>
 
@@ -2809,7 +2827,8 @@
                             <i class="ri-mac-line tip-icon" style="color: #ff9800;"></i>
                             <div class="tip-text">
                                 <h4>Quality Hardware</h4>
-                                <p>If you're typing on a mushy laptop keyboard, you're fighting the hardware. A good mechanical keyboard with tactile switches changes everything.</p>
+                                <p>If you're typing on a mushy laptop keyboard, you're fighting the hardware. A good
+                                    mechanical keyboard with tactile switches changes everything.</p>
                             </div>
                         </div>
 
@@ -2817,7 +2836,8 @@
                             <i class="ri-cup-line tip-icon" style="color: #9e9e9e;"></i>
                             <div class="tip-text">
                                 <h4>Rest & Refresh</h4>
-                                <p>Typing speed plateaus when muscles fatigue. If your WPM begins to drop consistently, take a 10-minute break. Don't grind through fatigue.</p>
+                                <p>Typing speed plateaus when muscles fatigue. If your WPM begins to drop consistently,
+                                    take a 10-minute break. Don't grind through fatigue.</p>
                             </div>
                         </div>
                     </div>
@@ -2830,17 +2850,18 @@
             </div>
 
             <!-- View 5: Common Mistakes -->
-            <div id="dev-note-mistakes-view" class="dev-note-view hidden">
+            <div id="dev-note-mistakes-view" class="dev-note-view hidden wide-view">
                 <div class="advice-content" style="padding: 15px; max-height: 400px; overflow-y: auto;">
                     <h3 class="guide-title" style="margin-bottom: 20px;">Common Mistakes</h3>
-                    
+
                     <div class="tips-container">
                         <!-- Beginner -->
                         <div class="tip-card">
                             <i class="ri-seedling-line tip-icon" style="color: #4caf50;"></i>
                             <div class="tip-text">
                                 <h4>Beginner: The "Index Hunt"</h4>
-                                <p>Typing exclusively with 2-4 index/middle fingers. This hard-caps your speed at 40-50 WPM. You must engage your ring and pinky fingers immediately.</p>
+                                <p>Typing exclusively with 2-4 index/middle fingers. This hard-caps your speed at 40-50
+                                    WPM. You must engage your ring and pinky fingers immediately.</p>
                             </div>
                         </div>
 
@@ -2849,7 +2870,9 @@
                             <i class="ri-eye-off-line tip-icon" style="color: #e91e63;"></i>
                             <div class="tip-text">
                                 <h4>Intermediate: The "Yo-Yo" Vision</h4>
-                                <p>Looking at the screen to read, looking down at the keyboard to type, looking back up to check for errors. This constant shifting guarantees you will never break 60 WPM. You must learn to trust your proprioception (muscle memory).</p>
+                                <p>Looking at the screen to read, looking down at the keyboard to type, looking back up
+                                    to check for errors. This constant shifting guarantees you will never break 60 WPM.
+                                    You must learn to trust your proprioception (muscle memory).</p>
                             </div>
                         </div>
 
@@ -2858,7 +2881,9 @@
                             <i class="ri-run-line tip-icon" style="color: #00d4ff;"></i>
                             <div class="tip-text">
                                 <h4>Intermediate: Ignoring the Right Shift</h4>
-                                <p>Pressing the Left Shift to capitalize letters typed by the left hand (like A, S, W) forces awkward contortions. Use the Right Shift for left-hand letters, and Left Shift for right-hand letters.</p>
+                                <p>Pressing the Left Shift to capitalize letters typed by the left hand (like A, S, W)
+                                    forces awkward contortions. Use the Right Shift for left-hand letters, and Left
+                                    Shift for right-hand letters.</p>
                             </div>
                         </div>
 
@@ -2866,7 +2891,9 @@
                             <i class="ri-anchor-line tip-icon" style="color: #00bcd4;"></i>
                             <div class="tip-text">
                                 <h4>Intermediate: Planted Palms</h4>
-                                <p>Anchoring your wrists/palms firmly on the desk severely restricts your fingers' range of motion, forcing awkward stretches for top-row keys. Keep your wrists slightly floating to allow your whole hand to assist with reach.</p>
+                                <p>Anchoring your wrists/palms firmly on the desk severely restricts your fingers' range
+                                    of motion, forcing awkward stretches for top-row keys. Keep your wrists slightly
+                                    floating to allow your whole hand to assist with reach.</p>
                             </div>
                         </div>
 
@@ -2874,7 +2901,9 @@
                             <i class="ri-hammer-line tip-icon" style="color: #ff5722;"></i>
                             <div class="tip-text">
                                 <h4>Intermediate: Heavy Hitting</h4>
-                                <p>Smashing every key all the way down to the plastic (bottoming out) wastes energy and critical milliseconds. Most mechanical switches actuate halfway down. Train your fingers to tap lightly and immediately release to the next key.</p>
+                                <p>Smashing every key all the way down to the plastic (bottoming out) wastes energy and
+                                    critical milliseconds. Most mechanical switches actuate halfway down. Train your
+                                    fingers to tap lightly and immediately release to the next key.</p>
                             </div>
                         </div>
 
@@ -2883,7 +2912,9 @@
                             <i class="ri-fire-line tip-icon" style="color: #ff9800;"></i>
                             <div class="tip-text">
                                 <h4>Advanced: The Backspace Habit</h4>
-                                <p>Instinctively pressing Backspace without thinking when you feel a typo. At high speeds (90+ WPM), hitting backspace breaks your entire visual tracking rhythm. Learn to type through minor errors or slow down your base pace.</p>
+                                <p>Instinctively pressing Backspace without thinking when you feel a typo. At high
+                                    speeds (90+ WPM), hitting backspace breaks your entire visual tracking rhythm. Learn
+                                    to type through minor errors or slow down your base pace.</p>
                             </div>
                         </div>
 
@@ -2891,7 +2922,9 @@
                             <i class="ri-music-2-line tip-icon" style="color: #e040fb;"></i>
                             <div class="tip-text">
                                 <h4>Advanced: Staccato Typing</h4>
-                                <p>Waiting for the previous key to fully return up before pressing the next one. On a good mechanical keyboard, you should practice "Roll-Overs"—pressing subsequent keys while the previous ones are still held down.</p>
+                                <p>Waiting for the previous key to fully return up before pressing the next one. On a
+                                    good mechanical keyboard, you should practice "Roll-Overs"—pressing subsequent keys
+                                    while the previous ones are still held down.</p>
                             </div>
                         </div>
 
@@ -2899,7 +2932,9 @@
                             <i class="ri-thumb-up-line tip-icon" style="color: #cddc39;"></i>
                             <div class="tip-text">
                                 <h4>Advanced: The Rogue Thumb</h4>
-                                <p>Using the same thumb for the Spacebar regardless of which hand typed the last letter. Professional typists map their Spacebar thumb opposite to the hand that just finished a word to avoid split-second hand-locking.</p>
+                                <p>Using the same thumb for the Spacebar regardless of which hand typed the last letter.
+                                    Professional typists map their Spacebar thumb opposite to the hand that just
+                                    finished a word to avoid split-second hand-locking.</p>
                             </div>
                         </div>
 
@@ -2908,7 +2943,9 @@
                             <i class="ri-vip-crown-line tip-icon" style="color: #b388ff;"></i>
                             <div class="tip-text">
                                 <h4>Pro: Not using Alt-Gr / Numpad</h4>
-                                <p>Reaching wildly for special symbols or numbers on the top row when writing code/data. Pros master the peripheral keys with strict pinky discipline or utilize layers/macros so their hands never leave the Home Row.</p>
+                                <p>Reaching wildly for special symbols or numbers on the top row when writing code/data.
+                                    Pros master the peripheral keys with strict pinky discipline or utilize
+                                    layers/macros so their hands never leave the Home Row.</p>
                             </div>
                         </div>
 
@@ -2917,7 +2954,9 @@
                             <i class="ri-hand-coin-line tip-icon" style="color: #ffc107;"></i>
                             <div class="tip-text">
                                 <h4>Advanced: The Floating Hand</h4>
-                                <p>Lifting your entire hand off the keyboard to reach keys like Backspace, Enter, or the arrow keys instead of stretching your pinky. This forces you to constantly re-find the Home Row, killing your momentum.</p>
+                                <p>Lifting your entire hand off the keyboard to reach keys like Backspace, Enter, or the
+                                    arrow keys instead of stretching your pinky. This forces you to constantly re-find
+                                    the Home Row, killing your momentum.</p>
                             </div>
                         </div>
 
@@ -2925,7 +2964,9 @@
                             <i class="ri-rhythm-line tip-icon" style="color: #00bcd4;"></i>
                             <div class="tip-text">
                                 <h4>Advanced: Burst Typing</h4>
-                                <p>Typing easy words (the, and, of) at 150 WPM and then practically stopping to type complex words (rhythm, queue) at 40 WPM. Your average speed will plummet. Smooth, metronomic typing at 90 WPM is always faster.</p>
+                                <p>Typing easy words (the, and, of) at 150 WPM and then practically stopping to type
+                                    complex words (rhythm, queue) at 40 WPM. Your average speed will plummet. Smooth,
+                                    metronomic typing at 90 WPM is always faster.</p>
                             </div>
                         </div>
 
@@ -2933,7 +2974,10 @@
                             <i class="ri-layout-bottom-line tip-icon" style="color: #f44336;"></i>
                             <div class="tip-text">
                                 <h4>Pro: The Bottom Row Slide</h4>
-                                <p>Using the wrong finger for bottom row keys, especially C, X, and V. Many self-taught typists use their left index finger for all three, which pulls the hand wildly out of position. Strict adherence to proper finger mapping is required for elite speeds.</p>
+                                <p>Using the wrong finger for bottom row keys, especially C, X, and V. Many self-taught
+                                    typists use their left index finger for all three, which pulls the hand wildly out
+                                    of position. Strict adherence to proper finger mapping is required for elite speeds.
+                                </p>
                             </div>
                         </div>
 
@@ -2941,7 +2985,9 @@
                             <i class="ri-double-quotes-l tip-icon" style="color: #00e676;"></i>
                             <div class="tip-text">
                                 <h4>Pro: Punctuation Hesitation</h4>
-                                <p>Slowing down drastically for commas, periods, or quotes. Elite typists treat punctuation exactly like letters in their mental buffer. A period string shouldn't break your combo flow any more than typing an 'e' would.</p>
+                                <p>Slowing down drastically for commas, periods, or quotes. Elite typists treat
+                                    punctuation exactly like letters in their mental buffer. A period string shouldn't
+                                    break your combo flow any more than typing an 'e' would.</p>
                             </div>
                         </div>
                     </div>
@@ -2954,16 +3000,18 @@
             </div>
 
             <!-- View 6: Practice Philosophy -->
-            <div id="dev-note-philosophy-view" class="dev-note-view hidden">
+            <div id="dev-note-philosophy-view" class="dev-note-view hidden wide-view">
                 <div class="advice-content" style="padding: 15px; max-height: 400px; overflow-y: auto;">
                     <h3 class="guide-title" style="margin-bottom: 20px;">The 1% Habit</h3>
-                    
+
                     <div class="tips-container">
                         <div class="tip-card">
                             <i class="ri-bar-chart-horizontal-line tip-icon" style="color: #9c27b0;"></i>
                             <div class="tip-text">
                                 <h4>The Plateau Illusion</h4>
-                                <p>Progress is never linear. You will spend 90% of your time on flat plateaus where WPM doesn't budge, followed by a sudden 15 WPM jump overnight. Trust the plateau—it's where the actual rewiring of your brain happens.</p>
+                                <p>Progress is never linear. You will spend 90% of your time on flat plateaus where WPM
+                                    doesn't budge, followed by a sudden 15 WPM jump overnight. Trust the plateau—it's
+                                    where the actual rewiring of your brain happens.</p>
                             </div>
                         </div>
 
@@ -2971,45 +3019,230 @@
                             <i class="ri-leaf-line tip-icon" style="color: #8bc34a;"></i>
                             <div class="tip-text">
                                 <h4>Consistency > Duration</h4>
-                                <p>15 minutes of focused <span class="hl-hagakure">Hagakure Mode</span> every day is better than 3 hours once a week. Muscle memory is built in sleep, not in exhaustion.</p>
+                                <p>15 minutes of focused <span class="hl-hagakure">Hagakure Mode</span> every day is
+                                    better than 3 hours once a week. Muscle memory is built in sleep, not in exhaustion.
+                                </p>
                             </div>
                         </div>
-                        
+
                         <div class="tip-card">
                             <i class="ri-eye-close-line tip-icon" style="color: #e91e63;"></i>
                             <div class="tip-text">
                                 <h4>Detachment from Numbers</h4>
-                                <p>When you obsess over the WPM counter, anxiety tightens your fingers, resulting in errors. Focus entirely on the physical sensation of flow and the rhythm of the words. The number at the end is just a byproduct of that flow.</p>
+                                <p>When you obsess over the WPM counter, anxiety tightens your fingers, resulting in
+                                    errors. Focus entirely on the physical sensation of flow and the rhythm of the
+                                    words. The number at the end is just a byproduct of that flow.</p>
                             </div>
                         </div>
-                        
+
                         <div class="tip-card">
                             <i class="ri-fire-fill tip-icon" style="color: #ff5722;"></i>
                             <div class="tip-text">
                                 <h4>Embracing the Struggle</h4>
-                                <p>If practice feels easy, you aren't improving. You must force yourself into the zone of 'desirable difficulty'—practicing words, speeds, and modes that frustrate you. Frustration is the literal sensation of new neural pathways forming.</p>
+                                <p>If practice feels easy, you aren't improving. You must force yourself into the zone
+                                    of 'desirable difficulty'—practicing words, speeds, and modes that frustrate you.
+                                    Frustration is the literal sensation of new neural pathways forming.</p>
                             </div>
                         </div>
-                        
+
                         <div class="tip-card">
                             <i class="ri-temp-cold-line tip-icon" style="color: #03a9f4;"></i>
                             <div class="tip-text">
                                 <h4>The "Warm-up" Fallacy</h4>
-                                <p>Your first 5 minutes of typing every day will be your worst. Do not judge your skill by your warm-up runs. Your tendons and brain need a few minutes of blood flow to sync up. Give yourself grace during the first few tests.</p>
+                                <p>Your first 5 minutes of typing every day will be your worst. Do not judge your skill
+                                    by your warm-up runs. Your tendons and brain need a few minutes of blood flow to
+                                    sync up. Give yourself grace during the first few tests.</p>
                             </div>
                         </div>
-                        
+
                         <div class="tip-card">
                             <i class="ri-zzz-line tip-icon" style="color: #3f51b5;"></i>
                             <div class="tip-text">
                                 <h4>Sleep is Practice</h4>
-                                <p>You do not learn while you practice; you learn while you sleep. Practice simply flags the neural circuits that need to be strengthened during deep sleep. If you trade sleep for 3 hours of late-night typing, you are wasting your effort.</p>
+                                <p>You do not learn while you practice; you learn while you sleep. Practice simply flags
+                                    the neural circuits that need to be strengthened during deep sleep. If you trade
+                                    sleep for 3 hours of late-night typing, you are wasting your effort.</p>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="advice-actions">
                     <button id="dev-note-philosophy-back" class="back-btn">
+                        <i class="ri-arrow-left-line"></i> Go Back
+                    </button>
+                </div>
+            </div>
+
+            <!-- View 7: Walk the Path with Me -->
+            <div id="dev-note-path-view" class="dev-note-view hidden wide-view">
+                <div class="advice-content" style="padding: 15px; max-height: 500px; overflow-y: auto;">
+                    <div style="text-align: center; padding: 40px 0 20px 0;">
+                        <h1
+                            style="font-family: 'Space Mono', monospace; font-size: 3.8rem; font-weight: 900; color: #ffffff; text-transform: uppercase; line-height: 1.1; letter-spacing: -1px; margin: 0; text-shadow: 4px 4px 0px rgba(0,0,0,0.8);">
+                            <span style="color: #e0e0e0;">DON'T JUST TYPE.</span><br>
+                            <span class="giga-glitch"
+                                style="background: linear-gradient(90deg, #ff0055, #ffaa00); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 0 30px rgba(255,0,85,0.6); letter-spacing: 4px; font-size: 4.5rem;">FLEX
+                                WPM.</span><br>
+                            <span class="lightning-text"
+                                style="font-size: 1.8rem; color: #00d4ff; letter-spacing: 8px; font-weight: 700;">Be
+                                the lightning.</span>
+                        </h1>
+                        <div class="developer-signature"
+                            style="text-align: center; margin-top: 30px; font-size: 2.2rem; transform: rotate(-2deg); display: inline-block;">
+                            — Irfan S., Developer of ZenType
+                        </div>
+                    </div>
+
+                    <div class="wishlist-divider">
+                        <span>Future Goals</span>
+                    </div>
+
+                    <div class="wishlist-container" id="zen-wishlist">
+
+                        <!-- 1. The Global Dojo (Expandable) -->
+                        <div class="tip-card expandable-card"
+                            style="margin-bottom: 5px; animation-delay: 0.1s; cursor: pointer;"
+                            onclick="this.classList.toggle('expanded')">
+                            <div class="expandable-header">
+                                <i class="ri-global-line tip-icon" style="color: #4fc3f7;"></i>
+                                <div class="tip-text" style="flex-grow: 1;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <h4 style="color: #4fc3f7;">The Global Dojo (Multiplayer)</h4>
+                                        <i class="ri-arrow-down-s-line expand-icon"
+                                            style="color: rgba(255,255,255,0.5);"></i>
+                                    </div>
+                                    <p>A dedicated lobby system for Ghost Racing and
+                                        synchronous typing sessions—test your stillness against your friends in a
+                                        noiseless
+                                        environment. Click to view details.</p>
+                                </div>
+                            </div>
+
+                            <!-- Hidden Sub-features (Revealed on click) -->
+                            <div class="dojo-expansion">
+                                <div class="sub-feature">
+                                    <i class="ri-home-heart-line" style="color: #4fc3f7;"></i>
+                                    <div>
+                                        <strong>Friend Sanctuaries:</strong> Create private, invitation-only rooms to
+                                        challenge your inner circle. No public noise—just you and your friends in a
+                                        shared state of flow.
+                                    </div>
+                                </div>
+                                <div class="sub-feature">
+                                    <i class="ri-ghost-line" style="color: #b388ff;"></i>
+                                    <div>
+                                        <strong>The 'Spirit Race':</strong> Type against your friends' "Ghost Spirits"
+                                        in real-time. See their progress as a faint, glowing trail so you know exactly
+                                        how far ahead (or behind) you are.
+                                    </div>
+                                </div>
+                                <div class="sub-feature">
+                                    <i class="ri-bar-chart-2-line" style="color: #ffd700;"></i>
+                                    <div>
+                                        <strong>The Velocity Mandate:</strong> A dedicated leaderboard for your friend
+                                        group to settle once and for all who truly belongs in the Top 1%.
+                                    </div>
+                                </div>
+                                <div class="sub-feature">
+                                    <i class="ri-eye-off-fill" style="color: #ff5252;"></i>
+                                    <div>
+                                        <strong>Live 'Stakes' Mode:</strong> A high-pressure mode where the slowest
+                                        typist's screen gradually fades to black, forcing them to rely 100% on muscle
+                                        memory to finish.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 2. AI Neuro-Mapping -->
+                        <div class="tip-card" style="margin-bottom: 5px; animation-delay: 0.2s;">
+                            <i class="ri-brain-line tip-icon" style="color: #b388ff;"></i>
+                            <div class="tip-text">
+                                <h4 style="color: #b388ff;">AI-Driven Neuro-Mapping</h4>
+                                <p>Using Machine Learning to generate real-time heatmaps of your keyboard, identifying
+                                    the exact millisecond "stutters" in your finger movement.</p>
+                            </div>
+                        </div>
+
+                        <!-- 3. Whisper Chat -->
+                        <div class="tip-card" style="margin-bottom: 5px; animation-delay: 0.3s;">
+                            <i class="ri-chat-voice-line tip-icon" style="color: #00e676;"></i>
+                            <div class="tip-text">
+                                <h4 style="color: #00e676;">Whisper Chat</h4>
+                                <p>A minimalist, non-intrusive communication feature designed to keep the "Flow State"
+                                    intact while connecting with fellow masters.</p>
+                            </div>
+                        </div>
+
+                        <!-- 4. Reactive Soundscapes -->
+                        <div class="tip-card" style="margin-bottom: 5px; animation-delay: 0.4s;">
+                            <i class="ri-sound-module-line tip-icon" style="color: #ff9800;"></i>
+                            <div class="tip-text">
+                                <h4 style="color: #ff9800;">Reactive Soundscapes</h4>
+                                <p>Procedural audio that adjusts its tempo and tone based on your WPM, turning your
+                                    typing into a live ambient meditation.</p>
+                            </div>
+                        </div>
+
+                        <!-- 5. The Visual Sanctuary (Expandable) -->
+                        <div class="tip-card expandable-card"
+                            style="margin-bottom: 5px; animation-delay: 0.5s; cursor: pointer;"
+                            onclick="this.classList.toggle('expanded')">
+                            <div class="expandable-header">
+                                <i class="ri-palette-line tip-icon" style="color: #ffd700;"></i>
+                                <div class="tip-text" style="flex-grow: 1;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <h4 style="color: #ffd700; margin-bottom: 0;">🖼️ The Visual Sanctuary (Steam
+                                            Workshop)</h4>
+                                        <i class="ri-arrow-down-s-line expand-icon"
+                                            style="color: rgba(255,255,255,0.5);"></i>
+                                    </div>
+                                    <p>I built the engine, now you design the view. Full Steam Workshop integration lets
+                                        you upload, share, and download custom backgrounds. Click to view details.</p>
+                                </div>
+                            </div>
+
+                            <!-- Hidden Sanctuary details -->
+                            <div class="dojo-expansion">
+                                <div class="sub-feature">
+                                    <i class="ri-cloud-line" style="color: #ffd700;"></i>
+                                    <div>
+                                        <strong>Community Creations:</strong> Browse thousands of player-created
+                                        backgrounds, ranging from minimalist zen gardens to high-energy cyber-cities.
+                                    </div>
+                                </div>
+                                <div class="sub-feature">
+                                    <i class="ri-download-cloud-2-line" style="color: #4fc3f7;"></i>
+                                    <div>
+                                        <strong>One-Click Sync:</strong> Download and apply themes directly from the
+                                        Steam overlay. No manual file moving—just pure aesthetic immersion.
+                                    </div>
+                                </div>
+                                <div class="sub-feature">
+                                    <i class="ri-share-line" style="color: #b388ff;"></i>
+                                    <div>
+                                        <strong>Sanctuary Sharing:</strong> Export your custom color palettes, particle
+                                        settings, and effects as a single 'Sanctuary' file for others to master.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 6. The Archives -->
+                        <div class="tip-card" style="margin-bottom: 5px; animation-delay: 0.6s;">
+                            <i class="ri-book-3-line tip-icon" style="color: #4fc3f7;"></i>
+                            <div class="tip-text">
+                                <h4 style="color: #4fc3f7;">📜 The Archives</h4>
+                                <p>Stop just typing random words—start uploading your own. Share your favorite quotes,
+                                    code scripts, or stories and challenge the world to master them. Upvote them, add
+                                    comments, and filter out the noise to find the best ones.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="advice-actions">
+                    <button id="dev-note-path-back" class="back-btn">
                         <i class="ri-arrow-left-line"></i> Go Back
                     </button>
                 </div>

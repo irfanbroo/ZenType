@@ -191,6 +191,8 @@ body.zen-mode #app-header,
 body.zen-mode .site-footer,
 body.zen-mode #login-btn,
 body.zen-mode #leaderboard-btn,
+body.zen-mode #dev-note-btn,
+body.zen-mode #hagakure-leaderboard-btn,
 body.zen-mode #wallpaper-sound-btn {
     opacity: 0;
     pointer-events: none;
