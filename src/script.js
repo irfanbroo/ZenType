@@ -40,6 +40,14 @@ const hagakureEarlyFailMessages = [
     "- You were not ready."
 ];
 
+const shadowWordsMedium = [
+    "acquire", "argument", "maintenance", "occurrence", "questionnaire", "sergeant", "apprehension", "subtle", "fuming", "hypocritical", "relegate", "inquisitive", "stroll", "finery", "incubus", "mutinous", "contempt", "grovel", "acknowledgement", "adequate", "adjudicate", "adroit", "amicable", "analogous", "annul", "applause", "arid", "articulate", "available", "benevolent", "bewildered", "boisterous", "brusque", "canny", "capability", "capacious", "chronic", "cognitive", "coherence", "commemorate", "comply", "conspicuous", "constraint", "controversy", "corrugated", "narcissistic", "bourbon", "indict", "connecticut", "vacuum", "presence", "intuition", "resonance", "ephemeral", "synthetic", "technical", "versatile", "vigorous", "momentum", "precision", "prototype", "quantify", "resilient", "scrutinize", "transparent", "undermine"
+];
+
+const shadowWordsHard = [
+    "grammatically", "magnanimous", "metamorphosis", "satisfactorily", "surveillance", "unanimous", "reconciliation", "procrastinate", "ostentatious", "conscientious", "fluorescent", "olfactory", "facsimile", "incessant", "reservoir", "spasmodic", "gobbledegook", "euphemism", "abrogate", "demagogue", "facetious", "pulchritudinous", "verisimilitude", "consanguineous", "balatron", "dewdropper", "frippet", "callipygian", "bedevil", "confabulate", "spanandry", "bombilate", "pettifogging", "unconscionable", "perforce", "longitudinal", "inadvertent", "juxtaposition", "idiosyncratic", "hyperbole", "ephemeral", "deleterious", "cacophony", "belligerent", "audacious", "anomaly", "synchronization", "quintessential"
+];
+
 const hagakureGeneralFailMessages = [
     "Your focus wavered.",
     "A moment of weakness.",
@@ -9273,9 +9281,10 @@ function setupSettingsListeners() {
         // Torch State
         state.torchWordIndex = 0; // Starts at 0
 
-        // Generate Words (Cyberpunk Pool)
-        const pool = wordPools[0];
+        // Generate Words (Challenging Mix)
         for (let i = 0; i < 30; i++) {
+            const isHard = Math.random() < 0.25; // 25% hard words sprinkle
+            const pool = isHard ? shadowWordsHard : shadowWordsMedium;
             state.words.push(pool[Math.floor(Math.random() * pool.length)]);
         }
 

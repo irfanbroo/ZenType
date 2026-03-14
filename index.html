@@ -22,7 +22,6 @@
         window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
     </script>
     <script defer src="/_vercel/insights/script.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body>
@@ -39,7 +38,7 @@
             <i class="ri-close-line"></i>
         </div>
     </div>
-    <script type="module" src="/src/window-controls.js"></script>
+
 
 
 
@@ -1742,11 +1741,8 @@
         </div>
     </div>
 
-    <!-- Supabase SDK -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script type="module" src="/src/script.js"></script>
+    <!-- Supabase script and Auth moved to bottom -->
 
-    <script type="module" src="/src/auth.js"></script>
     <!-- Shadow Mode UI -->
     <div id="shadow-splash" class="hidden">
         <div class="s-splash-content">
@@ -3251,10 +3247,13 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script type="module" src="/src/auth.js"></script>
     <script type="module" src="/src/window-controls.js"></script>
-    <script src="/src/keystroke-visualizer.js"></script>
-    <script src="/src/footer-widget.js"></script>
-    <script src="/src/devnote.js"></script>
+    <script type="module" src="/src/script.js"></script>
+    <script type="module" src="/src/keystroke-visualizer.js"></script>
+    <script type="module" src="/src/footer-widget.js"></script>
+    <script type="module" src="/src/devnote.js"></script>
 </body>
 
 </html>
