@@ -2,3 +2,15 @@ node_modules/
 .DS_Store
 .env
 config.js
+
+# Tauri / Rust Build Artifacts
+src-tauri/target/
+*.pdb
+*.dll
+*.exe
+
+# Exported Build Folders (Steam, itch.io, etc.)
+steam-build*/
+*-build/
+dist/
+build/

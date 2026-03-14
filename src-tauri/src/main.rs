@@ -71,7 +71,55 @@ fn set_fullscreen(window: tauri::WebviewWindow, fullscreen: bool) {
     let _ = window.set_fullscreen(fullscreen);
 }
 
+// ── Windows Registry Self-Registration ─────────────────────────────────────
+// Registers zentype:// URI scheme in HKEY_CURRENT_USER (no admin needed).
+// Called every launch so the path stays current even if the .exe is moved.
+#[cfg(windows)]
+fn register_uri_scheme() {
+    use winreg::enums::*;
+    use winreg::RegKey;
+
+    // Get the path of this running executable
+    let exe_path = match std::env::current_exe() {
+        Ok(p) => p.to_string_lossy().to_string(),
+        Err(_) => return,
+    };
+
+    let hkcu = RegKey::predef(HKEY_CURRENT_USER);
+
+    // Create/open: HKCU\Software\Classes\zentype
+    let (zentype_key, _) = match hkcu.create_subkey("Software\\Classes\\zentype") {
+        Ok(result) => result,
+        Err(_) => return,
+    };
+
+    // Set default value and URL protocol marker
+    let _ = zentype_key.set_value("", &"URL:ZenType Protocol");
+    let _ = zentype_key.set_value("URL Protocol", &"");
+
+    // Create: HKCU\Software\Classes\zentype\shell\open\command
+    let (cmd_key, _) = match hkcu.create_subkey("Software\\Classes\\zentype\\shell\\open\\command") {
+        Ok(result) => result,
+        Err(_) => return,
+    };
+
+    // Set the command: "path\to\zentype.exe" "%1"
+    let command = format!("\"{}\" \"%1\"", exe_path);
+    let _ = cmd_key.set_value("", &command.as_str());
+
+    println!("ZenType: URI scheme 'zentype://' registered successfully.");
+}
+
+#[cfg(not(windows))]
+fn register_uri_scheme() {
+    // On non-Windows platforms, deep-link plugin handles scheme registration natively
+}
+
+
 fn main() {
+    // Register zentype:// URI scheme in Windows registry on every launch
+    register_uri_scheme();
+
     let start_time = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .unwrap()
@@ -104,7 +152,21 @@ fn main() {
         Err(_) => None,
     };
 
-    tauri::Builder::default()
+    let mut builder = tauri::Builder::default();
+
+    // Single-instance MUST be the first plugin — it forwards deep link URLs
+    // from new process launches to the already-running instance on Windows/Linux
+    #[cfg(desktop)]
+    {
+        builder = builder.plugin(tauri_plugin_single_instance::init(|_app, argv, _cwd| {
+            println!("ZenType: New instance attempted with args: {:?}", argv);
+            // Deep link forwarding is automatic when the 'deep-link' feature is enabled
+        }));
+    }
+
+    builder
+        .plugin(tauri_plugin_deep_link::init())
+        .plugin(tauri_plugin_shell::init())
         .manage(DiscordClient {
             client: Mutex::new(discord_client),
             start_time,

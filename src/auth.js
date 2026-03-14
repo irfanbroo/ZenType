@@ -33,6 +33,93 @@ try {
 }
 
 // ══════════════════════════════════════════════════════════
+// DEEP LINK HANDLER — registered at startup so it catches
+// callbacks on cold start AND when the app is already open.
+// ══════════════════════════════════════════════════════════
+(async function setupDeepLinkListener() {
+    try {
+        const tauriDeepLink = await import('@tauri-apps/plugin-deep-link');
+
+        const processDeepLinkUrl = async (callbackUrl) => {
+            console.log("Auth.js [Global]: Deep link received:", callbackUrl);
+
+            // Only process URLs that look like our auth callback
+            if (!callbackUrl || !callbackUrl.includes('zentype://auth/callback')) {
+                console.log("Auth.js [Global]: Ignoring non-auth deep link:", callbackUrl);
+                return;
+            }
+
+            // Parse tokens from hash fragment or query string
+            let params;
+            try {
+                const hashPart = callbackUrl.includes('#')
+                    ? callbackUrl.split('#')[1]
+                    : callbackUrl.split('?')[1] || '';
+                params = new URLSearchParams(hashPart);
+            } catch (e) {
+                console.error("Auth.js [Global]: Failed to parse callback URL:", e);
+                alert("Login failed: Could not parse the auth response.");
+                return;
+            }
+
+            const access_token = params.get('access_token');
+            const refresh_token = params.get('refresh_token');
+
+            if (!access_token || !refresh_token) {
+                const errorDesc = params.get('error_description') || params.get('error');
+                console.error("Auth.js [Global]: No tokens found. Error:", errorDesc);
+                if (errorDesc || callbackUrl.length > 30) {
+                    alert("Login failed: No tokens received.\n\n" + (errorDesc || "URL: " + callbackUrl));
+                }
+                return;
+            }
+
+            if (!supabaseClient) {
+                alert("Login failed: Supabase not ready yet.");
+                return;
+            }
+
+            const { error: sessionError } = await supabaseClient.auth.setSession({
+                access_token,
+                refresh_token,
+            });
+
+            if (sessionError) {
+                console.error("Auth.js [Global]: Failed to set session:", sessionError);
+                alert("Login failed (Session Error):\n\n" + sessionError.message);
+            } else {
+                console.log("Auth.js [Global]: Session set successfully!");
+                // Hide auth modal if it exists
+                const modal = document.getElementById('auth-modal');
+                if (modal) modal.classList.add('hidden');
+                // Force UI update
+                if (typeof fetchUserStats === 'function') fetchUserStats();
+            }
+        };
+
+        // Register the listener — fires when the app is ALREADY RUNNING and a deep link arrives
+        await tauriDeepLink.onOpenUrl((urls) => {
+            console.log("Auth.js [Global]: onOpenUrl fired with:", urls);
+            const url = Array.isArray(urls) ? urls[0] : urls;
+            if (url) processDeepLinkUrl(url);
+        });
+
+        // Also check for deep link that LAUNCHED the app (cold start)
+        const startUrls = await tauriDeepLink.getCurrent();
+        console.log("Auth.js [Global]: getCurrent() returned:", startUrls);
+        if (startUrls && startUrls.length > 0) {
+            const url = Array.isArray(startUrls) ? startUrls[0] : startUrls;
+            if (url) processDeepLinkUrl(url);
+        }
+
+        console.log("Auth.js [Global]: Deep link listener registered successfully.");
+    } catch (e) {
+        // Not running in Tauri (web build) — this is fine, just skip
+        console.log("Auth.js: Not in Tauri, skipping deep link listener setup.");
+    }
+})();
+
+// ══════════════════════════════════════════════════════════
 // AUTHENTICATION LOGIC
 // ══════════════════════════════════════════════════════════
 
@@ -152,12 +239,59 @@ function initAuth() {
     // --- GOOGLE LOGIN ---
     const handleGoogleLogin = async () => {
         if (!supabaseClient) return alert("Supabase not initialized");
+
+        // --- Check if we're inside Tauri ---
+        let isTauri = false;
+        let tauriShell;
+        try {
+            const tauriCore = await import('@tauri-apps/api/core');
+            tauriShell = await import('@tauri-apps/plugin-shell');
+            isTauri = tauriCore.isTauri();
+        } catch (e) {
+            // Not in Tauri — will use web fallback
+        }
+
+        // ── Tauri Desktop: Open browser, deep link listener is already active ──
+        if (isTauri && tauriShell) {
+            try {
+                const { data, error } = await supabaseClient.auth.signInWithOAuth({
+                    provider: 'google',
+                    options: {
+                        redirectTo: 'zentype://auth/callback',
+                        skipBrowserRedirect: true,
+                    }
+                });
+
+                if (error) {
+                    alert("Error starting Google login: " + error.message);
+                    return;
+                }
+
+                if (!data?.url) {
+                    alert("Could not get Google login URL. Please try again.");
+                    return;
+                }
+
+                // Open the OAuth URL in the system browser
+                const { open } = tauriShell;
+                await open(data.url);
+                // The global deep link listener (registered at startup) will handle the callback
+                return;
+            } catch (err) {
+                console.error("Auth.js: Tauri login error:", err);
+                alert("Login error: " + err.message);
+                return;
+            }
+        }
+
+        // ── Web Fallback: Standard Supabase redirect ──────────────────────
         const { error } = await supabaseClient.auth.signInWithOAuth({ provider: 'google' });
         if (error) alert("Error: " + error.message);
     };
 
     if (authUI.googleBtn) authUI.googleBtn.onclick = handleGoogleLogin;
     if (authUI.googleSignupBtn) authUI.googleSignupBtn.onclick = handleGoogleLogin;
+
 
 
     // --- EMAIL LOGIN ---

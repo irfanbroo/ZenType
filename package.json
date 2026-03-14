@@ -7,11 +7,13 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.95.3",
+    "@tauri-apps/plugin-deep-link": "^2.4.7",
+    "@tauri-apps/plugin-shell": "^2.3.5",
     "@vercel/analytics": "^1.6.1",
     "discord-rpc": "^4.0.1"
   },
   "devDependencies": {
-    "@tauri-apps/api": "2.0.0",
+    "@tauri-apps/api": "^2.0.0",
     "@tauri-apps/cli": "^2.0.0",
     "playwright": "^1.58.2",
     "vite": "^6.0.0"
