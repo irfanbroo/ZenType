@@ -40,6 +40,8 @@ let userConfig = {
     comboSound: true,
     pitchShift: true,
     wallpaperAudio: true, // Default to true
+    uiMode: 'zen', // 'zen' | 'clean'
+    comboStyle: 'heatbar', // 'heatbar' | 'classic' | 'edgeglow' | 'minimal' | 'off'
     instantLegend: false // When true, all keystrokes register as correct
 };
 
@@ -397,6 +399,12 @@ function initTheme() {
         userConfig = { ...userConfig, ...JSON.parse(savedConfig) };
         // Ensure wallpaperAudio is present (migration)
         if (userConfig.wallpaperAudio === undefined) userConfig.wallpaperAudio = true;
+        // Migrate old showCombo → comboStyle
+        if (userConfig.showCombo !== undefined) {
+            if (userConfig.showCombo === false) userConfig.comboStyle = 'off';
+            delete userConfig.showCombo;
+        }
+        if (!userConfig.comboStyle) userConfig.comboStyle = 'heatbar';
     }
 
     // Restore sound preference
@@ -469,6 +477,35 @@ function toggleZenMode(forceState = null) {
 }
 
 function applyTheme(skipLoader = false) {
+    // --- UI MODE (Zen vs Clean) ---
+    const isClean = userConfig.uiMode === 'clean';
+    document.body.classList.toggle('clean-mode', isClean);
+
+    // Show/hide clean-mode big WPM
+    const cleanWpm = document.getElementById('clean-wpm-display');
+    if (cleanWpm) cleanWpm.style.display = isClean ? '' : 'none';
+
+    // Hide wallpaper/effects tabs in clean mode
+    document.querySelectorAll('.settings-tab[data-tab="wallpaper"], .settings-tab[data-tab="effects"]').forEach(tab => {
+        tab.style.display = isClean ? 'none' : '';
+    });
+
+    // Update UI mode toggle buttons
+    document.querySelectorAll('.ui-mode-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.mode === userConfig.uiMode);
+    });
+
+    // In clean mode, skip wallpaper loading
+    if (isClean) {
+        // Pause and hide video
+        if (UI.bgVideo) { UI.bgVideo.pause(); UI.bgVideo.classList.add('fade-out'); }
+        // Stop background effects
+        if (typeof effectAnimId !== 'undefined' && effectAnimId) {
+            cancelAnimationFrame(effectAnimId);
+            setEffectAnimId(null);
+        }
+    }
+
     const wp = wallpapers.find(w => w.id === userConfig.wallpaperId) || wallpapers[0];
 
     // --- AUDIO TOGGLE UI ---
@@ -8384,6 +8421,38 @@ if (pToggle) {
     });
 }
 
+// UI Mode Toggle (Zen vs Clean)
+const uiModeBtns = document.querySelectorAll('.ui-mode-btn');
+uiModeBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        uiModeBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        userConfig.uiMode = btn.dataset.mode;
+        saveConfig();
+        applyTheme(true);
+    });
+});
+
+// Combo Style Selector (event wiring only — function is top-level)
+const comboStyleBtns = document.querySelectorAll('.combo-style-btn');
+if (comboStyleBtns.length > 0) {
+    // Set active button from config
+    const activeStyle = userConfig.comboStyle || 'heatbar';
+    comboStyleBtns.forEach(btn => btn.classList.toggle('active', btn.dataset.comboStyle === activeStyle));
+    applyComboStyle(activeStyle);
+
+    comboStyleBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            comboStyleBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            userConfig.comboStyle = btn.dataset.comboStyle;
+            resetAllComboVisuals();
+            applyComboStyle(btn.dataset.comboStyle);
+            saveConfig();
+        });
+    });
+}
+
 const shapeOptions = document.querySelector('.particle-shape-options');
 if (shapeOptions) {
     shapeOptions.addEventListener('click', (e) => {
@@ -8488,46 +8557,555 @@ const comboThemes = [
 
 let currentStreakTheme = comboThemes[0];
 
+// --- CARET FIRE PARTICLE SYSTEM ---
+let caretFireParticles = [];
+let caretFireAnimId = null;
+
+function hslToRgbSimple(h, s, l) {
+    s /= 100; l /= 100;
+    const k = n => (n + h / 30) % 12;
+    const a = s * Math.min(l, 1 - l);
+    const f = n => l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
+    return { r: Math.round(f(0) * 255), g: Math.round(f(8) * 255), b: Math.round(f(4) * 255) };
+}
+
+function initCaretFireCanvas() {
+    const canvas = document.getElementById('caret-fire-canvas');
+    if (!canvas) return;
+    const parent = canvas.parentElement;
+    if (!parent) return;
+    const rect = parent.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    canvas.style.width = rect.width + 'px';
+    canvas.style.height = rect.height + 'px';
+    const ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+}
+
+function spawnCaretFireParticles() {
+    const style = userConfig.comboStyle || 'heatbar';
+    if (!['caretfire', 'sakura', 'lightning', 'comet', 'galaxy', 'void', 'snowstorm'].includes(style)) return;
+    if (state.combo < 1) return;
+
+    const caret = document.getElementById('caret');
+    const canvas = document.getElementById('caret-fire-canvas');
+    if (!caret || !canvas) return;
+
+    const caretRect = caret.getBoundingClientRect();
+    const canvasRect = canvas.getBoundingClientRect();
+    const x = caretRect.left - canvasRect.left + caretRect.width / 2;
+    const y = caretRect.top - canvasRect.top + caretRect.height * 0.3;
+    const intensity = Math.min(state.combo / 25, 1);
+
+    if (style === 'caretfire') {
+        const count = 2 + Math.floor(intensity * 6);
+        let r = 255, g = 150, b = 50;
+        if (state.combo >= 50) { r = 255; g = 255; b = 255; }
+        else if (state.combo >= 25) { r = 255; g = 50; b = 50; }
+        else if (state.combo >= 10) { r = 255; g = 100; b = 30; }
+
+        for (let i = 0; i < count; i++) {
+            caretFireParticles.push({
+                x: x + (Math.random() - 0.5) * 6, y,
+                vx: (Math.random() - 0.5) * 1.5,
+                vy: -(1.5 + Math.random() * 3 * (0.5 + intensity)),
+                size: 2 + Math.random() * 3 * (0.5 + intensity),
+                life: 1, decay: 0.02 + Math.random() * 0.03,
+                r, g, b, type: 'circle'
+            });
+        }
+    }
+
+    if (style === 'sakura') {
+        const count = 1 + Math.floor(intensity * 3);
+        for (let i = 0; i < count; i++) {
+            caretFireParticles.push({
+                x: x + (Math.random() - 0.5) * 10, y,
+                vx: 0.5 + Math.random() * 2,
+                vy: 0.3 + Math.random() * 1.5,
+                size: 3 + Math.random() * 4 * (0.5 + intensity),
+                life: 1, decay: 0.008 + Math.random() * 0.008,
+                r: 255, g: 150 + Math.floor(Math.random() * 50), b: 180 + Math.floor(Math.random() * 40),
+                type: 'petal', rotation: Math.random() * Math.PI * 2, rotSpeed: (Math.random() - 0.5) * 0.1
+            });
+        }
+    }
+
+    if (style === 'lightning') {
+        const count = 1 + Math.floor(intensity * 2);
+        for (let i = 0; i < count; i++) {
+            const angle = (Math.random() - 0.5) * Math.PI;
+            const len = 15 + Math.random() * 30 * (0.5 + intensity);
+            caretFireParticles.push({
+                x, y, type: 'bolt',
+                ex: x + Math.cos(angle) * len,
+                ey: y + Math.sin(angle) * len,
+                life: 1, decay: 0.08 + Math.random() * 0.06,
+                r: 100 + Math.floor(Math.random() * 50), g: 200 + Math.floor(Math.random() * 55), b: 255,
+                size: 1 + intensity, segments: 4 + Math.floor(Math.random() * 4)
+            });
+        }
+    }
+
+    if (style === 'comet') {
+        caretFireParticles.push({
+            x, y: caretRect.top - canvasRect.top + caretRect.height / 2,
+            vx: 0, vy: 0,
+            size: 3 + intensity * 4,
+            life: 1, decay: 0.03 + Math.random() * 0.02,
+            r: 100 + Math.floor(intensity * 155), g: 180 + Math.floor(intensity * 75), b: 255,
+            type: 'circle'
+        });
+    }
+
+    if (style === 'galaxy') {
+        const count = 3 + Math.floor(intensity * 8);
+        const yCenter = caretRect.top - canvasRect.top + caretRect.height / 2;
+        for (let i = 0; i < count; i++) {
+            const angle = Math.random() * Math.PI * 2;
+            const dist = 5 + Math.random() * 15;
+            const orbitSpeed = 0.03 + Math.random() * 0.04;
+            // Color: cycle through purple/blue/cyan/pink nebula colors
+            const hue = (state.combo * 8 + Math.random() * 60) % 360;
+            const rgb = hslToRgbSimple(hue, 80, 70);
+            caretFireParticles.push({
+                x: x + Math.cos(angle) * dist,
+                y: yCenter + Math.sin(angle) * dist,
+                cx: x, cy: yCenter, // orbit center
+                angle, dist, orbitSpeed,
+                size: 1 + Math.random() * 2.5 * (0.5 + intensity),
+                life: 1, decay: 0.006 + Math.random() * 0.008,
+                r: rgb.r, g: rgb.g, b: rgb.b,
+                type: 'galaxy',
+                isStar: Math.random() < 0.3 // some are bright stars
+            });
+        }
+    }
+
+    if (style === 'void') {
+        // Particles spawn AROUND the caret and get sucked IN (reverse gravity)
+        const count = 2 + Math.floor(intensity * 5);
+        const yCenter = caretRect.top - canvasRect.top + caretRect.height / 2;
+        for (let i = 0; i < count; i++) {
+            const angle = Math.random() * Math.PI * 2;
+            const spawnDist = 30 + Math.random() * 40;
+            const sx = x + Math.cos(angle) * spawnDist;
+            const sy = yCenter + Math.sin(angle) * spawnDist;
+            // Dark purple/indigo core colors
+            const shade = Math.random();
+            let r = 80 + Math.floor(shade * 60);
+            let g = 20 + Math.floor(shade * 30);
+            let b = 150 + Math.floor(shade * 105);
+            if (state.combo >= 25) { r = 30; g = 0; b = 60; } // deeper void
+            if (state.combo >= 50) { r = 0; g = 0; b = 0; } // pure black hole
+            caretFireParticles.push({
+                x: sx, y: sy, tx: x, ty: yCenter,
+                size: 1.5 + Math.random() * 3 * (0.5 + intensity),
+                life: 1, decay: 0.015 + Math.random() * 0.015,
+                r, g, b, type: 'void',
+                speed: 0.04 + Math.random() * 0.04 + intensity * 0.03
+            });
+        }
+    }
+
+    if (style === 'snowstorm') {
+        const count = 2 + Math.floor(intensity * 6);
+        const yCenter = caretRect.top - canvasRect.top + caretRect.height / 2;
+        for (let i = 0; i < count; i++) {
+            const angle = Math.random() * Math.PI * 2;
+            const speed = 2 + Math.random() * 4 * (0.5 + intensity);
+            // White/blue crystals
+            const blue = Math.random() < 0.4;
+            caretFireParticles.push({
+                x, y: yCenter,
+                vx: Math.cos(angle) * speed,
+                vy: Math.sin(angle) * speed,
+                size: 1.5 + Math.random() * 3 * (0.5 + intensity),
+                life: 1, decay: 0.015 + Math.random() * 0.015,
+                r: blue ? 150 : 230, g: blue ? 200 : 240, b: 255,
+                type: 'snow',
+                rotation: Math.random() * Math.PI * 2,
+                rotSpeed: (Math.random() - 0.5) * 0.15
+            });
+        }
+    }
+
+    if (!caretFireAnimId) {
+        caretFireAnimId = requestAnimationFrame(loopCaretFire);
+    }
+}
+
+function loopCaretFire() {
+    const canvas = document.getElementById('caret-fire-canvas');
+    if (!canvas) { caretFireAnimId = null; return; }
+    const ctx = canvas.getContext('2d');
+    const dpr = window.devicePixelRatio || 1;
+    ctx.clearRect(0, 0, canvas.width / dpr, canvas.height / dpr);
+
+    for (let i = caretFireParticles.length - 1; i >= 0; i--) {
+        const p = caretFireParticles[i];
+        p.life -= p.decay;
+        if (p.life <= 0) { caretFireParticles.splice(i, 1); continue; }
+
+        if (p.type === 'circle') {
+            p.x += p.vx; p.y += p.vy;
+            p.vy *= 0.97; p.vx *= 0.98;
+            p.size *= 0.98;
+            // Glow
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size * 3, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(${p.r},${p.g},${p.b},${p.life * 0.12})`;
+            ctx.fill();
+            // Core
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(${p.r},${p.g},${p.b},${p.life * 0.8})`;
+            ctx.fill();
+        }
+
+        if (p.type === 'petal') {
+            p.x += p.vx; p.y += p.vy;
+            p.vx *= 0.99;
+            p.vy += 0.02; // gentle gravity
+            p.rotation += p.rotSpeed;
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.rotate(p.rotation);
+            ctx.beginPath();
+            // Draw petal shape
+            ctx.ellipse(0, 0, p.size, p.size * 0.5, 0, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(${p.r},${p.g},${p.b},${p.life * 0.7})`;
+            ctx.fill();
+            // Soft glow
+            ctx.beginPath();
+            ctx.ellipse(0, 0, p.size * 2, p.size, 0, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(${p.r},${p.g},${p.b},${p.life * 0.1})`;
+            ctx.fill();
+            ctx.restore();
+        }
+
+        if (p.type === 'bolt') {
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+            let bx = p.x, by = p.y;
+            const dx = (p.ex - p.x) / p.segments;
+            const dy = (p.ey - p.y) / p.segments;
+            for (let s = 0; s < p.segments; s++) {
+                bx += dx + (Math.random() - 0.5) * 12;
+                by += dy + (Math.random() - 0.5) * 12;
+                ctx.lineTo(bx, by);
+            }
+            ctx.strokeStyle = `rgba(${p.r},${p.g},${p.b},${p.life * 0.9})`;
+            ctx.lineWidth = p.size;
+            ctx.shadowColor = `rgba(${p.r},${p.g},${p.b},0.6)`;
+            ctx.shadowBlur = 8;
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+        }
+
+        if (p.type === 'galaxy') {
+            // Orbit around the spawn point
+            p.angle += p.orbitSpeed;
+            p.dist += 0.15; // slowly spiral outward
+            p.x = p.cx + Math.cos(p.angle) * p.dist;
+            p.y = p.cy + Math.sin(p.angle) * p.dist;
+            p.size *= 0.998;
+
+            if (p.isStar) {
+                // Bright star with cross flare
+                const flicker = 0.7 + Math.sin(p.angle * 10) * 0.3;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size * 1.5, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255,255,255,${p.life * flicker * 0.9})`;
+                ctx.fill();
+            }
+            // Nebula glow
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size * 4, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(${p.r},${p.g},${p.b},${p.life * 0.08})`;
+            ctx.fill();
+            // Core
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(${p.r},${p.g},${p.b},${p.life * 0.7})`;
+            ctx.fill();
+        }
+
+        if (p.type === 'void') {
+            // Lerp toward target (caret position)
+            p.x += (p.tx - p.x) * p.speed;
+            p.y += (p.ty - p.y) * p.speed;
+            p.size *= 0.99;
+            // Dark glow
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size * 4, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(${p.r},${p.g},${p.b},${p.life * 0.1})`;
+            ctx.fill();
+            // Core
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(${p.r},${p.g},${p.b},${p.life * 0.7})`;
+            ctx.fill();
+            // White hot center when close to target
+            const dist = Math.hypot(p.tx - p.x, p.ty - p.y);
+            if (dist < 8) {
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size * 0.5, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255,255,255,${p.life * 0.5})`;
+                ctx.fill();
+            }
+        }
+
+        if (p.type === 'snow') {
+            p.x += p.vx;
+            p.y += p.vy;
+            p.vx *= 0.96;
+            p.vy *= 0.96;
+            p.rotation += p.rotSpeed;
+            p.size *= 0.995;
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.rotate(p.rotation);
+            // Draw 6-point snowflake
+            ctx.strokeStyle = `rgba(${p.r},${p.g},${p.b},${p.life * 0.8})`;
+            ctx.lineWidth = 0.8;
+            for (let a = 0; a < 6; a++) {
+                const arm = (Math.PI * 2 / 6) * a;
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.lineTo(Math.cos(arm) * p.size, Math.sin(arm) * p.size);
+                ctx.stroke();
+            }
+            // Center glow
+            ctx.beginPath();
+            ctx.arc(0, 0, p.size * 2, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(${p.r},${p.g},${p.b},${p.life * 0.08})`;
+            ctx.fill();
+            ctx.restore();
+        }
+    }
+
+    if (caretFireParticles.length > 0) {
+        caretFireAnimId = requestAnimationFrame(loopCaretFire);
+    } else {
+        caretFireAnimId = null;
+    }
+}
+
+function applyComboStyle(style) {
+    document.querySelectorAll('.combo-visual').forEach(el => el.style.display = 'none');
+    if (style === 'heatbar') {
+        const bar = document.getElementById('combo-heat-bar');
+        if (bar) bar.style.display = '';
+    } else if (style === 'classic') {
+        const classic = document.getElementById('combo-classic');
+        if (classic) { classic.style.display = ''; classic.className = 'combo-visual'; }
+    } else if (style === 'minimal') {
+        const min = document.getElementById('combo-minimal');
+        if (min) min.style.display = 'flex';
+    } else if (['caretfire', 'sakura', 'lightning', 'comet', 'galaxy', 'void', 'snowstorm'].includes(style)) {
+        const canvas = document.getElementById('caret-fire-canvas');
+        if (canvas) { canvas.style.display = ''; initCaretFireCanvas(); }
+    }
+    // edgeglow, off — no persistent element needed
+}
+
+function getComboTier(combo) {
+    if (combo >= 50) return { name: 'godlike', label: '👑 GODLIKE', color: '#ffffff', glow: 'rgba(255,255,255,0.3)' };
+    if (combo >= 25) return { name: 'savage', label: '💀 SAVAGE', color: '#ff2a6d', glow: 'rgba(255,42,109,0.3)' };
+    if (combo >= 10) return { name: 'electric', label: '⚡ UNSTOPPABLE', color: '#00d4ff', glow: 'rgba(0,212,255,0.3)' };
+    if (combo >= 5) return { name: 'fire', label: '🔥 ON FIRE', color: '#ff6b35', glow: 'rgba(255,107,53,0.3)' };
+    return { name: '', label: 'COMBO', color: 'var(--accent-gold, #ffd700)', glow: 'transparent' };
+}
+
+function resetAllComboVisuals() {
+    const heatFill = document.getElementById('combo-heat-fill');
+    if (heatFill) { heatFill.style.width = '0%'; heatFill.classList.remove('heat-warm', 'heat-hot', 'heat-fire', 'heat-godlike'); }
+
+    const classic = document.getElementById('combo-classic');
+    if (classic) { classic.className = 'combo-visual'; }
+
+    const minCount = document.getElementById('combo-minimal-count');
+    if (minCount) { minCount.classList.remove('visible'); minCount.textContent = ''; }
+
+    const panel = document.getElementById('game-ui');
+    if (panel) { panel.classList.remove('edge-glow-active'); panel.style.removeProperty('--edge-glow-color'); panel.style.removeProperty('--edge-glow-border'); }
+
+    // Vignette
+    const vig = document.getElementById('combo-vignette');
+    if (vig) vig.style.boxShadow = 'inset 0 0 0px transparent';
+
+    // Pulse ring — clear children
+    const prContainer = document.getElementById('combo-pulsering-container');
+    if (prContainer) prContainer.innerHTML = '';
+
+    // Caret fire — reset trail
+    const trail = document.getElementById('caret-trail');
+    if (trail) { trail.classList.remove('caret-fire-active'); trail.style.opacity = ''; trail.style.filter = ''; trail.style.height = ''; }
+
+    // Text glow — remove from all typed words
+    document.querySelectorAll('.text-glow-active').forEach(el => el.classList.remove('text-glow-active'));
+    document.documentElement.style.removeProperty('--combo-glow-color');
+
+    // Caret fire — clear particles
+    caretFireParticles = [];
+    if (caretFireAnimId) { cancelAnimationFrame(caretFireAnimId); caretFireAnimId = null; }
+    const fireCanvas = document.getElementById('caret-fire-canvas');
+    if (fireCanvas) {
+        const ctx = fireCanvas.getContext('2d');
+        const dpr = window.devicePixelRatio || 1;
+        ctx.clearRect(0, 0, fireCanvas.width / dpr, fireCanvas.height / dpr);
+    }
+}
+
 function updateCombo(wordCorrect) {
+    const style = userConfig.comboStyle || 'heatbar';
+
     if (wordCorrect) {
-        // If starting a new streak (combo was 0), pick a random theme
         if (state.combo === 0) {
-            // Weighted Random: 85% Classic, 15% Cyber
             const isCyber = Math.random() < 0.15;
             currentStreakTheme = isCyber ? comboThemes[1] : comboThemes[0];
         }
 
         state.combo++;
         if (state.combo > state.maxCombo) state.maxCombo = state.combo;
-
         UI.comboCount.innerText = state.combo;
+        playComboSound(state.combo);
 
-        // Update display
-        UI.comboDisplay.className = 'combo-visible';
+        if (style === 'off') return;
 
-        // Clear all possible theme classes first
-        const allClasses = comboThemes.flatMap(t => t.tiers.map(tier => tier.class));
-        UI.comboDisplay.classList.remove(...allClasses);
+        const tier = getComboTier(state.combo);
 
-        // Find the highest applicable tier for the current theme
-        const tier = currentStreakTheme.tiers.find(t => state.combo >= t.threshold);
-
-        if (tier) {
-            UI.comboDisplay.classList.add(tier.class);
-            UI.comboLabel.innerText = tier.text;
-        } else {
-            UI.comboLabel.innerText = 'COMBO';
+        // --- HEAT BAR ---
+        if (style === 'heatbar') {
+            const heatFill = document.getElementById('combo-heat-fill');
+            if (heatFill) {
+                const pct = Math.min(100, (state.combo / 50) * 100);
+                heatFill.style.width = pct + '%';
+                heatFill.classList.remove('heat-warm', 'heat-hot', 'heat-fire', 'heat-godlike');
+                if (state.combo >= 50) heatFill.classList.add('heat-godlike');
+                else if (state.combo >= 25) heatFill.classList.add('heat-fire');
+                else if (state.combo >= 10) heatFill.classList.add('heat-hot');
+                else if (state.combo >= 5) heatFill.classList.add('heat-warm');
+            }
         }
 
-        // Pop animation
-        UI.comboDisplay.classList.remove('combo-pop');
-        void UI.comboDisplay.offsetHeight;
-        UI.comboDisplay.classList.add('combo-pop');
+        // --- CLASSIC COUNTER (uses original Classic/Cyber random themes) ---
+        if (style === 'classic') {
+            const classic = document.getElementById('combo-classic');
+            const cCount = document.getElementById('combo-classic-count');
+            const cLabel = document.getElementById('combo-classic-label');
+            if (classic && cCount && cLabel) {
+                // Use the randomly picked theme (Classic 85% / Cyber 15%)
+                const themeTier = currentStreakTheme.tiers.find(t => state.combo >= t.threshold);
+                const tierClass = themeTier ? themeTier.class.replace('combo-', 'tier-') : '';
+                classic.style.display = '';
+                classic.className = 'combo-visual visible' + (tierClass ? ' ' + tierClass : '');
+                cCount.textContent = state.combo;
+                cLabel.textContent = themeTier ? themeTier.text : 'COMBO';
+                // Pop animation
+                classic.style.animation = 'none';
+                void classic.offsetHeight;
+                classic.style.animation = 'comboPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)';
+            }
+        }
 
-        playComboSound(state.combo);
+        // --- EDGE GLOW ---
+        if (style === 'edgeglow') {
+            const panel = document.getElementById('game-ui');
+            if (panel) {
+                panel.classList.add('edge-glow-active');
+                const intensity = Math.min(1, state.combo / 30);
+                panel.style.setProperty('--edge-glow-color', tier.glow.replace('0.3', (0.1 + intensity * 0.3).toFixed(2)));
+                panel.style.setProperty('--edge-glow-border', tier.color + Math.round(40 + intensity * 60).toString(16));
+            }
+        }
+
+        // --- MINIMAL NUMBER ---
+        if (style === 'minimal') {
+            const minCount = document.getElementById('combo-minimal-count');
+            if (minCount) {
+                minCount.textContent = state.combo;
+                minCount.style.color = tier.color;
+                minCount.style.textShadow = `0 0 12px ${tier.glow}`;
+                minCount.classList.add('visible');
+            }
+        }
+
+        // --- PULSE RING ---
+        if (style === 'pulsering') {
+            const container = document.getElementById('combo-pulsering-container');
+            if (container) {
+                const ring = document.createElement('div');
+                ring.className = 'pulse-ring';
+                const size = 80 + Math.min(state.combo, 50) * 6;
+                ring.style.width = size + 'px';
+                ring.style.height = size + 'px';
+                ring.style.borderColor = tier.color;
+                ring.style.borderWidth = (state.combo >= 25 ? 3 : 2) + 'px';
+                container.appendChild(ring);
+                setTimeout(() => ring.remove(), 800);
+            }
+        }
+
+        // --- CARET FIRE ---
+        if (style === 'caretfire') {
+            const trail = document.getElementById('caret-trail');
+            if (trail) {
+                trail.classList.add('caret-fire-active');
+                const intensity = Math.min(state.combo / 30, 1);
+                trail.style.opacity = 0.2 + intensity * 0.6;
+                trail.style.filter = `blur(${3 + intensity * 8}px)`;
+                trail.style.height = (1.8 + intensity * 1.5) + 'rem';
+                trail.style.background = tier.color;
+            }
+        }
+
+        // --- VIGNETTE ---
+        if (style === 'vignette') {
+            const vig = document.getElementById('combo-vignette');
+            if (vig) {
+                const intensity = Math.min(state.combo / 40, 1);
+                const spread = 40 + intensity * 80;
+                vig.style.boxShadow = `inset 0 0 ${spread}px ${tier.glow.replace(/[\d.]+\)$/, (0.2 + intensity * 0.4).toFixed(2) + ')')}`;
+            }
+        }
+
+        // --- TEXT GLOW ---
+        if (style === 'textglow') {
+            document.documentElement.style.setProperty('--combo-glow-color', tier.glow);
+            // Apply glow to recently typed words
+            document.querySelectorAll('.word.typed, .word.typed-wrong').forEach(w => {
+                w.classList.add('text-glow-active');
+            });
+        }
+
+        // --- SHOCKWAVE ---
+        if (style === 'shockwave') {
+            // Only fire at milestones: 5, 10, 15, 20, 25, 30, 40, 50
+            const milestones = [5, 10, 15, 20, 25, 30, 40, 50];
+            if (milestones.includes(state.combo)) {
+                const caret = document.getElementById('caret');
+                if (caret) {
+                    const rect = caret.getBoundingClientRect();
+                    const ring = document.createElement('div');
+                    ring.className = 'shockwave-ring';
+                    const size = 60 + state.combo * 3;
+                    ring.style.width = size + 'px';
+                    ring.style.height = size + 'px';
+                    ring.style.left = (rect.left + rect.width / 2 - size / 2) + 'px';
+                    ring.style.top = (rect.top + rect.height / 2 - size / 2) + 'px';
+                    ring.style.borderColor = tier.color;
+                    document.body.appendChild(ring);
+                    setTimeout(() => ring.remove(), 600);
+                }
+            }
+        }
     } else {
         state.combo = 0;
-        UI.comboDisplay.className = 'combo-hidden';
+        resetAllComboVisuals();
     }
 }
 
@@ -8553,6 +9131,7 @@ function initGame() {
     state.startTime = null;
     state.combo = 0;
     state.maxCombo = 0;
+    submittedWords = [];
 
     // Reset Discord presence back to idle when test is cancelled
     if (discordPresence.currentState === 'typing') {
@@ -8570,10 +9149,22 @@ function initGame() {
     UI.input.value = '';
     UI.input.disabled = false;
     UI.input.focus();
-    UI.timer.innerText = state.timeLimit + "s";
+    UI.timer.innerText = userConfig.uiMode === 'clean' ? state.timeLimit : state.timeLimit + "s";
     UI.wpm.innerText = "0 WPM";
+    const cleanWpmNum = document.getElementById('clean-wpm-number');
+    if (cleanWpmNum) cleanWpmNum.textContent = '0';
+    const liveAccEl = document.getElementById('live-accuracy');
+    if (liveAccEl) { liveAccEl.style.display = 'none'; liveAccEl.innerText = '100%'; }
+    const divider = document.querySelector('.stats-divider');
+    if (divider) divider.style.display = 'none';
+    // Remove PB banner if present
+    const pbBanner = document.querySelector('.pb-banner');
+    if (pbBanner) pbBanner.remove();
     UI.results.classList.add('hidden');
-    UI.comboDisplay.className = 'combo-hidden';
+    document.body.classList.remove('is-typing');
+    // Reset all combo visuals and show the active style
+    resetAllComboVisuals();
+    applyComboStyle(userConfig.comboStyle || 'heatbar');
 
     renderWords();
     setTimeout(() => {
@@ -8640,21 +9231,101 @@ function appendWords(count = 30) {
     // So we use insertAdjacentHTML.
 
     UI.container.insertAdjacentHTML('beforeend', newWordsHTML);
-
-    // Move caret/trail to end of container to keep them "on top" if needed?
-    // Not strictly needed if they are absolute.
 }
 
 // --- INPUT HANDLER ---
 
 let hasError = false;
+// Store what was typed per word so backspace can restore previous words
+let submittedWords = []; // { typed, correctChars, totalChars, rawKeystrokes, correctKeystrokes, wasCorrect }
 
 // MonkeyType-style accuracy: count every keystroke as it happens,
 // including ones the user later backspaces — so corrections don't hide errors.
 UI.input.addEventListener('keydown', (e) => {
-    if (!state.isActive) return; // only track while test is running
+    // Allow first keystroke through (isActive becomes true after input event fires startTimer)
+    if (!state.isActive && state.timeLeft !== state.timeLimit) return;
 
     const key = e.key;
+
+    // --- BACKSPACE TO GO BACK TO PREVIOUS WORD ---
+    if (key === 'Backspace' && UI.input.value === '' && submittedWords.length > 0 && state.currWordIndex > 0) {
+        e.preventDefault();
+
+        // Pop the last submitted word
+        const prev = submittedWords.pop();
+
+        // Restore counters to before that word was submitted
+        state.correctChars = prev.correctChars;
+        state.totalCharsTyped = prev.totalChars;
+        state.rawKeystrokes = prev.rawKeystrokes;
+        state.correctKeystrokes = prev.correctKeystrokes;
+
+        // Undo combo if the word was correct
+        if (prev.wasCorrect && state.combo > 0) {
+            state.combo--;
+        }
+
+        // Go back to previous word
+        state.currWordIndex--;
+
+        // Remove dimming from the word we're going back to
+        const wordEl = document.getElementById(`word-${state.currWordIndex}`);
+        if (wordEl) {
+            wordEl.classList.remove('typed', 'typed-wrong');
+        }
+
+        // Restore the typed text in the input
+        UI.input.value = prev.typed;
+
+        // Re-render the previous word's letter coloring
+        if (wordEl) {
+            const letters = wordEl.querySelectorAll('.letter');
+            letters.forEach(l => l.className = 'letter');
+            for (let i = 0; i < letters.length; i++) {
+                const char = prev.typed[i];
+                if (char == null) break;
+                else if (char === letters[i].innerText) letters[i].classList.add('correct');
+                else letters[i].classList.add('incorrect');
+            }
+        }
+
+        hasError = false;
+        updateCaretPosition();
+        return;
+    }
+
+    // Block arrow keys, Home, End — prevents cursor movement inside input
+    if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'].includes(key)) {
+        e.preventDefault();
+        return;
+    }
+
+    // Block Ctrl+A (select all)
+    if (e.ctrlKey && key === 'a') {
+        e.preventDefault();
+        return;
+    }
+
+    // Ctrl+Backspace — clear entire current word input (MonkeyType behavior)
+    if (e.ctrlKey && key === 'Backspace') {
+        e.preventDefault();
+        UI.input.value = '';
+        // Re-render word letters as untyped
+        const wordEl = document.getElementById(`word-${state.currWordIndex}`);
+        if (wordEl) {
+            wordEl.querySelectorAll('.letter.extra').forEach(el => el.remove());
+            wordEl.querySelectorAll('.letter').forEach(l => l.className = 'letter');
+        }
+        hasError = false;
+        updateCaretPosition();
+        return;
+    }
+
+    // Block space on empty input — can't skip words (MonkeyType behavior)
+    if (key === ' ' && UI.input.value.trim() === '') {
+        e.preventDefault();
+        return;
+    }
 
     // Ignore non-character keys (Backspace, Shift, Tab, Enter, arrow keys, etc.)
     // A real character key has key.length === 1
@@ -8694,6 +9365,12 @@ UI.input.addEventListener('input', (e) => {
         const trimmedVal = typedVal.trim();
         let wordCorrect = userConfig.instantLegend ? true : (trimmedVal === currentWordStr);
 
+        // Snapshot counters BEFORE adding this word (for backspace undo)
+        const prevCorrectChars = state.correctChars;
+        const prevTotalChars = state.totalCharsTyped;
+        const prevRawKeystrokes = state.rawKeystrokes;
+        const prevCorrectKeystrokes = state.correctKeystrokes;
+
         if (userConfig.instantLegend) {
             // Instant Legend: count all typed chars as correct
             state.correctChars += Math.min(trimmedVal.length, currentWordStr.length);
@@ -8706,7 +9383,33 @@ UI.input.addEventListener('input', (e) => {
         }
         if (wordCorrect) state.correctChars++; // +1 for the space
 
+        // MonkeyType-style accuracy: only actually pressed keys count.
+        // Incomplete words hurt WPM (fewer correctChars), not accuracy.
+        // The keydown handler already tracks every real keystroke.
+
         state.totalCharsTyped += trimmedVal.length + 1;
+
+        // Save word data for backspace-to-go-back
+        submittedWords.push({
+            typed: trimmedVal,
+            correctChars: prevCorrectChars,
+            totalChars: prevTotalChars,
+            rawKeystrokes: prevRawKeystrokes,
+            correctKeystrokes: prevCorrectKeystrokes,
+            wasCorrect: wordCorrect
+        });
+
+        // Mark submitted word: remove overflow chars, dim untyped letters, fade word
+        const submittedLetters = currentWordEl.querySelectorAll('.letter:not(.extra)');
+        currentWordEl.querySelectorAll('.letter.extra').forEach(el => el.remove());
+        if (!userConfig.instantLegend) {
+            for (let i = trimmedVal.length; i < submittedLetters.length; i++) {
+                submittedLetters[i].classList.add('missed');
+            }
+        }
+        // Progressive dimming + strikethrough wrong words
+        currentWordEl.classList.add(wordCorrect ? 'typed' : 'typed-wrong');
+
         state.currWordIndex++;
         UI.input.value = '';
         hasError = false;
@@ -8727,8 +9430,11 @@ UI.input.addEventListener('input', (e) => {
         return;
     }
 
-    const letters = currentWordEl.querySelectorAll('.letter');
+    const letters = currentWordEl.querySelectorAll('.letter:not(.extra)');
     letters.forEach(l => l.className = 'letter');
+
+    // Remove old extra (overflow) characters
+    currentWordEl.querySelectorAll('.letter.extra').forEach(el => el.remove());
 
     let currentHasError = false;
     for (let i = 0; i < letters.length; i++) {
@@ -8743,6 +9449,18 @@ UI.input.addEventListener('input', (e) => {
             letterSpan.classList.add('incorrect');
             currentHasError = true;
         }
+    }
+
+    // Show extra typed characters beyond word length (MonkeyType overflow)
+    if (typedVal.length > currentWordStr.length) {
+        const extraChars = typedVal.slice(currentWordStr.length);
+        for (const ch of extraChars) {
+            const extraSpan = document.createElement('span');
+            extraSpan.className = 'letter extra incorrect';
+            extraSpan.textContent = ch;
+            currentWordEl.appendChild(extraSpan);
+        }
+        currentHasError = true;
     }
 
     // Sound + shake on new error
@@ -8766,10 +9484,13 @@ UI.input.addEventListener('input', (e) => {
         // Adjust for center of caret
         spawnKeypressParticles(rect.left + rect.width / 2, rect.top + rect.height / 2);
     }
+    // Caret fire combo particles
+    spawnCaretFireParticles();
 });
 
 function startTimer() {
     state.isActive = true;
+    document.body.classList.add('is-typing');
     state.startTime = Date.now();
     discordPresence.setTyping(state.timeLimit);
     state.lastRecordTime = state.startTime;
@@ -8779,7 +9500,7 @@ function startTimer() {
         const elapsedSeconds = (now - state.startTime) / 1000;
         state.timeLeft = Math.max(0, Math.ceil(state.timeLimit - elapsedSeconds));
 
-        UI.timer.innerText = state.timeLeft + "s";
+        UI.timer.innerText = userConfig.uiMode === 'clean' ? state.timeLeft : state.timeLeft + "s";
 
         // Calculate WPM with high precision
         const timeElapsedMin = elapsedSeconds / 60;
@@ -8801,6 +9522,27 @@ function startTimer() {
 
         UI.wpm.innerText = wpm + " WPM";
 
+        // Clean mode: big WPM counter
+        const cleanWpmNum = document.getElementById('clean-wpm-number');
+        if (cleanWpmNum) cleanWpmNum.textContent = wpm;
+
+        // Live accuracy display
+        const liveAccEl = document.getElementById('live-accuracy');
+        if (liveAccEl) {
+            const divider = document.querySelector('.stats-divider');
+            if (state.rawKeystrokes > 0) {
+                const liveAcc = Math.round((state.correctKeystrokes / state.rawKeystrokes) * 100);
+                liveAccEl.innerText = liveAcc + '%';
+                liveAccEl.style.display = '';
+                if (divider) divider.style.display = 'block';
+                liveAccEl.style.color = liveAcc >= 95 ? 'var(--accent-gold, #ffd700)'
+                    : liveAcc >= 85 ? '#ffab40' : 'var(--error-red, #ff4444)';
+            } else {
+                liveAccEl.style.display = 'none';
+                if (divider) divider.style.display = 'none';
+            }
+        }
+
         // Record Instant WPM every ~1 second for graph
         if (now - state.lastRecordTime >= 1000) {
             const charsDiff = state.totalCharsTyped - state.lastTotalChars;
@@ -8820,6 +9562,7 @@ function startTimer() {
 function endGame() {
     clearInterval(state.timerInterval);
     state.isActive = false;
+    document.body.classList.remove('is-typing');
     UI.input.disabled = true;
     const caret = document.getElementById('caret');
     const caretTrail = document.getElementById('caret-trail');
@@ -8833,15 +9576,25 @@ function endGame() {
     const finalTimeMin = state.timeLimit / 60;
 
     const netWpm = Math.round((state.correctChars / 5) / finalTimeMin);
-    // Accuracy is tracked via raw keystrokes (MonkeyType-style): every key press
-    // counts, including ones that were later backspaced — so corrections don't
-    // inflate the score the way the old word-level method did.
+    const rawWpm = Math.round((state.totalCharsTyped / 5) / finalTimeMin);
+
     const accuracy = state.rawKeystrokes > 0
         ? Math.round((state.correctKeystrokes / state.rawKeystrokes) * 100)
         : 0;
 
-    // UI.finalWpm.innerText = netWpm; // Removed static assignment
-    // UI.finalAcc.innerText = accuracy + "%"; // Removed static assignment
+    const errors = state.rawKeystrokes - state.correctKeystrokes;
+
+    // Consistency: coefficient of variation of per-second WPM history
+    // Lower CV = more consistent. We invert it to a 0-100% score.
+    let consistency = 0;
+    if (state.wpmHistory.length > 1) {
+        const mean = state.wpmHistory.reduce((a, b) => a + b, 0) / state.wpmHistory.length;
+        if (mean > 0) {
+            const variance = state.wpmHistory.reduce((sum, v) => sum + (v - mean) ** 2, 0) / state.wpmHistory.length;
+            const cv = Math.sqrt(variance) / mean; // coefficient of variation (0 = perfect, higher = worse)
+            consistency = Math.round(Math.max(0, Math.min(100, (1 - cv) * 100)));
+        }
+    }
 
     const rank = getRankTitle(netWpm);
     const rankEl = document.getElementById('rank-title');
@@ -8856,6 +9609,16 @@ function endGame() {
         rankEl.style.webkitTextFillColor = 'transparent';
     }
 
+    // Set rank glow + border color on results card
+    const resultsCard = document.querySelector('.results-content');
+    if (resultsCard) {
+        resultsCard.style.setProperty('--rank-glow', rank.color + '35');
+        resultsCard.style.setProperty('--rank-color', rank.color);
+    }
+
+    // Particle burst celebration
+    spawnResultsParticles(rank.color);
+
     if (rankDescEl) {
         rankDescEl.innerText = rank.desc;
         rankDescEl.style.opacity = 0;
@@ -8863,6 +9626,15 @@ function endGame() {
             rankDescEl.style.transition = 'opacity 1s ease';
             rankDescEl.style.opacity = 0.8;
         }, 500);
+    }
+
+    // --- PERSONAL BEST CHECK ---
+    const pbKey = `zenType_pb_${state.timeLimit}`;
+    const prevPB = parseInt(localStorage.getItem(pbKey)) || 0;
+    const isNewPB = netWpm > prevPB && netWpm > 0 && !userConfig.instantLegend;
+
+    if (isNewPB) {
+        localStorage.setItem(pbKey, netWpm);
     }
 
     // Draw Graph
@@ -8875,14 +9647,141 @@ function endGame() {
 
     UI.results.classList.remove('hidden');
 
-    // Animate Numbers
+    // Animate Numbers — main stats
     animateValue(UI.finalWpm, 0, netWpm, 1500);
     animateValue(UI.finalAcc, 0, accuracy, 1500, "%");
+
+    // Secondary stats
+    const rawWpmEl = document.getElementById('final-raw-wpm');
+    const consistencyEl = document.getElementById('final-consistency');
+    const errorsEl = document.getElementById('final-errors');
+    const comboEl = document.getElementById('final-combo');
+
+    if (rawWpmEl) animateValue(rawWpmEl, 0, rawWpm, 1200);
+    if (consistencyEl) animateValue(consistencyEl, 0, consistency, 1200, "%");
+    if (errorsEl) animateValue(errorsEl, 0, errors, 800);
+    if (comboEl) animateValue(comboEl, 0, state.maxCombo, 800);
+
+    // Color the errors count based on severity
+    if (errorsEl) {
+        setTimeout(() => {
+            errorsEl.style.color = errors === 0 ? '#4caf50'
+                : errors <= 5 ? '#ffab40'
+                : 'var(--error-red, #ff4444)';
+        }, 900);
+    }
+
+    // Color consistency
+    if (consistencyEl) {
+        setTimeout(() => {
+            consistencyEl.style.color = consistency >= 80 ? '#4caf50'
+                : consistency >= 50 ? '#ffab40'
+                : 'var(--error-red, #ff4444)';
+        }, 900);
+    }
 
     discordPresence.setConcluded(netWpm, accuracy);
 
     // Feed the Progress widget
     if (window.onTestComplete) window.onTestComplete(netWpm, accuracy);
+
+    // --- PB CELEBRATION ---
+    if (isNewPB) {
+        setTimeout(() => {
+            // PB Banner
+            const pbBanner = document.createElement('div');
+            pbBanner.className = 'pb-banner';
+            pbBanner.innerHTML = `<span class="pb-icon">&#9733;</span> NEW PERSONAL BEST <span class="pb-icon">&#9733;</span>`;
+            const resultsContent = document.querySelector('.results-content');
+            if (resultsContent) {
+                resultsContent.insertBefore(pbBanner, resultsContent.querySelector('.stats-grid-main'));
+            }
+
+            // Extra particle burst for PB (double burst, gold)
+            spawnResultsParticles('#ffd700');
+            setTimeout(() => spawnResultsParticles('#ffd700'), 300);
+        }, 600);
+    }
+}
+
+// --- RESULTS PARTICLE BURST ---
+function spawnResultsParticles(color) {
+    const canvas = document.createElement('canvas');
+    canvas.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:501;pointer-events:none;';
+    document.body.appendChild(canvas);
+    const ctx = canvas.getContext('2d');
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = window.innerWidth * dpr;
+    canvas.height = window.innerHeight * dpr;
+    ctx.scale(dpr, dpr);
+    const W = window.innerWidth;
+    const H = window.innerHeight;
+    const cx = W / 2;
+    const cy = H / 2;
+
+    // Parse hex color to RGB
+    const hex = color.replace('#', '');
+    const r = parseInt(hex.slice(0, 2), 16);
+    const g = parseInt(hex.slice(2, 4), 16);
+    const b = parseInt(hex.slice(4, 6), 16);
+
+    const particles = [];
+    const count = 60;
+    for (let i = 0; i < count; i++) {
+        const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.5;
+        const speed = 3 + Math.random() * 6;
+        const size = 2 + Math.random() * 4;
+        particles.push({
+            x: cx, y: cy,
+            vx: Math.cos(angle) * speed,
+            vy: Math.sin(angle) * speed - 1,
+            size,
+            opacity: 0.8 + Math.random() * 0.2,
+            decay: 0.015 + Math.random() * 0.01,
+            gravity: 0.06 + Math.random() * 0.04,
+            // Mix in some white particles for sparkle
+            isWhite: Math.random() < 0.3
+        });
+    }
+
+    let frame;
+    function loop() {
+        ctx.clearRect(0, 0, W, H);
+        let alive = false;
+        for (const p of particles) {
+            if (p.opacity <= 0) continue;
+            alive = true;
+            p.x += p.vx;
+            p.y += p.vy;
+            p.vy += p.gravity;
+            p.vx *= 0.99;
+            p.opacity -= p.decay;
+
+            const pr = p.isWhite ? 255 : r;
+            const pg = p.isWhite ? 255 : g;
+            const pb = p.isWhite ? 255 : b;
+
+            // Glow
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size * 3, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(${pr},${pg},${pb},${p.opacity * 0.15})`;
+            ctx.fill();
+            // Core
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(${pr},${pg},${pb},${p.opacity})`;
+            ctx.fill();
+        }
+        if (alive) {
+            frame = requestAnimationFrame(loop);
+        } else {
+            canvas.remove();
+        }
+    }
+    frame = requestAnimationFrame(loop);
+
+    // Safety cleanup
+    setTimeout(() => { cancelAnimationFrame(frame); canvas.remove(); }, 3000);
 }
 
 const rankQuotes = {
@@ -9436,6 +10335,8 @@ function animateValue(obj, start, end, duration, suffix = "") {
     window.requestAnimationFrame(step);
 }
 
+let caretBlinkTimeout = null;
+
 function updateCaretPosition() {
     const caret = document.getElementById('caret');
     const caretTrail = document.getElementById('caret-trail');
@@ -9443,7 +10344,7 @@ function updateCaretPosition() {
     if (!currentWordEl || !caret) return;
 
     const typedLen = UI.input.value.length;
-    const letters = currentWordEl.querySelectorAll('.letter');
+    const letters = currentWordEl.querySelectorAll('.letter:not(.extra)');
     let targetLeft = 0;
     let targetTop = 0;
 
@@ -9455,22 +10356,20 @@ function updateCaretPosition() {
         targetLeft = currentWordEl.offsetLeft + targetLetter.offsetLeft;
         targetTop = currentWordEl.offsetTop + targetLetter.offsetTop;
     } else {
-        const lastLetter = letters[letters.length - 1];
+        const allLetters = currentWordEl.querySelectorAll('.letter');
+        const lastLetter = allLetters[allLetters.length - 1];
         targetLeft = currentWordEl.offsetLeft + lastLetter.offsetLeft + lastLetter.offsetWidth;
         targetTop = currentWordEl.offsetTop + lastLetter.offsetTop;
     }
 
     caret.style.transform = `translate(${targetLeft}px, ${targetTop}px)`;
-    const caretStyle = userConfig.caretStyle || 'line';
 
-    // Carets that animate #caret itself instead of ::before
-    const ignoreBlink = ['heartbeat', 'pulse', 'neon', 'ripple', 'breathe', 'bounce', 'glitch', 'static', 'wave', 'comet'];
-
-    if (!ignoreBlink.includes(caretStyle)) {
-        caret.style.animation = 'none';
-        void caret.offsetWidth;
-        caret.style.animation = 'blink 1s infinite';
-    }
+    // While typing: stop blink so caret stays solid, resume after 500ms idle
+    caret.classList.add('typing');
+    if (caretBlinkTimeout) clearTimeout(caretBlinkTimeout);
+    caretBlinkTimeout = setTimeout(() => {
+        caret.classList.remove('typing');
+    }, 500);
 
     // Trail follows with delay (CSS transition handles the smooth lag)
     if (caretTrail) {

@@ -116,23 +116,50 @@
     <div class="glass-panel" id="game-ui">
 
         <div class="stats-bar">
-            <div id="timer">30s</div>
+            <div class="stats-left">
+                <div id="timer">30s</div>
+                <div id="combo-minimal" class="combo-visual" style="display:none;">
+                    <span id="combo-minimal-count"></span>
+                </div>
+            </div>
             <div class="time-modes" id="time-modes">
                 <button class="time-btn" data-time="15">15</button>
                 <button class="time-btn active" data-time="30">30</button>
                 <button class="time-btn" data-time="60">60</button>
                 <button class="time-btn" data-time="120">120</button>
             </div>
-            <div id="wpm">0 WPM</div>
+            <div class="stats-right">
+                <div id="wpm">0 WPM</div>
+                <div class="stats-divider"></div>
+                <div id="live-accuracy" style="display:none;">100%</div>
+            </div>
         </div>
 
-        <div id="combo-display" class="combo-hidden">
+        <!-- Combo: Heat Bar -->
+        <div id="combo-heat-bar" class="combo-visual"><div id="combo-heat-fill"></div></div>
+
+        <!-- Combo: Classic Counter -->
+        <div id="combo-classic" class="combo-visual" style="display:none;">
+            <span id="combo-classic-count">0</span>
+            <span id="combo-classic-label">COMBO</span>
+        </div>
+
+        <!-- Combo: Caret Fire canvas -->
+        <canvas id="caret-fire-canvas" class="combo-visual" style="display:none;"></canvas>
+
+        <!-- Hidden combo state holder -->
+        <div id="combo-display" style="display:none;">
             <span id="combo-count">0</span>
             <span id="combo-label">COMBO</span>
         </div>
 
         <div id="words-wrapper">
             <div id="words-container"></div>
+        </div>
+
+        <!-- Clean mode: Big WPM counter -->
+        <div id="clean-wpm-display" style="display:none;">
+            <span id="clean-wpm-number">0</span>
         </div>
 
         <div class="footer-hint">
@@ -156,6 +183,18 @@
 
                 <button id="close-settings" class="close-btn">
                     <i class="ri-close-line"></i>
+                </button>
+            </div>
+
+            <!-- UI Mode Toggle -->
+            <div class="ui-mode-toggle" id="ui-mode-toggle">
+                <button class="ui-mode-btn active" data-mode="zen">
+                    <i class="ri-moon-line"></i>
+                    <span>Zen</span>
+                </button>
+                <button class="ui-mode-btn" data-mode="clean">
+                    <i class="ri-sun-line"></i>
+                    <span>Clean</span>
                 </button>
             </div>
 
@@ -743,6 +782,62 @@
                         </div>
                     </div>
 
+                    <!-- Combo Style -->
+                    <div class="settings-group"
+                        style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1);">
+                        <label class="group-title">COMBO STYLE</label>
+                        <div class="combo-style-options" id="combo-style-options">
+                            <button class="combo-style-btn active" data-combo-style="heatbar">
+                                <span class="combo-style-icon"><i class="ri-bar-chart-horizontal-line"></i></span>
+                                <span class="combo-style-label">Heat Bar</span>
+                            </button>
+                            <button class="combo-style-btn" data-combo-style="classic">
+                                <span class="combo-style-icon"><i class="ri-fire-line"></i></span>
+                                <span class="combo-style-label">Classic</span>
+                            </button>
+                            <button class="combo-style-btn" data-combo-style="edgeglow">
+                                <span class="combo-style-icon"><i class="ri-blur-off-line"></i></span>
+                                <span class="combo-style-label">Edge Glow</span>
+                            </button>
+                            <button class="combo-style-btn" data-combo-style="minimal">
+                                <span class="combo-style-icon"><i class="ri-hashtag"></i></span>
+                                <span class="combo-style-label">Minimal</span>
+                            </button>
+                            <button class="combo-style-btn" data-combo-style="caretfire">
+                                <span class="combo-style-icon"><i class="ri-fire-line"></i></span>
+                                <span class="combo-style-label">Caret Fire</span>
+                            </button>
+                            <button class="combo-style-btn" data-combo-style="sakura">
+                                <span class="combo-style-icon"><i class="ri-leaf-line"></i></span>
+                                <span class="combo-style-label">Sakura</span>
+                            </button>
+                            <button class="combo-style-btn" data-combo-style="lightning">
+                                <span class="combo-style-icon"><i class="ri-flashlight-line"></i></span>
+                                <span class="combo-style-label">Lightning</span>
+                            </button>
+                            <button class="combo-style-btn" data-combo-style="comet">
+                                <span class="combo-style-icon"><i class="ri-meteor-line"></i></span>
+                                <span class="combo-style-label">Comet Trail</span>
+                            </button>
+                            <button class="combo-style-btn" data-combo-style="galaxy">
+                                <span class="combo-style-icon"><i class="ri-sparkling-2-line"></i></span>
+                                <span class="combo-style-label">Galaxy</span>
+                            </button>
+                            <button class="combo-style-btn" data-combo-style="void">
+                                <span class="combo-style-icon"><i class="ri-circle-line"></i></span>
+                                <span class="combo-style-label">Void</span>
+                            </button>
+                            <button class="combo-style-btn" data-combo-style="snowstorm">
+                                <span class="combo-style-icon"><i class="ri-snowy-line"></i></span>
+                                <span class="combo-style-label">Blizzard</span>
+                            </button>
+                            <button class="combo-style-btn" data-combo-style="off">
+                                <span class="combo-style-icon"><i class="ri-eye-off-line"></i></span>
+                                <span class="combo-style-label">Off</span>
+                            </button>
+                        </div>
+                    </div>
+
                     <!-- Instant Legend -->
                     <div class="settings-group"
                         style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1);">
@@ -1301,7 +1396,7 @@
             </div>
             <div id="rank-desc" class="text-lg text-gray-300 mb-8 font-light"
                 style="min-height: 1.5rem; letter-spacing: 0.05em; text-shadow: 0 2px 4px rgba(0,0,0,0.5);"></div>
-            <div class="stats-grid">
+            <div class="stats-grid stats-grid-main">
                 <div class="stat-item">
                     <span class="label">WPM</span>
                     <span class="value" id="final-wpm">0</span>
@@ -1309,6 +1404,24 @@
                 <div class="stat-item">
                     <span class="label">Accuracy</span>
                     <span class="value" id="final-acc">0%</span>
+                </div>
+            </div>
+            <div class="stats-grid stats-grid-secondary">
+                <div class="stat-item stat-small">
+                    <span class="label">Raw WPM</span>
+                    <span class="value" id="final-raw-wpm">0</span>
+                </div>
+                <div class="stat-item stat-small">
+                    <span class="label">Consistency</span>
+                    <span class="value" id="final-consistency">0%</span>
+                </div>
+                <div class="stat-item stat-small">
+                    <span class="label">Errors</span>
+                    <span class="value" id="final-errors">0</span>
+                </div>
+                <div class="stat-item stat-small">
+                    <span class="label">Combo</span>
+                    <span class="value" id="final-combo">0</span>
                 </div>
             </div>
 
