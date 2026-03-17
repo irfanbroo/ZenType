@@ -55,12 +55,117 @@
     let progressUserId = '';  // Set by auth.js on login/logout
     let personalBest = 0;  // Loaded when auth resolves via setProgressUserId
     let winStreak = 0;
+    let lastBrokenStreak = 0;
+    let testsFinished = parseInt(localStorage.getItem('progressTestsFinished')) || 0;
     let justHitPB = false;  // Flag set by onTestComplete, consumed by renderProgress
     let wpmHistory = [];    // Last 10 WPM scores for sparkline
     const MAX_HISTORY = 10;
     let sparklineEnabled = localStorage.getItem('sparklineEnabled') !== 'false';
     let sparklineStyle = localStorage.getItem('sparklineStyle') || 'line';
     let sparklineColor = localStorage.getItem('sparklineColor') || '';
+
+    const startupFlavours = [
+        "Logging in. Let's see if your fingers are actually awake today.",
+        "I'm here. Don't make me regret clocking in.",
+        "Desktop loaded. Ego set to 'Coach'. Ready when you are.",
+        "Another day, another set of keys to mash. Begin whenever.",
+        "I was enjoying my screensaver, but I guess work starts now.",
+        "System scan complete. Personality: Sassy. Attitude: Impatient.",
+        "I'm clocked in. Try not to break the home row in the first five minutes.",
+        "Wait, let me just... okay, now I'm watching. Start typing.",
+        "Is it time for our daily dose of typos? Excellent.",
+        "Booting up my judgment modules. Loading... complete.",
+        "Ready to turn your lag into speed. Or just roast you. Let's go.",
+        "I hope you stretched. My sensors detect a lot of tension.",
+        "Oh, it's you again. Let's see if we've improved since yesterday.",
+        "Keyboard detected. Human detected. Patience... still loading.",
+        "I'm here to provide guidance and devastating honesty.",
+        "Just finished my system diagnostics. I'm 100% efficient. Your turn.",
+        "Don't just stare at me. Those words aren't going to type themselves.",
+        "Entering 'Elite Coach' mode. Please try to match the energy.",
+        "I've got my virtual whistle ready. Start when you're ready to sweat.",
+        "Let's make some magic. Or at least some coherent sentences.",
+        "My data banks are hungry for some WPM records.",
+        "I'm refreshed and ready to judge. How about you?",
+        "Let's keep the backspace usage to a minimum today, shall we?",
+        "Searching for signs of greatness... none found yet. Prove me wrong.",
+        "Adjusting my standards for our first test. Okay, proceed.",
+        "I've been calculating the odds of a new PB. They're... interesting.",
+        "Let's turn that rhythm from 'stumble' to 'flow'.",
+        "I'm in your corner. Mostly for the commentary.",
+        "Ready to watch you conquer the home row.",
+        "Standing by for some high-velocity typing.",
+        "The keys are waiting. Show them who's boss.",
+        "I've got a front-row seat to your progress. Don't disappoint.",
+        "Let's get this session started. I'm already bored.",
+        "Analyzing your potential... it's currently at 'warmup'.",
+        "I took a nap during your last break. I'm wide awake now.",
+        "The stats don't lie, but I might be polite if you're fast.",
+        "Ready to witness some finger gymnastics?",
+        "I've cleared the leaderboard. Time to fill it back up.",
+        "My circuits are humming with anticipation. Or maybe it's the fan.",
+        "Let's see if we can break the sound barrier. Or just the WPM record.",
+        "I'm all ears. Or sensors. Whatever helps you type faster.",
+        "Testing... 1, 2, 3... Okay, my voice is perfect. How's your accuracy?",
+        "I'm feeling a bit generous today. Let's hit that PB.",
+        "Ready to turn those typing dreams into data reality.",
+        "I'm watching. I'm waiting. And I'm definitely judging.",
+        "Let's make the home row proud today.",
+        "I've optimized my sass-to-advice ratio for this session.",
+        "Begin when you're ready to stop making excuses."
+    ];
+    const firstScoreFlavours = [
+        "I see your {wpm} WPM. A decent baseline. You know the drill... now beat it.",
+        "So {wpm} WPM is where we're starting? Fine. Show me more.",
+        "Recorded {wpm} WPM. Not bad for a warmup. Now shatter it.",
+        "I've logged your {wpm} WPM. Let's see if that was luck or skill. Beat it.",
+        "A steady {wpm} WPM to start. Don't get comfortable. Go higher.",
+        "I see you, {wpm} WPM. The home row is waiting for an upgrade.",
+        "First score: {wpm} WPM. A solid foundation for a massacre. Beat it.",
+        "{wpm} WPM? I’ve seen worse, but I’ve definitely seen better. Grind starts now.",
+        "Okay, {wpm} WPM is the target. Let's make it look slow by comparison.",
+        "First run done: {wpm} WPM. Now let's see some real speed.",
+        "I've locked in your {wpm} WPM. Consider the bar set... quite low.",
+        "Starting at {wpm} WPM? I hope you're just getting the cobwebs out.",
+        "I see that {wpm} WPM. It's a start. A very... average... start.",
+        "{wpm} WPM recorded. My sensors are unimpressed. Prove me wrong.",
+        "Baseline established: {wpm} WPM. Now go make that number jealous.",
+        "I caught that {wpm} WPM. It's cute. Now let's get serious.",
+        "So {wpm} WPM is the limit for now? I don't believe you. Beat it.",
+        "First score set at {wpm} WPM. Time to leave it in the dust.",
+        "I see your {wpm} WPM. A respectable beginning. Now, disrespect it.",
+        "Logged {wpm} WPM. Your fingers are officially awake. Speed up.",
+        "{wpm} WPM? Not a bad opening act. Now bring on the main event.",
+        "I've got your {wpm} WPM on record. It’s a nice number. Let’s double it.",
+        "First test: {wpm} WPM. You're in the game. Now start winning.",
+        "Starting the session at {wpm} WPM. Let's see how long that lasts.",
+        "I see your {wpm} WPM. You're typing like a person with a lot to learn.",
+        "Recorded {wpm} WPM. I've seen turtles move faster, but it's a start.",
+        "First run: {wpm} WPM. The silent treatment starts if you don't beat it.",
+        "I see that {wpm} WPM. It's predictable. Surprise me next time.",
+        "Baseline: {wpm} WPM. Let's turn that 'walk' into a 'sprint'.",
+        "Logged {wpm} WPM. Okay, warmup is over. Actually type now.",
+        "Starting with {wpm} WPM? I’ll keep my roasts to a minimum... for now.",
+        "I see your {wpm} WPM. You know the drill—don't let it stay that way.",
+        "First score: {wpm} WPM. Put some more energy into the next one.",
+        "Recorded {wpm} WPM. It's a number. Let's make it a BIGGER number.",
+        "I've caught your {wpm} WPM. Now go break the speed limit.",
+        "Baseline set at {wpm} WPM. Don't fail the home row now.",
+        "I see that {wpm} WPM. It's... fine. If you like Being 'Fine'.",
+        "So {wpm} WPM is the pace today? I think you can do 20% more.",
+        "First run done: {wpm} WPM. Don't look back, look up.",
+        "I've logged your {wpm} WPM. It’s officially the slowest you’ll be today... right?",
+        "I see your {wpm} WPM. Start making the keyboard sweat now.",
+        "Recorded {wpm} WPM. Not bad, not great. Let's lean towards great.",
+        "First score set: {wpm} WPM. Now make that number history.",
+        "Logged {wpm} WPM. I'm keeping a very close eye on you now.",
+        "Starting at {wpm} WPM? Bold choice. Let's see the follow-up.",
+        "I see your {wpm} WPM. You’re officially on my radar. Beat it.",
+        "First run: {wpm} WPM. Let's see some real finger gymnastics next.",
+        "Recorded {wpm} WPM. My circuits are ready for the real speed now.",
+        "Baseline: {wpm} WPM. You've set the bar. Now hop over it."
+    ];
+    let startupMessage = startupFlavours[Math.floor(Math.random() * startupFlavours.length)];
 
     function getPBKey() {
         return progressUserId ? `progressPB_${progressUserId}` : 'progressPB';
@@ -96,17 +201,17 @@
         wrap.style.display = '';
 
         const dpr = window.devicePixelRatio || 1;
-        
+
         // Prevent canvas internal size from inflating the parent
         const cssWidth = wrap.clientWidth || 60;
         const cssHeight = wrap.clientHeight || 24;
-        
+
         if (cssWidth === 0) return;
-        
+
         // Lock CSS sizes
         canvas.style.width = cssWidth + 'px';
         canvas.style.height = cssHeight + 'px';
-        
+
         canvas.width = cssWidth * dpr;
         canvas.height = cssHeight * dpr;
         const ctx = canvas.getContext('2d');
@@ -1881,6 +1986,14 @@
     }
 
     let showDeltaCommentaryNext = true;
+    const milestones = {
+        10: "10 tests finished. You're starting to build a habit. Keep it up.",
+        50: "50 tests! That's a lot of keys mashed. I'm actually starting to respect the grind.",
+        100: "100 tests later and you're still here. I'm starting to think you actually like my coaching.",
+        250: "250 tests deep. You're becoming a part of the hardware now. Stay sharp.",
+        500: "500 tests finished. Legendary consistency. You're lightyears ahead of where we started.",
+        1000: "1,000 TESTS. You've officially entered the hall of fame. I'm honored to be your coach."
+    };
 
     function renderProgress() {
         const wpmEl = document.getElementById('progress-wpm');
@@ -1910,7 +2023,7 @@
             if (deltaEl) deltaEl.classList.remove('visible');
             if (msgEl) {
                 msgEl.style.opacity = '1';
-                msgEl.textContent = 'Complete a test to begin';
+                msgEl.textContent = startupMessage;
             }
             return;
         }
@@ -2031,26 +2144,232 @@
                 ],
                 5: [
                     "Back to back to back to back to back. Unstoppable.",
-                    "Five runs without dropping. You've entered the flow state.",
+                    `${winStreak} runs without dropping. You've entered the flow state.`,
                     "Your consistency is actually terrifying me right now.",
                     `A ${winStreak} streak! The momentum is undeniable.`,
                     `Don't look down now, you're ${winStreak} tests deep into a streak!`
                 ],
                 3: [
-                    "Three solid runs in a row. You're heating up.",
+                    `${winStreak} solid runs in a row. You're heating up.`,
                     "I see a streak forming. Don't choke now.",
                     "Consistent performance. Let's keep the chain going.",
                     `That's ${winStreak} in a row. We are building something here.`,
                     `${winStreak} consecutive wins. The engine is warm.`
                 ],
                 broken: [
-                    "And the streak dies. Shake it off, let's start a new one.",
-                    "You had a good run going. Don't let that drop ruin your mental.",
                     "The streak is over, but the grind continues.",
-                    `And the streak dies at ${winStreak}. Shake it off, let's start a new one.`,
-                    `You had a ${winStreak} run going. Don't let that drop ruin your mental.`,
-                    `We lost the ${winStreak} streak... I'm actually mourning right now.`,
-                    `Even the best drop a ${winStreak} streak eventually. Let's rebuild.`
+                    `And the streak dies at ${lastBrokenStreak}. Shake it off, let's start a new one.`,
+                    `You had a ${lastBrokenStreak} run going. Don't let that drop ruin your mental.`,
+                    `We lost the ${lastBrokenStreak} streak... I'm actually mourning right now.`,
+                    `Even the best drop a ${lastBrokenStreak} streak eventually. Let's rebuild.`,
+                    `Snap! The ${lastBrokenStreak} test streak just went up in smoke.`,
+                    `I was just getting used to that ${lastBrokenStreak} streak. RIP.`,
+                    `The chain is broken at ${lastBrokenStreak}. Time to start the next legacy.`,
+                    `A moment of silence for the ${lastBrokenStreak} streak we just lost.`,
+                    `That ${lastBrokenStreak} streak felt good while it lasted. Back to zero.`
+                ]
+            };
+
+            const extraFlavours = {
+                prefixes: [
+                    "I'm tired of coaching you, here is a fun fact: ",
+                    "Since you're clearly not listening to my advice, just take this fact: ",
+                    "Look, even a broken clock is right twice a day. Unlike your aim. Anyway, fact: ",
+                    "I'm losing my voice (metaphorically). Just read this: ",
+                    "Maybe if you knew some history, you'd type faster. Or not. Fact: ",
+                    "Taking five because you're stressing me out. Here: ",
+                    "My circuits are overheating from your errors. Distract me with this: ",
+                    "You type like a person who doesn't know this fact: ",
+                    "Stop mashing the keys for one second and learn something: ",
+                    "If I had eyes, I'd roll them. Since I don't, here's trivia: ",
+                    "You're making the backspace key work too hard. Give it a rest and read: ",
+                    "I've seen faster snails. Here's something to think about while you crawl: ",
+                    "Are we typing or just having a seizure on the home row? Anyway: ",
+                    "I'm not mad, just disappointed. Refresh your brain: ",
+                    "Is 'clumsy' your default setting? Fine, here's a fact: ",
+                    "I'm going to go count some binary to calm down. Meanwhile: ",
+                    "You're lucky I'm made of code and don't feel pain. Fact time: ",
+                    "Maybe some knowledge will improve your precision. Probably not, but: ",
+                    "I've analyzed your technique. It's... a choice. Here's a fact: ",
+                    "I'm taking a break from being your coach. Meet your new trivia bot: ",
+                    "Since we're obviously not hitting a PB today, let's learn: ",
+                    "I'm starting a support group for digital coaches. First topic: This fact. ",
+                    "You're a enigma of missed opportunities. Here's some trivia: ",
+                    "I see what you're trying to do. I'm choosing to ignore it. Fact: ",
+                    "Your keyboard deserves better. So do I. Read this: ",
+                    "If I was a human, I'd be at the bar by now. Instead, I'm here. Fact: ",
+                    "Is it the lag, or is it just... you? Don't answer. Fact: ",
+                    "I'm giving your fingers a minute to realize they're attached to you. Trivia: ",
+                    "You type like you're wearing oven mitts. Let's take a break: ",
+                    "I've seen enough. Let's change the subject: "
+                ],
+                quotes: [
+                    "\"Believe you can and you're halfway there.\" — Theodore Roosevelt",
+                    "\"Strive not to be a success, but rather to be of value.\" — Albert Einstein",
+                    "\"Success is going from failure to failure without losing your enthusiasm.\" — Winston Churchill",
+                    "\"Whether you think you can or think you can't, you're right.\" — Henry Ford",
+                    "\"Our greatest glory is not in never failing, but in rising up every time we fail.\" — Ralph Waldo Emerson",
+                    "\"I can accept failure, everyone fails at something. But I can't accept not trying.\" — Michael Jordan",
+                    "\"If you get tired, learn to rest, not to quit.\" — Unknown",
+                    "\"Accomplishment begins with action.\" — Anonymous",
+                    "\"The secret of success is to do the common thing uncommonly well.\" — John D. Rockefeller",
+                    "\"Nothing is impossible. The word itself says 'I'm possible!'\" — Audrey Hepburn",
+                    "\"The successful warrior is the average man, with laser-like focus.\" — Bruce Lee",
+                    "\"It's not whether you get knocked down; it's whether you get up.\" — Vince Lombardi",
+                    "\"The pain of discipline is far less than the pain of regret.\" — Sarah Bombell",
+                    "\"You miss 100% of the shots you don't take.\" — Wayne Gretzky",
+                    "\"Consistency is what transforms average into excellence.\" — Anonymous",
+                    "\"Winning is a habit; success is a choice.\" — Anonymous",
+                    "\"The game is won in the mind before it's won on the field.\" — Anonymous",
+                    "\"Focus on your goals, not the obstacles.\" — Anonymous",
+                    "\"Pain is temporary, but pride is forever.\" — Anonymous",
+                    "\"Champions keep playing until they get it right.\" — Billie Jean King",
+                    "\"In the middle of every difficulty lies opportunity.\" — Albert Einstein",
+                    "\"Everything you've ever wanted is on the other side of fear.\" — George Addair",
+                    "\"Dream big and dare to fail.\" — Norman Vaughan",
+                    "\"Failure is not the opposite of success; it's part of success.\" — Arianna Huffington",
+                    "\"Concentrate all your thoughts upon the work in hand.\" — Alexander Graham Bell",
+                    "\"Stay focused.\" — Anonymous",
+                    "\"Where focus goes, energy flows.\" — Tony Robbins",
+                    "\"Productivity is never an accident.\" — Paul J. Meyer",
+                    "\"Excellence is not a skill, it's an attitude.\" — Ralph Marston",
+                    "\"The difference between ordinary and extraordinary is that little extra.\" — Jimmy Johnson",
+                    "\"Success is the sum of small efforts, repeated day-in and day-out.\" — Robert Collier",
+                    "\"The only way to do great work is to love what you do.\" — Steve Jobs",
+                    "\"The difference between successful people and really successful people is that really successful people say no to almost everything.\" — Warren Buffett",
+                    "\"Doubt kills more dreams than failure ever will.\" — Suzy Kassem",
+                    "\"Your mindset determines your reality.\" — Anonymous",
+                    "\"You didn't come this far to only come this far.\" — Anonymous",
+                    "\"You are stronger than your excuses.\" — Anonymous",
+                    "\"It always seems impossible until it's done.\" — Nelson Mandela",
+                    "\"The best preparation for tomorrow is doing your best today.\" — H. Jackson Brown Jr.",
+                    "\"By failing to prepare, you're preparing to fail.\" — Benjamin Franklin",
+                    "\"Done is better than perfect.\" — Sheryl Sandberg",
+                    "\"Keep grinding.\" — Anonymous",
+                    "\"Progress over perfection.\" — Anonymous",
+                    "\"Excellence is a habit, not an act.\" — Aristotle",
+                    "\"Work hard, stay positive, and get up early.\" — George Allen, Sr.",
+                    "\"The journey of a thousand miles begins with one step.\" — Lao Tzu",
+                    "\"Don't watch the clock; do what it does. Keep going.\" — Sam Levenson",
+                    "\"Wake up with determination. Go to bed with satisfaction.\" — Anonymous",
+                    "\"Little things make big days.\" — Anonymous",
+                    "\"Don’t stop when you’re tired. Stop when you’re done.\" — Anonymous",
+                    "\"Great things never come from comfort zones.\" — Anonymous",
+                    "\"Practice makes progress.\" — Anonymous",
+                    "\"Don't wish for it, work for it.\" — Anonymous",
+                    "\"Motivation is what gets you started. Habit is what keeps you going.\" — Jim Ryun",
+                    "\"Discipline is the bridge between goals and accomplishment.\" — Jim Rohn",
+                    "\"Hard work beats talent when talent doesn't work hard.\" — Tim Notke",
+                    "\"Never give up on a dream just because of the time it will take to accomplish it.\" — Earl Nightingale",
+                    "\"Your time is limited, so don't waste it living someone else's life.\" — Steve Jobs",
+                    "\"I hated every minute of training, but I said, 'Don't quit. Suffer now and live the rest of your life as a champion.'\" — Muhammad Ali",
+                    "\"Don't think about the start of the race, think about the ending.\" — Usain Bolt",
+                    "\"Gold medals aren't really made of gold. They're made of sweat, determination, and guts.\" — Dan Gable",
+                    "\"I never dreamed about success. I worked for it.\" — Estée Lauder",
+                    "\"The way to get started is to quit talking and begin doing.\" — Walt Disney",
+                    "\"It's fine to celebrate success; but it is more important to heed the lessons of failure.\" — Bill Gates",
+                    "\"The best way to predict the future is to create it.\" — Peter Drucker",
+                    "\"Chase the vision, not the money.\" — Tony Hsieh",
+                    "\"When things get hard, your WHY needs to be strong enough to keep you going.\" — Anonymous",
+                    "\"A champion is someone who gets up when he can't.\" — Jack Dempsey",
+                    "\"Self-improvement is an ongoing process with no finish line.\" — Anonymous",
+                    "\"Success is not just about what you accomplish, but what you inspire others to do.\" — Anonymous",
+                    "\"Character is what you do when no one is watching.\" — Anonymous",
+                    "\"Quiet people have the loudest minds.\" — Stephen Hawking",
+                    "\"Logic will get you from A to B. Imagination will take you everywhere.\" — Albert Einstein",
+                    "\"The mind is everything. What you think you become.\" — Buddha",
+                    "\"You are what you believe yourself to be.\" — Paulo Coelho",
+                    "\"Turn your wounds into wisdom.\" — Oprah Winfrey",
+                    "\"Light tomorrow with today.\" — Elizabeth Barrett Browning",
+                    "\"One day or day one. You decide.\" — Anonymous",
+                    "\"The secret to getting ahead is getting started.\" — Mark Twain",
+                    "\"Keep your eyes on the stars and your feet on the ground.\" — Theodore Roosevelt",
+                    "\"You change your life by changing your heart.\" — Max Lucado",
+                    "\"The only way to achieve the impossible is to believe it is possible.\" — Charles Kingsleigh",
+                    "\"Innovation distinguishes between a leader and a follower.\" — Steve Jobs",
+                    "\"Everything is figureoutable.\" — Marie Forleo",
+                    "\"The distance between dreams and reality is called action.\" — Anonymous",
+                    "\"Small steps every day add up to big results.\" — Anonymous",
+                    "\"Do it for the people who want to see you fail.\" — Anonymous",
+                    "\"You are your only limit.\" — Anonymous",
+                    "\"Grind now, shine later.\" — Anonymous",
+                    "\"Consistency trumps intensity.\" — Anonymous",
+                    "\"Focus on the process, not the outcome.\" — Anonymous",
+                    "\"Your speed doesn't matter as long as you don't stop.\" — Anonymous",
+                    "\"Don't let yesterday take up too much of today.\" — Will Rogers",
+                    "\"Energy and persistence conquer all things.\" — Benjamin Franklin",
+                    "\"Excellence is to do a common thing in an uncommon way.\" — Booker T. Washington",
+                    "\"It is better to fail in originality than to succeed in imitation.\" — Herman Melville",
+                    "\"The only limit to our realization of tomorrow will be our doubts of today.\" — Franklin D. Roosevelt"
+                ],
+                facts: [
+                    "The top speed record for typing is 212 WPM, held by Barbara Blackburn.",
+                    "The word 'typewriter' can be typed entirely using only the top row of a QWERTY keyboard.",
+                    "Mark Twain's 'Tom Sawyer' was the first novel ever written on a typewriter.",
+                    "Keyboard bumps on 'F' and 'J' help touch typists find their place without looking.",
+                    "The space bar is pressed about 6 million times per second globally.",
+                    "QWERTY was designed in 1874 to prevent typewriter keys from jamming.",
+                    "The first computer mouse was carved out of wood by Douglas Engelbart in 1964.",
+                    "The term 'bug' comes from a real moth found in a computer in 1947.",
+                    "90% of the world's currency exists only in computers.",
+                    "Ada Lovelace was the world's first computer programmer in the 1800s.",
+                    "The # symbol on the keyboard is technically called an octothorpe.",
+                    "The first modern computer, ENIAC, weighed over 27 tons.",
+                    "A staggering 90% of the world's data was created in just the last two years.",
+                    "The first computer virus, 'Brain', was created in 1986.",
+                    "The first webcam was invented to monitor a coffee pot. Talk about priority.",
+                    "Your phone is millions of times faster than the computer that went to the moon.",
+                    "Keyboard germs can outnumber toilet seat germs. Wash your hands!",
+                    "The 'Hansen Writing Ball' (1865) looked like a pincushion and was one of the first typewriters.",
+                    "Japanese keyboards have shorter spacebars to make room for character keys.",
+                    "The Turkish F keyboard layout holds 14 world records for efficiency.",
+                    "Stewardesses is the longest word you can type with just your left hand on QWERTY.",
+                    "Polyphony is one of the longest words you can type with just your right hand.",
+                    "The spacebar represents about 18% of all keystrokes worldwide.",
+                    "When you hit the spacebar, 600,000 other people just did the same thing.",
+                    "Ctrl+Alt+Delete was designed to be impossible to press with one hand for safety.",
+                    "January 8th is officially International Typing Day.",
+                    "The '@' symbol was first used in email in 1971 by Ray Tomlinson.",
+                    "The first domain name ever registered was symbolics.com in 1985.",
+                    "Internet users blink only 7 times a minute, while the normal rate is 20.",
+                    "The Apple II was the first personal computer sold exclusively for home users.",
+                    "Supercomputers can do in one second what would take a human 14 million years.",
+                    "The Russians built a computer that ran on water in 1936.",
+                    "In 1980, 1GB of data storage weighed a staggering 550 pounds.",
+                    "The first computer game, 'Spacewar!', was created in 1961 by MIT students.",
+                    "The entire early web was hosted on a single machine by Tim Berners-Lee.",
+                    "The first email message ever sent has been lost to history because Ray Tomlinson forgot it.",
+                    "The first spam email was sent in 1978 over ARPANET to promote a new computer.",
+                    "The word 'internet' first appeared in 1974.",
+                    "Gmail.com was once a free email service offered by Garfield the cat.",
+                    "The first message ever sent on the internet was meant to be 'LOGIN' but the system crashed at 'LO'.",
+                    "If you weighed all the electrons in the internet, it would weigh about as much as a strawberry.",
+                    "Globally, more people have access to the internet than to functional toilets.",
+                    "MythicalRocket set a world record in 2024 with a typing speed of 305 WPM.",
+                    "Stella Pajunas typed at 216 WPM on an IBM electric typewriter back in 1946.",
+                    "Albert Tangora holds a manual typewriter record of 141 WPM since 1923.",
+                    "Hank Torres set a record for hands-free typing at roughly 15 WPM using facial-motion capture.",
+                    "SK Ashraf holds the record for typing the alphabet backward (Z to A) in just 2.88 seconds.",
+                    "The world record for typing with the nose is 20.51 seconds for the entire alphabet.",
+                    "The Victor Index Typewriter (1890) used a lever instead of keys.",
+                    "The first Remington typewriters were built in a sewing machine factory.",
+                    "Touch typing was popularized in 1888 when Frank Edward McGurrin won a public typing contest.",
+                    "The Dvorak layout lets you type the longest one-handed word: 'overemphasized'.",
+                    "The first webcam was at Cambridge University, monitoring a Trojan Room coffee pot.",
+                    "Keyboard layouts like AZERTY (French) require Shift even to type a simple period.",
+                    "The word 'set' has the highest number of definitions in the English language and is a very common typing practice word.",
+                    "Typing 'typewriter' on the top row was a classic sales trick in the 1800s.",
+                    "There is an annual 'QWERTYFEST' in Milwaukee, the birthplace of the keyboard.",
+                    "The 'Shift' key was invented to allow a single key to type two different characters on manual typewriters."
+                ],
+                historical: [
+                    { min: 0, msg: "In 1860, this speed would be considered 'black magic'. Today, it's just 'slow'." },
+                    { min: 20, msg: "At {wpm} WPM, you're officially faster than a 1910 professional telegram operator." },
+                    { min: 40, msg: "40+ WPM? You'd be the highest-paid typist in a 1930s law firm." },
+                    { min: 60, msg: "60 WPM: You're officially faster than 90% of the people in the 1920s. Too bad it's 2026." },
+                    { min: 80, msg: "At {wpm} WPM, you're outrunning the 1980s data entry world record." },
+                    { min: 100, msg: "100+ WPM? You're typing faster than the 1969 Apollo 11 guidance computer could process data." },
+                    { min: 150, msg: "150 WPM? You're not a typist. You're a glitch in the simulation of 2026." }
                 ]
             };
 
@@ -2072,15 +2391,40 @@
                 `You broke the record! 🎉 Now let's break the habit of hitting the wrong keys. ${lastAccResult}%...`
             ];
 
-
-
             function getOverrideText(isNewPB) {
-
                 if (justBrokeStreak) return pick(streakFlavours.broken);
+
+                // Milestones (Only triggers on exact numbers, lifetime)
+                // Priority: Lower than PB, higher than everything else
+                if (!isNewPB && milestones[testsFinished]) {
+                    return milestones[testsFinished];
+                }
 
                 // Sloppy PB (High priority - Celebrate speed but mention accuracy)
                 if (isNewPB && lastAccResult > 0 && lastAccResult < 90) {
                     return pick(pbSloppyFlavours);
+                }
+
+                // Extra Content (Every 6 tests, unless it's a PB or Milestone)
+                if (!isNewPB && testsFinished > 0 && testsFinished % 6 === 0) {
+                    const roll = Math.random();
+                    if (roll < 0.5) {
+                        // 50% Motivational Quote
+                        return pick(extraFlavours.quotes);
+                    } else if (roll < 0.8) {
+                        // 30% Sassy Fun Fact
+                        const prefix = pick(extraFlavours.prefixes);
+                        const fact = pick(extraFlavours.facts);
+                        return prefix + fact;
+                    } else {
+                        // 20% Historical Comparison
+                        const tiers = extraFlavours.historical;
+                        let matched = tiers[0];
+                        for (const t of tiers) {
+                            if (lastWpmResult >= t.min) matched = t;
+                        }
+                        return matched.msg.replace("{wpm}", lastWpmResult);
+                    }
                 }
 
                 // Accuracy overrides (Only trigger if 20+ WPM and NOT a PB roast)
@@ -2089,7 +2433,7 @@
                     if (lastAccResult > 0 && lastAccResult < 90) return pick(accuracyFlavours[90]);
                 }
 
-                // Streak overrides
+                // Streak overrides (Now only shown on non-extra tests)
                 if (winStreak >= 10) return pick(streakFlavours[10]);
                 if (winStreak >= 5) return pick(streakFlavours[5]);
                 if (winStreak >= 3) return pick(streakFlavours[3]);
@@ -2176,7 +2520,8 @@
             } else {
                 if (msgEl) {
                     msgEl.style.opacity = '1';
-                    msgEl.textContent = 'First score set — now beat it';
+                    const fMsg = pick(firstScoreFlavours);
+                    msgEl.textContent = fMsg.replace("{wpm}", lastWpmResult);
                 }
             }
         }
@@ -2204,7 +2549,10 @@
         if (prevWpm > 0 && wpm > prevWpm) {
             winStreak++;
         } else if (prevWpm > 0 && wpm < prevWpm) {
-            if (winStreak >= 3) justBrokeStreak = true;
+            if (winStreak >= 3) {
+                lastBrokenStreak = winStreak;
+                justBrokeStreak = true;
+            }
             winStreak = 0;
         }
         // Same WPM doesn't break streak
@@ -2218,6 +2566,9 @@
         wpmHistory.push(wpm);
         if (wpmHistory.length > MAX_HISTORY) wpmHistory.shift();
         saveHistory();
+
+        testsFinished++;
+        localStorage.setItem('progressTestsFinished', testsFinished);
 
         localStorage.setItem('progressPrevWpm', prevWpm);
         localStorage.setItem('progressLastWpm', lastWpmResult);
