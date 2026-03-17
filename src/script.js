@@ -32,17 +32,19 @@ let userConfig = {
     bgVolume: 50,
     caretStyle: 'line',
     fontFamily: 'modern',
-    caretColor: '#ffd700',
+    caretColor: '#00d4ff',
     zenMode: false,
     particle: true,
-    particleColor: '#ffd700',
+    particleColor: '#00d4ff',
     showTrackSelector: true,
     comboSound: true,
     pitchShift: true,
     wallpaperAudio: true, // Default to true
     uiMode: 'zen', // 'zen' | 'clean'
     comboStyle: 'heatbar', // 'heatbar' | 'classic' | 'edgeglow' | 'minimal' | 'off'
-    instantLegend: false // When true, all keystrokes register as correct
+    instantLegend: false, // When true, all keystrokes register as correct
+    cleanTheme: 'koi', // default theme for first-time users
+    paceWPM: 90 // 0=off, 30, 60, 90, 120
 };
 
 const UI = {
@@ -480,6 +482,13 @@ function applyTheme(skipLoader = false) {
     // --- UI MODE (Zen vs Clean) ---
     const isClean = userConfig.uiMode === 'clean';
     document.body.classList.toggle('clean-mode', isClean);
+
+    // Apply clean theme
+    if (userConfig.cleanTheme && userConfig.cleanTheme !== 'default') {
+        document.body.setAttribute('data-clean-theme', userConfig.cleanTheme);
+    } else {
+        document.body.removeAttribute('data-clean-theme');
+    }
 
     // Show/hide clean-mode big WPM
     const cleanWpm = document.getElementById('clean-wpm-display');
@@ -9173,6 +9182,374 @@ function initGame() {
     }, 10);
 }
 
+// ═══════════════════════════════════════════════════════════
+// TAPE MODE MODULE — 100% additive, never modifies zen code
+// ═══════════════════════════════════════════════════════════
+const tapeMode = {
+    _inputHandler: null,
+    _keyHandler: null,
+    _blinkTimeout: null,
+
+    activate() {
+        if (!document.getElementById('words-wrapper')) return;
+        // Snap to position instantly (no transition for first frame)
+        UI.container.style.transition = 'none';
+        UI.container.style.transform = `translateX(${this._calc()}px)`;
+        requestAnimationFrame(() => { UI.container.style.transition = ''; });
+
+        this._inputHandler = () => this._scroll();
+        UI.input.addEventListener('input', this._inputHandler);
+        this._keyHandler = (e) => {
+            if (e.key === 'Backspace') setTimeout(() => this._scroll(), 5);
+        };
+        UI.input.addEventListener('keydown', this._keyHandler);
+    },
+
+    deactivate() {
+        if (this._inputHandler) { UI.input.removeEventListener('input', this._inputHandler); this._inputHandler = null; }
+        if (this._keyHandler) { UI.input.removeEventListener('keydown', this._keyHandler); this._keyHandler = null; }
+        UI.container.style.transform = '';
+        UI.container.style.transition = '';
+        const w = document.getElementById('words-wrapper');
+        if (w) w.style.removeProperty('--tape-font');
+    },
+
+    _calc() {
+        const wrapper = document.getElementById('words-wrapper');
+        const wordEl = document.getElementById(`word-${state.currWordIndex}`);
+        if (!wrapper || !wordEl) return 0;
+        const tapeX = wrapper.offsetWidth * 0.40;
+        let w = 0;
+        const gap = parseFloat(getComputedStyle(UI.container).gap) || 0;
+        const words = UI.container.querySelectorAll('.word');
+        for (let i = 0; i < state.currWordIndex && i < words.length; i++) w += words[i].offsetWidth + gap;
+        let tw = 0;
+        const len = UI.input.value.length;
+        if (len > 0) { const ltrs = wordEl.querySelectorAll('.letter'); for (let i = 0; i < len && i < ltrs.length; i++) tw += ltrs[i].offsetWidth; }
+        return tapeX - w - tw;
+    },
+
+    _scroll() {
+        if (userConfig.uiMode !== 'clean') return;
+        UI.container.style.transform = `translateX(${this._calc()}px)`;
+        const c = document.getElementById('tape-caret');
+        if (c) { c.classList.add('typing'); if (this._blinkTimeout) clearTimeout(this._blinkTimeout); this._blinkTimeout = setTimeout(() => c.classList.remove('typing'), 500); }
+    }
+};
+
+// Monkey-patch initGame: deactivate tape before, reactivate after
+const _origInitGame = initGame;
+initGame = function() {
+    tapeMode.deactivate();
+    _origInitGame();
+    if (userConfig.uiMode === 'clean') {
+        setTimeout(() => tapeMode.activate(), 15);
+    }
+};
+
+// --- CLEAN KEYBOARD VISUALIZER ---
+(function() {
+    const allKeys = document.querySelectorAll('#clean-keyboard .kb-key');
+    const keyMap = {};
+    allKeys.forEach(el => { keyMap[el.dataset.key] = el; });
+
+    document.addEventListener('keydown', (e) => {
+        if (userConfig.uiMode !== 'clean') return;
+        const k = keyMap[e.key.toLowerCase()];
+        if (k) k.classList.add('active');
+    });
+
+    document.addEventListener('keyup', (e) => {
+        if (userConfig.uiMode !== 'clean') return;
+        const k = keyMap[e.key.toLowerCase()];
+        if (k) k.classList.remove('active');
+    });
+})();
+
+// --- PACE CARET (self-monitoring, no monkey-patching needed) ---
+const paceCaret = {
+    targetWPM: userConfig.paceWPM ?? 90,
+    _rafId: null,
+    _wasActive: false,
+
+    // Runs continuously, auto-detects when typing starts/stops
+    init() {
+        // Check state every frame, but only update position every ~250ms for swoosh jumps
+        let lastTickTime = 0;
+        const loop = () => {
+            const paceEl = document.getElementById('pace-caret');
+            if (!paceEl) { this._rafId = requestAnimationFrame(loop); return; }
+
+            const shouldRun = state.isActive && userConfig.uiMode === 'clean' && this.targetWPM > 0 && state.startTime;
+
+            if (shouldRun && !this._wasActive) {
+                // Snap to first word position instantly (no transition)
+                const w = document.getElementById('words-wrapper');
+                if (w) {
+                    paceEl.style.transition = 'none';
+                    paceEl.style.left = `${w.offsetWidth * 0.40}px`;
+                    paceEl.offsetHeight; // force reflow
+                    paceEl.style.transition = '';
+                }
+                paceEl.classList.add('active');
+                this._wasActive = true;
+            } else if (!shouldRun && this._wasActive) {
+                paceEl.classList.remove('active');
+                this._wasActive = false;
+            }
+
+            if (shouldRun) this._tick();
+
+            this._rafId = requestAnimationFrame(loop);
+        };
+        this._rafId = requestAnimationFrame(loop);
+    },
+
+    _tick() {
+        const wrapper = document.getElementById('words-wrapper');
+        const paceEl = document.getElementById('pace-caret');
+        if (!wrapper || !paceEl || !state.startTime) return;
+
+        const elapsed = (Date.now() - state.startTime) / 1000;
+        // Characters per second at target WPM
+        const cps = (this.targetWPM * 5) / 60;
+        const paceChars = elapsed * cps;
+
+        // User's REAL progress = only CORRECT characters (state tracks this already)
+        const userChars = state.correctChars;
+
+        // Difference in characters — positive means pace is ahead
+        const charDiff = paceChars - userChars;
+
+        // Convert to pixels: average char width from the container's font
+        // This is simpler and more reliable than walking DOM elements
+        const fontSize = parseFloat(getComputedStyle(UI.container).fontSize) || 35;
+        const avgCharWidth = fontSize * 0.6; // monospace-ish approximation
+        const pxDiff = charDiff * avgCharWidth;
+
+        // Position relative to tape caret (40%)
+        const caretX = wrapper.offsetWidth * 0.40;
+        const paceLeft = caretX + pxDiff;
+
+        paceEl.style.left = `${Math.max(-20, Math.min(wrapper.offsetWidth + 20, paceLeft))}px`;
+
+        // Breathing — noticeable but smooth
+        const t = Date.now() * 0.001;
+        const breathe = 1 + Math.sin(t * 2.2) * 0.35;
+        const isLight = ['paper','snow','cream','linen','sepia','frost'].includes(userConfig.cleanTheme);
+        const opacityBreath = isLight
+            ? 0.55 + Math.sin(t * 1.6) * 0.15  // 0.40-0.70 for light themes
+            : 0.45 + Math.sin(t * 1.6) * 0.2;  // 0.25-0.65 for dark themes
+        paceEl.style.transform = `translateY(-50%) scaleX(${breathe})`;
+        paceEl.style.opacity = opacityBreath;
+    }
+};
+
+// Start the self-monitoring pace caret loop
+paceCaret.init();
+
+// Pace controls
+const paceCustomInput = document.getElementById('pace-custom-input');
+const pacePbBtn = document.getElementById('pace-pb');
+
+function getPB() {
+    return parseInt(localStorage.getItem(`zenType_pb_${state.timeLimit}`)) || 0;
+}
+
+function clearAllPaceActive() {
+    document.querySelectorAll('.pace-btn').forEach(b => b.classList.remove('active'));
+    if (paceCustomInput) paceCustomInput.classList.remove('active');
+}
+
+function setPace(wpm, source) {
+    paceCaret.targetWPM = wpm;
+    userConfig.paceWPM = wpm;
+    userConfig.paceSource = source; // 'preset', 'custom', 'pb'
+    saveConfig();
+}
+
+// Update PB button label with actual value
+function updatePbLabel() {
+    if (!pacePbBtn) return;
+    const pb = getPB();
+    const valSpan = pacePbBtn.querySelector('.pb-val');
+    if (pb > 0) {
+        if (valSpan) { valSpan.textContent = pb; }
+        else { pacePbBtn.innerHTML = 'pb<span class="pb-val">' + pb + '</span>'; }
+        pacePbBtn.title = 'Pace: your personal best (' + pb + ' WPM)';
+    } else {
+        if (valSpan) valSpan.textContent = '';
+        pacePbBtn.title = 'No PB recorded yet for this duration';
+    }
+    // If PB source is active, update the live pace too
+    if (userConfig.paceSource === 'pb') {
+        paceCaret.targetWPM = pb;
+    }
+}
+
+// Preset buttons (off/30/60/90/120)
+document.querySelectorAll('.pace-btn:not(#pace-pb)').forEach(btn => {
+    btn.addEventListener('click', () => {
+        clearAllPaceActive();
+        btn.classList.add('active');
+        setPace(parseInt(btn.dataset.pace) || 0, 'preset');
+    });
+});
+
+// PB button
+if (pacePbBtn) {
+    pacePbBtn.addEventListener('click', () => {
+        const pb = getPB();
+        if (pb <= 0) return; // no PB yet
+        clearAllPaceActive();
+        pacePbBtn.classList.add('active');
+        setPace(pb, 'pb');
+    });
+}
+
+// Custom input
+if (paceCustomInput) {
+    const applyCustom = () => {
+        let val = parseInt(paceCustomInput.value);
+        if (isNaN(val) || val < 1) val = 1;
+        if (val > 300) val = 300;
+        paceCustomInput.value = val;
+        clearAllPaceActive();
+        paceCustomInput.classList.add('active');
+        setPace(val, 'custom');
+    };
+    // Limit to 3 digits max while typing
+    paceCustomInput.addEventListener('input', () => {
+        if (paceCustomInput.value.length > 3) {
+            paceCustomInput.value = paceCustomInput.value.slice(0, 3);
+        }
+    });
+    paceCustomInput.addEventListener('change', applyCustom);
+    paceCustomInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') { paceCustomInput.blur(); applyCustom(); }
+        e.stopPropagation(); // prevent typing test from capturing
+    });
+    paceCustomInput.addEventListener('keyup', (e) => e.stopPropagation());
+    paceCustomInput.addEventListener('keypress', (e) => e.stopPropagation());
+    paceCustomInput.addEventListener('focus', () => {
+        // Don't let the typing test capture input while editing pace
+        paceCustomInput.setAttribute('data-pace-editing', 'true');
+    });
+    paceCustomInput.addEventListener('blur', () => {
+        paceCustomInput.removeAttribute('data-pace-editing');
+    });
+}
+
+// Sync pace state on load
+(function syncPaceOnLoad() {
+    const source = userConfig.paceSource || 'preset';
+    const wpm = userConfig.paceWPM ?? 90;
+
+    if (source === 'custom' && paceCustomInput) {
+        clearAllPaceActive();
+        paceCustomInput.value = wpm;
+        paceCustomInput.classList.add('active');
+        paceCaret.targetWPM = wpm;
+    } else if (source === 'pb' && pacePbBtn) {
+        clearAllPaceActive();
+        pacePbBtn.classList.add('active');
+        paceCaret.targetWPM = getPB();
+    } else {
+        document.querySelectorAll('.pace-btn:not(#pace-pb)').forEach(b => {
+            b.classList.toggle('active', parseInt(b.dataset.pace) === wpm);
+        });
+        paceCaret.targetWPM = wpm;
+    }
+    updatePbLabel();
+})();
+
+// Update PB label when time mode changes
+document.querySelectorAll('.time-btn').forEach(btn => {
+    btn.addEventListener('click', () => setTimeout(updatePbLabel, 50));
+});
+
+// (pace caret auto-stops via self-monitoring when state.isActive becomes false)
+
+// --- THEME SELECTOR (dropdown) ---
+const themeToggleBtn = document.getElementById('theme-toggle-btn');
+const themeDropdown = document.getElementById('theme-dropdown');
+
+// Toggle dropdown
+themeToggleBtn?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    themeDropdown.classList.toggle('hidden');
+});
+
+// Tab switching (dark/light/japanese)
+document.querySelectorAll('.theme-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+        document.querySelectorAll('.theme-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        document.querySelectorAll('.theme-dropdown-grid').forEach(g => g.style.display = 'none');
+        const grid = document.querySelector(`.theme-grid-${tab.dataset.tab}`);
+        if (grid) grid.style.display = '';
+    });
+});
+
+// Close on click outside
+document.addEventListener('click', (e) => {
+    if (themeDropdown && !themeDropdown.contains(e.target) && e.target !== themeToggleBtn) {
+        themeDropdown.classList.add('hidden');
+    }
+});
+
+// Theme option click
+document.querySelectorAll('.theme-option').forEach(opt => {
+    opt.addEventListener('click', () => {
+        document.querySelectorAll('.theme-option').forEach(o => o.classList.remove('active'));
+        opt.classList.add('active');
+        userConfig.cleanTheme = opt.dataset.theme;
+        if (opt.dataset.theme !== 'default') {
+            document.body.setAttribute('data-clean-theme', opt.dataset.theme);
+        } else {
+            document.body.removeAttribute('data-clean-theme');
+        }
+        saveConfig();
+        themeDropdown.classList.add('hidden');
+    });
+});
+
+// Sync active theme on load
+document.querySelectorAll('.theme-option').forEach(o => {
+    o.classList.toggle('active', o.dataset.theme === (userConfig.cleanTheme || 'default'));
+});
+
+// --- FONT SIZE CONTROLS ---
+const TAPE_FONT_SIZES = [1.5, 1.75, 2, 2.25, 2.5, 3, 3.5, 4, 4.5];
+let tapeFontIdx = TAPE_FONT_SIZES.length - 3; // default = 3.5rem
+
+document.getElementById('font-decrease')?.addEventListener('click', () => {
+    if (tapeFontIdx > 0) tapeFontIdx--;
+    const wrapper = document.getElementById('words-wrapper');
+    if (wrapper) wrapper.style.setProperty('--tape-font', TAPE_FONT_SIZES[tapeFontIdx] + 'rem');
+    setTimeout(() => tapeMode.scroll(), 10);
+});
+
+document.getElementById('font-increase')?.addEventListener('click', () => {
+    if (tapeFontIdx < TAPE_FONT_SIZES.length - 1) tapeFontIdx++;
+    const wrapper = document.getElementById('words-wrapper');
+    if (wrapper) wrapper.style.setProperty('--tape-font', TAPE_FONT_SIZES[tapeFontIdx] + 'rem');
+    setTimeout(() => tapeMode.scroll(), 10);
+});
+
+// --- ACTIVATE TAPE ON MODE SWITCH ---
+// Listen for clean-mode class changes on body
+const _tapeObserver = new MutationObserver(() => {
+    if (document.body.classList.contains('clean-mode')) {
+        setTimeout(() => tapeMode.activate(), 15);
+    } else {
+        tapeMode.deactivate();
+    }
+});
+_tapeObserver.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+
+// ═══════════════════════════════════════════════════════════
+
 function generateWordList(count = 60) {
     // Check if current wallpaper has a specific word pool assigned
     const wp = wallpapers.find(w => w.id === userConfig.wallpaperId);
@@ -9247,8 +9624,8 @@ UI.input.addEventListener('keydown', (e) => {
 
     const key = e.key;
 
-    // --- BACKSPACE TO GO BACK TO PREVIOUS WORD ---
-    if (key === 'Backspace' && UI.input.value === '' && submittedWords.length > 0 && state.currWordIndex > 0) {
+    // --- BACKSPACE TO GO BACK TO PREVIOUS WORD (only if it was wrong) ---
+    if (key === 'Backspace' && UI.input.value === '' && submittedWords.length > 0 && state.currWordIndex > 0 && !submittedWords[submittedWords.length - 1].wasCorrect) {
         e.preventDefault();
 
         // Pop the last submitted word
@@ -9635,6 +10012,7 @@ function endGame() {
 
     if (isNewPB) {
         localStorage.setItem(pbKey, netWpm);
+        if (typeof updatePbLabel === 'function') updatePbLabel();
     }
 
     // Draw Graph
@@ -10385,6 +10763,9 @@ document.addEventListener('keydown', (e) => {
 
     // Don't focus if auth modal is open
     if (!document.getElementById('auth-modal').classList.contains('hidden')) return;
+
+    // Don't steal focus from pace custom input
+    if (document.activeElement && document.activeElement.getAttribute('data-pace-editing')) return;
 
     if (e.key !== 'Tab') UI.input.focus();
     if (e.key === 'Tab') {

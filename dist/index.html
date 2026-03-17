@@ -16,8 +16,8 @@
         window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
     </script>
     <script defer src="/_vercel/insights/script.js"></script>
-  <script type="module" crossorigin src="/assets/index-C87RMCf6.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-Bab50oNZ.css">
+  <script type="module" crossorigin src="/assets/index-C5nLS1t-.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-DkT4UKmC.css">
 </head>
 
 <body>
@@ -131,6 +131,170 @@
             </div>
         </div>
 
+        <!-- Clean mode toolbar (pace + font + themes) -->
+        <div id="clean-toolbar">
+            <div class="ct-group">
+                <span class="ct-label">pace</span>
+                <button class="pace-btn" data-pace="0">off</button>
+                <button class="pace-btn" data-pace="30">30</button>
+                <button class="pace-btn" data-pace="60">60</button>
+                <button class="pace-btn active" data-pace="90">90</button>
+                <button class="pace-btn" data-pace="120">120</button>
+            </div>
+            <div class="ct-sep"></div>
+            <div class="ct-group">
+                <button class="font-size-btn" id="font-decrease">A-</button>
+                <button class="font-size-btn" id="font-increase">A+</button>
+            </div>
+            <div class="ct-sep"></div>
+            <div class="ct-group" style="position:relative;">
+                <button id="theme-toggle-btn" class="ct-btn" title="Themes">
+                    <i class="ri-palette-line"></i> theme
+                </button>
+                <div id="theme-dropdown" class="hidden">
+                    <div class="theme-tabs">
+                        <button class="theme-tab active" data-tab="dark">Dark</button>
+                        <button class="theme-tab" data-tab="light">Light</button>
+                        <button class="theme-tab" data-tab="japanese">和 Japanese</button>
+                    </div>
+                    <div class="theme-dropdown-grid theme-grid-dark">
+                        <div class="theme-option active" data-theme="default">
+                            <div class="theme-preview" style="--tp-bg:#323437;--tp-accent:#e2b714;--tp-text:#d1d0c5;--tp-sub:#646669;"></div>
+                            <span>Carbon</span>
+                        </div>
+                        <div class="theme-option" data-theme="dracula">
+                            <div class="theme-preview" style="--tp-bg:#282a36;--tp-accent:#bd93f9;--tp-text:#f8f8f2;--tp-sub:#6272a4;"></div>
+                            <span>Dracula</span>
+                        </div>
+                        <div class="theme-option" data-theme="nord">
+                            <div class="theme-preview" style="--tp-bg:#2e3440;--tp-accent:#88c0d0;--tp-text:#eceff4;--tp-sub:#4c566a;"></div>
+                            <span>Nord</span>
+                        </div>
+                        <div class="theme-option" data-theme="botanical">
+                            <div class="theme-preview" style="--tp-bg:#1a1e1a;--tp-accent:#7ec860;--tp-text:#c4d4aa;--tp-sub:#5a6b4a;"></div>
+                            <span>Botanical</span>
+                        </div>
+                        <div class="theme-option" data-theme="bushido">
+                            <div class="theme-preview" style="--tp-bg:#1c1816;--tp-accent:#c23a3a;--tp-text:#c8b89a;--tp-sub:#5c5044;"></div>
+                            <span>Bushido</span>
+                        </div>
+                        <div class="theme-option" data-theme="midnight">
+                            <div class="theme-preview" style="--tp-bg:#0d1117;--tp-accent:#58a6ff;--tp-text:#c9d1d9;--tp-sub:#484f58;"></div>
+                            <span>Midnight</span>
+                        </div>
+                        <div class="theme-option" data-theme="sunset">
+                            <div class="theme-preview" style="--tp-bg:#1a1520;--tp-accent:#ff7b54;--tp-text:#f0d9c6;--tp-sub:#6b5060;"></div>
+                            <span>Sunset</span>
+                        </div>
+                        <div class="theme-option" data-theme="ocean">
+                            <div class="theme-preview" style="--tp-bg:#0b1929;--tp-accent:#00d4aa;--tp-text:#b8d4e3;--tp-sub:#3a5a72;"></div>
+                            <span>Ocean</span>
+                        </div>
+                        <div class="theme-option" data-theme="lavender">
+                            <div class="theme-preview" style="--tp-bg:#1e1b2e;--tp-accent:#c4a1ff;--tp-text:#d4ccf0;--tp-sub:#5c5480;"></div>
+                            <span>Lavender</span>
+                        </div>
+                        <div class="theme-option" data-theme="neon">
+                            <div class="theme-preview" style="--tp-bg:#0a0a0a;--tp-accent:#39ff14;--tp-text:#e0ffe0;--tp-sub:#2a3a2a;"></div>
+                            <span>Neon</span>
+                        </div>
+                        <div class="theme-option" data-theme="sakura">
+                            <div class="theme-preview" style="--tp-bg:#1f1520;--tp-accent:#ff8fa3;--tp-text:#f0d6e0;--tp-sub:#6b4560;"></div>
+                            <span>Sakura</span>
+                        </div>
+                        <div class="theme-option" data-theme="mocha">
+                            <div class="theme-preview" style="--tp-bg:#1e1712;--tp-accent:#d4956a;--tp-text:#d4c5b2;--tp-sub:#6b5a48;"></div>
+                            <span>Mocha</span>
+                        </div>
+                        <div class="theme-option" data-theme="arctic">
+                            <div class="theme-preview" style="--tp-bg:#0f1923;--tp-accent:#a8e0ff;--tp-text:#e8f0f8;--tp-sub:#4a6070;"></div>
+                            <span>Arctic</span>
+                        </div>
+                        <div class="theme-option" data-theme="ember">
+                            <div class="theme-preview" style="--tp-bg:#151010;--tp-accent:#ff6320;--tp-text:#e8c8b0;--tp-sub:#5a3830;"></div>
+                            <span>Ember</span>
+                        </div>
+                        <div class="theme-option" data-theme="void">
+                            <div class="theme-preview" style="--tp-bg:#050505;--tp-accent:#555555;--tp-text:#888888;--tp-sub:#2a2a2a;"></div>
+                            <span>Void</span>
+                        </div>
+                        <div class="theme-option" data-theme="copper">
+                            <div class="theme-preview" style="--tp-bg:#1a1614;--tp-accent:#c47a4a;--tp-text:#d4bfaa;--tp-sub:#6b5548;"></div>
+                            <span>Copper</span>
+                        </div>
+                    </div>
+                    <div class="theme-dropdown-grid theme-grid-light" style="display:none;">
+                        <div class="theme-option" data-theme="paper">
+                            <div class="theme-preview" style="--tp-bg:#e8e4dc;--tp-accent:#d45020;--tp-text:#2c2c2c;--tp-sub:#a8a098;"></div>
+                            <span>Paper</span>
+                        </div>
+                        <div class="theme-option" data-theme="snow">
+                            <div class="theme-preview" style="--tp-bg:#f0f0f0;--tp-accent:#3a7bd5;--tp-text:#1a1a1a;--tp-sub:#b0b0b0;"></div>
+                            <span>Snow</span>
+                        </div>
+                        <div class="theme-option" data-theme="cream">
+                            <div class="theme-preview" style="--tp-bg:#f5f0e8;--tp-accent:#8b6d4a;--tp-text:#3a3530;--tp-sub:#b8a898;"></div>
+                            <span>Cream</span>
+                        </div>
+                        <div class="theme-option" data-theme="linen">
+                            <div class="theme-preview" style="--tp-bg:#ece6da;--tp-accent:#6a8a5a;--tp-text:#2a2a28;--tp-sub:#a09888;"></div>
+                            <span>Linen</span>
+                        </div>
+                        <div class="theme-option" data-theme="sepia">
+                            <div class="theme-preview" style="--tp-bg:#f4ecd8;--tp-accent:#a06030;--tp-text:#433422;--tp-sub:#b0a08a;"></div>
+                            <span>Sepia</span>
+                        </div>
+                        <div class="theme-option" data-theme="frost">
+                            <div class="theme-preview" style="--tp-bg:#e8eef4;--tp-accent:#4a90c4;--tp-text:#1e2830;--tp-sub:#98a8b8;"></div>
+                            <span>Frost</span>
+                        </div>
+                    </div>
+                    <div class="theme-dropdown-grid theme-grid-japanese" style="display:none;">
+                        <div class="theme-option" data-theme="bloodscroll">
+                            <div class="theme-preview" style="--tp-bg:#0f0a06;--tp-accent:#8b0a0a;--tp-text:#c4a878;--tp-sub:#4a3520;"></div>
+                            <span>Blood Scroll</span>
+                        </div>
+                        <div class="theme-option" data-theme="sumi">
+                            <div class="theme-preview" style="--tp-bg:#0a0a0a;--tp-accent:#c43030;--tp-text:#d8d0c4;--tp-sub:#3a3630;"></div>
+                            <span>Sumi</span>
+                        </div>
+                        <div class="theme-option" data-theme="koi">
+                            <div class="theme-preview" style="--tp-bg:#080f18;--tp-accent:#d4a020;--tp-text:#c8d4dc;--tp-sub:#2a4050;"></div>
+                            <span>Koi Pond</span>
+                        </div>
+                        <div class="theme-option" data-theme="torii">
+                            <div class="theme-preview" style="--tp-bg:#0c0606;--tp-accent:#d42a18;--tp-text:#c8b0a0;--tp-sub:#4a2820;"></div>
+                            <span>Torii</span>
+                        </div>
+                        <div class="theme-option" data-theme="wabisabi">
+                            <div class="theme-preview" style="--tp-bg:#141210;--tp-accent:#6a8a5a;--tp-text:#b0a088;--tp-sub:#4a4030;"></div>
+                            <span>Wabi-Sabi</span>
+                        </div>
+                        <div class="theme-option" data-theme="oni">
+                            <div class="theme-preview" style="--tp-bg:#120a18;--tp-accent:#9040c0;--tp-text:#d0b8e0;--tp-sub:#4a3060;"></div>
+                            <span>Oni</span>
+                        </div>
+                        <div class="theme-option" data-theme="matcha">
+                            <div class="theme-preview" style="--tp-bg:#0e1410;--tp-accent:#88b860;--tp-text:#c0d4a8;--tp-sub:#4a6040;"></div>
+                            <span>Matcha</span>
+                        </div>
+                        <div class="theme-option" data-theme="tsunami">
+                            <div class="theme-preview" style="--tp-bg:#06101a;--tp-accent:#20a0c0;--tp-text:#b0d8e8;--tp-sub:#2a5868;"></div>
+                            <span>Tsunami</span>
+                        </div>
+                        <div class="theme-option" data-theme="hanami">
+                            <div class="theme-preview" style="--tp-bg:#18101a;--tp-accent:#e06888;--tp-text:#e8c8d8;--tp-sub:#6a4860;"></div>
+                            <span>Hanami</span>
+                        </div>
+                        <div class="theme-option" data-theme="shogun">
+                            <div class="theme-preview" style="--tp-bg:#0e0c08;--tp-accent:#c8a020;--tp-text:#d8c890;--tp-sub:#5a5030;"></div>
+                            <span>Shogun</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Combo: Heat Bar -->
         <div id="combo-heat-bar" class="combo-visual"><div id="combo-heat-fill"></div></div>
 
@@ -151,11 +315,28 @@
 
         <div id="words-wrapper">
             <div id="words-container"></div>
+            <div id="tape-caret"></div>
+            <div id="pace-caret"></div>
         </div>
 
         <!-- Clean mode: Big WPM counter -->
         <div id="clean-wpm-display" style="display:none;">
             <span id="clean-wpm-number">0</span>
+        </div>
+
+        <div id="clean-keyboard">
+            <div class="kb-row">
+                <div class="kb-key" data-key="q">q</div><div class="kb-key" data-key="w">w</div><div class="kb-key" data-key="e">e</div><div class="kb-key" data-key="r">r</div><div class="kb-key" data-key="t">t</div><div class="kb-key" data-key="y">y</div><div class="kb-key" data-key="u">u</div><div class="kb-key" data-key="i">i</div><div class="kb-key" data-key="o">o</div><div class="kb-key" data-key="p">p</div>
+            </div>
+            <div class="kb-row">
+                <div class="kb-key" data-key="a">a</div><div class="kb-key" data-key="s">s</div><div class="kb-key" data-key="d">d</div><div class="kb-key" data-key="f">f</div><div class="kb-key" data-key="g">g</div><div class="kb-key" data-key="h">h</div><div class="kb-key" data-key="j">j</div><div class="kb-key" data-key="k">k</div><div class="kb-key" data-key="l">l</div>
+            </div>
+            <div class="kb-row">
+                <div class="kb-key" data-key="z">z</div><div class="kb-key" data-key="x">x</div><div class="kb-key" data-key="c">c</div><div class="kb-key" data-key="v">v</div><div class="kb-key" data-key="b">b</div><div class="kb-key" data-key="n">n</div><div class="kb-key" data-key="m">m</div>
+            </div>
+            <div class="kb-row">
+                <div class="kb-key kb-space" data-key=" "></div>
+            </div>
         </div>
 
         <div class="footer-hint">

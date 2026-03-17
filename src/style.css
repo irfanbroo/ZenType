@@ -65,6 +65,10 @@
    ═══════════════════════════════════════════════════════════ */
 body.clean-mode {
     background: #323437 !important;
+}
+
+/* Kill zen wallpapers — but only when NO theme with custom bg is active */
+body.clean-mode:not([data-clean-theme="bloodscroll"]):not([data-clean-theme="sumi"]):not([data-clean-theme="koi"]):not([data-clean-theme="torii"]):not([data-clean-theme="wabisabi"]):not([data-clean-theme="oni"]):not([data-clean-theme="matcha"]):not([data-clean-theme="tsunami"]):not([data-clean-theme="hanami"]):not([data-clean-theme="shogun"]):not([data-clean-theme="yokai"]):not([data-clean-theme="ukiyo"]):not([data-clean-theme="fuji"]):not([data-clean-theme="ryokan"]):not([data-clean-theme="karesansui"]) {
     background-image: none !important;
 }
 
@@ -268,6 +272,754 @@ body.clean-mode #combo-classic-count {
 
 body.clean-mode #combo-classic-label {
     color: #646669;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   CLEAN MODE: TAPE LAYOUT + THEMES + CONTROLS
+   All additive — zen mode is never affected
+   ═══════════════════════════════════════════════════════════ */
+
+/* --- Theme Variables --- */
+/* Default: Carbon */
+body.clean-mode { --cm-accent: #e2b714; --cm-sub: #646669; --cm-text: #d1d0c5; --cm-bg: #323437; --cm-error: #ca4754; }
+/* Dracula */
+body.clean-mode[data-clean-theme="dracula"] { --cm-bg: #282a36; --cm-text: #f8f8f2; --cm-sub: #6272a4; --cm-accent: #bd93f9; --cm-error: #ff5555; }
+/* Nord */
+body.clean-mode[data-clean-theme="nord"] { --cm-bg: #2e3440; --cm-text: #eceff4; --cm-sub: #4c566a; --cm-accent: #88c0d0; --cm-error: #bf616a; }
+/* Botanical */
+body.clean-mode[data-clean-theme="botanical"] { --cm-bg: #1a1e1a; --cm-text: #c4d4aa; --cm-sub: #5a6b4a; --cm-accent: #7ec860; --cm-error: #d4644a; }
+/* Bushido */
+body.clean-mode[data-clean-theme="bushido"] { --cm-bg: #1c1816; --cm-text: #c8b89a; --cm-sub: #5c5044; --cm-accent: #c23a3a; --cm-error: #ff6b4a; }
+/* Midnight */
+body.clean-mode[data-clean-theme="midnight"] { --cm-bg: #0d1117; --cm-text: #c9d1d9; --cm-sub: #484f58; --cm-accent: #58a6ff; --cm-error: #f85149; }
+/* Sunset */
+body.clean-mode[data-clean-theme="sunset"] { --cm-bg: #1a1520; --cm-text: #f0d9c6; --cm-sub: #6b5060; --cm-accent: #ff7b54; --cm-error: #ff4c6a; }
+/* Ocean */
+body.clean-mode[data-clean-theme="ocean"] { --cm-bg: #0b1929; --cm-text: #b8d4e3; --cm-sub: #3a5a72; --cm-accent: #00d4aa; --cm-error: #ff6b8a; }
+/* Lavender */
+body.clean-mode[data-clean-theme="lavender"] { --cm-bg: #1e1b2e; --cm-text: #d4ccf0; --cm-sub: #5c5480; --cm-accent: #c4a1ff; --cm-error: #ff7eb3; }
+/* Neon */
+body.clean-mode[data-clean-theme="neon"] { --cm-bg: #0a0a0a; --cm-text: #e0ffe0; --cm-sub: #2a3a2a; --cm-accent: #39ff14; --cm-error: #ff2050; }
+/* Sakura */
+body.clean-mode[data-clean-theme="sakura"] { --cm-bg: #1f1520; --cm-text: #f0d6e0; --cm-sub: #6b4560; --cm-accent: #ff8fa3; --cm-error: #ff5c5c; }
+/* Mocha */
+body.clean-mode[data-clean-theme="mocha"] { --cm-bg: #1e1712; --cm-text: #d4c5b2; --cm-sub: #6b5a48; --cm-accent: #d4956a; --cm-error: #d45050; }
+/* Arctic */
+body.clean-mode[data-clean-theme="arctic"] { --cm-bg: #0f1923; --cm-text: #e8f0f8; --cm-sub: #4a6070; --cm-accent: #a8e0ff; --cm-error: #ff8a8a; }
+/* Ember */
+body.clean-mode[data-clean-theme="ember"] { --cm-bg: #151010; --cm-text: #e8c8b0; --cm-sub: #5a3830; --cm-accent: #ff6320; --cm-error: #ff3040; }
+/* Void */
+body.clean-mode[data-clean-theme="void"] { --cm-bg: #050505; --cm-text: #888888; --cm-sub: #2a2a2a; --cm-accent: #555555; --cm-error: #883333; }
+/* Copper */
+body.clean-mode[data-clean-theme="copper"] { --cm-bg: #1a1614; --cm-text: #d4bfaa; --cm-sub: #6b5548; --cm-accent: #c47a4a; --cm-error: #c44040; }
+/* Paper */
+body.clean-mode[data-clean-theme="paper"] { --cm-bg: #e8e4dc; --cm-text: #2c2c2c; --cm-sub: #a8a098; --cm-accent: #d45020; --cm-error: #c43030; }
+/* Snow */
+body.clean-mode[data-clean-theme="snow"] { --cm-bg: #f0f0f0; --cm-text: #1a1a1a; --cm-sub: #b0b0b0; --cm-accent: #3a7bd5; --cm-error: #d03040; }
+/* Cream */
+body.clean-mode[data-clean-theme="cream"] { --cm-bg: #f5f0e8; --cm-text: #3a3530; --cm-sub: #b8a898; --cm-accent: #8b6d4a; --cm-error: #a84030; }
+/* Linen */
+body.clean-mode[data-clean-theme="linen"] { --cm-bg: #ece6da; --cm-text: #2a2a28; --cm-sub: #a09888; --cm-accent: #6a8a5a; --cm-error: #b04040; }
+/* Sepia */
+body.clean-mode[data-clean-theme="sepia"] { --cm-bg: #f4ecd8; --cm-text: #433422; --cm-sub: #b0a08a; --cm-accent: #a06030; --cm-error: #b83020; }
+/* Frost */
+body.clean-mode[data-clean-theme="frost"] { --cm-bg: #e8eef4; --cm-text: #1e2830; --cm-sub: #98a8b8; --cm-accent: #4a90c4; --cm-error: #c04050; }
+
+/* === JAPANESE COLLECTION === */
+/* Blood Scroll — writing with blood on aged parchment */
+body.clean-mode[data-clean-theme="bloodscroll"] { --cm-bg: #2c2218; --cm-text: #d4b888; --cm-sub: #6a5040; --cm-accent: #8b0a0a; --cm-error: #cc2020; }
+body.clean-mode[data-clean-theme="bloodscroll"] {
+    background:
+        radial-gradient(ellipse at 50% 50%, #3d2e1c 0%, transparent 70%),
+        radial-gradient(ellipse at 0% 0%, #0a0504 0%, transparent 50%),
+        radial-gradient(ellipse at 100% 0%, #0a0504 0%, transparent 50%),
+        radial-gradient(ellipse at 0% 100%, #0a0504 0%, transparent 50%),
+        radial-gradient(ellipse at 100% 100%, #0a0504 0%, transparent 50%),
+        repeating-linear-gradient(0deg, transparent 0px, transparent 2px, rgba(120, 80, 40, 0.15) 2px, rgba(120, 80, 40, 0.15) 3px),
+        repeating-linear-gradient(90deg, transparent 0px, transparent 60px, rgba(90, 50, 20, 0.12) 60px, rgba(90, 50, 20, 0.12) 62px),
+        linear-gradient(180deg, #100a04 0%, #2a1e12 10%, #3a2c1c 50%, #2a1e12 90%, #100a04 100%) !important;
+}
+
+/* Sumi — ink wash on rice paper */
+body.clean-mode[data-clean-theme="sumi"] { --cm-bg: #d8d0c0; --cm-text: #1a1a18; --cm-sub: #8a8070; --cm-accent: #c43030; --cm-error: #cc2020; }
+body.clean-mode[data-clean-theme="sumi"] {
+    background:
+        radial-gradient(ellipse at 20% 30%, rgba(0, 0, 0, 0.08) 0%, transparent 40%),
+        radial-gradient(ellipse at 80% 60%, rgba(0, 0, 0, 0.06) 0%, transparent 35%),
+        radial-gradient(circle at 88% 8%, rgba(200, 40, 40, 0.18) 0%, transparent 12%),
+        repeating-linear-gradient(0deg, transparent 0px, transparent 1px, rgba(0, 0, 0, 0.025) 1px, rgba(0, 0, 0, 0.025) 2px),
+        linear-gradient(180deg, #c4bca8 0%, #d8d0c0 15%, #e0d8c8 50%, #d8d0c0 85%, #c4bca8 100%) !important;
+}
+
+/* Koi Pond — deep moonlit water */
+body.clean-mode[data-clean-theme="koi"] { --cm-bg: #0a1420; --cm-text: #c8d8e0; --cm-sub: #3a5868; --cm-accent: #e09048; --cm-error: #e05040; }
+body.clean-mode[data-clean-theme="koi"] {
+    background:
+        radial-gradient(ellipse at 50% 15%, rgba(40, 110, 170, 0.5) 0%, transparent 55%),
+        radial-gradient(ellipse at 25% 80%, rgba(210, 160, 30, 0.18) 0%, transparent 22%),
+        radial-gradient(ellipse at 78% 70%, rgba(210, 160, 30, 0.14) 0%, transparent 18%),
+        radial-gradient(ellipse at 50% 50%, rgba(15, 40, 60, 0.6) 0%, transparent 70%),
+        linear-gradient(180deg, #020810 0%, #0c1e30 25%, #102840 50%, #0c1e30 75%, #020810 100%) !important;
+}
+
+/* Torii — shrine at dusk, vermillion gates */
+body.clean-mode[data-clean-theme="torii"] { --cm-bg: #1a0e0a; --cm-text: #d4b8a8; --cm-sub: #6a4030; --cm-accent: #d42a18; --cm-error: #ff5030; }
+body.clean-mode[data-clean-theme="torii"] {
+    background:
+        radial-gradient(ellipse at 50% 100%, rgba(220, 50, 15, 0.25) 0%, transparent 45%),
+        radial-gradient(ellipse at 50% 0%, rgba(20, 8, 5, 0.8) 0%, transparent 50%),
+        repeating-linear-gradient(90deg, transparent 0px, transparent 80px, rgba(100, 25, 10, 0.12) 80px, rgba(100, 25, 10, 0.12) 83px),
+        repeating-linear-gradient(0deg, transparent 0px, transparent 3px, rgba(80, 20, 8, 0.08) 3px, rgba(80, 20, 8, 0.08) 4px),
+        linear-gradient(180deg, #080404 0%, #1e100a 20%, #2a1610 50%, #1e100a 80%, #080404 100%) !important;
+}
+
+/* Oni — demon mask, dark purple fury */
+body.clean-mode[data-clean-theme="oni"] { --cm-bg: #120a18; --cm-text: #d0b8e0; --cm-sub: #4a3060; --cm-accent: #9040c0; --cm-error: #e03060; }
+body.clean-mode[data-clean-theme="oni"] {
+    background:
+        radial-gradient(ellipse at 50% 80%, rgba(140, 50, 180, 0.2) 0%, transparent 45%),
+        radial-gradient(ellipse at 30% 20%, rgba(80, 20, 120, 0.15) 0%, transparent 35%),
+        radial-gradient(ellipse at 70% 30%, rgba(80, 20, 120, 0.12) 0%, transparent 30%),
+        radial-gradient(ellipse at 50% 50%, rgba(20, 10, 30, 0.5) 0%, transparent 70%),
+        linear-gradient(180deg, #080410 0%, #140a1e 25%, #1a1028 50%, #140a1e 75%, #080410 100%) !important;
+}
+
+/* Matcha — tea ceremony, calm green */
+body.clean-mode[data-clean-theme="matcha"] { --cm-bg: #0e1410; --cm-text: #c0d4a8; --cm-sub: #4a6040; --cm-accent: #88b860; --cm-error: #c06040; }
+body.clean-mode[data-clean-theme="matcha"] {
+    background:
+        radial-gradient(ellipse at 50% 40%, rgba(60, 100, 40, 0.2) 0%, transparent 55%),
+        radial-gradient(ellipse at 20% 80%, rgba(40, 70, 30, 0.12) 0%, transparent 30%),
+        radial-gradient(ellipse at 80% 20%, rgba(50, 80, 35, 0.1) 0%, transparent 28%),
+        linear-gradient(180deg, #080c06 0%, #10180e 25%, #142014 50%, #10180e 75%, #080c06 100%) !important;
+}
+
+/* Tsunami — crashing wave, dark teal fury */
+body.clean-mode[data-clean-theme="tsunami"] { --cm-bg: #06101a; --cm-text: #b0d8e8; --cm-sub: #2a5868; --cm-accent: #20a0c0; --cm-error: #e05050; }
+body.clean-mode[data-clean-theme="tsunami"] {
+    background:
+        radial-gradient(ellipse at 50% 75%, rgba(20, 160, 200, 0.35) 0%, transparent 45%),
+        radial-gradient(ellipse at 30% 55%, rgba(10, 100, 140, 0.25) 0%, transparent 35%),
+        radial-gradient(ellipse at 70% 60%, rgba(10, 100, 140, 0.2) 0%, transparent 30%),
+        radial-gradient(ellipse at 50% 30%, rgba(5, 60, 90, 0.3) 0%, transparent 45%),
+        linear-gradient(180deg, #020a12 0%, #081820 25%, #0c2030 50%, #081820 75%, #020a12 100%) !important;
+}
+
+/* Hanami — cherry blossom viewing, soft pink night */
+body.clean-mode[data-clean-theme="hanami"] { --cm-bg: #18101a; --cm-text: #e8c8d8; --cm-sub: #6a4860; --cm-accent: #e06888; --cm-error: #e04050; }
+body.clean-mode[data-clean-theme="hanami"] {
+    background:
+        radial-gradient(ellipse at 30% 25%, rgba(200, 80, 120, 0.12) 0%, transparent 30%),
+        radial-gradient(ellipse at 70% 35%, rgba(200, 80, 120, 0.1) 0%, transparent 25%),
+        radial-gradient(ellipse at 50% 75%, rgba(180, 60, 100, 0.08) 0%, transparent 35%),
+        radial-gradient(ellipse at 85% 80%, rgba(200, 100, 140, 0.06) 0%, transparent 20%),
+        radial-gradient(ellipse at 15% 70%, rgba(200, 100, 140, 0.06) 0%, transparent 20%),
+        linear-gradient(180deg, #100a12 0%, #1a1220 25%, #201828 50%, #1a1220 75%, #100a12 100%) !important;
+}
+
+/* Shogun — gold and black imperial power */
+body.clean-mode[data-clean-theme="shogun"] { --cm-bg: #0e0c08; --cm-text: #d8c890; --cm-sub: #5a5030; --cm-accent: #c8a020; --cm-error: #c04030; }
+body.clean-mode[data-clean-theme="shogun"] {
+    background:
+        radial-gradient(ellipse at 50% 40%, rgba(180, 140, 20, 0.12) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 90%, rgba(160, 120, 10, 0.08) 0%, transparent 35%),
+        repeating-linear-gradient(45deg, transparent 0px, transparent 30px, rgba(180, 140, 20, 0.03) 30px, rgba(180, 140, 20, 0.03) 31px),
+        repeating-linear-gradient(-45deg, transparent 0px, transparent 30px, rgba(180, 140, 20, 0.03) 30px, rgba(180, 140, 20, 0.03) 31px),
+        linear-gradient(180deg, #060504 0%, #100e08 25%, #161410 50%, #100e08 75%, #060504 100%) !important;
+}
+
+/* Wabi-Sabi — weathered clay and moss */
+body.clean-mode[data-clean-theme="wabisabi"] { --cm-bg: #1e1a14; --cm-text: #b8a888; --cm-sub: #5a5040; --cm-accent: #6a8a5a; --cm-error: #a05040; }
+body.clean-mode[data-clean-theme="wabisabi"] {
+    background:
+        radial-gradient(ellipse at 15% 25%, rgba(70, 100, 40, 0.2) 0%, transparent 30%),
+        radial-gradient(ellipse at 85% 75%, rgba(70, 100, 40, 0.15) 0%, transparent 28%),
+        radial-gradient(ellipse at 60% 40%, rgba(90, 65, 40, 0.2) 0%, transparent 35%),
+        repeating-linear-gradient(5deg, transparent 0px, transparent 80px, rgba(110, 90, 55, 0.08) 80px, rgba(110, 90, 55, 0.08) 83px),
+        repeating-linear-gradient(85deg, transparent 0px, transparent 110px, rgba(80, 65, 40, 0.07) 110px, rgba(80, 65, 40, 0.07) 113px),
+        linear-gradient(180deg, #100e0a 0%, #1e1a14 15%, #26221a 50%, #1e1a14 85%, #100e0a 100%) !important;
+}
+
+/* Yokai — ghostly spirit-fire in darkness */
+body.clean-mode[data-clean-theme="yokai"] { --cm-bg: #0a0810; --cm-text: #a0e0d0; --cm-sub: #304840; --cm-accent: #40e0a0; --cm-error: #e04060; }
+body.clean-mode[data-clean-theme="yokai"] {
+    background:
+        radial-gradient(ellipse at 30% 30%, rgba(40, 220, 150, 0.15) 0%, transparent 35%),
+        radial-gradient(ellipse at 70% 60%, rgba(40, 220, 150, 0.1) 0%, transparent 30%),
+        radial-gradient(ellipse at 50% 80%, rgba(20, 180, 120, 0.08) 0%, transparent 25%),
+        radial-gradient(circle at 20% 70%, rgba(60, 255, 180, 0.06) 0%, transparent 15%),
+        radial-gradient(circle at 80% 25%, rgba(60, 255, 180, 0.05) 0%, transparent 12%),
+        linear-gradient(180deg, #040408 0%, #080810 30%, #0c0c18 50%, #080810 70%, #040408 100%) !important;
+}
+
+/* Ukiyo-e — woodblock print warmth */
+body.clean-mode[data-clean-theme="ukiyo"] { --cm-bg: #0c1018; --cm-text: #d8c0a0; --cm-sub: #4a4038; --cm-accent: #e0a050; --cm-error: #c04040; }
+body.clean-mode[data-clean-theme="ukiyo"] {
+    background:
+        radial-gradient(ellipse at 40% 25%, rgba(220, 150, 60, 0.18) 0%, transparent 40%),
+        radial-gradient(ellipse at 65% 70%, rgba(180, 80, 40, 0.12) 0%, transparent 35%),
+        radial-gradient(ellipse at 20% 80%, rgba(60, 80, 140, 0.15) 0%, transparent 30%),
+        repeating-linear-gradient(0deg, transparent 0px, transparent 60px, rgba(200, 160, 80, 0.04) 60px, rgba(200, 160, 80, 0.04) 62px),
+        linear-gradient(180deg, #080808 0%, #10100c 25%, #181410 50%, #10100c 75%, #080808 100%) !important;
+}
+
+/* Fuji — serene mountain at dusk */
+body.clean-mode[data-clean-theme="fuji"] { --cm-bg: #0e1020; --cm-text: #c8d0e8; --cm-sub: #3a4060; --cm-accent: #a0b0e0; --cm-error: #d06060; }
+body.clean-mode[data-clean-theme="fuji"] {
+    background:
+        radial-gradient(ellipse at 50% 85%, rgba(160, 120, 200, 0.4) 0%, transparent 45%),
+        radial-gradient(ellipse at 50% 20%, rgba(220, 160, 240, 0.15) 0%, transparent 40%),
+        radial-gradient(ellipse at 25% 65%, rgba(120, 100, 200, 0.3) 0%, transparent 35%),
+        radial-gradient(ellipse at 75% 55%, rgba(120, 100, 200, 0.25) 0%, transparent 30%),
+        radial-gradient(ellipse at 50% 50%, rgba(80, 60, 140, 0.2) 0%, transparent 55%),
+        linear-gradient(180deg, #08081a 0%, #10102a 20%, #1a1840 50%, #10102a 80%, #08081a 100%) !important;
+}
+
+/* Ryokan — warm wooden inn, lantern glow */
+body.clean-mode[data-clean-theme="ryokan"] { --cm-bg: #14100a; --cm-text: #d0b898; --cm-sub: #5a4830; --cm-accent: #c89060; --cm-error: #b04040; }
+body.clean-mode[data-clean-theme="ryokan"] {
+    background:
+        radial-gradient(ellipse at 50% 40%, rgba(200, 140, 80, 0.2) 0%, transparent 45%),
+        radial-gradient(ellipse at 25% 30%, rgba(180, 120, 60, 0.1) 0%, transparent 25%),
+        radial-gradient(ellipse at 75% 35%, rgba(180, 120, 60, 0.08) 0%, transparent 20%),
+        repeating-linear-gradient(90deg, transparent 0px, transparent 50px, rgba(140, 100, 50, 0.05) 50px, rgba(140, 100, 50, 0.05) 52px),
+        repeating-linear-gradient(0deg, transparent 0px, transparent 50px, rgba(140, 100, 50, 0.04) 50px, rgba(140, 100, 50, 0.04) 52px),
+        linear-gradient(180deg, #0a0806 0%, #14100a 20%, #1c1610 50%, #14100a 80%, #0a0806 100%) !important;
+}
+
+/* Karesansui — zen rock garden, monochrome serenity */
+body.clean-mode[data-clean-theme="karesansui"] { --cm-bg: #101214; --cm-text: #b0b4b8; --cm-sub: #484c50; --cm-accent: #808890; --cm-error: #a06060; }
+body.clean-mode[data-clean-theme="karesansui"] {
+    background:
+        radial-gradient(ellipse at 50% 50%, rgba(120, 130, 140, 0.12) 0%, transparent 50%),
+        radial-gradient(ellipse at 30% 70%, rgba(80, 90, 100, 0.08) 0%, transparent 30%),
+        radial-gradient(ellipse at 70% 30%, rgba(80, 90, 100, 0.06) 0%, transparent 25%),
+        repeating-linear-gradient(2deg, transparent 0px, transparent 80px, rgba(100, 110, 120, 0.04) 80px, rgba(100, 110, 120, 0.04) 82px),
+        repeating-linear-gradient(-2deg, transparent 0px, transparent 90px, rgba(100, 110, 120, 0.03) 90px, rgba(100, 110, 120, 0.03) 92px),
+        linear-gradient(180deg, #0a0b0c 0%, #101214 25%, #161819 50%, #101214 75%, #0a0b0c 100%) !important;
+}
+
+/* Apply theme vars to existing clean-mode elements */
+/* Background set per-theme (flat or textured) — Japanese themes use gradients */
+body.clean-mode[data-clean-theme]:not([data-clean-theme="bloodscroll"]):not([data-clean-theme="sumi"]):not([data-clean-theme="koi"]):not([data-clean-theme="torii"]):not([data-clean-theme="wabisabi"]):not([data-clean-theme="oni"]):not([data-clean-theme="matcha"]):not([data-clean-theme="tsunami"]):not([data-clean-theme="hanami"]):not([data-clean-theme="shogun"]):not([data-clean-theme="yokai"]):not([data-clean-theme="ukiyo"]):not([data-clean-theme="fuji"]):not([data-clean-theme="ryokan"]):not([data-clean-theme="karesansui"]) { background: var(--cm-bg) !important; }
+body.clean-mode[data-clean-theme] #words-container { color: var(--cm-sub); }
+body.clean-mode[data-clean-theme] #words-container .letter.correct { color: var(--cm-text); }
+body.clean-mode[data-clean-theme] #words-container .letter.incorrect { color: var(--cm-error); }
+body.clean-mode[data-clean-theme] #timer,
+body.clean-mode[data-clean-theme] .time-btn.active { color: var(--cm-accent); }
+body.clean-mode[data-clean-theme] .stats-bar,
+body.clean-mode[data-clean-theme] .time-btn,
+body.clean-mode[data-clean-theme] #wpm,
+body.clean-mode[data-clean-theme] .footer-hint,
+body.clean-mode[data-clean-theme] .footer-hint .key { color: var(--cm-sub); }
+body.clean-mode[data-clean-theme] #caret,
+body.clean-mode[data-clean-theme] #caret-trail,
+body.clean-mode[data-clean-theme] #tape-caret { background: var(--cm-accent); }
+body.clean-mode[data-clean-theme] #clean-wpm-number { color: var(--cm-accent); }
+body.clean-mode[data-clean-theme] #combo-heat-fill { background: var(--cm-accent); }
+body.clean-mode[data-clean-theme] #top-nav-buttons .glass-icon { color: var(--cm-sub); }
+body.clean-mode[data-clean-theme] #top-nav-buttons .glass-icon:hover { color: var(--cm-text); }
+
+/* --- Tape Layout (only when clean-mode) --- */
+body.clean-mode #words-wrapper {
+    --tape-font: 3.5rem;
+    overflow-x: clip;
+    overflow-y: visible;
+    height: calc(var(--tape-font) * 2.2);
+    font-size: var(--tape-font);
+    mask-image: linear-gradient(to right, transparent 0%, black 8%, black 90%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 90%, transparent 100%);
+}
+
+body.clean-mode #words-container {
+    max-height: none;
+    overflow: visible;
+    flex-wrap: nowrap;
+    align-items: center;
+    font-size: var(--tape-font);
+    height: calc(var(--tape-font) * 2.2);
+    padding-top: 0;
+    padding-bottom: 0;
+    transition: transform 0.1s ease-out;
+    will-change: transform;
+    mask-image: none;
+    -webkit-mask-image: none;
+}
+
+body.clean-mode #words-container .word { flex-shrink: 0; }
+
+/* --- Hide original caret in clean mode, show tape-caret --- */
+body.clean-mode #caret,
+body.clean-mode #caret-trail { display: none !important; }
+
+#tape-caret {
+    display: none;
+    position: absolute;
+    width: 2.5px;
+    height: 1.35em;
+    background: #e2b714;
+    border-radius: 2px;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 40%;
+    z-index: 10;
+    pointer-events: none;
+    animation: caretFlashSmooth 1s infinite;
+}
+
+#tape-caret.typing {
+    animation: none;
+    opacity: 1;
+}
+
+body.clean-mode #tape-caret { display: block; }
+
+/* --- Hide WPM + footer-links in clean mode --- */
+body.clean-mode #wpm { display: none; }
+body.clean-mode .footer-links { display: none !important; }
+
+/* --- Font Size Buttons --- */
+.font-size-btn {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    color: #646669;
+    font-size: 0.6rem;
+    font-family: inherit;
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: color 0.15s, background 0.15s;
+}
+.font-size-btn:hover { color: #d1d0c5; background: rgba(255, 255, 255, 0.08); }
+
+/* --- Theme Button + Dropdown --- */
+.ct-btn {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    color: #646669;
+    font-size: 0.8rem;
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: color 0.15s, background 0.15s;
+    display: flex;
+    align-items: center;
+}
+.ct-btn:hover { color: #d1d0c5; background: rgba(255, 255, 255, 0.08); }
+
+#theme-dropdown {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #2c2e31;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 16px;
+    padding: 16px;
+    z-index: 200;
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.6);
+    animation: dropdownIn 0.15s ease-out;
+}
+
+#theme-dropdown.hidden { display: none; }
+
+@keyframes dropdownIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.theme-tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 10px;
+    padding: 3px;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 8px;
+}
+
+.theme-tab {
+    flex: 1;
+    padding: 6px 0;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #646669;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: color 0.15s, background 0.15s;
+    font-family: inherit;
+}
+
+.theme-tab:hover { color: #d1d0c5; }
+.theme-tab.active { color: #e2b714; background: rgba(255, 255, 255, 0.06); }
+
+body.clean-mode[data-clean-theme] .theme-tab { color: var(--cm-sub); }
+body.clean-mode[data-clean-theme] .theme-tab:hover { color: var(--cm-text); }
+body.clean-mode[data-clean-theme] .theme-tab.active { color: var(--cm-accent); }
+body.clean-mode:is([data-clean-theme="paper"],[data-clean-theme="snow"],[data-clean-theme="cream"],[data-clean-theme="linen"],[data-clean-theme="sepia"],[data-clean-theme="frost"],[data-clean-theme="sumi"]) .theme-tabs { background: rgba(0,0,0,0.04); }
+body.clean-mode:is([data-clean-theme="paper"],[data-clean-theme="snow"],[data-clean-theme="cream"],[data-clean-theme="linen"],[data-clean-theme="sepia"],[data-clean-theme="frost"],[data-clean-theme="sumi"]) .theme-tab.active { background: rgba(0,0,0,0.06); }
+
+.theme-dropdown-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    width: 420px;
+    max-height: 60vh;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+.theme-dropdown-grid::-webkit-scrollbar { width: 4px; }
+.theme-dropdown-grid::-webkit-scrollbar-track { background: transparent; }
+.theme-dropdown-grid::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+
+.theme-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.theme-option:hover { background: rgba(255, 255, 255, 0.06); }
+.theme-option.active { background: rgba(255, 255, 255, 0.08); }
+
+.theme-option span {
+    font-size: 0.55rem;
+    color: #646669;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.theme-option.active span { color: #d1d0c5; }
+
+.theme-preview {
+    width: 100%;
+    height: 32px;
+    border-radius: 6px;
+    background: var(--tp-bg);
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.theme-preview::before {
+    content: 'abc';
+    position: absolute;
+    left: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem;
+    color: var(--tp-sub);
+    letter-spacing: 0.05em;
+}
+
+.theme-preview::after {
+    content: '';
+    position: absolute;
+    left: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 2px;
+    height: 14px;
+    background: var(--tp-accent);
+    border-radius: 1px;
+}
+
+/* Light theme shared overrides */
+body.clean-mode[data-clean-theme="paper"],
+body.clean-mode[data-clean-theme="snow"],
+body.clean-mode[data-clean-theme="cream"],
+body.clean-mode[data-clean-theme="linen"],
+body.clean-mode[data-clean-theme="sepia"],
+body.clean-mode[data-clean-theme="frost"] {
+    --cm-btn-bg: rgba(0,0,0,0.04);
+    --cm-btn-border: rgba(0,0,0,0.08);
+    --cm-btn-hover: rgba(0,0,0,0.08);
+}
+
+body.clean-mode:is([data-clean-theme="paper"],[data-clean-theme="snow"],[data-clean-theme="cream"],[data-clean-theme="linen"],[data-clean-theme="sepia"],[data-clean-theme="frost"],[data-clean-theme="sumi"]) .time-modes { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.08); }
+body.clean-mode:is([data-clean-theme="paper"],[data-clean-theme="snow"],[data-clean-theme="cream"],[data-clean-theme="linen"],[data-clean-theme="sepia"],[data-clean-theme="frost"],[data-clean-theme="sumi"]) .pace-btn,
+body.clean-mode:is([data-clean-theme="paper"],[data-clean-theme="snow"],[data-clean-theme="cream"],[data-clean-theme="linen"],[data-clean-theme="sepia"],[data-clean-theme="frost"],[data-clean-theme="sumi"]) .font-size-btn,
+body.clean-mode:is([data-clean-theme="paper"],[data-clean-theme="snow"],[data-clean-theme="cream"],[data-clean-theme="linen"],[data-clean-theme="sepia"],[data-clean-theme="frost"],[data-clean-theme="sumi"]) .ct-btn { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.08); }
+body.clean-mode:is([data-clean-theme="paper"],[data-clean-theme="snow"],[data-clean-theme="cream"],[data-clean-theme="linen"],[data-clean-theme="sepia"],[data-clean-theme="frost"],[data-clean-theme="sumi"]) .pace-btn:hover,
+body.clean-mode:is([data-clean-theme="paper"],[data-clean-theme="snow"],[data-clean-theme="cream"],[data-clean-theme="linen"],[data-clean-theme="sepia"],[data-clean-theme="frost"],[data-clean-theme="sumi"]) .font-size-btn:hover,
+body.clean-mode:is([data-clean-theme="paper"],[data-clean-theme="snow"],[data-clean-theme="cream"],[data-clean-theme="linen"],[data-clean-theme="sepia"],[data-clean-theme="frost"],[data-clean-theme="sumi"]) .ct-btn:hover { color: var(--cm-text); background: rgba(0,0,0,0.08); }
+body.clean-mode:is([data-clean-theme="paper"],[data-clean-theme="snow"],[data-clean-theme="cream"],[data-clean-theme="linen"],[data-clean-theme="sepia"],[data-clean-theme="frost"],[data-clean-theme="sumi"]) .footer-hint .key { background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.1); }
+body.clean-mode:is([data-clean-theme="paper"],[data-clean-theme="snow"],[data-clean-theme="cream"],[data-clean-theme="linen"],[data-clean-theme="sepia"],[data-clean-theme="frost"],[data-clean-theme="sumi"]) .kb-key { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.08); }
+body.clean-mode:is([data-clean-theme="paper"],[data-clean-theme="snow"],[data-clean-theme="cream"],[data-clean-theme="linen"],[data-clean-theme="sepia"],[data-clean-theme="frost"],[data-clean-theme="sumi"]) .ct-sep { background: rgba(0,0,0,0.1); }
+body.clean-mode:is([data-clean-theme="paper"],[data-clean-theme="snow"],[data-clean-theme="cream"],[data-clean-theme="linen"],[data-clean-theme="sepia"],[data-clean-theme="frost"],[data-clean-theme="sumi"]) #theme-dropdown { background: color-mix(in srgb, var(--cm-bg) 95%, #000 5%); }
+body.clean-mode:is([data-clean-theme="paper"],[data-clean-theme="snow"],[data-clean-theme="cream"],[data-clean-theme="linen"],[data-clean-theme="sepia"],[data-clean-theme="frost"],[data-clean-theme="sumi"]) .results-content { background: color-mix(in srgb, var(--cm-bg) 95%, #000 5%); }
+body.clean-mode:is([data-clean-theme="paper"],[data-clean-theme="snow"],[data-clean-theme="cream"],[data-clean-theme="linen"],[data-clean-theme="sepia"],[data-clean-theme="frost"],[data-clean-theme="sumi"]) #results-overlay { background: color-mix(in srgb, var(--cm-bg) 90%, transparent); }
+body.clean-mode:is([data-clean-theme="paper"],[data-clean-theme="snow"],[data-clean-theme="cream"],[data-clean-theme="linen"],[data-clean-theme="sepia"],[data-clean-theme="frost"],[data-clean-theme="sumi"]) .theme-option:hover { background: rgba(0,0,0,0.06); }
+body.clean-mode:is([data-clean-theme="paper"],[data-clean-theme="snow"],[data-clean-theme="cream"],[data-clean-theme="linen"],[data-clean-theme="sepia"],[data-clean-theme="frost"],[data-clean-theme="sumi"]) .theme-option.active { background: rgba(0,0,0,0.08); }
+body.clean-mode:is([data-clean-theme="paper"],[data-clean-theme="snow"],[data-clean-theme="cream"],[data-clean-theme="linen"],[data-clean-theme="sepia"],[data-clean-theme="frost"],[data-clean-theme="sumi"]) #pace-caret { background: #000 !important; height: 4px; }
+body.clean-mode:is([data-clean-theme="paper"],[data-clean-theme="snow"],[data-clean-theme="cream"],[data-clean-theme="linen"],[data-clean-theme="sepia"],[data-clean-theme="frost"],[data-clean-theme="sumi"]) #tape-caret { background: var(--cm-accent); }
+
+/* Theme-aware dropdown */
+body.clean-mode[data-clean-theme] #theme-dropdown { background: color-mix(in srgb, var(--cm-bg) 95%, #fff 5%); }
+body.clean-mode[data-clean-theme] .theme-option span { color: var(--cm-sub); }
+body.clean-mode[data-clean-theme] .theme-option.active span { color: var(--cm-text); }
+body.clean-mode[data-clean-theme] .ct-btn { color: var(--cm-sub); }
+body.clean-mode[data-clean-theme] .ct-btn:hover { color: var(--cm-text); }
+
+/* --- Pace Caret (underline shape with pulse) --- */
+#pace-caret {
+    display: none;
+    position: absolute;
+    width: 0.6em;
+    height: 3px;
+    background: #646669;
+    border-radius: 2px;
+    bottom: 15%;
+    left: 40%;
+    transform: translateY(-50%) scaleX(1);
+    transform-origin: center;
+    z-index: 9;
+    pointer-events: none;
+    opacity: 0.5;
+    transition: left 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+body.clean-mode #pace-caret.active { display: block; }
+body.clean-mode[data-clean-theme] #pace-caret { background: var(--cm-sub); }
+
+/* --- Clean Toolbar (pace + font + themes) --- */
+#clean-toolbar { display: none; }
+
+body.clean-mode #clean-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    margin-bottom: 1rem;
+    padding: 0.4rem 0.8rem;
+}
+
+.ct-group {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.ct-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    color: #646669;
+    text-transform: uppercase;
+    margin-right: 0.1rem;
+}
+
+.ct-sep {
+    width: 1px;
+    height: 14px;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.pace-btn {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    color: #646669;
+    font-size: 0.6rem;
+    font-family: inherit;
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: color 0.15s, background 0.15s;
+}
+
+.pace-btn:hover { color: #d1d0c5; background: rgba(255, 255, 255, 0.08); }
+.pace-btn.active { color: #e2b714; background: rgba(226, 183, 20, 0.1); border-color: rgba(226, 183, 20, 0.2); }
+
+.pace-custom-input {
+    width: 2.8rem;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    color: #646669;
+    font-size: 0.6rem;
+    font-family: inherit;
+    padding: 0.1rem 0.25rem;
+    border-radius: 4px;
+    text-align: center;
+    outline: none;
+    transition: color 0.15s, border-color 0.15s;
+    -moz-appearance: textfield;
+}
+.pace-custom-input::-webkit-inner-spin-button,
+.pace-custom-input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+.pace-custom-input:focus { color: #e2b714; border-color: rgba(226, 183, 20, 0.3); }
+.pace-custom-input.active { color: #e2b714; border-color: rgba(226, 183, 20, 0.2); }
+
+#pace-pb { font-style: italic; }
+#pace-pb.active { position: relative; }
+#pace-pb .pb-val { font-style: normal; font-size: 0.5rem; opacity: 0.7; margin-left: 2px; }
+
+body.clean-mode[data-clean-theme] .pace-custom-input { color: var(--cm-sub); border-color: color-mix(in srgb, var(--cm-sub) 15%, transparent); }
+body.clean-mode[data-clean-theme] .pace-custom-input:focus,
+body.clean-mode[data-clean-theme] .pace-custom-input.active { color: var(--cm-accent); border-color: color-mix(in srgb, var(--cm-accent) 30%, transparent); }
+
+body.clean-mode[data-clean-theme] .ct-label { color: var(--cm-sub); }
+body.clean-mode[data-clean-theme] .pace-btn { color: var(--cm-sub); }
+body.clean-mode[data-clean-theme] .pace-btn.active { color: var(--cm-accent); }
+body.clean-mode[data-clean-theme] .ct-sep { background: color-mix(in srgb, var(--cm-sub) 20%, transparent); }
+
+/* Hide toolbar when typing */
+body.clean-mode.is-typing #clean-toolbar {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+}
+
+/* --- Clean Keyboard Visualizer --- */
+#clean-keyboard { display: none; }
+
+body.clean-mode #clean-keyboard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    margin-top: 1.5rem;
+    user-select: none;
+}
+
+.kb-row {
+    display: flex;
+    gap: 4px;
+}
+
+.kb-key {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: #646669;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 6px;
+    transition: background 0.05s, color 0.05s, transform 0.05s, border-color 0.05s;
+}
+
+.kb-key.active {
+    color: #e2b714;
+    background: rgba(226, 183, 20, 0.12);
+    border-color: rgba(226, 183, 20, 0.3);
+    transform: scale(0.92);
+}
+
+.kb-space {
+    width: 180px;
+    height: 28px;
+}
+
+/* Theme-aware keyboard */
+body.clean-mode[data-clean-theme] .kb-key { color: var(--cm-sub); }
+body.clean-mode[data-clean-theme] .kb-key.active {
+    color: var(--cm-accent);
+    background: color-mix(in srgb, var(--cm-accent) 12%, transparent);
+    border-color: color-mix(in srgb, var(--cm-accent) 30%, transparent);
+}
+
+/* (toolbar hide-on-typing handled above in #clean-toolbar rule) */
+
+/* --- Clean Mode Results Screen --- */
+body.clean-mode #results-overlay {
+    background: rgba(50, 52, 55, 0.95);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+body.clean-mode .results-content {
+    background: #2c2e31;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    box-shadow: none;
+    border-radius: 16px;
+    animation: cleanSlideUp 0.3s ease-out;
+}
+
+/* Kill zen glow + spinning border */
+body.clean-mode .results-content::before { display: none; }
+body.clean-mode .results-content::after { display: none; }
+
+body.clean-mode .results-content h1 {
+    color: #646669;
+    font-size: 0.8rem;
+    font-weight: 400;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+}
+
+body.clean-mode #rank-title {
+    color: #e2b714;
+    filter: none !important;
+    text-shadow: none !important;
+    font-size: 1rem;
+    letter-spacing: 0.1em;
+}
+
+body.clean-mode #rank-desc {
+    color: #646669;
+    text-shadow: none !important;
+    font-size: 0.85rem;
+}
+
+body.clean-mode .stat-item .label {
+    color: #646669;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+}
+
+body.clean-mode .stat-item .value {
+    color: #e2b714;
+    font-size: 2.5rem;
+    font-weight: 400;
+    text-shadow: none;
+}
+
+body.clean-mode .stats-grid-secondary .stat-item .value {
+    color: #d1d0c5;
+    font-size: 1.5rem;
+}
+
+body.clean-mode .wpm-chart-container {
+    background: rgba(0, 0, 0, 0.15) !important;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+body.clean-mode .pb-banner {
+    background: rgba(226, 183, 20, 0.08);
+    border-color: rgba(226, 183, 20, 0.15);
+    color: #e2b714;
+    text-shadow: none;
+    box-shadow: none;
+    animation: cleanSlideUp 0.3s ease-out;
+}
+
+/* Theme-aware overrides for results */
+body.clean-mode[data-clean-theme] #results-overlay { background: color-mix(in srgb, var(--cm-bg) 95%, transparent); }
+body.clean-mode[data-clean-theme] .results-content { background: color-mix(in srgb, var(--cm-bg) 90%, #fff 10%); }
+body.clean-mode[data-clean-theme] #rank-title { color: var(--cm-accent); }
+body.clean-mode[data-clean-theme] .stat-item .value { color: var(--cm-accent); }
+body.clean-mode[data-clean-theme] .stats-grid-secondary .stat-item .value { color: var(--cm-text); }
+body.clean-mode[data-clean-theme] .stat-item .label,
+body.clean-mode[data-clean-theme] #rank-desc,
+body.clean-mode[data-clean-theme] .results-content h1 { color: var(--cm-sub); }
+body.clean-mode[data-clean-theme] .pb-banner { color: var(--cm-accent); border-color: var(--cm-accent); }
+
+@keyframes cleanSlideUp {
+    from { transform: translateY(10px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
 }
 
 /* Freeze all GPU work when app is unfocused */

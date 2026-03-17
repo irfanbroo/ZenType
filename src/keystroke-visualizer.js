@@ -14,7 +14,8 @@
     let idlePhase = 0;
 
     // ── Color Helpers ──
-    let customVizColor = localStorage.getItem('vizColor') || '';
+    // Default cyan for first-time users (matches Koi Pond theme), empty for returning users
+    let customVizColor = localStorage.getItem('vizColor') || (localStorage.getItem('zenType_config') ? '' : '#00d4ff');
 
     function getAccentColor() {
         if (customVizColor) return customVizColor;
