@@ -1,0 +1,14 @@
+node_modules/
+src-tauri/target/
+dist/
+build/
+steam-build*/
+*.exe
+*.msi
+*.deb
+*.app
+*.zip
+*.mp3
+*.mp4
+*.webm
+.git/
