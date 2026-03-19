@@ -1,3 +1,12 @@
+const isTauri = !!window.__TAURI_INTERNALS__;
+const VIDEO_CDN = !isTauri ? 'https://zen-type-brown.vercel.app/' : '';
+
+export function resolveVideoUrl(url) {
+    if (!url || url.startsWith('http')) return url;
+    if (url.startsWith('videos/') && VIDEO_CDN) return VIDEO_CDN + url;
+    return url;
+}
+
 export const wallpaperCategories = [
     { id: 'relax', label: 'Relax', icon: 'ri-cup-line' },
     { id: 'nature', label: 'Nature', icon: 'ri-leaf-line' },

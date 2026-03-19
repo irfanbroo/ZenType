@@ -16,8 +16,8 @@
         window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
     </script>
     <script defer src="/_vercel/insights/script.js"></script>
-  <script type="module" crossorigin src="/assets/index-C5nLS1t-.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-DkT4UKmC.css">
+  <script type="module" crossorigin src="/assets/index-CK-IFo92.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-B7iEBYQG.css">
 </head>
 
 <body>
@@ -140,6 +140,8 @@
                 <button class="pace-btn" data-pace="60">60</button>
                 <button class="pace-btn active" data-pace="90">90</button>
                 <button class="pace-btn" data-pace="120">120</button>
+                <button class="pace-btn" id="pace-pb" data-pace="pb">pb</button>
+                <input type="number" id="pace-custom-input" class="pace-custom-input" min="1" max="300" placeholder="..." title="Custom WPM">
             </div>
             <div class="ct-sep"></div>
             <div class="ct-group">
@@ -153,11 +155,11 @@
                 </button>
                 <div id="theme-dropdown" class="hidden">
                     <div class="theme-tabs">
-                        <button class="theme-tab active" data-tab="dark">Dark</button>
+                        <button class="theme-tab active" data-tab="japanese">和 Japanese</button>
+                        <button class="theme-tab" data-tab="dark">Dark</button>
                         <button class="theme-tab" data-tab="light">Light</button>
-                        <button class="theme-tab" data-tab="japanese">和 Japanese</button>
                     </div>
-                    <div class="theme-dropdown-grid theme-grid-dark">
+                    <div class="theme-dropdown-grid theme-grid-dark" style="display:none;">
                         <div class="theme-option active" data-theme="default">
                             <div class="theme-preview" style="--tp-bg:#323437;--tp-accent:#e2b714;--tp-text:#d1d0c5;--tp-sub:#646669;"></div>
                             <span>Carbon</span>
@@ -249,7 +251,11 @@
                             <span>Frost</span>
                         </div>
                     </div>
-                    <div class="theme-dropdown-grid theme-grid-japanese" style="display:none;">
+                    <div class="theme-dropdown-grid theme-grid-japanese">
+                        <div class="theme-option" data-theme="koi">
+                            <div class="theme-preview" style="--tp-bg:#080f18;--tp-accent:#e09048;--tp-text:#c8d8e0;--tp-sub:#2a4050;"></div>
+                            <span>Koi Pond</span>
+                        </div>
                         <div class="theme-option" data-theme="bloodscroll">
                             <div class="theme-preview" style="--tp-bg:#0f0a06;--tp-accent:#8b0a0a;--tp-text:#c4a878;--tp-sub:#4a3520;"></div>
                             <span>Blood Scroll</span>
@@ -257,10 +263,6 @@
                         <div class="theme-option" data-theme="sumi">
                             <div class="theme-preview" style="--tp-bg:#0a0a0a;--tp-accent:#c43030;--tp-text:#d8d0c4;--tp-sub:#3a3630;"></div>
                             <span>Sumi</span>
-                        </div>
-                        <div class="theme-option" data-theme="koi">
-                            <div class="theme-preview" style="--tp-bg:#080f18;--tp-accent:#d4a020;--tp-text:#c8d4dc;--tp-sub:#2a4050;"></div>
-                            <span>Koi Pond</span>
                         </div>
                         <div class="theme-option" data-theme="torii">
                             <div class="theme-preview" style="--tp-bg:#0c0606;--tp-accent:#d42a18;--tp-text:#c8b0a0;--tp-sub:#4a2820;"></div>
@@ -289,6 +291,26 @@
                         <div class="theme-option" data-theme="shogun">
                             <div class="theme-preview" style="--tp-bg:#0e0c08;--tp-accent:#c8a020;--tp-text:#d8c890;--tp-sub:#5a5030;"></div>
                             <span>Shogun</span>
+                        </div>
+                        <div class="theme-option" data-theme="yokai">
+                            <div class="theme-preview" style="--tp-bg:#0a0810;--tp-accent:#40e0a0;--tp-text:#a0e0d0;--tp-sub:#304840;"></div>
+                            <span>Yokai</span>
+                        </div>
+                        <div class="theme-option" data-theme="ukiyo">
+                            <div class="theme-preview" style="--tp-bg:#0c1018;--tp-accent:#e0a050;--tp-text:#d8c0a0;--tp-sub:#4a4038;"></div>
+                            <span>Ukiyo-e</span>
+                        </div>
+                        <div class="theme-option" data-theme="fuji">
+                            <div class="theme-preview" style="--tp-bg:#0e1020;--tp-accent:#a0b0e0;--tp-text:#c8d0e8;--tp-sub:#3a4060;"></div>
+                            <span>Fuji</span>
+                        </div>
+                        <div class="theme-option" data-theme="ryokan">
+                            <div class="theme-preview" style="--tp-bg:#14100a;--tp-accent:#c89060;--tp-text:#d0b898;--tp-sub:#5a4830;"></div>
+                            <span>Ryokan</span>
+                        </div>
+                        <div class="theme-option" data-theme="karesansui">
+                            <div class="theme-preview" style="--tp-bg:#101214;--tp-accent:#808890;--tp-text:#b0b4b8;--tp-sub:#484c50;"></div>
+                            <span>Karesansui</span>
                         </div>
                     </div>
                 </div>

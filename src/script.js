@@ -6,7 +6,7 @@ import { wordPools, hagakureWords, hagakureFailMessages, hagakureEarlyFailMessag
     shadowWordsMedium, shadowWordsHard, hagakureGeneralFailMessages,
     hagakureMiddleFailMessages, hagakureLateFailMessages } from './data/wordPools.js';
 
-import { wallpaperCategories, wallpapers, currentCategory, setCurrentCategory } from './data/wallpapers.js';
+import { wallpaperCategories, wallpapers, currentCategory, setCurrentCategory, resolveVideoUrl } from './data/wallpapers.js';
 
 import { initAudio, autoInitAudio, playKeySound, previewSound, playComboSound,
     toggleSound, setSoundConfig, isSoundEnabled, setSoundEnabled,
@@ -568,7 +568,7 @@ function applyTheme(skipLoader = false) {
         // Always start muted to ensure autoplay works visually
         UI.bgVideo.muted = true;
         UI.bgVideo.volume = (userConfig.bgVolume !== undefined ? userConfig.bgVolume : 50) / 100;
-        UI.bgVideo.src = wp.url;
+        UI.bgVideo.src = resolveVideoUrl(wp.url);
         UI.bgVideo.load();
 
         UI.bgVideo.oncanplay = () => {

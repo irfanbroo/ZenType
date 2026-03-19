@@ -1,18 +1,18 @@
-import { getCurrentWindow } from '@tauri-apps/api/window';
+if (window.__TAURI_INTERNALS__) {
+    import('@tauri-apps/api/window').then(({ getCurrentWindow }) => {
+        const appWindow = getCurrentWindow();
+        window.appWindow = appWindow;
 
-const appWindow = getCurrentWindow();
+        document.getElementById('titlebar-minimize')?.addEventListener('click', () => {
+            appWindow.minimize();
+        });
 
-// Expose so non-module scripts (script.js) can call setFullscreen
-window.appWindow = appWindow;
+        document.getElementById('titlebar-maximize')?.addEventListener('click', () => {
+            appWindow.toggleMaximize();
+        });
 
-document.getElementById('titlebar-minimize').addEventListener('click', () => {
-    appWindow.minimize();
-});
-
-document.getElementById('titlebar-maximize').addEventListener('click', () => {
-    appWindow.toggleMaximize();
-});
-
-document.getElementById('titlebar-close').addEventListener('click', () => {
-    appWindow.close();
-});
+        document.getElementById('titlebar-close')?.addEventListener('click', () => {
+            appWindow.close();
+        });
+    });
+}

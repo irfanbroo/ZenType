@@ -12,7 +12,14 @@ let supabaseClient = null;
 
 try {
     if (window.supabase && SUPABASE_URL !== 'INSERT_YOUR_SUPABASE_URL_HERE') {
-        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+            auth: {
+                autoRefreshToken: true,
+                persistSession: true,
+                detectSessionInUrl: true,
+                flowType: 'implicit'
+            }
+        });
         console.log("Supabase initialized successfully");
     } else {
         console.error("Supabase Initialization Failed:");
@@ -276,7 +283,12 @@ function initAuth() {
         }
 
         // ── Web Fallback: Standard Supabase redirect ──────────────────────
-        const { error } = await supabaseClient.auth.signInWithOAuth({ provider: 'google' });
+        const { error } = await supabaseClient.auth.signInWithOAuth({
+            provider: 'google',
+            options: {
+                redirectTo: window.location.origin,
+            }
+        });
         if (error) alert("Error: " + error.message);
     };
 
@@ -1321,7 +1333,7 @@ function initAuth() {
 
     // Check Logic
     if (supabaseClient) {
-        supabaseClient.auth.getSession().then(({ data: { session } }) => updateAuthState(session));
+        supabaseClient.auth.getSession().then(({ data: { session } }) => updateAuthState(session)).catch(e => console.warn("Auth session check failed:", e));
         supabaseClient.auth.onAuthStateChange((_event, session) => updateAuthState(session));
     }
 }
@@ -1335,3 +1347,10 @@ if (document.readyState === 'loading') {
 } else {
     initAuth();
 }
+
+// Clean up OAuth hash fragment after Supabase has consumed it
+setTimeout(() => {
+    if (window.location.hash === '#' || window.location.hash === '') {
+        history.replaceState(null, '', window.location.pathname);
+    }
+}, 1000);
