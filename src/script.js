@@ -18,7 +18,6 @@ import { initParticles, initKeypressParticles, loopKeypressParticles,
     getKeypressAnimId, setKeypressAnimId, getKeyParticles } from './effects.js';
 
 
-let currentPool = 0;
 
 let userConfig = {
     wallpaperId: 'gura_yuri',
@@ -494,10 +493,15 @@ function applyTheme(skipLoader = false) {
     const cleanWpm = document.getElementById('clean-wpm-display');
     if (cleanWpm) cleanWpm.style.display = isClean ? '' : 'none';
 
-    // Hide wallpaper/effects tabs in clean mode
-    document.querySelectorAll('.settings-tab[data-tab="wallpaper"], .settings-tab[data-tab="effects"]').forEach(tab => {
-        tab.style.display = isClean ? 'none' : '';
+    // Toggle settings tabs vs clean modes panel
+    const settingsTabs = document.querySelector('.settings-tabs');
+    const cleanModesPanel = document.getElementById('clean-modes-panel');
+    if (settingsTabs) settingsTabs.style.display = isClean ? 'none' : '';
+    document.querySelectorAll('.tab-pane').forEach(pane => {
+        if (isClean) pane.style.display = 'none';
+        else pane.style.display = '';
     });
+    if (cleanModesPanel) cleanModesPanel.style.display = isClean ? 'block' : 'none';
 
     // Update UI mode toggle buttons
     document.querySelectorAll('.ui-mode-btn').forEach(btn => {
@@ -783,71 +787,27 @@ function setupSettingsListeners() {
         });
     });
 
-    // --- MODES MODAL LOGIC ---
-    const modesBtn = document.getElementById('modes-btn');
-    const modesModal = document.getElementById('modes-modal');
-    const closeModesBtn = document.getElementById('close-modes-btn');
+    // --- CLEAN MODE: GAME MODES PANEL CARD LISTENERS ---
+    const closeSettingsForMode = () => {
+        if (UI.settingsModal) UI.settingsModal.classList.add('hidden');
+    };
 
-    if (modesBtn && modesModal && closeModesBtn) {
-        modesBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            modesModal.classList.remove('hidden');
-        });
+    const cleanModesPanel = document.getElementById('clean-modes-panel');
+    if (cleanModesPanel) {
+        const hagakureCard = document.getElementById('hagakure-tile');
+        if (hagakureCard) hagakureCard.addEventListener('click', () => { startHagakureMode(); closeSettingsForMode(); });
 
-        closeModesBtn.addEventListener('click', () => {
-            modesModal.classList.add('hidden');
-        });
-
-        modesModal.addEventListener('click', (e) => {
-            if (e.target === modesModal) {
-                modesModal.classList.add('hidden');
-            }
-        });
-
-        // Hagakure Card Click
-        const hagakureCard = document.querySelector('.mode-card.active'); // Assuming Hagakure is the only active one for now
-        if (hagakureCard) {
-            hagakureCard.addEventListener('click', () => {
-                startHagakureMode();
-                modesModal.classList.add('hidden');
-            });
-        }
-
-        // Shadow Mode Card Click
         const shadowCard = document.getElementById('shadow-mode-card');
-        if (shadowCard) {
-            shadowCard.addEventListener('click', () => {
-                startShadowMode();
-                modesModal.classList.add('hidden');
-            });
-        }
+        if (shadowCard) shadowCard.addEventListener('click', () => { startShadowMode(); closeSettingsForMode(); });
 
-        // Dojo Mode Card Click
         const dojoCard = document.getElementById('dojo-mode-card');
-        if (dojoCard) {
-            dojoCard.addEventListener('click', () => {
-                startDojoMode();
-                modesModal.classList.add('hidden');
-            });
-        }
+        if (dojoCard) dojoCard.addEventListener('click', () => { startDojoMode(); closeSettingsForMode(); });
 
-        // Coding Mode Card Click
         const codingCard = document.getElementById('coding-mode-card');
-        if (codingCard) {
-            codingCard.addEventListener('click', () => {
-                startCodingMode();
-                modesModal.classList.add('hidden');
-            });
-        }
+        if (codingCard) codingCard.addEventListener('click', () => { startCodingMode(); closeSettingsForMode(); });
 
-        // Zen Garden Mode Card Click
         const zenCard = document.getElementById('zen-mode-card');
-        if (zenCard) {
-            zenCard.addEventListener('click', () => {
-                startZenMode();
-                modesModal.classList.add('hidden');
-            });
-        }
+        if (zenCard) zenCard.addEventListener('click', () => { startZenMode(); closeSettingsForMode(); });
     }
 
     // ═══════════════════════════════════════════════════════
@@ -5893,6 +5853,18 @@ const dojoLevelInfo = {
     }
 };
 
+function updateDojoTrophyCount() {
+    const badge = document.getElementById('dojo-trophy-count');
+    if (!badge) return;
+    const wins = parseInt(localStorage.getItem('dojo_level7_wins') || '0', 10);
+    if (wins > 0) {
+        badge.textContent = wins;
+        badge.classList.remove('hidden');
+    } else {
+        badge.classList.add('hidden');
+    }
+}
+
 function initDojoSetup() {
     // Show setup, hide game board
     const setup = document.getElementById('dojo-setup');
@@ -5945,6 +5917,8 @@ function initDojoSetup() {
             launchDojoLevel(level);
         };
     });
+
+    updateDojoTrophyCount();
 }
 
 function launchDojoLevel(level) {
@@ -6019,10 +5993,10 @@ function launchDojoLevel(level) {
     if (dojoState.timedMode) {
         if (globalTimer) globalTimer.classList.remove('hidden');
         if (globalTimerValue) {
-            globalTimerValue.textContent = '00:15';
+            globalTimerValue.textContent = '00:30';
             globalTimerValue.classList.remove('danger');
         }
-        dojoState.globalTimeLeft = 15; // 15 seconds (Final)
+        dojoState.globalTimeLeft = 30; // 30 seconds
         dojoState.globalTimerInterval = null;
     } else {
         if (globalTimer) globalTimer.classList.add('hidden');
@@ -6717,6 +6691,7 @@ async function dojoLevel7Victory() {
     let wins = parseInt(localStorage.getItem('dojo_level7_wins') || '0', 10);
     wins++;
     localStorage.setItem('dojo_level7_wins', wins.toString());
+    updateDojoTrophyCount();
 
     // Play slice sound for victory
     playDojoSliceSound();
@@ -6762,11 +6737,9 @@ async function dojoLevel7Victory() {
     // Record in Supabase (Global Leaderboard) in BACKGROUND
     if (window.recordDojoWin) {
         window.recordDojoWin().then(dbWins => {
-            if (dbWins !== null) {
-                // Sync local storage to match DB
+            if (dbWins != null) {
                 localStorage.setItem('dojo_level7_wins', dbWins.toString());
-                // Update overlay if still visible? 
-                // No need to be distracting, just store it for next time.
+                updateDojoTrophyCount();
             }
         });
     }
@@ -9551,25 +9524,7 @@ _tapeObserver.observe(document.body, { attributes: true, attributeFilter: ['clas
 // ═══════════════════════════════════════════════════════════
 
 function generateWordList(count = 60) {
-    // Check if current wallpaper has a specific word pool assigned
-    const wp = wallpapers.find(w => w.id === userConfig.wallpaperId);
-    let pool;
-
-    if (wp && wp.wordPoolId !== undefined) {
-        pool = wordPools[wp.wordPoolId];
-    } else {
-        // Skip pool 1 (APT) in random rotation if generic
-        // Actually, just pick random pool safely
-        // But let's keep existing logic or simplify
-        pool = wordPools[currentPool];
-        // Only advance pool if we are generating a FULL new game list
-        // For appending, maybe just use same pool?
-        if (count >= 60) {
-            currentPool = (currentPool + 1) % wordPools.length;
-            // Skip APT (index 1) if rotated into it? logic was weird before.
-            if (currentPool === 1) currentPool = 2;
-        }
-    }
+    const pool = wordPools[0];
 
     const list = [];
     for (let i = 0; i < count; i++) {

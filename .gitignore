@@ -17,7 +17,6 @@ steam-build*/
 *.exe
 *.msi
 *.deb
-*.app
 *.zip
 
 # Local config

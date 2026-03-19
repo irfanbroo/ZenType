@@ -16,8 +16,8 @@
         window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
     </script>
     <script defer src="/_vercel/insights/script.js"></script>
-  <script type="module" crossorigin src="/assets/index-CK-IFo92.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-B7iEBYQG.css">
+  <script type="module" crossorigin src="/assets/index-XuAq5CdF.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-DMA0dcXk.css">
 </head>
 
 <body>
@@ -419,6 +419,56 @@
                     <i class="ri-user-settings-line"></i>
                     <span>Avatar</span>
                 </button>
+            </div>
+
+            <!-- Clean Mode: Game Modes Panel -->
+            <div id="clean-modes-panel">
+                <div class="section-header" style="padding: 20px 24px 8px;">
+                    <i class="ri-gamepad-line section-icon"></i>
+                    <label class="section-label">GAME MODES</label>
+                </div>
+                <div class="clean-modes-grid">
+                    <div class="clean-mode-tile" id="hagakure-tile">
+                        <div class="clean-tile-icon"><i class="ri-sword-fill"></i></div>
+                        <div class="clean-tile-info">
+                            <span class="clean-tile-name">Hagakure</span>
+                            <span class="clean-tile-desc">One mistake and it's over</span>
+                        </div>
+                        <i class="ri-arrow-right-s-line clean-tile-arrow"></i>
+                    </div>
+                    <div class="clean-mode-tile" id="shadow-mode-card">
+                        <div class="clean-tile-icon"><i class="ri-ghost-line"></i></div>
+                        <div class="clean-tile-info">
+                            <span class="clean-tile-name">Shadow</span>
+                            <span class="clean-tile-desc">Hesitation is defeat</span>
+                        </div>
+                        <i class="ri-arrow-right-s-line clean-tile-arrow"></i>
+                    </div>
+                    <div class="clean-mode-tile" id="dojo-mode-card">
+                        <div class="clean-tile-icon"><i class="ri-graduation-cap-line"></i></div>
+                        <div class="clean-tile-info">
+                            <span class="clean-tile-name">Dojo</span>
+                            <span class="clean-tile-desc">Train your fingers</span>
+                        </div>
+                        <i class="ri-arrow-right-s-line clean-tile-arrow"></i>
+                    </div>
+                    <div class="clean-mode-tile" id="coding-mode-card">
+                        <div class="clean-tile-icon"><i class="ri-code-s-slash-line"></i></div>
+                        <div class="clean-tile-info">
+                            <span class="clean-tile-name">Coding</span>
+                            <span class="clean-tile-desc">Type real code</span>
+                        </div>
+                        <i class="ri-arrow-right-s-line clean-tile-arrow"></i>
+                    </div>
+                    <div class="clean-mode-tile" id="zen-mode-card">
+                        <div class="clean-tile-icon"><i class="ri-leaf-line"></i></div>
+                        <div class="clean-tile-info">
+                            <span class="clean-tile-name">Zen Garden</span>
+                            <span class="clean-tile-desc">Type poetry & philosophy</span>
+                        </div>
+                        <i class="ri-arrow-right-s-line clean-tile-arrow"></i>
+                    </div>
+                </div>
             </div>
 
             <!-- Tab: Wallpaper -->
@@ -1882,77 +1932,12 @@
             </div>
         </div>
         <div class="footer-links">
-            <a href="#" class="footer-link-pill" id="modes-btn">
-                <i class="ri-gamepad-line"></i> Modes
-            </a>
-            <a href="privacy.html" class="footer-link-pill">
+<a href="privacy.html" class="footer-link-pill">
                 <i class="ri-lock-line"></i> Privacy
             </a>
         </div>
     </footer>
 
-    <!-- MODES MODAL -->
-    <div id="modes-modal" class="modal-overlay hidden">
-        <div class="settings-modal" style="max-width: 800px;">
-            <div class="settings-header">
-                <h2><i class="ri-gamepad-line"></i> Game Modes</h2>
-                <button class="close-modal-btn" id="close-modes-btn"><i class="ri-close-line"></i></button>
-            </div>
-            <div class="settings-content">
-                <div class="modes-grid">
-                    <!-- Hagakure Mode -->
-                    <div class="mode-card active">
-                        <div class="mode-icon"><i class="ri-sword-fill"></i></div>
-                        <div class="mode-info">
-                            <h3>Hagakure Mode</h3>
-                            <p>The way of the warrior. One mistake and it's over.</p>
-                        </div>
-                        <div class="mode-status">Active</div>
-                    </div>
-
-                    <!-- Shadow Mode -->
-                    <div class="mode-card active" id="shadow-mode-card">
-                        <div class="mode-icon"><i class="ri-ghost-line"></i></div>
-                        <div class="mode-info">
-                            <h3>Shadow Mode</h3>
-                            <p>Rhythm of the Void. Hesitation is Defeat.</p>
-                        </div>
-                        <div class="mode-status">Active</div>
-                    </div>
-
-                    <!-- Dojo Mode -->
-                    <div class="mode-card active" id="dojo-mode-card">
-                        <div class="mode-icon"><i class="ri-graduation-cap-line"></i></div>
-                        <div class="mode-info">
-                            <h3>Dojo Mode</h3>
-                            <p>Master the blade. Train your fingers.</p>
-                        </div>
-                        <div class="mode-status">Active</div>
-                    </div>
-
-                    <!-- Coding Mode -->
-                    <div class="mode-card active" id="coding-mode-card">
-                        <div class="mode-icon"><i class="ri-code-s-slash-line"></i></div>
-                        <div class="mode-info">
-                            <h3>Coding Mode</h3>
-                            <p>Built for Developers. Type Real Code.</p>
-                        </div>
-                        <div class="mode-status">Active</div>
-                    </div>
-
-                    <!-- Zen Garden Mode -->
-                    <div class="mode-card active" id="zen-mode-card">
-                        <div class="mode-icon"><i class="ri-leaf-line"></i></div>
-                        <div class="mode-info">
-                            <h3>Zen Garden</h3>
-                            <p>Endless focus. Type poetry & philosophy.</p>
-                        </div>
-                        <div class="mode-status">Active</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- HAGAKURE MODE -->
     <div id="hagakure-splash" class="hidden">

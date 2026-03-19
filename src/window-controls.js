@@ -1,4 +1,6 @@
 if (window.__TAURI_INTERNALS__) {
+    document.querySelector('.titlebar').style.display = 'flex';
+
     import('@tauri-apps/api/window').then(({ getCurrentWindow }) => {
         const appWindow = getCurrentWindow();
         window.appWindow = appWindow;
