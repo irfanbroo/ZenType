@@ -502,6 +502,8 @@ function applyTheme(skipLoader = false) {
         else pane.style.display = '';
     });
     if (cleanModesPanel) cleanModesPanel.style.display = isClean ? 'block' : 'none';
+    const musicPanel = document.getElementById('clean-music-panel');
+    if (musicPanel) musicPanel.style.display = isClean ? 'none' : 'block';
 
     // Update UI mode toggle buttons
     document.querySelectorAll('.ui-mode-btn').forEach(btn => {
@@ -577,6 +579,11 @@ function applyTheme(skipLoader = false) {
 
         UI.bgVideo.oncanplay = () => {
             UI.bgVideo.oncanplay = null;
+            // Don't play video in clean mode
+            if (document.body.classList.contains('clean-mode')) {
+                if (!skipLoader) UI.loadingOverlay.classList.add('hidden');
+                return;
+            }
             // Attempt to play immediately (should succeed since muted)
             const playPromise = UI.bgVideo.play();
 
@@ -808,6 +815,9 @@ function setupSettingsListeners() {
 
         const zenCard = document.getElementById('zen-mode-card');
         if (zenCard) zenCard.addEventListener('click', () => { startZenMode(); closeSettingsForMode(); });
+
+        const rainCard = document.getElementById('rain-mode-card');
+        if (rainCard) rainCard.addEventListener('click', () => { startRainMode(); closeSettingsForMode(); });
     }
 
     // ═══════════════════════════════════════════════════════
@@ -11169,6 +11179,754 @@ window.applyProfileTheme = function (theme, targetElement = null) {
     root.style.setProperty('--profile-accent', accent);
     root.style.setProperty('--profile-glow-primary', glowPrimary);
 };
+
+// ══════════════════════════════════════════════════════════
+//                     RAIN MODE
+//     "Let the words fall. Keep up."
+// ══════════════════════════════════════════════════════════
+
+const rainDifficultyConfig = {
+    drizzle:  { maxOnScreen: 3, spawnMs: 2400, speedMin: 0.35, speedMax: 0.7,  pool: 'easy'   },
+    downpour: { maxOnScreen: 5, spawnMs: 1600, speedMin: 0.65, speedMax: 1.2,  pool: 'medium' },
+    typhoon:  { maxOnScreen: 7, spawnMs: 900,  speedMin: 1.05, speedMax: 1.9,  pool: 'hard'   }
+};
+
+const rainFailQuotes = [
+    "The tide swallowed you whole.",
+    "Even the rain grows tired of waiting.",
+    "Some storms are not meant to be survived.",
+    "You hesitated. The sky did not.",
+    "Drowning is just falling in the wrong direction.",
+    "The words never stopped. You did.",
+    "Every drop knew your name. You forgot theirs.",
+    "Still hands make still graves.",
+    "The storm remembers. You will not.",
+    "Speed is a form of mercy. You found none."
+];
+
+const rainVictoryQuotes = [
+    "The rain bows to your rhythm.",
+    "You speak the language of storms.",
+    "Every word caught. Every drop obeyed.",
+    "Calm in the eye of the typhoon.",
+    "The sky has nothing left to throw at you.",
+    "You are the current they feared.",
+    "The storm remembers who survived.",
+    "Not a single drop touched the ground.",
+    "Fluid precision. The river envies you.",
+    "You became the rain."
+];
+
+const rainCodeWords = [
+    "function", "return", "const", "let", "async", "await", "import", "export",
+    "class", "extends", "interface", "typeof", "forEach", "filter", "reduce",
+    "Promise", "callback", "render", "useState", "useEffect", "props", "boolean",
+    "module", "require", "console", "debugger", "iterator", "generator", "prototype",
+    "closure", "scope", "hoisting", "webpack", "runtime", "compile", "deploy",
+    "docker", "container", "pipeline", "endpoint", "middleware", "payload", "schema",
+    "migrate", "rollback", "commit", "rebase", "fetch", "component", "selector",
+    "recursion", "algorithm", "boolean", "variable", "parameter", "exception",
+    "overflow", "pointer", "integer", "compiler", "runtime", "bytecode", "garbage"
+];
+
+const rainState = {
+    activeWords: [],
+    lives: 3,
+    maxLives: 3,
+    score: 0,
+    level: 1,
+    correctChars: 0,
+    startTime: null,
+    spawnTimer: null,
+    animFrameId: null,
+    statsInterval: null,
+    targetId: null,
+    difficulty: 'drizzle',
+    wordType: 'english',
+    wordsTyped: 0,
+    combo: 0,
+    maxCombo: 0,
+    isActive: false,
+    _nextId: 0
+};
+
+let rainWasPlayingBefore = { masterPlaying: false, bgAudioPlaying: false, bgVideoMuted: true };
+
+function startRainMode() {
+    const splash = document.getElementById('rain-splash');
+    if (!splash) return;
+
+    splash.classList.remove('hidden');
+
+    // Hide main UI
+    ['game-ui', 'modes-modal'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('hidden');
+    });
+    const appHeader = document.getElementById('app-header');
+    const navButtons = document.getElementById('top-nav-buttons');
+    const footer = document.querySelector('footer') || document.querySelector('.site-footer');
+    if (appHeader) appHeader.style.display = 'none';
+    if (navButtons) navButtons.style.display = 'none';
+    if (footer) footer.style.display = 'none';
+
+    // Save audio state — keep master audio playing (rain is chill)
+    rainWasPlayingBefore.masterPlaying = !masterAudio.paused;
+    rainWasPlayingBefore.bgAudioPlaying = currentBgAudio && !currentBgAudio.paused;
+    rainWasPlayingBefore.bgVideoMuted = UI.bgVideo ? UI.bgVideo.muted : true;
+    if (UI.bgVideo) UI.bgVideo.muted = true;
+
+    setTimeout(() => {
+        splash.classList.add('hidden');
+        const rainUI = document.getElementById('rain-ui');
+        if (rainUI) {
+            rainUI.classList.remove('hidden');
+            // Always start on clear sky
+            rainUI.dataset.sky = 'clear';
+            document.querySelectorAll('.rain-sky-phase').forEach(el => el.classList.remove('active'));
+            const clearEl = document.getElementById('sky-clear');
+            if (clearEl) clearEl.classList.add('active');
+            // Reset sun
+            const sun = document.getElementById('rain-sun');
+            if (sun) { sun.style.opacity = '1'; sun.style.animation = ''; }
+        }
+        initRainSetup();
+    }, 2500);
+}
+
+function initRainSetup() {
+    // Exit button
+    const exitBtn = document.getElementById('rain-exit-btn');
+    if (exitBtn) exitBtn.onclick = () => exitRainMode();
+
+    // Difficulty buttons — click selects + starts
+    document.querySelectorAll('.rain-opt-btn').forEach(btn => {
+        btn.onclick = () => {
+            document.querySelectorAll('.rain-opt-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            rainState.difficulty = btn.dataset.diff || 'drizzle';
+            initRainGame();
+        };
+    });
+
+    // Word type buttons — click selects only (no start)
+    document.querySelectorAll('.rain-type-btn').forEach(btn => {
+        btn.onclick = () => {
+            document.querySelectorAll('.rain-type-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            rainState.wordType = btn.dataset.type || 'english';
+        };
+    });
+
+    // Lives selector buttons
+    document.querySelectorAll('.rain-lives-btn').forEach(btn => {
+        btn.onclick = () => {
+            document.querySelectorAll('.rain-lives-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            rainState.maxLives = parseInt(btn.dataset.lives) || 3;
+        };
+    });
+
+    // Result buttons
+    const retryBtn = document.getElementById('rain-retry-btn');
+    if (retryBtn) retryBtn.onclick = () => initRainGame();
+    const leaveBtn = document.getElementById('rain-leave-btn');
+    if (leaveBtn) leaveBtn.onclick = () => exitRainMode();
+}
+
+function initRainGame() {
+    // Clean up any previous run
+    rainCleanup();
+
+    // Reset state
+    rainState.activeWords = [];
+    rainState.lives = rainState.maxLives;
+    rainState.score = 0;
+    rainState.level = 1;
+    rainState.correctChars = 0;
+    rainState.startTime = null;
+    rainState.targetId = null;
+    rainState.wordsTyped = 0;
+    rainState.combo = 0;
+    rainState.maxCombo = 0;
+    rainState.isActive = true;
+    rainState._nextId = 0;
+
+    // Build lives HUD dynamically
+    const livesEl = document.getElementById('rain-lives');
+    livesEl.innerHTML = '';
+    livesEl.classList.remove('critical');
+    for (let i = 0; i < rainState.maxLives; i++) {
+        const icon = document.createElement('i');
+        icon.className = 'ri-drop-fill rain-life';
+        livesEl.appendChild(icon);
+    }
+
+    // Reset HUD
+    rainUpdateHUD();
+    rainUpdateComboHUD();
+
+    // Show arena, hide setup + result
+    document.getElementById('rain-setup').classList.add('hidden');
+    document.getElementById('rain-arena').classList.remove('hidden');
+    document.getElementById('rain-result').classList.add('hidden');
+
+    // Clear field
+    document.getElementById('rain-field').innerHTML = '';
+
+    // Initialize sky + rain streaks
+    rainUpdateSky();
+    rainBuildStreaks();
+    rainSpawnBgDrops();
+
+    // Focus input
+    const input = document.getElementById('rain-input');
+    input.value = '';
+    input.style.color = '';
+    input.focus();
+    input.onblur = () => { if (rainState.isActive) input.focus(); };
+    input.oninput = (e) => {
+        if (!rainState.isActive) return;
+        if (!rainState.startTime && e.target.value.length > 0) {
+            rainState.startTime = Date.now();
+        }
+        handleRainInput(e.target.value, e.target);
+    };
+
+    // Start spawner
+    rainScheduleSpawn();
+
+    // Start game loop
+    rainLoop();
+
+    // Start stats updater
+    rainState.statsInterval = setInterval(rainUpdateHUD, 250);
+}
+
+function rainGetWordPool() {
+    // Word type overrides difficulty pool
+    if (rainState.wordType === 'warrior') return hagakureWords;
+    if (rainState.wordType === 'code')    return rainCodeWords;
+    // English: difficulty-based
+    const cfg = rainDifficultyConfig[rainState.difficulty];
+    if (cfg.pool === 'easy')   return wordPools[0];
+    if (cfg.pool === 'medium') return shadowWordsMedium;
+    return shadowWordsHard;
+}
+
+function rainPickWord() {
+    const pool = rainGetWordPool();
+    return pool[Math.floor(Math.random() * pool.length)];
+}
+
+function rainScheduleSpawn() {
+    const cfg = rainDifficultyConfig[rainState.difficulty];
+    const levelBonus = Math.max(0, (rainState.level - 1) * 80); // speed up spawns slightly per level
+    const delay = Math.max(500, cfg.spawnMs - levelBonus);
+
+    rainState.spawnTimer = setTimeout(() => {
+        if (!rainState.isActive) return;
+        if (rainState.activeWords.length < cfg.maxOnScreen) {
+            rainSpawnWord();
+        }
+        rainScheduleSpawn();
+    }, delay);
+}
+
+function rainSpawnWord() {
+    const cfg = rainDifficultyConfig[rainState.difficulty];
+    const field = document.getElementById('rain-field');
+    if (!field) return;
+
+    const text = rainPickWord();
+    const id = rainState._nextId++;
+
+    // Random X position (keep word within bounds, assume ~9px/char)
+    const fieldW = field.clientWidth || window.innerWidth;
+    const wordPxWidth = text.length * 11 + 20;
+    const xMin = 20;
+    const xMax = Math.max(xMin + 10, fieldW - wordPxWidth - 20);
+    const x = xMin + Math.random() * (xMax - xMin);
+
+    // Random speed within range, boosted by level
+    const levelMult = 1 + (rainState.level - 1) * 0.12;
+    const speed = (cfg.speedMin + Math.random() * (cfg.speedMax - cfg.speedMin)) * levelMult;
+
+    // Build DOM element
+    const el = document.createElement('div');
+    el.className = 'rain-word';
+    el.dataset.id = id;
+    el.style.left = x + 'px';
+    el.style.top = '-40px';
+
+    text.split('').forEach(ch => {
+        const span = document.createElement('span');
+        span.textContent = ch;
+        el.appendChild(span);
+    });
+
+    field.appendChild(el);
+
+    const wordObj = { text, x, y: -40, speed, el, charIndex: 0, id, done: false };
+    rainState.activeWords.push(wordObj);
+
+    // Auto-target the first word if nothing targeted
+    if (rainState.targetId === null) {
+        rainSetTarget(id);
+    }
+}
+
+function rainSetTarget(id) {
+    // Remove targeted class from old target
+    document.querySelectorAll('.rain-word.targeted').forEach(el => el.classList.remove('targeted'));
+    rainState.targetId = id;
+    if (id === null) return;
+    const word = rainState.activeWords.find(w => w.id === id);
+    if (word && word.el) word.el.classList.add('targeted');
+}
+
+function rainAutoTarget() {
+    // Target the word closest to the bottom (highest y value)
+    if (rainState.activeWords.length === 0) {
+        rainSetTarget(null);
+        return;
+    }
+    const currentTarget = rainState.activeWords.find(w => w.id === rainState.targetId && !w.done);
+    if (currentTarget) return; // keep current target if still active
+
+    let best = null;
+    let bestY = -Infinity;
+    for (const w of rainState.activeWords) {
+        if (!w.done && w.y > bestY) {
+            bestY = w.y;
+            best = w;
+        }
+    }
+    rainSetTarget(best ? best.id : null);
+}
+
+function rainLoop() {
+    if (!rainState.isActive) return;
+
+    const field = document.getElementById('rain-field');
+    if (!field) return;
+    const fieldH = field.clientHeight || window.innerHeight;
+
+    for (let i = rainState.activeWords.length - 1; i >= 0; i--) {
+        const w = rainState.activeWords[i];
+        if (w.done) continue;
+
+        w.y += w.speed;
+        w.el.style.top = w.y + 'px';
+
+        // Urgency coloring based on proximity to bottom
+        const pct = w.y / fieldH;
+        w.el.classList.toggle('warn',   pct >= 0.55 && pct < 0.78);
+        w.el.classList.toggle('danger', pct >= 0.78);
+
+        // Check if word hit the bottom
+        if (w.y + 30 >= fieldH) {
+            rainWordMissed(w, i);
+        }
+    }
+
+    // Auto re-target if needed
+    rainAutoTarget();
+
+    rainState.animFrameId = requestAnimationFrame(rainLoop);
+}
+
+function rainWordMissed(word, idx) {
+    word.done = true;
+
+    // Break combo
+    rainState.combo = 0;
+    rainUpdateComboHUD();
+
+    // Visual — missed animation
+    word.el.classList.add('missed');
+    word.el.classList.remove('warn', 'danger', 'targeted');
+    if (rainState.targetId === word.id) rainSetTarget(null);
+
+    setTimeout(() => {
+        if (word.el.parentNode) word.el.parentNode.removeChild(word.el);
+        rainState.activeWords.splice(rainState.activeWords.indexOf(word), 1);
+        rainAutoTarget();
+    }, 350);
+
+    // Lose a life
+    rainLoseLife();
+}
+
+function rainLoseLife() {
+    rainState.lives--;
+
+    // Update life icons
+    const lifeIcons = document.querySelectorAll('.rain-life');
+    for (let i = 0; i < lifeIcons.length; i++) {
+        if (i >= rainState.lives) lifeIcons[i].classList.add('lost');
+    }
+
+    // Critical pulse when 1 life left
+    const livesEl = document.getElementById('rain-lives');
+    if (rainState.lives === 1) livesEl.classList.add('critical');
+    else livesEl.classList.remove('critical');
+
+    // Screen flash
+    const flash = document.createElement('div');
+    flash.className = 'rain-danger-flash';
+    document.body.appendChild(flash);
+    setTimeout(() => flash.remove(), 400);
+
+    // Arena shake
+    const arena = document.getElementById('rain-arena');
+    arena.classList.remove('shake');
+    void arena.offsetWidth;
+    arena.classList.add('shake');
+    setTimeout(() => arena.classList.remove('shake'), 300);
+
+    if (rainState.lives <= 0) {
+        setTimeout(() => handleRainFail(), 350);
+    }
+}
+
+function handleRainInput(val, inputEl) {
+    const word = rainState.activeWords.find(w => w.id === rainState.targetId && !w.done);
+    if (!word) {
+        if (inputEl) inputEl.value = '';
+        return;
+    }
+
+    // Space at end = submit attempt
+    if (val.endsWith(' ')) {
+        const trimmed = val.trimEnd();
+        if (trimmed === word.text) {
+            rainCompleteWord(word);
+        }
+        if (inputEl) { inputEl.value = ''; inputEl.style.color = ''; }
+        return;
+    }
+
+    // Sync span highlights on the falling word
+    const spans = word.el.querySelectorAll('span');
+    let allCorrectSoFar = true;
+    for (let i = 0; i < word.text.length; i++) {
+        spans[i].classList.remove('correct', 'wrong-flash');
+        if (i < val.length) {
+            if (val[i] === word.text[i]) {
+                spans[i].classList.add('correct');
+            } else {
+                spans[i].classList.add('wrong-flash');
+                allCorrectSoFar = false;
+            }
+        }
+    }
+
+    word.charIndex = val.length;
+
+    // Color the input text: cyan if all correct so far, red if mistake
+    if (inputEl) {
+        inputEl.style.color = allCorrectSoFar ? 'var(--rain-correct)' : 'var(--rain-wrong)';
+    }
+
+    // Auto-complete when full word typed correctly (no space needed)
+    if (val === word.text) {
+        rainCompleteWord(word);
+        if (inputEl) { inputEl.value = ''; inputEl.style.color = ''; }
+    }
+}
+
+function rainCompleteWord(word) {
+    word.done = true;
+
+    // Combo + score
+    rainState.combo++;
+    if (rainState.combo > rainState.maxCombo) rainState.maxCombo = rainState.combo;
+    const multiplier = Math.min(5, 1 + Math.floor(rainState.combo / 3));
+    rainState.score += multiplier;
+    rainState.wordsTyped++;
+    rainState.correctChars += word.text.length;
+    if (rainState.targetId === word.id) rainSetTarget(null);
+
+    // Completion particles at word position
+    const rect = word.el.getBoundingClientRect();
+    rainSpawnCompletionParticles(rect.left + rect.width / 2, rect.top + rect.height / 2);
+
+    // Burst animation
+    word.el.classList.add('burst');
+    word.el.classList.remove('targeted', 'warn', 'danger');
+    setTimeout(() => {
+        if (word.el.parentNode) word.el.parentNode.removeChild(word.el);
+        const idx = rainState.activeWords.indexOf(word);
+        if (idx !== -1) rainState.activeWords.splice(idx, 1);
+        rainAutoTarget();
+    }, 400);
+
+    // Level up every 2 words (temp for testing, change back to 10)
+    if (rainState.wordsTyped > 0 && rainState.wordsTyped % 2 === 0) {
+        rainLevelUp();
+    }
+
+    rainUpdateHUD();
+    rainUpdateComboHUD();
+}
+
+function rainLevelUp() {
+    rainState.level++;
+    rainUpdateHUD();
+    rainUpdateSky();
+
+    // Background flash
+    const flash = document.createElement('div');
+    flash.className = 'rain-levelup-flash';
+    document.body.appendChild(flash);
+    setTimeout(() => flash.remove(), 600);
+
+    // Toast
+    const toast = document.createElement('div');
+    toast.className = 'rain-toast';
+    toast.textContent = `LEVEL ${rainState.level}`;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 1000);
+}
+
+function rainUpdateComboHUD() {
+    const el = document.getElementById('rain-combo');
+    const stat = document.getElementById('rain-combo-stat');
+    if (!el) return;
+
+    const mult = Math.min(5, 1 + Math.floor(rainState.combo / 3));
+    el.textContent = `x${mult}`;
+
+    el.classList.remove('hot', 'fire');
+    if (rainState.combo >= 9) el.classList.add('fire');
+    else if (rainState.combo >= 5) el.classList.add('hot');
+
+    // Bump animation
+    if (stat) {
+        stat.classList.remove('bump');
+        void stat.offsetWidth;
+        stat.classList.add('bump');
+        setTimeout(() => stat.classList.remove('bump'), 150);
+    }
+}
+
+function rainSpawnCompletionParticles(x, y) {
+    const colors = ['var(--rain-cyan)', '#a78bfa', 'var(--rain-gold)', '#00ff88'];
+    for (let i = 0; i < 8; i++) {
+        const p = document.createElement('div');
+        p.className = 'rain-particle';
+        const angle = (i / 8) * Math.PI * 2;
+        const dist = 35 + Math.random() * 45;
+        const tx = Math.cos(angle) * dist;
+        const ty = Math.sin(angle) * dist;
+        const dur = 0.4 + Math.random() * 0.3;
+        p.style.cssText = `left:${x}px;top:${y}px;background:${colors[i % colors.length]};--tx:${tx}px;--ty:${ty}px;--dur:${dur}s`;
+        document.body.appendChild(p);
+        setTimeout(() => p.remove(), dur * 1000 + 100);
+    }
+}
+
+function rainUpdateHUD() {
+    const wpmEl = document.getElementById('rain-wpm');
+    const scoreEl = document.getElementById('rain-score');
+    const levelEl = document.getElementById('rain-level');
+
+    if (scoreEl) scoreEl.textContent = rainState.score;
+    if (levelEl) levelEl.textContent = rainState.level;
+
+    if (wpmEl) {
+        if (!rainState.startTime) {
+            wpmEl.textContent = '0';
+        } else {
+            const mins = (Date.now() - rainState.startTime) / 60000;
+            wpmEl.textContent = Math.round((rainState.correctChars / 5) / mins) || 0;
+        }
+    }
+}
+
+
+function handleRainFail() {
+    rainState.isActive = false;
+    rainCleanup(false);
+
+    const resultEl   = document.getElementById('rain-result');
+    const titleEl    = document.getElementById('rain-result-title');
+    const quoteEl    = document.getElementById('rain-result-quote');
+    const finalWpm   = document.getElementById('rain-final-wpm');
+    const finalScore = document.getElementById('rain-final-score');
+    const finalLevel = document.getElementById('rain-final-level');
+    const finalCombo = document.getElementById('rain-final-combo');
+    const finalBest  = document.getElementById('rain-final-best');
+    const newBest    = document.getElementById('rain-new-best');
+
+    titleEl.textContent = 'DROWNED';
+    quoteEl.textContent = rainFailQuotes[Math.floor(Math.random() * rainFailQuotes.length)];
+
+    const mins = rainState.startTime ? (Date.now() - rainState.startTime) / 60000 : 0.01;
+    const wpm  = Math.round((rainState.correctChars / 5) / mins) || 0;
+
+    if (finalWpm)   finalWpm.textContent   = wpm;
+    if (finalScore) finalScore.textContent = rainState.score;
+    if (finalLevel) finalLevel.textContent = rainState.level;
+    if (finalCombo) finalCombo.textContent = `x${Math.min(5, 1 + Math.floor(rainState.maxCombo / 3))}`;
+
+    // Best score
+    const bestKey  = `rainBest_${rainState.difficulty}_${rainState.wordType}`;
+    const prevBest = parseInt(localStorage.getItem(bestKey)) || 0;
+    if (finalBest) finalBest.textContent = Math.max(prevBest, rainState.score);
+    if (rainState.score > prevBest) {
+        localStorage.setItem(bestKey, rainState.score);
+        if (newBest) newBest.classList.remove('hidden');
+    } else {
+        if (newBest) newBest.classList.add('hidden');
+    }
+
+    resultEl.classList.remove('hidden', 'survived');
+    resultEl.classList.add('drowned');
+}
+
+function rainUpdateSky() {
+    let phase;
+    if      (rainState.level <= 2) phase = 'clear';
+    else if (rainState.level <= 4) phase = 'golden';
+    else if (rainState.level <= 6) phase = 'cloudy';
+    else if (rainState.level <= 8) phase = 'storm';
+    else                           phase = 'typhoon';
+
+    const ui = document.getElementById('rain-ui');
+    const prev = ui.dataset.sky;
+    ui.dataset.sky = phase;
+
+    // Sun fades level by level, fully gone at level 9
+    const sun = document.getElementById('rain-sun');
+    if (sun) {
+        const sunOpacity = Math.max(0, 1 - (rainState.level - 1) / 8);
+        sun.style.opacity = sunOpacity;
+        // Kill the animation so it can't override opacity
+        sun.style.animation = sunOpacity <= 0 ? 'none' : '';
+    }
+
+    if (prev === phase) return;
+
+    // Crossfade sky layers
+    document.querySelectorAll('.rain-sky-phase').forEach(el => el.classList.remove('active'));
+    const phaseEl = document.getElementById(`sky-${phase}`);
+    if (phaseEl) phaseEl.classList.add('active');
+
+    // Rain streaks only from cloudy onwards
+    document.querySelectorAll('.rain-streak').forEach(el => {
+        el.classList.toggle('active', phase !== 'clear' && phase !== 'golden');
+    });
+
+    // Lightning on first entry into storm/typhoon
+    if (phase === 'storm' || phase === 'typhoon') {
+        rainLightningFlash();
+    }
+}
+
+function rainBuildStreaks() {
+    const layer = document.getElementById('rain-streak-layer');
+    if (!layer) return;
+    layer.innerHTML = '';
+    for (let i = 0; i < 40; i++) {
+        const s = document.createElement('div');
+        s.className = 'rain-streak';
+        const h = 60 + Math.random() * 100;
+        const dur = 0.6 + Math.random() * 1.2;
+        const delay = Math.random() * 3;
+        const left = Math.random() * 100;
+        s.style.cssText = `left:${left}%;height:${h}px;animation-duration:${dur}s;animation-delay:${delay}s`;
+        layer.appendChild(s);
+    }
+}
+
+function rainLightningFlash() {
+    const flash = document.createElement('div');
+    flash.style.cssText = `
+        position:fixed;inset:0;z-index:9600;pointer-events:none;
+        background:rgba(200,220,255,0.25);
+        animation: lightningFlash 0.15s ease forwards;
+    `;
+    document.body.appendChild(flash);
+    setTimeout(() => {
+        // Second flash
+        flash.style.animation = 'lightningFlash 0.1s ease forwards';
+        flash.style.background = 'rgba(200,220,255,0.15)';
+        setTimeout(() => flash.remove(), 150);
+    }, 200);
+}
+
+function rainCleanup(hideArena = true) {
+    rainState.isActive = false;
+
+    if (rainState.animFrameId) {
+        cancelAnimationFrame(rainState.animFrameId);
+        rainState.animFrameId = null;
+    }
+    if (rainState.spawnTimer) {
+        clearTimeout(rainState.spawnTimer);
+        rainState.spawnTimer = null;
+    }
+    if (rainState.statsInterval) {
+        clearInterval(rainState.statsInterval);
+        rainState.statsInterval = null;
+    }
+
+    // Clear field
+    const field = document.getElementById('rain-field');
+    if (field) field.innerHTML = '';
+    rainState.activeWords = [];
+
+    if (hideArena) {
+        const arena = document.getElementById('rain-arena');
+        if (arena) arena.classList.add('hidden');
+        const setup = document.getElementById('rain-setup');
+        if (setup) setup.classList.remove('hidden');
+    }
+}
+
+function rainSpawnBgDrops() {
+    const field = document.getElementById('rain-field');
+    if (!field) return;
+    // Remove old ones
+    field.querySelectorAll('.rain-bg-drop').forEach(el => el.remove());
+    for (let i = 0; i < 18; i++) {
+        const drop = document.createElement('div');
+        drop.className = 'rain-bg-drop';
+        const h = 40 + Math.random() * 80;
+        const dur = 1.2 + Math.random() * 2.5;
+        const delay = Math.random() * 3;
+        const left = Math.random() * 100;
+        drop.style.cssText = `left:${left}%;height:${h}px;animation-duration:${dur}s;animation-delay:${delay}s;opacity:${0.2 + Math.random() * 0.3}`;
+        field.appendChild(drop);
+    }
+}
+
+function exitRainMode() {
+    rainCleanup(true);
+
+    // Restore audio
+    if (UI.bgVideo) UI.bgVideo.muted = rainWasPlayingBefore.bgVideoMuted ?? true;
+
+    // Hide rain UI
+    document.getElementById('rain-ui').classList.add('hidden');
+
+    // Restore main UI
+    ['game-ui'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.remove('hidden');
+    });
+    const appHeader = document.getElementById('app-header');
+    const navButtons = document.getElementById('top-nav-buttons');
+    const footer = document.querySelector('footer') || document.querySelector('.site-footer');
+    if (appHeader) appHeader.style.display = '';
+    if (navButtons) navButtons.style.display = '';
+    if (footer) footer.style.display = '';
+
+    state.gameMode = 'time';
+    newGame();
+}
 
 // --- DISABLE DEV TOOLS & CONTEXT MENU ---
 document.addEventListener('contextmenu', event => event.preventDefault());

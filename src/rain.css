@@ -1,0 +1,1155 @@
+/* ══════════════════════════════════════════════════════════
+   RAIN MODE — ZenType
+   "Let the words fall. Keep up."
+══════════════════════════════════════════════════════════ */
+
+:root {
+    --rain-bg: #040d1a;
+    --rain-panel: rgba(4, 18, 38, 0.96);
+    --rain-text: #d6eeff;
+    --rain-cyan: #00d4ff;
+    --rain-blue: #0080ff;
+    --rain-life: #00b4d8;
+    --rain-danger: #ff4d6d;
+    --rain-correct: #48cae4;
+    --rain-wrong: #ff4d6d;
+    --rain-gold: #ffd166;
+}
+
+/* ── SPLASH ── */
+#rain-splash {
+    position: fixed;
+    inset: 0;
+    background: var(--rain-bg);
+    z-index: 10000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+#rain-splash:not(.hidden) {
+    display: flex;
+}
+
+/* animated rain streaks behind splash */
+#rain-splash::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+        170deg,
+        transparent 0px,
+        transparent 18px,
+        rgba(0, 180, 220, 0.04) 18px,
+        rgba(0, 180, 220, 0.04) 19px
+    );
+    animation: rainStreakBG 1.2s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes rainStreakBG {
+    from { background-position: 0 0; }
+    to   { background-position: 0 80px; }
+}
+
+/* Vignette */
+#rain-splash::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.85) 100%);
+    pointer-events: none;
+}
+
+.rain-splash-content {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    animation: splashDrop 2.5s cubic-bezier(0.1, 0, 0.15, 1) forwards;
+}
+
+@keyframes splashDrop {
+    0%   { opacity: 0; transform: translateY(-30px) scale(0.9); }
+    30%  { opacity: 1; transform: translateY(4px) scale(1.02); }
+    60%  { transform: translateY(-2px) scale(1); }
+    100% { opacity: 0.85; transform: translateY(0) scale(1); }
+}
+
+.rain-splash-title {
+    font-family: 'Shojumaru', cursive;
+    font-size: 5.5rem;
+    color: var(--rain-cyan);
+    text-shadow:
+        0 0 30px rgba(0, 212, 255, 0.6),
+        0 0 80px rgba(0, 212, 255, 0.2);
+    letter-spacing: 14px;
+    margin-bottom: 16px;
+}
+
+.rain-splash-quote {
+    font-family: 'JetBrains Mono', monospace;
+    color: rgba(214, 238, 255, 0.55);
+    font-size: 1rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+}
+
+/* Falling drop decorations on splash */
+.rain-splash-drops {
+    position: absolute;
+    top: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px;
+    height: 40px;
+    overflow: visible;
+}
+
+.rain-splash-drops::before,
+.rain-splash-drops::after {
+    content: '⬩ ⬩ ⬩';
+    position: absolute;
+    color: rgba(0, 212, 255, 0.35);
+    font-size: 0.7rem;
+    letter-spacing: 12px;
+    animation: dropsFloat 2s ease-in-out infinite alternate;
+}
+
+.rain-splash-drops::after {
+    top: 20px;
+    animation-delay: 0.4s;
+    color: rgba(0, 128, 255, 0.2);
+}
+
+@keyframes dropsFloat {
+    from { opacity: 0.3; transform: translateY(0); }
+    to   { opacity: 0.8; transform: translateY(-6px); }
+}
+
+/* ══════════════════════════════════════════════════
+   SKY SYSTEM — Cinematic weather background
+═══════════════════════════════════════════════════ */
+
+#rain-ui {
+    position: fixed;
+    inset: 0;
+    z-index: 9000;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    background: #0c1e3a;
+}
+
+#rain-ui:not(.hidden) {
+    display: flex;
+}
+
+/* ── SKY LAYER ── */
+#rain-sky {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+}
+
+.rain-sky-phase {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.rain-sky-phase.active {
+    opacity: 1;
+}
+
+/* Phase 1 — Midday. Rich cobalt at zenith, bright azure below */
+#sky-clear {
+    background: linear-gradient(180deg,
+        #0d1f4a 0%,
+        #10357a 12%,
+        #1455a8 30%,
+        #1e7bc4 52%,
+        #3a9fd8 72%,
+        #6ec8e8 88%,
+        #a8dff0 100%
+    );
+}
+
+/* Phase 2 — Golden hour. Deep indigo zenith, violet mid, amber horizon */
+#sky-golden {
+    background: linear-gradient(180deg,
+        #0c0e20 0%,
+        #1a1240 12%,
+        #3a1858 28%,
+        #7a2a5a 44%,
+        #c04820 58%,
+        #e06818 72%,
+        #f09030 84%,
+        #f8b84a 100%
+    );
+}
+
+/* Phase 3 — Heavy overcast. All warmth drained */
+#sky-cloudy {
+    background: linear-gradient(180deg,
+        #0e1018 0%,
+        #181e28 20%,
+        #222a38 42%,
+        #2c3648 65%,
+        #384458 100%
+    );
+}
+
+/* Phase 4 — Pre-storm. Near-black, cold indigo */
+#sky-storm {
+    background: linear-gradient(180deg,
+        #04050a 0%,
+        #080c18 25%,
+        #0c1228 55%,
+        #080e20 80%,
+        #040810 100%
+    );
+}
+
+/* Phase 5 — Typhoon. Absolute void */
+#sky-typhoon {
+    background: linear-gradient(180deg,
+        #020204 0%,
+        #03040a 40%,
+        #040310 70%,
+        #020206 100%
+    );
+}
+
+/* ── SUN / HORIZON GLOW ── */
+#rain-sun {
+    position: absolute;
+    top: -120px;
+    right: -60px;
+    width: 280px;
+    height: 280px;
+    border-radius: 50%;
+    background: radial-gradient(circle,
+        rgba(255, 240, 180, 0.65) 0%,
+        rgba(255, 210, 100, 0.3)  30%,
+        rgba(255, 180, 60,  0.08) 60%,
+        transparent 100%
+    );
+    pointer-events: none;
+    z-index: 3;
+    transition: opacity 8s cubic-bezier(0.4, 0, 0.2, 1),
+                background 8s cubic-bezier(0.4, 0, 0.2, 1),
+                top 8s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: sunBreath 5s ease-in-out infinite alternate;
+}
+
+#rain-sun i { display: none; }
+
+/* Golden hour — sun drops lower, turns deep amber/orange */
+#rain-ui[data-sky="golden"] #rain-sun {
+    top: 10px;
+    right: -40px;
+    width: 340px;
+    height: 340px;
+    background: radial-gradient(circle,
+        rgba(255, 180, 60,  0.7) 0%,
+        rgba(255, 120, 20,  0.4) 28%,
+        rgba(220,  80,  0,  0.15) 55%,
+        transparent 100%
+    );
+}
+
+/* sun opacity controlled by JS per level */
+
+@keyframes sunBreath {
+    from { opacity: 0.82; }
+    to   { opacity: 1; }
+}
+
+/* ── VIGNETTE — deepens as sky darkens ── */
+#rain-sky::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 50%, transparent 40%, rgba(0,0,0,0.18) 100%);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 8s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 5;
+}
+
+#rain-ui[data-sky="cloudy"]  #rain-sky::after { opacity: 0.5; }
+#rain-ui[data-sky="storm"]   #rain-sky::after { opacity: 0.8; }
+#rain-ui[data-sky="typhoon"] #rain-sky::after { opacity: 1; }
+
+
+/* ── RAIN STREAK LAYER ── */
+#rain-streak-layer {
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.rain-streak {
+    position: absolute;
+    width: 1.5px;
+    background: linear-gradient(to bottom, transparent, rgba(180, 220, 255, 0.35), transparent);
+    animation: streakFall linear infinite;
+    top: -10%;
+    opacity: 0;
+    transition: opacity 2s ease;
+}
+
+.rain-streak.active { opacity: 1; }
+
+@keyframes streakFall {
+    from { transform: translateY(0); }
+    to   { transform: translateY(115vh); }
+}
+
+/* Streak intensity per phase */
+#rain-ui[data-sky="clear"]  .rain-streak  { opacity: 0 !important; }
+#rain-ui[data-sky="golden"] .rain-streak  { opacity: 0 !important; }
+#rain-ui[data-sky="cloudy"] .rain-streak  { background: linear-gradient(to bottom, transparent, rgba(160, 200, 230, 0.25), transparent); }
+#rain-ui[data-sky="storm"] .rain-streak   { background: linear-gradient(to bottom, transparent, rgba(140, 180, 220, 0.45), transparent); width: 2px; }
+#rain-ui[data-sky="typhoon"] .rain-streak { background: linear-gradient(to bottom, transparent, rgba(100, 160, 220, 0.6), transparent); width: 2.5px; }
+
+/* ── HUD ── */
+#rain-hud {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 16px;
+    /* transparent — sky shows through */
+    background: linear-gradient(180deg, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.1) 100%);
+    backdrop-filter: blur(8px);
+    /* soft fade bottom instead of hard border */
+    border-bottom: none;
+}
+
+/* stat pill */
+.rain-hud-stat {
+    display: flex;
+    align-items: baseline;
+    gap: 7px;
+    padding: 5px 14px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.rain-hud-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 2px;
+    color: rgba(255, 255, 255, 0.35);
+    text-transform: uppercase;
+}
+
+#rain-wpm, #rain-score, #rain-level {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #ffffff;
+    text-shadow: 0 0 14px rgba(0, 212, 255, 0.5);
+}
+
+#rain-combo {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #ffffff;
+    text-shadow: 0 0 14px rgba(0, 212, 255, 0.5);
+    transition: color 0.2s, text-shadow 0.2s;
+}
+
+/* lives — pushed to far right, no pill */
+#rain-lives {
+    margin-left: auto;
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    padding: 5px 14px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.rain-life {
+    font-size: 1.05rem;
+    color: #48cae4;
+    text-shadow: 0 0 8px rgba(0, 180, 216, 0.7);
+    transition: color 0.3s, text-shadow 0.3s;
+}
+
+.rain-life.lost {
+    color: rgba(255, 255, 255, 0.1);
+    text-shadow: none;
+}
+
+/* ── SETUP SCREEN ── */
+#rain-setup {
+    position: relative;
+    z-index: 10;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    padding: 40px;
+}
+
+/* Frosted glass panel behind setup content */
+#rain-setup::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: min(560px, 90%);
+    height: auto;
+    min-height: 380px;
+    max-height: 80vh;
+    background: rgba(5, 15, 35, 0.45);
+    backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 20px;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.25);
+    z-index: -1;
+}
+
+#rain-setup.hidden {
+    display: none !important;
+}
+
+.rain-title {
+    font-family: 'Shojumaru', cursive;
+    font-size: 3.5rem;
+    color: var(--rain-cyan);
+    text-shadow: 0 0 24px rgba(0, 212, 255, 0.4);
+    letter-spacing: 10px;
+    margin-bottom: 4px;
+}
+
+.rain-subtitle {
+    font-family: 'JetBrains Mono', monospace;
+    color: rgba(214, 238, 255, 0.4);
+    font-size: 0.75rem;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+}
+
+.rain-difficulty {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 12px;
+}
+
+.rain-opt-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    padding: 14px 32px;
+    background: transparent;
+    border: 1px solid rgba(0, 212, 255, 0.25);
+    color: rgba(214, 238, 255, 0.6);
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+}
+
+.rain-opt-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 212, 255, 0);
+    transition: background 0.2s;
+}
+
+.rain-opt-btn:hover {
+    border-color: var(--rain-cyan);
+    color: var(--rain-cyan);
+    text-shadow: 0 0 8px rgba(0, 212, 255, 0.5);
+    box-shadow: 0 0 18px rgba(0, 212, 255, 0.15);
+}
+
+.rain-opt-btn[data-diff="typhoon"]:hover {
+    border-color: var(--rain-danger);
+    color: var(--rain-danger);
+    text-shadow: 0 0 8px rgba(255, 77, 109, 0.5);
+    box-shadow: 0 0 18px rgba(255, 77, 109, 0.15);
+}
+
+#rain-exit-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+    padding: 10px 24px;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(214, 238, 255, 0.25);
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s;
+    margin-top: 8px;
+}
+
+#rain-exit-btn:hover {
+    color: rgba(214, 238, 255, 0.5);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* ── GAME ARENA ── */
+#rain-arena {
+    position: relative;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+#rain-arena.hidden {
+    display: none;
+}
+
+#rain-field {
+    position: relative;
+    flex: 1;
+    overflow: hidden;
+}
+
+/* ── FALLING WORDS ── */
+.rain-word {
+    position: absolute;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #ffffff;
+    text-shadow:
+        0 2px 6px rgba(0, 30, 80, 0.5),
+        0 1px 2px rgba(0, 0, 0, 0.35);
+    white-space: nowrap;
+    user-select: none;
+    pointer-events: none;
+    letter-spacing: 2px;
+    animation: wordSpawn 0.25s ease-out forwards;
+    transition: color 3s ease, text-shadow 3s ease;
+}
+
+@keyframes wordSpawn {
+    from { opacity: 0; transform: translateY(-8px) scale(0.92); }
+    to   { opacity: 1; transform: translateY(0)   scale(1); }
+}
+
+/* Per-phase colors */
+#rain-ui[data-sky="clear"] .rain-word {
+    color: #ffffff;
+    text-shadow:
+        0 2px 8px rgba(0, 40, 120, 0.45),
+        0 1px 0   rgba(0, 0,  0,   0.2);
+}
+
+/* Golden hour — warm cream text, amber glow */
+#rain-ui[data-sky="golden"] .rain-word {
+    color: #fff4e0;
+    text-shadow:
+        0 2px 10px rgba(140, 50, 0, 0.5),
+        0 1px 0    rgba(0, 0, 0, 0.25);
+}
+
+#rain-ui[data-sky="cloudy"] .rain-word {
+    color: #e8f2ff;
+    text-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.5),
+        0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+#rain-ui[data-sky="storm"] .rain-word {
+    color: #d0eaff;
+    text-shadow:
+        0 0 12px rgba(80, 160, 255, 0.4),
+        0 2px 6px rgba(0,  0,   0,   0.65);
+}
+
+#rain-ui[data-sky="typhoon"] .rain-word {
+    color: #ffffff;
+    text-shadow:
+        0 0 14px rgba(0, 212, 255, 0.55),
+        0 2px 6px rgba(0, 0,   0,   0.8);
+}
+
+/* Targeted word */
+.rain-word.targeted {
+    font-size: 1.55rem;
+    letter-spacing: 2.5px;
+}
+
+#rain-ui[data-sky="clear"] .rain-word.targeted,
+#rain-ui[data-sky="golden"] .rain-word.targeted,
+#rain-ui[data-sky="cloudy"] .rain-word.targeted {
+    color: #ffffff !important;
+    text-shadow:
+        0 0 16px rgba(30, 140, 255, 0.7),
+        0 2px 8px rgba(0,  60,  160, 0.4),
+        0 1px 0   rgba(0,  0,   0,   0.25) !important;
+}
+
+#rain-ui[data-sky="storm"] .rain-word.targeted,
+#rain-ui[data-sky="typhoon"] .rain-word.targeted {
+    color: #80f0ff !important;
+    text-shadow:
+        0 0 18px rgba(0, 212, 255, 0.85),
+        0 2px 6px rgba(0, 0,   0,   0.7) !important;
+}
+
+.rain-word span {
+    transition: color 0.1s;
+}
+
+.rain-word span.correct {
+    color: #7de8ff;
+    text-shadow: 0 0 8px rgba(0, 180, 240, 0.6);
+}
+
+.rain-word span.wrong-flash {
+    color: #ff4d6d;
+    text-shadow: 0 0 8px rgba(255, 77, 109, 0.9);
+    animation: wrongFlash 0.3s ease-out forwards;
+}
+
+@keyframes wrongFlash {
+    0%   { color: #ff4d6d; }
+    100% { color: inherit; }
+}
+
+/* Word burst on completion */
+.rain-word.burst {
+    animation: wordBurst 0.4s cubic-bezier(0.2, 0, 0.8, 1) forwards;
+    pointer-events: none;
+}
+
+@keyframes wordBurst {
+    0%   { transform: scale(1);    opacity: 1; }
+    40%  { transform: scale(1.35); opacity: 0.9; filter: brightness(2); }
+    100% { transform: scale(0.6);  opacity: 0; }
+}
+
+/* Word missed — accelerate and fade red */
+.rain-word.missed {
+    animation: wordMissed 0.35s ease-in forwards;
+    color: var(--rain-danger) !important;
+    text-shadow: 0 0 12px rgba(255, 77, 109, 0.7) !important;
+}
+
+@keyframes wordMissed {
+    0%   { opacity: 1; transform: translateY(0) scale(1); }
+    100% { opacity: 0; transform: translateY(40px) scale(0.85); }
+}
+
+/* ── GROUND / INPUT ZONE ── */
+/* Semi-transparent ground band at the bottom */
+#rain-arena::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0; right: 0;
+    height: 100px;
+    background: linear-gradient(to top, rgba(0,10,30,0.55) 0%, transparent 100%);
+    pointer-events: none;
+    z-index: 4;
+    transition: background 3s ease;
+}
+
+#rain-ui[data-sky="clear"] #rain-arena::after,
+#rain-ui[data-sky="cloudy"] #rain-arena::after {
+    background: linear-gradient(to top, rgba(10,30,70,0.4) 0%, transparent 100%);
+}
+
+/* ── DANGER LINE ── */
+#rain-bottom-bar {
+    height: 2px;
+    background: linear-gradient(90deg,
+        transparent 0%,
+        rgba(255, 77, 109, 0.4) 20%,
+        rgba(255, 77, 109, 0.7) 50%,
+        rgba(255, 77, 109, 0.4) 80%,
+        transparent 100%
+    );
+    box-shadow: 0 -2px 12px rgba(255, 77, 109, 0.25), 0 2px 12px rgba(255, 77, 109, 0.25);
+    position: relative;
+    z-index: 6;
+    animation: dangerPulse 2.5s ease-in-out infinite;
+}
+
+@keyframes dangerPulse {
+    0%, 100% { opacity: 0.5; }
+    50%      { opacity: 1; }
+}
+
+/* ── INPUT ZONE WRAPPER ── */
+#rain-input-zone {
+    position: relative;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 0 16px;
+    background: rgba(0, 8, 24, 0.5);
+    backdrop-filter: blur(18px);
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* ── INPUT ── */
+#rain-input {
+    position: relative;
+    z-index: 20;
+    display: block;
+    margin: 0;
+    width: min(480px, 70%);
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    color: #e8f4ff;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.15rem;
+    font-weight: 600;
+    padding: 12px 24px;
+    outline: none;
+    caret-color: var(--rain-cyan);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    text-align: center;
+    letter-spacing: 2px;
+}
+
+#rain-input:focus {
+    border-color: rgba(0, 212, 255, 0.5);
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.15), inset 0 0 12px rgba(0, 212, 255, 0.04);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+#rain-input::placeholder {
+    color: rgba(200, 225, 255, 0.2);
+    font-size: 0.75rem;
+    letter-spacing: 3px;
+    font-weight: 400;
+}
+
+/* ── RESULT OVERLAY ── */
+#rain-result {
+    position: fixed;
+    inset: 0;
+    background: rgba(4, 13, 26, 0.95);
+    backdrop-filter: blur(20px);
+    z-index: 9500;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+#rain-result:not(.hidden) {
+    display: flex;
+    animation: resultFadeIn 0.5s ease forwards;
+}
+
+@keyframes resultFadeIn {
+    from { opacity: 0; transform: scale(0.96); }
+    to   { opacity: 1; transform: scale(1); }
+}
+
+#rain-result-title {
+    font-family: 'Shojumaru', cursive;
+    font-size: 4rem;
+    letter-spacing: 12px;
+    text-shadow: 0 0 30px currentColor;
+    margin-bottom: 4px;
+}
+
+#rain-result.drowned #rain-result-title {
+    color: var(--rain-danger);
+}
+
+#rain-result.survived #rain-result-title {
+    color: var(--rain-cyan);
+}
+
+#rain-result-quote {
+    font-family: 'JetBrains Mono', monospace;
+    color: rgba(214, 238, 255, 0.45);
+    font-size: 0.85rem;
+    letter-spacing: 2px;
+    text-align: center;
+    max-width: 500px;
+    margin-bottom: 16px;
+    font-style: italic;
+}
+
+.rain-result-stats {
+    display: flex;
+    gap: 40px;
+    margin-bottom: 24px;
+}
+
+.rain-stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.rain-stat-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 3px;
+    color: rgba(0, 212, 255, 0.4);
+    text-transform: uppercase;
+}
+
+#rain-final-wpm, #rain-final-score, #rain-final-level {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--rain-cyan);
+    text-shadow: 0 0 16px rgba(0, 212, 255, 0.4);
+}
+
+.rain-result-actions {
+    display: flex;
+    gap: 14px;
+}
+
+#rain-retry-btn, #rain-leave-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    padding: 12px 28px;
+    background: transparent;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+#rain-retry-btn {
+    border: 1px solid rgba(0, 212, 255, 0.4);
+    color: var(--rain-cyan);
+}
+
+#rain-retry-btn:hover {
+    background: rgba(0, 212, 255, 0.1);
+    box-shadow: 0 0 18px rgba(0, 212, 255, 0.2);
+}
+
+#rain-leave-btn {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(214, 238, 255, 0.3);
+}
+
+#rain-leave-btn:hover {
+    border-color: rgba(255, 255, 255, 0.25);
+    color: rgba(214, 238, 255, 0.6);
+}
+
+/* ── SCREEN DANGER FLASH (life lost) ── */
+.rain-danger-flash {
+    position: fixed;
+    inset: 0;
+    background: rgba(255, 77, 109, 0.18);
+    pointer-events: none;
+    z-index: 9999;
+    animation: dangerFlashAnim 0.4s ease forwards;
+}
+
+@keyframes dangerFlashAnim {
+    0%   { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+/* ── LEVEL UP FLASH ── */
+.rain-levelup-flash {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 212, 255, 0.08);
+    pointer-events: none;
+    z-index: 9999;
+    animation: levelUpFlash 0.6s ease forwards;
+}
+
+@keyframes levelUpFlash {
+    0%   { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+/* ── LIGHTNING FLASH ── */
+@keyframes lightningFlash {
+    0%   { opacity: 0; }
+    15%  { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+/* ── BACKGROUND SAKURA / RAIN PARTICLES (CSS-only) ── */
+.rain-bg-drop {
+    position: absolute;
+    width: 1px;
+    background: linear-gradient(to bottom, transparent, rgba(0, 180, 220, 0.3), transparent);
+    pointer-events: none;
+    animation: bgDropFall linear infinite;
+    top: -10%;
+}
+
+@keyframes bgDropFall {
+    from { transform: translateY(0); opacity: 0.6; }
+    to   { transform: translateY(120vh); opacity: 0; }
+}
+
+/* Arena shake on miss */
+#rain-arena.shake {
+    animation: arenaShake 0.3s ease;
+}
+
+@keyframes arenaShake {
+    0%  { transform: translate(0, 0); }
+    20% { transform: translate(-5px, 2px); }
+    40% { transform: translate(5px, -2px); }
+    60% { transform: translate(-3px, 1px); }
+    80% { transform: translate(3px, -1px); }
+    100%{ transform: translate(0, 0); }
+}
+
+/* ── WORD URGENCY ── */
+.rain-word.warn {
+    color: #ffc040 !important;
+    text-shadow:
+        0 0 10px rgba(255, 160, 0, 0.5),
+        0 2px 6px rgba(0, 0, 0, 0.45) !important;
+}
+
+.rain-word.danger {
+    color: #ff5570 !important;
+    text-shadow:
+        0 0 14px rgba(255, 60, 80, 0.6),
+        0 2px 6px rgba(0, 0, 0, 0.5) !important;
+    animation: dangerWordPulse 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes dangerWordPulse {
+    from { text-shadow: 0 0 8px  rgba(255,60,80,0.5), 0 2px 6px rgba(0,0,0,0.5); }
+    to   { text-shadow: 0 0 20px rgba(255,60,80,0.9), 0 2px 6px rgba(0,0,0,0.5); }
+}
+
+/* ── COMBO HUD ── */
+#rain-combo-stat {
+    transition: transform 0.15s cubic-bezier(0.2, 0, 0.4, 1.4);
+}
+
+#rain-combo-stat.bump {
+    transform: scale(1.3);
+}
+
+#rain-combo.hot {
+    color: var(--rain-gold);
+    text-shadow: 0 0 16px rgba(255, 209, 102, 0.6);
+}
+
+#rain-combo.fire {
+    color: #ff8c42;
+    text-shadow: 0 0 20px rgba(255, 140, 66, 0.7);
+    animation: comboFire 0.4s ease-in-out infinite alternate;
+}
+
+@keyframes comboFire {
+    from { transform: scale(1); }
+    to   { transform: scale(1.08); }
+}
+
+/* ── SETUP SECTIONS ── */
+.rain-setup-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.rain-setup-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 4px;
+    color: rgba(0, 212, 255, 0.35);
+    text-transform: uppercase;
+}
+
+/* Word type buttons */
+.rain-wordtype {
+    display: flex;
+    gap: 10px;
+}
+
+.rain-type-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    padding: 10px 22px;
+    background: transparent;
+    border: 1px solid rgba(0, 212, 255, 0.18);
+    color: rgba(214, 238, 255, 0.45);
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.rain-type-btn:hover,
+.rain-type-btn.active {
+    border-color: var(--rain-cyan);
+    color: var(--rain-cyan);
+    background: rgba(0, 212, 255, 0.08);
+    box-shadow: 0 0 12px rgba(0, 212, 255, 0.12);
+}
+
+.rain-type-btn[data-type="warrior"]:hover,
+.rain-type-btn[data-type="warrior"].active {
+    border-color: var(--rain-gold);
+    color: var(--rain-gold);
+    background: rgba(255, 209, 102, 0.08);
+    box-shadow: 0 0 12px rgba(255, 209, 102, 0.12);
+}
+
+.rain-type-btn[data-type="code"]:hover,
+.rain-type-btn[data-type="code"].active {
+    border-color: #a78bfa;
+    color: #a78bfa;
+    background: rgba(167, 139, 250, 0.08);
+    box-shadow: 0 0 12px rgba(167, 139, 250, 0.12);
+}
+
+/* Active difficulty btn */
+.rain-opt-btn.active {
+    border-color: var(--rain-cyan);
+    color: var(--rain-cyan);
+    background: rgba(0, 212, 255, 0.08);
+    box-shadow: 0 0 14px rgba(0, 212, 255, 0.15);
+}
+
+.rain-opt-btn[data-diff="typhoon"].active {
+    border-color: var(--rain-danger);
+    color: var(--rain-danger);
+    background: rgba(255, 77, 109, 0.08);
+    box-shadow: 0 0 14px rgba(255, 77, 109, 0.15);
+}
+
+/* Lives selector */
+.rain-lives-select {
+    display: flex;
+    gap: 10px;
+}
+
+.rain-lives-btn {
+    display: flex;
+    gap: 3px;
+    align-items: center;
+    padding: 9px 18px;
+    background: transparent;
+    border: 1px solid rgba(0, 212, 255, 0.18);
+    color: rgba(0, 180, 216, 0.4);
+    font-size: 0.85rem;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.rain-lives-btn:hover,
+.rain-lives-btn.active {
+    border-color: var(--rain-life);
+    color: var(--rain-life);
+    background: rgba(0, 180, 216, 0.08);
+    box-shadow: 0 0 12px rgba(0, 180, 216, 0.15);
+}
+
+/* ── LEVEL UP TOAST ── */
+.rain-toast {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.8);
+    font-family: 'Shojumaru', cursive;
+    font-size: 2.2rem;
+    letter-spacing: 10px;
+    color: var(--rain-cyan);
+    text-shadow: 0 0 30px rgba(0, 212, 255, 0.6);
+    pointer-events: none;
+    z-index: 9800;
+    animation: toastPop 1s cubic-bezier(0.2, 0, 0.4, 1) forwards;
+}
+
+@keyframes toastPop {
+    0%   { opacity: 0;   transform: translate(-50%, -50%) scale(0.7); }
+    20%  { opacity: 1;   transform: translate(-50%, -50%) scale(1.1); }
+    50%  { opacity: 1;   transform: translate(-50%, -50%) scale(1); }
+    100% { opacity: 0;   transform: translate(-50%, -60%) scale(0.95); }
+}
+
+/* ── COMPLETION PARTICLES ── */
+.rain-particle {
+    position: fixed;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--rain-cyan);
+    pointer-events: none;
+    z-index: 9700;
+    animation: rainParticleFly var(--dur, 0.6s) ease-out forwards;
+}
+
+@keyframes rainParticleFly {
+    0%   { opacity: 1; transform: translate(0, 0) scale(1); }
+    100% { opacity: 0; transform: translate(var(--tx, 0), var(--ty, 0)) scale(0); }
+}
+
+/* ── LIVES CRITICAL PULSE ── */
+#rain-lives.critical .rain-life:not(.lost) {
+    animation: lifeCritical 0.6s ease-in-out infinite alternate;
+    color: var(--rain-danger) !important;
+    text-shadow: 0 0 12px rgba(255, 77, 109, 0.8) !important;
+}
+
+@keyframes lifeCritical {
+    from { transform: scale(1);    opacity: 0.7; }
+    to   { transform: scale(1.25); opacity: 1; }
+}
+
+/* ── NEW BEST BADGE ── */
+#rain-new-best {
+    font-family: 'Shojumaru', cursive;
+    font-size: 1rem;
+    letter-spacing: 6px;
+    color: var(--rain-gold);
+    text-shadow: 0 0 20px rgba(255, 209, 102, 0.6);
+    padding: 4px 20px;
+    border: 1px solid rgba(255, 209, 102, 0.35);
+    border-radius: 3px;
+    background: rgba(255, 209, 102, 0.06);
+    animation: newBestPulse 1s ease-in-out infinite alternate;
+}
+
+#rain-new-best.hidden {
+    display: none !important;
+}
+
+@keyframes newBestPulse {
+    from { text-shadow: 0 0 10px rgba(255, 209, 102, 0.4); }
+    to   { text-shadow: 0 0 30px rgba(255, 209, 102, 0.8); }
+}

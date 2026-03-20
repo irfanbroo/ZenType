@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="/src/dojo.css">
     <link rel="stylesheet" href="/src/coding.css">
     <link rel="stylesheet" href="/src/devnote.css">
+    <link rel="stylesheet" href="/src/rain.css">
     <link
         href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Montserrat:wght@400;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;500;600;700&family=Shojumaru&display=swap"
         rel="stylesheet">
@@ -25,6 +26,29 @@
 </head>
 
 <body>
+
+    <!-- SPLASH SCREEN -->
+    <div id="splash-overlay">
+        <canvas id="splash-canvas"></canvas>
+        <div id="splash-content">
+            <div id="splash-title-block">
+                <p id="splash-eyebrow">Welcome to</p>
+                <h1 id="splash-title">ZenType</h1>
+                <p id="splash-tagline">Master your keyboard</p>
+            </div>
+            <div id="splash-buttons">
+                <button id="splash-music-btn">
+                    <i class="ri-music-fill"></i>
+                    Music Mode
+                    <span class="splash-beta">BETA</span>
+                </button>
+                <button id="splash-classic-btn">
+                    <i class="ri-keyboard-line"></i>
+                    Start Typing
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- Custom Titlebar / Window Controls -->
     <div data-tauri-drag-region class="titlebar">
@@ -401,6 +425,27 @@
                 </button>
             </div>
 
+            <!-- MUSIC MODE SECTION -->
+            <div id="clean-music-panel">
+                <button id="music-mode-toggle" class="music-mode-toggle">
+                    <div class="music-toggle-left">
+                        <i class="ri-headphone-line" style="color:#ffd700;font-size:1rem;"></i>
+                        <label class="section-label" style="cursor:pointer;margin:0;">MUSIC MODE</label>
+                    </div>
+                    <i class="ri-arrow-down-s-line music-toggle-chevron"></i>
+                </button>
+                <div class="clean-modes-grid music-mode-list" id="music-mode-list" style="display:none;">
+                    <div class="clean-mode-tile clean-mode-tile--golden" id="golden-brown-card">
+                        <div class="clean-tile-icon clean-tile-icon--golden"><i class="ri-music-fill"></i></div>
+                        <div class="clean-tile-info">
+                            <span class="clean-tile-name">Golden Brown</span>
+                            <span class="clean-tile-desc">Let the music guide your keys</span>
+                        </div>
+                        <i class="ri-arrow-right-s-line clean-tile-arrow"></i>
+                    </div>
+                </div>
+            </div>
+
             <!-- Settings Tab Navigation -->
             <div class="settings-tabs">
                 <button class="settings-tab active" data-tab="wallpaper">
@@ -472,8 +517,18 @@
                         </div>
                         <i class="ri-arrow-right-s-line clean-tile-arrow"></i>
                     </div>
+                    <div class="clean-mode-tile" id="rain-mode-card">
+                        <div class="clean-tile-icon"><i class="ri-drop-line"></i></div>
+                        <div class="clean-tile-info">
+                            <span class="clean-tile-name">Rain</span>
+                            <span class="clean-tile-desc">Don't let them hit the ground</span>
+                        </div>
+                        <i class="ri-arrow-right-s-line clean-tile-arrow"></i>
+                    </div>
                 </div>
             </div>
+
+
 
             <!-- Tab: Wallpaper -->
             <div class="tab-pane active" id="tab-wallpaper">
@@ -2108,6 +2163,131 @@
             </div>
         </div>
     </div>
+
+    <!-- RAIN MODE -->
+    <div id="rain-splash" class="hidden">
+        <div class="rain-splash-content">
+            <div class="rain-splash-drops"></div>
+            <h1 class="rain-splash-title">RAIN MODE</h1>
+            <p class="rain-splash-quote">"Let the words fall. Keep up."</p>
+        </div>
+    </div>
+
+    <div id="rain-ui" class="hidden" data-sky="clear">
+        <!-- Sky Background Layer -->
+        <div id="rain-sky">
+            <div class="rain-sky-phase active" id="sky-clear"></div>
+            <div class="rain-sky-phase" id="sky-golden"></div>
+            <div class="rain-sky-phase" id="sky-cloudy"></div>
+            <div class="rain-sky-phase" id="sky-storm"></div>
+            <div class="rain-sky-phase" id="sky-typhoon"></div>
+            <div id="rain-sun"></div>
+            <div id="rain-streak-layer"></div>
+        </div>
+
+        <!-- HUD -->
+        <div id="rain-hud">
+            <div class="rain-hud-stat">
+                <span class="rain-hud-label">WPM</span>
+                <span id="rain-wpm">0</span>
+            </div>
+            <div class="rain-hud-stat">
+                <span class="rain-hud-label">SCORE</span>
+                <span id="rain-score">0</span>
+            </div>
+            <div class="rain-hud-stat">
+                <span class="rain-hud-label">LEVEL</span>
+                <span id="rain-level">1</span>
+            </div>
+            <div class="rain-hud-stat" id="rain-combo-stat">
+                <span class="rain-hud-label">COMBO</span>
+                <span id="rain-combo">x1</span>
+            </div>
+            <div id="rain-lives">
+                <!-- filled by JS based on selected lives count -->
+            </div>
+        </div>
+
+        <!-- Setup Screen -->
+        <div id="rain-setup">
+            <h1 class="rain-title">RAIN MODE</h1>
+            <p class="rain-subtitle">TYPE BEFORE THEY FALL</p>
+
+            <div class="rain-setup-section">
+                <span class="rain-setup-label">SPEED</span>
+                <div class="rain-difficulty">
+                    <button class="rain-opt-btn active" data-diff="drizzle">DRIZZLE</button>
+                    <button class="rain-opt-btn" data-diff="downpour">DOWNPOUR</button>
+                    <button class="rain-opt-btn" data-diff="typhoon">TYPHOON</button>
+                </div>
+            </div>
+
+            <div class="rain-setup-section">
+                <span class="rain-setup-label">WORDS</span>
+                <div class="rain-wordtype">
+                    <button class="rain-type-btn active" data-type="english">ENGLISH</button>
+                    <button class="rain-type-btn" data-type="warrior">WARRIOR</button>
+                    <button class="rain-type-btn" data-type="code">CODE</button>
+                </div>
+            </div>
+
+            <div class="rain-setup-section">
+                <span class="rain-setup-label">LIVES</span>
+                <div class="rain-lives-select">
+                    <button class="rain-lives-btn" data-lives="1"><i class="ri-drop-fill"></i></button>
+                    <button class="rain-lives-btn active" data-lives="3"><i class="ri-drop-fill"></i><i class="ri-drop-fill"></i><i class="ri-drop-fill"></i></button>
+                    <button class="rain-lives-btn" data-lives="5"><i class="ri-drop-fill"></i><i class="ri-drop-fill"></i><i class="ri-drop-fill"></i><i class="ri-drop-fill"></i><i class="ri-drop-fill"></i></button>
+                </div>
+            </div>
+
+            <button id="rain-exit-btn">LEAVE THE STORM</button>
+        </div>
+
+        <!-- Game Arena -->
+        <div id="rain-arena" class="hidden">
+            <div id="rain-field">
+                <!-- falling word divs injected by JS -->
+            </div>
+            <div id="rain-bottom-bar"></div>
+            <div id="rain-input-zone">
+                <input type="text" id="rain-input" autocomplete="off" spellcheck="false" placeholder="type here...">
+            </div>
+
+            <!-- Result Overlay -->
+            <div id="rain-result" class="hidden">
+                <h1 id="rain-result-title">DROWNED</h1>
+                <p id="rain-result-quote"></p>
+                <div id="rain-new-best" class="hidden">NEW BEST</div>
+                <div class="rain-result-stats">
+                    <div class="rain-stat-item">
+                        <span class="rain-stat-label">WPM</span>
+                        <span id="rain-final-wpm">0</span>
+                    </div>
+                    <div class="rain-stat-item">
+                        <span class="rain-stat-label">SCORE</span>
+                        <span id="rain-final-score">0</span>
+                    </div>
+                    <div class="rain-stat-item">
+                        <span class="rain-stat-label">MAX COMBO</span>
+                        <span id="rain-final-combo">x1</span>
+                    </div>
+                    <div class="rain-stat-item">
+                        <span class="rain-stat-label">LEVEL</span>
+                        <span id="rain-final-level">1</span>
+                    </div>
+                    <div class="rain-stat-item">
+                        <span class="rain-stat-label">BEST</span>
+                        <span id="rain-final-best">0</span>
+                    </div>
+                </div>
+                <div class="rain-result-actions">
+                    <button id="rain-retry-btn">FACE THE STORM</button>
+                    <button id="rain-leave-btn">RETREAT</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- DOJO MODE UI -->
     <div id="dojo-splash" class="hidden">
         <div class="dojo-splash-content">
@@ -3556,6 +3736,71 @@
     <script type="module" src="/src/keystroke-visualizer.js"></script>
     <script type="module" src="/src/footer-widget.js"></script>
     <script type="module" src="/src/devnote.js"></script>
+    <script type="module" src="/src/music-mode.js"></script>
+    <script type="module" src="/src/splash.js"></script>
+
+    <!-- MUSIC MODE OVERLAY -->
+    <div id="music-mode-overlay" class="hidden">
+        <canvas id="music-shader-canvas"></canvas>
+        <div id="music-overlay-content">
+
+            <!-- Top bar -->
+            <div id="music-overlay-header">
+                <button id="music-overlay-back"><i class="ri-arrow-left-line"></i> Back</button>
+                <div></div>
+            </div>
+
+            <!-- Big title -->
+            <div id="music-overlay-title-block">
+                <p class="music-overlay-label">NOW PLAYING</p>
+                <h1 class="music-overlay-title">Golden Brown</h1>
+                <p class="music-overlay-artist">The Stranglers</p>
+            </div>
+
+            <!-- Loading screen -->
+            <div id="music-loading">
+                <div class="music-loading-spinner"></div>
+                <p class="music-loading-text">Loading track<span class="music-loading-dots"></span></p>
+            </div>
+
+            <!-- Lyrics -->
+            <div id="music-lyrics-area" style="display:none">
+                <div id="lyrics-prev" class="lyrics-line lyrics-prev"></div>
+                <div id="lyrics-curr" class="lyrics-line lyrics-curr"></div>
+                <div id="lyrics-next" class="lyrics-line lyrics-next"></div>
+                <div id="lyrics-done" class="lyrics-done hidden">
+                    <i class="ri-sparkling-2-line"></i> All lyrics typed
+                </div>
+            </div>
+
+            <!-- Hidden typing input -->
+            <input id="music-lyrics-input" type="text" autocomplete="off" spellcheck="false" autocapitalize="off">
+
+            <!-- Bottom controls -->
+            <div id="music-controls">
+                <button id="music-play-btn" class="music-play-btn">
+                    <i class="ri-play-fill"></i>
+                </button>
+                <div id="music-scrubber">
+                    <span id="music-time-current">0:00</span>
+                    <div id="music-progress-track">
+                        <div id="music-progress-fill"></div>
+                        <div id="music-progress-thumb"></div>
+                    </div>
+                    <span id="music-time-total">—</span>
+                </div>
+            </div>
+
+            <!-- Floating volume -->
+            <div id="music-volume">
+                <button id="music-vol-btn"><i class="ri-volume-up-line"></i></button>
+                <div id="music-vol-slider-wrap">
+                    <input id="music-vol-slider" type="range" min="0" max="100" value="80" step="1">
+                </div>
+            </div>
+
+        </div>
+    </div>
 </body>
 
 </html>
