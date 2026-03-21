@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google-site-verification" content="BWW0hMMw7Y84Myib4JPiUWQOsNLHf9sGvL9Ad4H39FQ" />
     <title>ZenType - Professional Typing Practice</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link
         href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Montserrat:wght@400;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;500;600;700&family=Shojumaru&display=swap"
         rel="stylesheet">
@@ -16,8 +16,8 @@
         window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
     </script>
     <script defer src="/_vercel/insights/script.js"></script>
-  <script type="module" crossorigin src="/assets/index-DeeBIaNF.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-CgXqjpiM.css">
+  <script type="module" crossorigin src="/assets/index-DpifoShy.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-CuBLTt5Q.css">
 </head>
 
 <body>
@@ -517,6 +517,14 @@
                         <div class="clean-tile-info">
                             <span class="clean-tile-name">Rain</span>
                             <span class="clean-tile-desc">Don't let them hit the ground</span>
+                        </div>
+                        <i class="ri-arrow-right-s-line clean-tile-arrow"></i>
+                    </div>
+                    <div class="clean-mode-tile" id="starroad-mode-card">
+                        <div class="clean-tile-icon"><i class="ri-star-line"></i></div>
+                        <div class="clean-tile-info">
+                            <span class="clean-tile-name">Star Road</span>
+                            <span class="clean-tile-desc">Hit notes to the beat</span>
                         </div>
                         <i class="ri-arrow-right-s-line clean-tile-arrow"></i>
                     </div>
@@ -3724,7 +3732,151 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- STAR ROAD SPLASH -->
+    <div id="starroad-splash" class="hidden">
+        <canvas id="starroad-splash-canvas"></canvas>
+        <div class="starroad-splash-inner">
+            <h1 class="starroad-splash-title">STAR ROAD</h1>
+            <p class="starroad-splash-subtitle">feel the rhythm</p>
+            <div class="starroad-splash-bar"><div class="starroad-splash-fill"></div></div>
+        </div>
+    </div>
+
+    <!-- STAR ROAD OVERLAY -->
+    <div id="starroad-overlay" class="hidden">
+        <canvas id="starroad-bg-canvas"></canvas>
+
+        <!-- SETUP SCREEN -->
+        <div id="starroad-setup" class="starroad-screen">
+            <button class="starroad-exit-btn" id="starroad-exit-btn">
+                <i class="ri-logout-box-r-line"></i> EXIT
+            </button>
+            <div class="starroad-setup-inner">
+                <h2 class="starroad-setup-title">STAR ROAD</h2>
+                <p class="starroad-setup-subtitle">paste a youtube link and ride the beat</p>
+                <div class="starroad-url-wrap">
+                    <i class="ri-youtube-line"></i>
+                    <input type="text" id="starroad-url-input" placeholder="https://youtube.com/watch?v=..." spellcheck="false" autocomplete="off">
+                </div>
+                <div class="starroad-speed-select">
+                    <span class="starroad-speed-label">NOTE SPEED</span>
+                    <button class="starroad-speed-btn" data-speed="slow">SLOW</button>
+                    <button class="starroad-speed-btn active" data-speed="normal">NORMAL</button>
+                    <button class="starroad-speed-btn" data-speed="fast">FAST</button>
+                </div>
+                <button class="starroad-start-btn" id="starroad-start-btn">
+                    <i class="ri-play-fill"></i> START
+                </button>
+                <p class="starroad-url-error hidden" id="starroad-url-error">Please enter a valid YouTube URL</p>
+            </div>
+        </div>
+
+        <!-- GAME BOARD -->
+        <div id="starroad-game" class="starroad-screen hidden">
+            <!-- Left panel (gpop retro style) -->
+            <div class="sr-left-panel">
+                <!-- Score block — gpop style -->
+                <div class="pp-scores">
+                    <div class="pp-score" id="starroad-score">0</div>
+                    <div class="pp-longest" id="starroad-best-streak">0</div>
+                    <div class="pp-score2" id="starroad-accuracy">0%</div>
+                    <div class="pp-fps" id="starroad-fps">60</div>
+                </div>
+
+                <!-- Controls help — dashed border box like challenge rules -->
+                <div class="sr-controls-box">
+                    <div class="sr-keys-help">
+                        <div class="sr-keys-row">
+                            <span class="sr-key-box">A</span>
+                            <span class="sr-key-box">S</span>
+                            <span class="sr-key-box">D</span>
+                            <span class="sr-key-box">F</span>
+                            <span class="sr-keys-text">to play the game.</span>
+                        </div>
+                        <div class="sr-keys-row">
+                            <span class="sr-key-box sr-key-wide">SPACE</span>
+                            <span class="sr-keys-text">to Play/Pause the video.</span>
+                        </div>
+                        <div class="sr-keys-row">
+                            <span class="sr-key-box">R</span>
+                            <span class="sr-keys-text">to restart the level.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- YouTube player visible top-right (like gpop) -->
+            <div id="sr-yt-visible"></div>
+
+            <!-- Ratings display (gpop pp-ratings style) -->
+            <div class="pp-ratings-container" id="sr-ratings"></div>
+
+            <!-- Game area with lanes and notes -->
+            <div id="sr-game-area">
+                <div class="sr-lane-line" style="--lane:0"><div class="sr-lane-glow" data-lane="0"></div></div>
+                <div class="sr-lane-line" style="--lane:1"><div class="sr-lane-glow" data-lane="1"></div></div>
+                <div class="sr-lane-line" style="--lane:2"><div class="sr-lane-glow" data-lane="2"></div></div>
+                <div class="sr-lane-line" style="--lane:3"><div class="sr-lane-glow" data-lane="3"></div></div>
+                <div class="sr-ghost" data-lane="0" style="--lane:0"></div>
+                <div class="sr-ghost" data-lane="1" style="--lane:1"></div>
+                <div class="sr-ghost" data-lane="2" style="--lane:2"></div>
+                <div class="sr-ghost" data-lane="3" style="--lane:3"></div>
+                <div id="sr-notes-container"></div>
+            </div>
+
+            <!-- ASDF key buttons at bottom -->
+            <div class="starroad-hit-zone" id="starroad-hit-zone">
+                <div class="starroad-hit-cell" data-lane="0"><span>A</span></div>
+                <div class="starroad-hit-cell" data-lane="1"><span>S</span></div>
+                <div class="starroad-hit-cell" data-lane="2"><span>D</span></div>
+                <div class="starroad-hit-cell" data-lane="3"><span>F</span></div>
+            </div>
+
+            <!-- Waiting message (shown until YT plays) -->
+            <div class="sr-waiting" id="sr-waiting">
+                <div class="sr-waiting-title">Waiting for Video to Play...</div>
+                <div class="sr-waiting-sub">(Click play video if the level is not starting)</div>
+            </div>
+
+
+            <div class="starroad-progress-bar">
+                <div class="starroad-progress-fill" id="starroad-progress-fill"></div>
+            </div>
+        </div>
+
+        <!-- RESULTS SCREEN -->
+        <div id="starroad-results" class="starroad-screen hidden">
+            <div class="starroad-results-inner">
+                <h2 class="starroad-results-title">STAGE CLEAR</h2>
+                <div class="starroad-results-stats">
+                    <div class="starroad-stat">
+                        <span class="starroad-stat-value" id="starroad-final-score">0</span>
+                        <span class="starroad-stat-label">SCORE</span>
+                    </div>
+                    <div class="starroad-stat">
+                        <span class="starroad-stat-value" id="starroad-final-accuracy">0%</span>
+                        <span class="starroad-stat-label">ACCURACY</span>
+                    </div>
+                    <div class="starroad-stat">
+                        <span class="starroad-stat-value" id="starroad-final-combo">0</span>
+                        <span class="starroad-stat-label">MAX COMBO</span>
+                    </div>
+                </div>
+                <div class="starroad-results-breakdown">
+                    <div class="starroad-break-row"><span class="starroad-break-label sr-perfect">PERFECT</span><span id="starroad-count-perfect">0</span></div>
+                    <div class="starroad-break-row"><span class="starroad-break-label sr-great">GREAT</span><span id="starroad-count-great">0</span></div>
+                    <div class="starroad-break-row"><span class="starroad-break-label sr-good">GOOD</span><span id="starroad-count-good">0</span></div>
+                    <div class="starroad-break-row"><span class="starroad-break-label sr-miss">MISS</span><span id="starroad-count-miss">0</span></div>
+                </div>
+                <div class="starroad-results-btns">
+                    <button class="starroad-btn" id="starroad-retry-btn"><i class="ri-refresh-line"></i> RETRY</button>
+                    <button class="starroad-btn starroad-btn-exit" id="starroad-leave-btn"><i class="ri-logout-box-r-line"></i> EXIT</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- MUSIC MODE OVERLAY -->
     <div id="music-mode-overlay" class="hidden">

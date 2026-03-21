@@ -4,7 +4,26 @@
       "Bash(npm run:*)",
       "WebFetch(domain:raw.githubusercontent.com)",
       "WebFetch(domain:21st.dev)",
-      "WebFetch(domain:app.superdesign.dev)"
+      "WebFetch(domain:app.superdesign.dev)",
+      "WebFetch(domain:gpop.io)",
+      "Bash(curl -s \"https://gpop.io\")",
+      "Bash(curl -s \"https://gpop.io/room\")",
+      "Bash(curl -s \"https://gpop.io/css/play.css?v=1.16.40\")",
+      "Bash(npm install:*)",
+      "Bash(curl -s \"https://gpop.io/dist/room.js?v=1.16.40\" -o /tmp/gpop-room.js)",
+      "Read(//tmp/**)",
+      "Bash(grep -oP '.{0,100}drawRoundedRect.{0,100}' /tmp/gpop-room.js)",
+      "Bash(grep -oE '.{0,80}drawRoundedRect.{0,80}' /tmp/gpop-room.js)",
+      "Bash(grep -oE '.{0,50}\\(canvas|Canvas\\).{0,50}' /tmp/gpop-room.js)",
+      "Bash(grep -oE '.{0,80}\\(note|Note|_\\\\$4n|_\\\\$4e|Texture\\\\.from\\).{0,80}' /tmp/gpop-room.js)",
+      "Bash(curl -s \"https://gpop.io/css/play.css?v=1.16.40\" -o /tmp/gpop-play.css)",
+      "Bash(curl -s \"https://gpop.io/css/room.css?v=1.16.40\" -o /tmp/gpop-room.css)",
+      "Bash(curl -s \"https://gpop.io/css/defaultpage.css?v=1.16.40\" -o /tmp/gpop-defaultpage.css)",
+      "Bash(grep -rn \"pp-note\\\\b\" /tmp/gpop-*.css)",
+      "Bash(grep -oE '.{0,30}_\\\\$I\\\\\\(.{0,100}' /tmp/gpop-room.js)",
+      "Bash(grep -oE '_\\\\$I=function.{0,200}' /tmp/gpop-room.js)",
+      "Bash(curl -sL \"https://gpop.io/room\" -o /tmp/gpop-room.html)",
+      "Bash(grep -oE '.{0,50}\\(borderColor|border-color|backgroundColor|background-color|hsl|rgb|#[0-9a-fA-F]{6}\\).{0,50}' /tmp/gpop-room.js)"
     ]
   }
 }

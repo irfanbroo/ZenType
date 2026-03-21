@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -B2 -A20 '_\\\\$ae=function')",
+      "Bash(grep -B2 -A30 '_\\\\$5s=function')"
+    ]
+  }
+}

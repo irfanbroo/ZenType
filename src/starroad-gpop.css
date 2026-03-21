@@ -1,0 +1,211 @@
+/* ══════════════════════════════════════════════════════════
+   STAR ROAD — Game visuals adapted from gpop.io's pixiiplayer.css
+   ══════════════════════════════════════════════════════════ */
+
+/* ── Lane structure ─────────────────────────────────────── */
+#sr-game-area {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    overflow: hidden;
+    /* Fade top edge like gpop */
+    -webkit-mask-image: linear-gradient(rgba(0,0,0,0) 0%, rgba(0,0,0,1) 10%);
+    mask-image: linear-gradient(rgba(0,0,0,0) 0%, rgba(0,0,0,1) 10%);
+}
+
+/* Lane line (vertical) */
+.sr-lane-line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: calc(var(--lane) * var(--sr-lane-w) + var(--sr-lanes-left) + var(--sr-note-w) / 2);
+    width: 0;
+    border-left: 1px solid #fff;
+    opacity: 0.4;
+    box-shadow: 0 0 3px 0px rgba(255, 255, 255, 0.5);
+    transition: 0.05s ease transform;
+    transform: scaleX(1) translateZ(0);
+}
+
+/* Lane glow — the line expands on hit */
+.sr-lane-glow {
+    display: none; /* replaced by the scaleX technique */
+}
+
+/* Lane hit state — the milky rainbow glow */
+.sr-lane-line.sr-lane-hit {
+    transform: scaleX(6) translateZ(0);
+    opacity: 1;
+    animation: sr-huerotate2 0.2s linear infinite;
+}
+
+/* Lane click (key press without hit) */
+.sr-lane-line.sr-lane-click {
+    transform: scaleX(2);
+    opacity: 0.7;
+}
+
+/* Ghost target at hit zone — same size as notes */
+.sr-ghost {
+    position: absolute;
+    top: 55%;
+    left: calc(var(--lane) * var(--sr-lane-w) + var(--sr-lanes-left));
+    width: var(--sr-note-w);
+    height: 28px;
+    transform: translateY(-50%);
+    border: 1px solid rgba(255, 255, 255, 1);
+    opacity: 0.4;
+    box-sizing: border-box;
+    border-radius: 6px;
+    box-shadow: 0 0 3px 0px rgba(255, 255, 255, 0.5);
+    transition: all 0.05s ease;
+}
+
+.sr-ghost.sr-ghost-glow {
+    box-shadow: 0 0 6px -1px rgb(255, 255, 255);
+    transform: translateY(-50%) scale(1.3) translateZ(0);
+    opacity: 1;
+}
+
+/* ── Notes ──────────────────────────────────────────────── */
+#sr-notes-container {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.sr-note {
+    position: absolute;
+    width: var(--sr-note-w);
+    text-align: center;
+    font-size: 18px;
+    line-height: 26px;
+    letter-spacing: -1px;
+    border-radius: 9px;
+    border: 3.2px double #fff;
+    background-clip: padding-box;
+    transition: opacity 0.5s ease;
+    transition-delay: 0.5s;
+    box-sizing: border-box;
+    border-color: currentColor;
+    background-color: currentColor;
+    box-shadow: 0 0 6px -1px currentColor;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+.sr-note-letter {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 28px;
+    min-height: 28px;
+    color: currentColor;
+    filter: brightness(1.5);
+    text-shadow: 0 0 2px rgba(255, 255, 255, 0.5);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 16px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+/* Per-lane note colors (from gpop) */
+.sr-note-a { color: #ff7272; background-color: rgba(255, 114, 114, 0.2); }
+.sr-note-s { color: #44f0ff; background-color: rgba(68, 240, 255, 0.2); }
+.sr-note-d { color: #5aff44; background-color: rgba(90, 255, 68, 0.2); }
+.sr-note-f { color: #fff744; background-color: rgba(255, 247, 68, 0.2); }
+
+/* Note hit animation */
+.sr-note-hit {
+    color: #44f0ff !important;
+    background-color: rgba(255, 114, 114, 0.9) !important;
+    opacity: 0;
+    animation: sr-huerotate2 0.2s linear infinite, sr-notehit 0.25s ease 1;
+}
+
+.sr-note-missed {
+    opacity: 0 !important;
+    transition: opacity 0.15s ease !important;
+    transition-delay: 0s !important;
+}
+
+/* Hold notes */
+.sr-note-hold {
+    text-align: center;
+    padding-left: 0;
+}
+
+.sr-note-hold .sr-note-letter {
+    height: 28px;
+}
+
+/* Center line through hold body */
+.sr-note-hold::before {
+    content: "";
+    height: calc(100% - 34px);
+    width: 1px;
+    background: currentColor;
+    display: block;
+    position: absolute;
+    top: 5px;
+    left: 50%;
+}
+
+/* Hold note being held */
+.sr-note-holding {
+    animation: sr-huerotate2 0.2s linear infinite;
+    background-color: rgba(255, 114, 114, 0.4) !important;
+}
+
+/* ── Hit feedback on ASDF buttons ───────────────────────── */
+.starroad-hit-cell.hit-perfect,
+.starroad-hit-cell.hit-great {
+    background: rgba(255, 255, 255, 0.5) !important;
+    box-shadow: inset 0 0 25px #1d1b2900, 0 1px 0 rgba(255, 255, 255, 0.5), 0 0px 3px -1px rgb(255, 227, 227) !important;
+    border: 1px solid rgb(255, 255, 255) !important;
+    animation: sr-keyhit 0.2s ease 1;
+}
+.starroad-hit-cell.hit-good {
+    background: rgba(255, 255, 255, 0.3) !important;
+    box-shadow: inset 0 0 25px #1d1b2900, 0 1px 0 rgba(255, 255, 255, 0.5), 0 1px 8px -1px rgb(255, 227, 227) !important;
+}
+.starroad-hit-cell.hit-miss {
+    opacity: 0.5;
+}
+
+/* ── Rating text (PERFECT, GREAT, etc.) ─────────────────── */
+.starroad-judgment.sr-miss { color: rgba(255, 109, 109, 0.7); font-size: 15px; }
+.starroad-judgment.sr-good { color: rgba(255, 255, 255, 0.3); font-size: 15px; }
+.starroad-judgment.sr-great { color: rgb(255, 254, 213); font-size: 18px; }
+.starroad-judgment.sr-perfect {
+    color: rgb(255, 197, 197);
+    animation: sr-huerotate 0.2s linear infinite;
+    padding: 2px 5px 1px;
+    border: 2px dotted;
+    font-size: 16px;
+}
+
+/* ── Animations (from gpop) ─────────────────────────────── */
+@keyframes sr-keyhit {
+    0%   { transform: scale(1); }
+    50%  { transform: scale(1.15); }
+    100% { transform: scale(1); }
+}
+@keyframes sr-notehit {
+    0%   { transform: scale(1); }
+    50%  { transform: scale(1.4); }
+    100% { transform: scale(1); }
+}
+@keyframes sr-huerotate {
+    0%   { filter: hue-rotate(0deg); }
+    50%  { filter: hue-rotate(180deg); }
+    100% { filter: hue-rotate(360deg); }
+}
+@keyframes sr-huerotate2 {
+    0%   { filter: brightness(1000%) invert(50%) sepia(100%) saturate(300%) brightness(200%) hue-rotate(0deg); }
+    50%  { filter: brightness(1000%) invert(50%) sepia(100%) saturate(300%) brightness(200%) hue-rotate(180deg); }
+    100% { filter: brightness(1000%) invert(50%) sepia(100%) saturate(300%) brightness(200%) hue-rotate(360deg); }
+}

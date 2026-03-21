@@ -1,0 +1,1195 @@
+/* ══════════════════════════════════════════════════════════
+   STAR ROAD MODE — gpop.io-style Falling Notes
+   ══════════════════════════════════════════════════════════ */
+
+/* Lane colors */
+:root {
+    --sr-lane0: #ff7272;   /* A — red (gpop exact) */
+    --sr-lane1: #44f0ff;   /* S — cyan (gpop exact) */
+    --sr-lane2: #5aff44;   /* D — green (gpop exact) */
+    --sr-lane3: #fff744;   /* F — yellow (gpop exact) */
+}
+
+/* ── SPLASH ─────────────────────────────────────────────── */
+#starroad-splash {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+#starroad-splash.hidden { display: none; }
+
+#starroad-splash-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.starroad-splash-inner {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+}
+
+.starroad-splash-title {
+    font-family: 'Outfit', sans-serif;
+    font-size: 4rem;
+    font-weight: 700;
+    color: #ffe644;
+    letter-spacing: 0.3em;
+    text-shadow: 0 0 40px rgba(255, 230, 68, 0.5), 0 0 80px rgba(255, 230, 68, 0.2);
+    animation: sr-splash-title 2.5s ease-out both;
+}
+
+.starroad-splash-subtitle {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.1rem;
+    color: rgba(255, 230, 180, 0.5);
+    letter-spacing: 0.2em;
+    margin-top: 8px;
+    animation: sr-splash-sub 2.5s ease-out 0.3s both;
+}
+
+.starroad-splash-bar {
+    width: 200px;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    margin: 24px auto 0;
+    overflow: hidden;
+}
+
+.starroad-splash-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #ff4466, #ffe644, #44ff88, #44ddff);
+    border-radius: 2px;
+    animation: sr-splash-load 2.3s ease-in-out forwards;
+}
+
+@keyframes sr-splash-title {
+    0% { opacity: 0; transform: scale(0.8) translateY(20px); }
+    50% { opacity: 1; }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+@keyframes sr-splash-sub {
+    0% { opacity: 0; transform: translateY(10px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes sr-splash-load {
+    0% { width: 0%; }
+    100% { width: 100%; }
+}
+
+/* ── OVERLAY ────────────────────────────────────────────── */
+#starroad-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 8000;
+    background: #0a0a12;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+#starroad-overlay.hidden { display: none; }
+
+#starroad-bg-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+}
+
+.starroad-screen {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.starroad-screen.hidden { display: none; }
+
+/* ── SETUP SCREEN ───────────────────────────────────────── */
+.starroad-exit-btn {
+    position: absolute;
+    top: 24px;
+    left: 24px;
+    z-index: 10;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: rgba(255, 255, 255, 0.6);
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.starroad-exit-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+.starroad-setup-inner {
+    text-align: center;
+    max-width: 480px;
+    padding: 0 24px;
+}
+
+.starroad-setup-title {
+    font-family: 'Outfit', sans-serif;
+    font-size: 2.8rem;
+    font-weight: 700;
+    color: #ffe644;
+    letter-spacing: 0.2em;
+    text-shadow: 0 0 30px rgba(255, 230, 68, 0.3);
+}
+
+.starroad-setup-subtitle {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.4);
+    letter-spacing: 0.1em;
+    margin-top: 6px;
+    margin-bottom: 32px;
+}
+
+.starroad-url-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 14px 18px;
+    transition: border-color 0.2s;
+}
+.starroad-url-wrap:focus-within {
+    border-color: rgba(255, 230, 68, 0.4);
+    box-shadow: 0 0 20px rgba(255, 230, 68, 0.08);
+}
+.starroad-url-wrap i {
+    font-size: 1.4rem;
+    color: #ff4444;
+    flex-shrink: 0;
+}
+
+#starroad-url-input {
+    flex: 1;
+    background: none;
+    border: none;
+    outline: none;
+    color: #fff;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9rem;
+}
+#starroad-url-input::placeholder {
+    color: rgba(255, 255, 255, 0.2);
+}
+
+.starroad-speed-select {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 20px;
+}
+.starroad-speed-label {
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.3);
+    letter-spacing: 0.15em;
+    margin-right: 8px;
+}
+.starroad-speed-btn {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.5);
+    padding: 6px 16px;
+    border-radius: 6px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.starroad-speed-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+}
+.starroad-speed-btn.active {
+    background: rgba(255, 230, 68, 0.12);
+    border-color: rgba(255, 230, 68, 0.4);
+    color: #ffe644;
+}
+
+.starroad-start-btn {
+    margin-top: 28px;
+    background: linear-gradient(135deg, #ffe644, #ff9900);
+    border: none;
+    color: #000;
+    padding: 14px 48px;
+    border-radius: 10px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 30px rgba(255, 230, 68, 0.25);
+}
+.starroad-start-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 40px rgba(255, 230, 68, 0.35);
+}
+
+.starroad-url-error {
+    color: #ff6b6b;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.85rem;
+    margin-top: 12px;
+}
+
+/* ── GAME BOARD ─────────────────────────────────────────── */
+#starroad-game {
+    justify-content: flex-start;
+    align-items: stretch;
+}
+
+/* Left panel — gpop style, positioned next to lanes */
+.sr-left-panel {
+    position: absolute;
+    top: 10px;
+    /* Anchor right edge to left edge of lanes, with small gap */
+    right: calc(100% - var(--sr-lanes-left) + 10px);
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 200px;
+    pointer-events: none;
+}
+
+/* Score block — exact gpop pp-scores style */
+.sr-left-panel .pp-scores {
+    display: block;
+    color: #fff;
+    font-family: 'JetBrains Mono', 'Press Start 2P', monospace;
+    animation: huerotate 2s linear infinite;
+    transform: translateZ(0);
+}
+.sr-left-panel .pp-score {
+    font-size: 28px;
+    color: #ffc5c5;
+    display: table;
+    transition: transform 0.08s ease;
+}
+.sr-left-panel .pp-score::before {
+    content: "SCORE: ";
+}
+.sr-left-panel .pp-longest {
+    font-size: 16px;
+    margin-top: -4px;
+    color: #fff;
+    opacity: 0.7;
+}
+.sr-left-panel .pp-longest::before {
+    content: "BEST STREAK: ";
+}
+.sr-left-panel .pp-score2 {
+    font-size: 16px;
+    margin-top: -2px;
+    color: #fff;
+    opacity: 0.7;
+}
+.sr-left-panel .pp-score2::before {
+    content: "ACCURACY: ";
+}
+.sr-left-panel .pp-fps {
+    font-size: 16px;
+    margin-top: -2px;
+    color: #fff;
+    opacity: 0.4;
+}
+.sr-left-panel .pp-fps::before {
+    content: "FPS: ";
+}
+
+/* ── DANCER (gpop Gbob-style pixel mascot) ───────────────── */
+.sr-dancer-area {
+    position: relative;
+    width: 100%;
+    height: 110px;
+    perspective-origin: center;
+    perspective: 70px;
+}
+/* Character container — bounces */
+.sr-dancer-character {
+    position: relative;
+    width: 100%;
+    height: 80px;
+    animation: bounce 1s infinite ease;
+}
+.sr-dancer-character canvas {
+    image-rendering: pixelated;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    height: 100%;
+    width: auto;
+    aspect-ratio: 16 / 22;
+}
+.sr-dancer-glow-layer {
+    filter: brightness(1000%) invert(50%) sepia(100%) saturate(300%) brightness(200%) blur(4px);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+/* Mini lane indicators under dancer (gpop plp-notes) */
+.sr-dancer-lanes {
+    position: absolute;
+    bottom: 1px;
+    left: 50%;
+    width: 80px;
+    transform: translateX(-50%) rotateX(60deg);
+    transform-style: preserve-3d;
+    display: flex;
+    justify-content: center;
+    gap: 2px;
+    opacity: 0.85;
+}
+.sr-dancer-lane {
+    width: 15px;
+    height: 40px;
+    border-radius: 0;
+    background-color: currentColor;
+    color: rgba(255, 255, 255, 0.15);
+    position: relative;
+    overflow: hidden;
+}
+.sr-dancer-lane-fill {
+    position: absolute;
+    inset: 0;
+    border-radius: 0;
+    box-sizing: border-box;
+    opacity: 0;
+    transition: opacity 0.05s ease;
+}
+/* Lane colors — match game lanes */
+.sr-dancer-lane-a .sr-dancer-lane-fill { border: 2px solid #ffb7b8; color: #ffb7b8; }
+.sr-dancer-lane-s .sr-dancer-lane-fill { border: 2px solid #98ffff; color: #98ffff; }
+.sr-dancer-lane-d .sr-dancer-lane-fill { border: 2px solid #a7ff8e; color: #a7ff8e; }
+.sr-dancer-lane-f .sr-dancer-lane-fill { border: 2px solid #ffff8d; color: #ffff8d; }
+/* Active state — key pressed */
+.sr-dancer-lane.active .sr-dancer-lane-fill {
+    opacity: 1;
+}
+/* Hit flash — brighter */
+.sr-dancer-lane.hit .sr-dancer-lane-fill {
+    opacity: 1;
+    animation: huerotate2 0.2s linear infinite;
+}
+
+/* Glow on during combo */
+.sr-dancer-area.sr-dancer-glow .sr-dancer-glow-layer {
+    opacity: 0.6;
+}
+/* Rainbow glow at high combo */
+.sr-dancer-area.sr-dancer-rainbow .sr-dancer-glow-layer {
+    opacity: 0.75;
+    animation: rainbow 1s linear infinite;
+}
+.sr-dancer-area.sr-dancer-rainbow .sr-dancer-character {
+    animation: bounce 0.5s infinite ease;
+}
+/* Hit reaction — quick scale pop */
+.sr-dancer-area.sr-dancer-hit .sr-dancer-character {
+    animation: sr-dancer-pop 0.15s ease 1, bounce 1s infinite ease;
+}
+@keyframes sr-dancer-pop {
+    0%   { transform: scale(1); }
+    50%  { transform: scale(1.15); }
+    100% { transform: scale(1); }
+}
+/* Miss reaction — shake */
+.sr-dancer-area.sr-dancer-miss .sr-dancer-character {
+    animation: sr-dancer-shake 0.3s ease 1, bounce 1s infinite ease;
+}
+@keyframes sr-dancer-shake {
+    0%, 100% { transform: translateX(0); }
+    25%      { transform: translateX(-4px); }
+    75%      { transform: translateX(4px); }
+}
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-4px); }
+}
+@keyframes rainbow {
+    0%   { filter: brightness(1000%) invert(50%) sepia(100%) saturate(300%) brightness(200%) blur(4px) hue-rotate(0deg); }
+    50%  { filter: brightness(1000%) invert(50%) sepia(100%) saturate(300%) brightness(200%) blur(4px) hue-rotate(180deg); }
+    100% { filter: brightness(1000%) invert(50%) sepia(100%) saturate(300%) brightness(200%) blur(4px) hue-rotate(360deg); }
+}
+
+/* Controls box — dashed border like gpop challenge rules */
+.sr-controls-box {
+    border: 3px dashed rgba(68, 240, 255, 0.5);
+    background: rgba(0, 0, 0, 0.3);
+    padding: 10px 12px;
+    pointer-events: auto;
+}
+
+/* Key instructions */
+.sr-keys-help {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.sr-keys-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.sr-key-box {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 28px;
+    height: 26px;
+    padding: 0 6px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #fff;
+}
+.sr-key-wide {
+    min-width: 60px;
+    padding: 0 10px;
+}
+.sr-keys-text {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.4);
+    margin-left: 6px;
+}
+
+/* YouTube player — visible top-right like gpop */
+#sr-yt-visible {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 10;
+    width: 280px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: #000;
+}
+#sr-yt-visible iframe {
+    display: block;
+    width: 100%;
+    height: 158px;
+    border: none;
+    pointer-events: none;
+}
+
+/* Volume blocks under video */
+.sr-volume-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 8px;
+    background: rgba(0, 0, 0, 0.6);
+}
+.sr-volume-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: rgba(255, 255, 255, 0.4);
+    letter-spacing: 0.1em;
+    margin-right: 4px;
+}
+.sr-vol-block {
+    width: 10px;
+    height: 12px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 2px;
+    cursor: pointer;
+    transition: background 0.1s;
+}
+.sr-vol-block.active {
+    background: #44ff88;
+}
+
+/* ── GAME AREA — lanes, ghosts, notes ──────────────────── */
+:root {
+    --sr-lane-w: 44px;  /* gpop exact: .ppplay .pp-lane width */
+    --sr-lanes-left: calc(50% - 66px); /* center 4 lanes: 4*44=176, half=88, minus half lane */
+    --sr-note-w: 28px;  /* gpop exact: .ppplay .pp-note width */
+    --sr-note-h: 28px;  /* gpop: calc(4% + 6px), min 24px — using 28px */
+}
+
+#sr-game-area {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    overflow: hidden;
+}
+
+/* Lane vertical lines */
+.sr-lane-line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: calc(var(--lane) * var(--sr-lane-w) + var(--sr-lanes-left) + var(--sr-note-w) / 2);
+    width: 1px;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+/* Lane glow — white milky overlay, full lane height (gpop plp-note technique) */
+.sr-lane-glow {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -4px;
+    width: 9px;
+    opacity: 0;
+    background: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.4), 0 0 30px rgba(255, 255, 255, 0.15);
+    border-radius: 5px;
+    pointer-events: none;
+    transition: opacity 0.15s ease-out;
+}
+
+.sr-lane-glow.sr-glow-active {
+    opacity: 1;
+    animation: sr-glow-pulse 0.4s ease-in-out infinite alternate;
+}
+.sr-lane-glow.sr-glow-fade {
+    opacity: 0;
+    transition: opacity 0.35s ease-out;
+    animation: none;
+}
+
+@keyframes sr-glow-pulse {
+    0% { opacity: 0.7; transform: scaleX(0.8); }
+    100% { opacity: 1; transform: scaleX(1.1); }
+}
+
+/* Ghost targets at hit zone (55%) */
+/* Ghost targets — gpop pp-square exact */
+.sr-ghost {
+    position: absolute;
+    top: 55%;
+    left: calc(var(--lane) * var(--sr-lane-w) + var(--sr-lanes-left));
+    width: var(--sr-note-w);
+    height: var(--sr-note-h);
+    transform: translateY(-50%);
+    border: 1px solid rgba(255, 255, 255);
+    opacity: 0.4;
+    border-radius: 6px;
+    box-sizing: border-box;
+    box-shadow: 0 0 3px 0px rgba(255, 255, 255, 0.5);
+    transition: transform 0.05s ease, opacity 0.05s ease;
+}
+/* Key press — gpop pp-lane-click .pp-square */
+.sr-ghost.sr-ghost-click {
+    transform: translateY(-50%) scale(1.2);
+    opacity: 0.9;
+}
+/* Note hit — gpop pp-lane-hit .pp-square */
+.sr-ghost.sr-ghost-glow {
+    box-shadow: 0 0px 6px -1px rgb(255, 255, 255);
+    transform: translateY(-50%) scale(1.3) translateZ(0);
+    opacity: 1;
+}
+
+/* Hold release — ghost pop reaction (gpop keyhit2 on hold complete) */
+.sr-ghost.sr-ghost-release {
+    animation: sr-ghost-pop 0.2s ease 1;
+    box-shadow: 0 0px 8px 0px rgb(255, 255, 255);
+    transform: translateY(-50%) scale(1.3) translateZ(0);
+    opacity: 1;
+}
+@keyframes sr-ghost-pop {
+    0%   { transform: translateY(-50%) scale(1); }
+    50%  { transform: translateY(-50%) scale(1.4); }
+    100% { transform: translateY(-50%) scale(1.3); }
+}
+
+/* Notes container */
+#sr-notes-container {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+/* ── NOTES — gpop.io style with border-style: double ────── */
+.sr-note {
+    position: absolute;
+    width: var(--sr-note-w);
+    border-style: double;
+    border-width: 3px;
+    border-radius: 5px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    font-weight: 700;
+    transition: opacity 0.15s;
+}
+
+.sr-note-letter {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: var(--sr-note-h);
+    color: currentColor;
+}
+
+/* Per-lane colors — solid fill + glow like gpop */
+.sr-note-a { color: #ff4466; border-color: #ff4466; background: rgba(255, 68, 102, 0.18); box-shadow: 0 0 8px rgba(255, 68, 102, 0.15); }
+.sr-note-s { color: #ffe644; border-color: #ffe644; background: rgba(255, 230, 68, 0.15); box-shadow: 0 0 8px rgba(255, 230, 68, 0.15); }
+.sr-note-d { color: #44ff88; border-color: #44ff88; background: rgba(68, 255, 136, 0.15); box-shadow: 0 0 8px rgba(68, 255, 136, 0.15); }
+.sr-note-f { color: #44ddff; border-color: #44ddff; background: rgba(68, 221, 255, 0.15); box-shadow: 0 0 8px rgba(68, 221, 255, 0.15); }
+
+/* Hold notes — center line via gradient */
+.sr-note-hold {
+    align-items: flex-end;
+    background-image: linear-gradient(to right, transparent calc(50% - 0.5px), currentColor calc(50% - 0.5px), currentColor calc(50% + 0.5px), transparent calc(50% + 0.5px));
+    background-blend-mode: normal;
+}
+.sr-note-hold .sr-note-letter {
+    background: inherit;
+    background-image: none;
+}
+
+/* Hit animation — gpop exact: 0.5s delay then 0.5s smooth fade */
+.sr-note-hit {
+    color: #44f0ff !important;
+    background-color: rgba(255, 114, 114, 0.9) !important;
+    opacity: 0 !important;
+    animation: huerotate2 0.2s linear infinite, notehit 0.25s ease 1;
+    transition: opacity 0.5s ease;
+    transition-delay: 0.5s;
+}
+.sr-note-missed {
+    opacity: 0 !important;
+}
+/* While holding — gpop pp-noteextended-hitting: rainbow glow */
+.sr-note-holding {
+    animation: huerotate2 0.2s linear infinite;
+    background-color: rgba(255, 114, 114, 0.4) !important;
+}
+/* Hold note after completion — fade slower than regular notes */
+.sr-note-hold.sr-note-hit {
+    animation: huerotate2 0.2s linear infinite, notehit 0.25s ease 1;
+    transition-delay: 0.3s;
+    opacity: 0 !important;
+}
+
+/* OLD DOM NOTE STYLES removed
+.sr-lane-tops {
+.sr-lane-tops {
+    position: absolute;
+    top: 55%;
+    left: 0;
+    right: 0;
+    display: flex;
+    z-index: 1;
+    transform: translateY(-50%);
+}
+.sr-lane-top {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.sr-lane-top::after {
+    content: '';
+    width: 52px;
+    height: 44px;
+    border-radius: 8px;
+    border: 1.5px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.01);
+    transition: all 0.1s;
+}
+/* Per-lane ghost colors */
+.sr-lane-top[data-lane="0"]::after { border-color: rgba(255, 68, 102, 0.12); }
+.sr-lane-top[data-lane="1"]::after { border-color: rgba(255, 230, 68, 0.12); }
+.sr-lane-top[data-lane="2"]::after { border-color: rgba(68, 255, 136, 0.12); }
+.sr-lane-top[data-lane="3"]::after { border-color: rgba(68, 221, 255, 0.12); }
+
+/* Glow when note is hit at this position */
+.sr-lane-top[data-lane="0"].glow::after { border-color: rgba(255, 68, 102, 0.6); background: rgba(255, 68, 102, 0.15); box-shadow: 0 0 20px rgba(255, 68, 102, 0.3); }
+.sr-lane-top[data-lane="1"].glow::after { border-color: rgba(255, 230, 68, 0.6); background: rgba(255, 230, 68, 0.15); box-shadow: 0 0 20px rgba(255, 230, 68, 0.3); }
+.sr-lane-top[data-lane="2"].glow::after { border-color: rgba(68, 255, 136, 0.6); background: rgba(68, 255, 136, 0.15); box-shadow: 0 0 20px rgba(68, 255, 136, 0.3); }
+.sr-lane-top[data-lane="3"].glow::after { border-color: rgba(68, 221, 255, 0.6); background: rgba(68, 221, 255, 0.15); box-shadow: 0 0 20px rgba(68, 221, 255, 0.3); }
+
+/* Streak counter — above hit zone */
+/* Ratings — gpop pp-ratings exact (outside lanes, rotated) */
+.pp-ratings-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    pointer-events: none;
+    font-family: 'JetBrains Mono', 'Press Start 2P', monospace;
+}
+.pp-rating {
+    letter-spacing: 0.5px;
+    opacity: 0;
+    position: absolute;
+    white-space: nowrap;
+}
+/* MISS */
+.pp-rating-0 { font-size: 15px; color: rgba(255, 109, 109, 0.7); }
+/* OK */
+.pp-rating-1 { font-size: 15px; color: rgba(255, 255, 255, 0.3); }
+/* GOOD */
+.pp-rating-2 { font-size: 15px; color: rgba(236, 185, 255, 0.9); }
+/* GREAT */
+.pp-rating-3 { font-size: 18px; color: rgb(255, 254, 213); }
+/* PERFECT — dotted border + hue rotate */
+.pp-rating-4 {
+    font-size: 16px;
+    color: rgb(255, 197, 197);
+    animation: huerotate 0.2s linear infinite;
+    padding: 2px 5px 1px;
+    border: 2px dotted;
+}
+/* NICE (hold complete) */
+.pp-rating-5 {
+    font-size: 12px;
+    color: rgba(255, 208, 208, 0.9);
+    animation: huerotate 0.2s linear infinite;
+    border: 1px solid;
+    border-radius: 5px;
+    padding: 1px 3px 0px 4px;
+    letter-spacing: 1px;
+}
+
+/* Waiting for video message — centered in lane area */
+.sr-waiting {
+    position: absolute;
+    left: 50%;
+    top: 42%;
+    transform: translate(-50%, -50%);
+    z-index: 8;
+    text-align: center;
+    pointer-events: none;
+}
+.sr-waiting.hidden { display: none; }
+.sr-waiting-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.6rem;
+    color: rgba(255, 255, 255, 0.7);
+    letter-spacing: 0.05em;
+}
+.sr-waiting-sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.3);
+    margin-top: 8px;
+}
+
+/* ASDF key buttons — at the bottom, matching lane positions */
+.starroad-hit-zone {
+    position: absolute;
+    bottom: 16px;
+    left: var(--sr-lanes-left);
+    width: calc(4 * var(--sr-lane-w));
+    height: var(--sr-note-h);
+    display: flex;
+    z-index: 5;
+}
+.starroad-hit-cell {
+    width: var(--sr-note-w);
+    height: var(--sr-note-h);
+    margin-right: calc(var(--sr-lane-w) - var(--sr-note-w));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    border: 3px double transparent;
+    background: rgba(255, 255, 255, 0.02);
+    transition: all 0.06s;
+    box-sizing: border-box;
+}
+.starroad-hit-cell:last-child { margin-right: 0; }
+
+/* Hit line — hidden, only used for JS position reference */
+.sr-hit-line {
+    display: none;
+}
+
+/* merged into the rule above */
+.starroad-hit-cell span {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    transition: all 0.06s;
+}
+
+/* Per-lane colors for hit cells */
+.starroad-hit-cell[data-lane="0"] { border-color: rgba(255, 68, 102, 0.25); }
+.starroad-hit-cell[data-lane="0"] span { color: rgba(255, 68, 102, 0.4); }
+
+.starroad-hit-cell[data-lane="1"] { border-color: rgba(255, 230, 68, 0.25); }
+.starroad-hit-cell[data-lane="1"] span { color: rgba(255, 230, 68, 0.4); }
+
+.starroad-hit-cell[data-lane="2"] { border-color: rgba(68, 255, 136, 0.25); }
+.starroad-hit-cell[data-lane="2"] span { color: rgba(68, 255, 136, 0.4); }
+
+.starroad-hit-cell[data-lane="3"] { border-color: rgba(68, 221, 255, 0.25); }
+.starroad-hit-cell[data-lane="3"] span { color: rgba(68, 221, 255, 0.4); }
+
+/* Pressed state — BIG GLOW like gpop */
+.starroad-hit-cell[data-lane="0"].pressed {
+    background: rgba(255, 68, 102, 0.3);
+    box-shadow: 0 0 30px rgba(255, 68, 102, 0.5), inset 0 0 15px rgba(255, 68, 102, 0.2);
+    border-color: #ff4466;
+}
+.starroad-hit-cell[data-lane="0"].pressed span { color: #fff; text-shadow: 0 0 12px #ff4466; }
+
+.starroad-hit-cell[data-lane="1"].pressed {
+    background: rgba(255, 230, 68, 0.3);
+    box-shadow: 0 0 30px rgba(255, 230, 68, 0.5), inset 0 0 15px rgba(255, 230, 68, 0.2);
+    border-color: #ffe644;
+}
+.starroad-hit-cell[data-lane="1"].pressed span { color: #fff; text-shadow: 0 0 12px #ffe644; }
+
+.starroad-hit-cell[data-lane="2"].pressed {
+    background: rgba(68, 255, 136, 0.3);
+    box-shadow: 0 0 30px rgba(68, 255, 136, 0.5), inset 0 0 15px rgba(68, 255, 136, 0.2);
+    border-color: #44ff88;
+}
+.starroad-hit-cell[data-lane="2"].pressed span { color: #fff; text-shadow: 0 0 12px #44ff88; }
+
+.starroad-hit-cell[data-lane="3"].pressed {
+    background: rgba(68, 221, 255, 0.3);
+    box-shadow: 0 0 30px rgba(68, 221, 255, 0.5), inset 0 0 15px rgba(68, 221, 255, 0.2);
+    border-color: #44ddff;
+}
+.starroad-hit-cell[data-lane="3"].pressed span { color: #fff; text-shadow: 0 0 12px #44ddff; }
+
+/* Hit feedback flashes — even brighter */
+.starroad-hit-cell.hit-perfect { background: rgba(68, 255, 136, 0.4) !important; box-shadow: 0 0 40px rgba(68, 255, 136, 0.6) !important; }
+.starroad-hit-cell.hit-great   { background: rgba(68, 221, 255, 0.4) !important; box-shadow: 0 0 40px rgba(68, 221, 255, 0.6) !important; }
+.starroad-hit-cell.hit-good    { background: rgba(255, 230, 68, 0.4) !important; box-shadow: 0 0 40px rgba(255, 230, 68, 0.6) !important; }
+.starroad-hit-cell.hit-miss    { background: rgba(255, 68, 68, 0.3) !important; box-shadow: 0 0 40px rgba(255, 68, 68, 0.4) !important; }
+
+/* Hold release — hit cell pop flash (gpop keyhit on hold complete) */
+.starroad-hit-cell.hold-release {
+    animation: sr-cell-release 0.25s ease 1;
+}
+@keyframes sr-cell-release {
+    0%   { transform: scale(1); }
+    40%  { transform: scale(1.15); filter: brightness(1.5); }
+    100% { transform: scale(1); filter: brightness(1); }
+}
+
+/* ── NOTES (falling colored letter blocks) ──────────────── */
+.starroad-note {
+    position: absolute;
+    width: 52px;
+    left: 50%;
+    transform: translateX(-50%);
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1rem;
+    font-weight: 700;
+    border-radius: 5px;
+    pointer-events: none;
+    z-index: 3;
+    transition: opacity 0.1s;
+}
+
+/* Outer border = the note itself. Inner border = ::before pseudo. Like gpop pixi rendering */
+.starroad-note::before {
+    content: '';
+    position: absolute;
+    inset: 3px;
+    border-radius: 7px;
+    pointer-events: none;
+}
+
+/* Per-lane note colors — double border + glow matching gpop */
+.starroad-note[data-lane="0"] {
+    background: rgba(255, 68, 102, 0.06);
+    border: 2px solid rgba(255, 68, 102, 0.55);
+    color: #ff4466;
+    text-shadow: 0 0 8px rgba(255, 68, 102, 0.8);
+    box-shadow: 0 0 8px rgba(255, 68, 102, 0.2);
+}
+.starroad-note[data-lane="0"]::before { border: 1.5px solid rgba(255, 68, 102, 0.4); }
+
+.starroad-note[data-lane="1"] {
+    background: rgba(255, 230, 68, 0.05);
+    border: 2px solid rgba(255, 230, 68, 0.55);
+    color: #ffe644;
+    text-shadow: 0 0 8px rgba(255, 230, 68, 0.8);
+    box-shadow: 0 0 8px rgba(255, 230, 68, 0.2);
+}
+.starroad-note[data-lane="1"]::before { border: 1.5px solid rgba(255, 230, 68, 0.4); }
+
+.starroad-note[data-lane="2"] {
+    background: rgba(68, 255, 136, 0.05);
+    border: 2px solid rgba(68, 255, 136, 0.55);
+    color: #44ff88;
+    text-shadow: 0 0 8px rgba(68, 255, 136, 0.8);
+    box-shadow: 0 0 8px rgba(68, 255, 136, 0.2);
+}
+.starroad-note[data-lane="2"]::before { border: 1.5px solid rgba(68, 255, 136, 0.4); }
+
+.starroad-note[data-lane="3"] {
+    background: rgba(68, 221, 255, 0.05);
+    border: 2px solid rgba(68, 221, 255, 0.55);
+    color: #44ddff;
+    text-shadow: 0 0 8px rgba(68, 221, 255, 0.8);
+    box-shadow: 0 0 8px rgba(68, 221, 255, 0.2);
+}
+.starroad-note[data-lane="3"]::before { border: 1.5px solid rgba(68, 221, 255, 0.4); }
+
+/* Hold notes — seamless rounded rectangle with center line like gpop */
+.starroad-note.starroad-hold {
+    height: auto;
+    width: 52px;
+    flex-direction: column;
+    border-radius: 5px;
+    padding: 0;
+    overflow: hidden;
+    position: relative;
+}
+.sr-hold-body {
+    flex: 1;
+    display: block;
+    width: 100%;
+    min-height: 20px;
+    position: relative;
+}
+/* Center vertical line through the hold body */
+.sr-hold-body::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 1px;
+    transform: translateX(-50%);
+}
+.sr-hold-letter {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 44px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1rem;
+    font-weight: 700;
+    position: relative;
+    z-index: 1;
+}
+
+/* Hold note colors — single border wraps entire note */
+.starroad-hold[data-lane="0"] { background: rgba(255, 68, 102, 0.1); border: 2px solid rgba(255, 68, 102, 0.55); }
+.starroad-hold[data-lane="0"] .sr-hold-body::after { background: rgba(255, 68, 102, 0.3); }
+.starroad-hold[data-lane="0"] .sr-hold-letter { color: #ff4466; text-shadow: 0 0 6px rgba(255, 68, 102, 0.5); }
+
+.starroad-hold[data-lane="1"] { background: rgba(255, 230, 68, 0.08); border: 2px solid rgba(255, 230, 68, 0.55); }
+.starroad-hold[data-lane="1"] .sr-hold-body::after { background: rgba(255, 230, 68, 0.3); }
+.starroad-hold[data-lane="1"] .sr-hold-letter { color: #ffe644; text-shadow: 0 0 6px rgba(255, 230, 68, 0.5); }
+
+.starroad-hold[data-lane="2"] { background: rgba(68, 255, 136, 0.08); border: 2px solid rgba(68, 255, 136, 0.55); }
+.starroad-hold[data-lane="2"] .sr-hold-body::after { background: rgba(68, 255, 136, 0.3); }
+.starroad-hold[data-lane="2"] .sr-hold-letter { color: #44ff88; text-shadow: 0 0 6px rgba(68, 255, 136, 0.5); }
+
+.starroad-hold[data-lane="3"] { background: rgba(68, 221, 255, 0.08); border: 2px solid rgba(68, 221, 255, 0.55); }
+.starroad-hold[data-lane="3"] .sr-hold-body::after { background: rgba(68, 221, 255, 0.3); }
+.starroad-hold[data-lane="3"] .sr-hold-letter { color: #44ddff; text-shadow: 0 0 6px rgba(68, 221, 255, 0.5); }
+
+/* Holding state — brighter glow */
+.starroad-hold.holding { box-shadow: 0 0 25px currentColor; }
+.starroad-hold.holding .sr-hold-body::after { opacity: 0.8; }
+
+.starroad-note.hit {
+    animation: sr-note-hit 0.2s ease-out forwards;
+}
+@keyframes sr-note-hit {
+    0% { transform: scale(1); opacity: 1; }
+    100% { transform: scale(1.3); opacity: 0; }
+}
+END OLD DOM STYLES */
+
+/* Old judgment removed — using gpop pp-ratings now */
+
+/* ── PROGRESS BAR (bottom, colored gradient like gpop) ──── */
+.starroad-progress-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.05);
+    z-index: 10;
+}
+.starroad-progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #ff4466, #ffe644, #44ff88, #44ddff);
+    transition: width 0.3s;
+}
+
+/* ── RESULTS SCREEN ─────────────────────────────────────── */
+.starroad-results-inner {
+    text-align: center;
+    max-width: 440px;
+    padding: 0 24px;
+}
+
+.starroad-results-title {
+    font-family: 'Outfit', sans-serif;
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: #ffe644;
+    letter-spacing: 0.2em;
+    text-shadow: 0 0 30px rgba(255, 230, 68, 0.3);
+    margin-bottom: 32px;
+    animation: sr-splash-title 0.6s ease-out both;
+}
+
+.starroad-results-stats {
+    display: flex;
+    gap: 40px;
+    justify-content: center;
+    margin-bottom: 28px;
+}
+
+.starroad-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.starroad-stat-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #fff;
+}
+.starroad-stat-label {
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.35);
+    letter-spacing: 0.15em;
+    margin-top: 4px;
+}
+
+.starroad-results-breakdown {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 10px;
+    padding: 16px 24px;
+    margin-bottom: 28px;
+}
+.starroad-break-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+.starroad-break-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+}
+.starroad-break-label.sr-perfect { color: #44ff88; }
+.starroad-break-label.sr-great   { color: #44ddff; }
+.starroad-break-label.sr-good    { color: #ffe644; }
+.starroad-break-label.sr-miss    { color: #ff4466; }
+
+.starroad-results-btns {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+.starroad-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #fff;
+    padding: 12px 28px;
+    border-radius: 10px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.starroad-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+.starroad-btn-exit {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* ── GPOP ANIMATIONS (copied from gpop.io/css/pixiiplayer.css) ── */
+@keyframes huerotate {
+    0%   { filter: hue-rotate(0deg); }
+    50%  { filter: hue-rotate(180deg); }
+    100% { filter: hue-rotate(360deg); }
+}
+@keyframes huerotate2 {
+    0%   { filter: brightness(1000%) invert(50%) sepia(100%) saturate(300%) brightness(200%) hue-rotate(0deg); }
+    50%  { filter: brightness(1000%) invert(50%) sepia(100%) saturate(300%) brightness(200%) hue-rotate(180deg); }
+    100% { filter: brightness(1000%) invert(50%) sepia(100%) saturate(300%) brightness(200%) hue-rotate(360deg); }
+}
+@keyframes huerotate3 {
+    0%   { filter: hue-rotate(0deg); }
+    50%  { filter: hue-rotate(30deg); }
+    100% { filter: hue-rotate(0deg); }
+}
+@keyframes scorehit {
+    0%   { transform: scale(1); }
+    50%  { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+@keyframes keyhit2 {
+    0%   { transform: translateX(-50%) scale(1); }
+    50%  { transform: translateX(-50%) scale(1.15); }
+    100% { transform: translateX(-50%) scale(1); }
+}
+@keyframes notehit {
+    0%   { transform: scale(1); }
+    50%  { transform: scale(1.4); }
+    100% { transform: scale(1); }
+}

@@ -818,6 +818,9 @@ function setupSettingsListeners() {
 
         const rainCard = document.getElementById('rain-mode-card');
         if (rainCard) rainCard.addEventListener('click', () => { startRainMode(); closeSettingsForMode(); });
+
+        const starRoadCard = document.getElementById('starroad-mode-card');
+        if (starRoadCard) starRoadCard.addEventListener('click', () => { startStarRoad(); closeSettingsForMode(); });
     }
 
     // ═══════════════════════════════════════════════════════
@@ -11927,6 +11930,80 @@ function exitRainMode() {
     state.gameMode = 'time';
     newGame();
 }
+
+// ═══════════════════════════════════════════════════════
+//                    STAR ROAD MODE
+//     "Hit notes to the beat"
+// ═══════════════════════════════════════════════════════
+let starRoadWasPlaying = { masterPlaying: false, bgAudioPlaying: false, bgVideoMuted: true };
+
+function startStarRoad() {
+    // Show splash
+    const splash = document.getElementById('starroad-splash');
+    if (!splash) return;
+    splash.classList.remove('hidden');
+
+    // Start splash starfield
+    if (window.initSplashStarfield) window.initSplashStarfield();
+
+    // Hide main UI
+    ['game-ui', 'modes-modal'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('hidden');
+    });
+    const appHeader = document.getElementById('app-header');
+    const navButtons = document.getElementById('top-nav-buttons');
+    const footer = document.querySelector('footer') || document.querySelector('.site-footer');
+    if (appHeader) appHeader.style.display = 'none';
+    if (navButtons) navButtons.style.display = 'none';
+    if (footer) footer.style.display = 'none';
+
+    // Save & pause audio
+    starRoadWasPlaying.masterPlaying = !masterAudio.paused;
+    starRoadWasPlaying.bgAudioPlaying = currentBgAudio && !currentBgAudio.paused;
+    starRoadWasPlaying.bgVideoMuted = UI.bgVideo ? UI.bgVideo.muted : true;
+    if (!masterAudio.paused) masterAudio.pause();
+    if (currentBgAudio && !currentBgAudio.paused) currentBgAudio.pause();
+    if (UI.bgVideo) UI.bgVideo.muted = true;
+
+    state.gameMode = 'starroad';
+
+    // Transition after splash
+    setTimeout(() => {
+        splash.classList.add('hidden');
+        if (window.destroySplashStarfield) window.destroySplashStarfield();
+        if (window.showStarRoadOverlay) window.showStarRoadOverlay();
+    }, 2500);
+}
+
+function exitStarRoad() {
+    if (window.hideStarRoadOverlay) window.hideStarRoadOverlay();
+
+    // Restore audio
+    if (starRoadWasPlaying.masterPlaying) {
+        masterAudio.play().catch(e => console.log('Resume master failed:', e));
+    }
+    if (starRoadWasPlaying.bgAudioPlaying && currentBgAudio) {
+        currentBgAudio.play().catch(e => console.log('Resume bg failed:', e));
+    }
+    if (UI.bgVideo) UI.bgVideo.muted = starRoadWasPlaying.bgVideoMuted ?? true;
+
+    // Restore main UI
+    ['game-ui'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.remove('hidden');
+    });
+    const appHeader = document.getElementById('app-header');
+    const navButtons = document.getElementById('top-nav-buttons');
+    const footer = document.querySelector('footer') || document.querySelector('.site-footer');
+    if (appHeader) appHeader.style.display = '';
+    if (navButtons) navButtons.style.display = '';
+    if (footer) footer.style.display = '';
+
+    state.gameMode = 'time';
+    newGame();
+}
+window.exitStarRoad = exitStarRoad;
 
 // --- DISABLE DEV TOOLS & CONTEXT MENU ---
 document.addEventListener('contextmenu', event => event.preventDefault());
