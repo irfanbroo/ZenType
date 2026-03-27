@@ -23,7 +23,86 @@ let srState = {
     isActive: false, speed: 'normal', noteSpeed: SPEED_MAP.normal,
     nextNoteId: 0, spawnTimer: null, animFrame: null, lastFrame: 0,
     ytPlayer: null, ytReady: false, ytDuration: 0, videoId: null,
+    // .osu beatmap queue
+    beatmap: null,      // parsed beatmap { notes: [...], title, artist, ... }
+    noteQueue: [],       // sorted notes to spawn, consumed as time passes
+    noteQueueIdx: 0,     // current position in queue
+    currentSong: null,   // song library entry
 };
+
+// ── .osu Beatmap Parser ────────────────────────────────────
+// Parses osu!mania 4K .osu file format
+function parseOsuBeatmap(osuText) {
+    const lines = osuText.split('\n').map(l => l.trim());
+    const result = {
+        title: '', artist: '', version: '', creator: '',
+        audioFilename: '', overallDifficulty: 5,
+        notes: [], // { lane, time, isHold, endTime }
+    };
+
+    let section = '';
+    for (const line of lines) {
+        if (line.startsWith('[') && line.endsWith(']')) {
+            section = line.slice(1, -1);
+            continue;
+        }
+        if (!line || line.startsWith('//')) continue;
+
+        if (section === 'Metadata') {
+            if (line.startsWith('Title:')) result.title = line.slice(6);
+            else if (line.startsWith('Artist:')) result.artist = line.slice(7);
+            else if (line.startsWith('Version:')) result.version = line.slice(8);
+            else if (line.startsWith('Creator:')) result.creator = line.slice(8);
+        }
+        else if (section === 'General') {
+            if (line.startsWith('AudioFilename:')) result.audioFilename = line.slice(14).trim();
+        }
+        else if (section === 'Difficulty') {
+            if (line.startsWith('OverallDifficulty:')) result.overallDifficulty = parseFloat(line.split(':')[1]);
+        }
+        else if (section === 'HitObjects') {
+            // Format: x,y,time,type,hitSound[,endTime:...]
+            const parts = line.split(',');
+            if (parts.length < 4) continue;
+            const x = parseInt(parts[0]);
+            const time = parseInt(parts[2]);
+            const type = parseInt(parts[3]);
+            // Lane: floor(x * 4 / 512)
+            const lane = Math.min(3, Math.max(0, Math.floor(x * 4 / 512)));
+            // Type bitmask: bit 0 = circle (tap), bit 7 = hold (128)
+            const isHold = (type & 128) !== 0;
+            let endTime = 0;
+            if (isHold && parts.length >= 6) {
+                // endTime is in the 6th field, before the colon-separated extras
+                const endParts = parts[5].split(':');
+                endTime = parseInt(endParts[0]);
+            }
+            result.notes.push({ lane, time, isHold, endTime: isHold ? endTime : 0 });
+        }
+    }
+
+    // Sort by time
+    result.notes.sort((a, b) => a.time - b.time);
+    return result;
+}
+
+// ── Song Library ───────────────────────────────────────────
+// Each song: { id, title, artist, youtubeId, difficulty, bpm, osuFile (URL or inline) }
+const SONG_LIBRARY = [];
+
+// Register songs dynamically
+function registerSong(song) {
+    SONG_LIBRARY.push(song);
+}
+
+// Fetch and parse a .osu file
+async function loadBeatmap(url) {
+    const resp = await fetch(url);
+    const text = await resp.text();
+    return parseOsuBeatmap(text);
+}
+
+// ── Default Song Library ─────────────────────────────────── (empty — all songs are in FEATURED_MAPS)
 
 // Starfield
 let stars = [], starCanvas = null, starCtx = null, starFrame = null;
@@ -58,7 +137,7 @@ function loadYouTubeAPI() {
     });
 }
 
-function createYTPlayer(videoId) {
+function createYTPlayer(videoId, startTime = 0) {
     return new Promise((resolve) => {
         const c = document.getElementById('sr-yt-visible');
         if (c) c.innerHTML = '';
@@ -66,11 +145,27 @@ function createYTPlayer(videoId) {
         d.id = 'sr-yt-player';
         if (c) c.appendChild(d); else document.body.appendChild(d);
         srState.ytPlayer = new YT.Player('sr-yt-player', {
-            width: 280, height: 158, videoId,
+            width: 380, height: 214, videoId,
             host: 'https://www.youtube-nocookie.com',
-            playerVars: { autoplay: 1, controls: 1, disablekb: 1, fs: 0, modestbranding: 1, rel: 0, iv_load_policy: 3 },
+            playerVars: { autoplay: 1, controls: 0, disablekb: 1, fs: 0, modestbranding: 1, rel: 0, iv_load_policy: 3, start: startTime },
             events: {
-                onReady: (e) => { srState.ytReady = true; srState.ytDuration = e.target.getDuration(); e.target.setVolume(80); e.target.playVideo(); resolve(); },
+                onReady: (e) => {
+                    srState.ytReady = true;
+                    srState.ytDuration = e.target.getDuration();
+                    e.target.setVolume(80);
+                    e.target.playVideo();
+                    // Update top bar with video info
+                    try {
+                        const data = e.target.getVideoData();
+                        const title = data.title || 'Unknown';
+                        const author = data.author || 'Unknown';
+                        const np = document.getElementById('sr-now-playing');
+                        if (np) np.textContent = 'Now playing: ' + title;
+                        const nt = document.getElementById('sr-now-time');
+                        if (nt) nt.textContent = author + ' - --:-- / ' + formatTime(srState.ytDuration);
+                    } catch(_) {}
+                    resolve();
+                },
                 onStateChange: (e) => { if (e.data === 0 && srState.isActive) endGame(); },
             },
         });
@@ -80,8 +175,106 @@ function createYTPlayer(videoId) {
 function destroyYTPlayer() {
     if (srState.ytPlayer) { try { srState.ytPlayer.stopVideo(); srState.ytPlayer.destroy(); } catch (_) {} srState.ytPlayer = null; }
     srState.ytReady = false;
+    if (srState._scPollInterval) { clearInterval(srState._scPollInterval); srState._scPollInterval = null; }
     const c = document.getElementById('sr-yt-visible');
     if (c) c.innerHTML = '';
+}
+
+// ── SoundCloud Player ──────────────────────────────────────
+function loadSCWidgetAPI() {
+    return new Promise(resolve => {
+        if (window.SC) { resolve(); return; }
+        if (document.getElementById('sc-widget-api')) {
+            const check = setInterval(() => { if (window.SC) { clearInterval(check); resolve(); } }, 100);
+            return;
+        }
+        const s = document.createElement('script');
+        s.id = 'sc-widget-api';
+        s.src = 'https://w.soundcloud.com/player/api.js';
+        s.onload = () => resolve();
+        document.head.appendChild(s);
+    });
+}
+
+function createSCPlayer(trackUrl) {
+    return new Promise(async (resolve) => {
+        // SC iframe hidden — audio only, YouTube shows visually
+        const iframe = document.createElement('iframe');
+        iframe.id = 'sr-sc-iframe';
+        iframe.style.cssText = 'width:1px;height:1px;position:fixed;top:-9999px;left:-9999px;border:none;';
+        iframe.allow = 'autoplay';
+        iframe.src = `https://w.soundcloud.com/player/?url=${encodeURIComponent(trackUrl)}&auto_play=true&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false&visual=false`;
+        document.body.appendChild(iframe);
+
+        await loadSCWidgetAPI();
+        const widget = window.SC.Widget(iframe);
+
+        let cachedPosition = 0;
+        let cachedDuration = 0;
+
+        // Wrap SC widget to look like YT player
+        srState.ytPlayer = {
+            _widget: widget,
+            _iframe: iframe,
+            _state: -1,
+            getCurrentTime: () => cachedPosition / 1000,
+            getDuration: () => cachedDuration / 1000,
+            getPlayerState: () => srState.ytPlayer._state,
+            setVolume: (v) => widget.setVolume(v),
+            playVideo: () => { widget.play(); srState.ytPlayer._state = 1; },
+            pauseVideo: () => { widget.pause(); srState.ytPlayer._state = 2; },
+            stopVideo: () => { widget.pause(); },
+            destroy: () => {
+                if (srState._scPollInterval) { clearInterval(srState._scPollInterval); srState._scPollInterval = null; }
+                try { iframe.remove(); } catch(_) {}
+            },
+            getVideoData: () => ({
+                title: srState.currentSong?.title || '',
+                author: srState.currentSong?.artist || '',
+            }),
+        };
+
+        widget.bind(window.SC.Widget.Events.READY, () => {
+            widget.getDuration(d => {
+                cachedDuration = d;
+                srState.ytDuration = d / 1000;
+                srState.ytReady = true;
+                srState.ytPlayer._state = 1;
+
+                widget.setVolume(80);
+
+                // Poll position every 50ms (SC API is async)
+                srState._scPollInterval = setInterval(() => {
+                    widget.getPosition(p => { cachedPosition = p; });
+                }, 50);
+
+                // Update top bar
+                const np = document.getElementById('sr-now-playing');
+                if (np) np.textContent = 'Now playing: ' + (srState.currentSong?.title || 'Unknown');
+                const nt = document.getElementById('sr-now-time');
+                if (nt) nt.textContent = (srState.currentSong?.artist || '') + ' - --:-- / ' + formatTime(d / 1000);
+
+                resolve();
+            });
+        });
+
+        widget.bind(window.SC.Widget.Events.PLAY,   () => { srState.ytPlayer._state = 1; });
+        widget.bind(window.SC.Widget.Events.PAUSE,  () => { srState.ytPlayer._state = 2; });
+        widget.bind(window.SC.Widget.Events.FINISH, () => {
+            srState.ytPlayer._state = 0;
+            if (srState.isActive) endGame();
+        });
+
+        // Timeout fallback — if READY doesn't fire in 10s, resolve anyway
+        setTimeout(() => {
+            if (!srState.ytReady) {
+                console.warn('SoundCloud READY timeout — starting anyway');
+                srState.ytReady = true;
+                srState.ytPlayer._state = 1;
+                resolve();
+            }
+        }, 10000);
+    });
 }
 
 // ── Starfield — STATIC bright white pixel squares (like gpop game bg) ──
@@ -425,7 +618,8 @@ function updateDancerGlow() {
 }
 
 // ── Note Spawner ───────────────────────────────────────────
-function startSpawner() {
+// Old random spawner (fallback when no beatmap loaded)
+function startRandomSpawner() {
     if (srState.spawnTimer) clearInterval(srState.spawnTimer);
     let lastLane = -1;
     srState.spawnTimer = setInterval(() => {
@@ -443,12 +637,65 @@ function startSpawner() {
     }, 600);
 }
 
-function spawnNote(lane, isHold = false) {
+// Beatmap-based spawner: spawn notes ahead of time based on YT currentTime
+// Notes need lead time to fall from top to hit zone
+function getLeadTimeMs() {
+    // How long a note takes to fall from spawn to hit zone (pixels / speed * 1000)
+    // Game area ~55% is hit zone, so note travels ~55% of game area height
+    const gameArea = document.getElementById('sr-game-area');
+    const h = gameArea ? gameArea.offsetHeight * 0.55 : 400;
+    return (h / srState.noteSpeed) * 1000;
+}
+
+function startBeatmapSpawner() {
+    // Use a fast interval to check if notes should spawn
+    if (srState.spawnTimer) clearInterval(srState.spawnTimer);
+    let randomFallbackStarted = false;
+    srState.spawnTimer = setInterval(() => {
+        if (!srState.isActive || !srState.ytPlayer || !srState.ytReady) return;
+        const currentTimeMs = srState.ytPlayer.getCurrentTime() * 1000;
+        const leadTime = getLeadTimeMs();
+        const spawnTime = currentTimeMs + leadTime;
+
+        // Spawn all notes whose time <= spawnTime
+        while (srState.noteQueueIdx < srState.noteQueue.length) {
+            const n = srState.noteQueue[srState.noteQueueIdx];
+            if (n.time <= spawnTime) {
+                if (n.isHold) {
+                    const holdDurationMs = n.endTime - n.time;
+                    const holdPx = (holdDurationMs / 1000) * srState.noteSpeed;
+                    spawnNote(n.lane, true, holdPx);
+                } else {
+                    spawnNote(n.lane, false);
+                }
+                srState.noteQueueIdx++;
+            } else {
+                break;
+            }
+        }
+
+        // When beatmap notes run out, switch to random spawner for the rest of the song
+        if (!randomFallbackStarted && srState.noteQueueIdx >= srState.noteQueue.length) {
+            randomFallbackStarted = true;
+            startRandomSpawner();
+        }
+    }, 16); // ~60fps check rate
+}
+
+function startSpawner() {
+    if (srState.beatmap && srState.noteQueue.length > 0) {
+        startBeatmapSpawner();
+    } else {
+        startRandomSpawner();
+    }
+}
+
+function spawnNote(lane, isHold = false, holdPx = 0) {
     const container = document.getElementById('sr-notes-container');
     if (!container) return;
 
     const NOTE_H = 28; // gpop exact note height
-    const holdH = isHold ? (120 + Math.floor(Math.random() * 100)) : 0;
+    const holdH = isHold ? (holdPx > 0 ? holdPx : (120 + Math.floor(Math.random() * 100))) : 0;
     const noteH = isHold ? holdH + NOTE_H : NOTE_H;
 
     const note = {
@@ -471,12 +718,13 @@ function spawnNote(lane, isHold = false) {
     el.appendChild(txt);
 
     // Position in correct lane column
-    el.style.left = `calc(${lane} * var(--sr-lane-w) + var(--sr-lanes-left))`;
+    el.style.left = `calc(${lane} * var(--sr-lane-w) + var(--sr-lanes-left) + (var(--sr-lane-w) - var(--sr-note-w)) / 2)`;
 
     container.appendChild(el);
     note.el = el;
     srState.notes.push(note);
-    srState.totalNotes++;
+    // Only increment totalNotes for random mode; beatmap mode pre-sets the count
+    if (!srState.beatmap) srState.totalNotes++;
 }
 
 function stopSpawner() { if (srState.spawnTimer) { clearInterval(srState.spawnTimer); srState.spawnTimer = null; } }
@@ -738,6 +986,13 @@ function showJudgment(text) {
 }
 
 // ── HUD ────────────────────────────────────────────────────
+function formatTime(sec) {
+    if (!sec || sec < 0) return '--:--';
+    const m = Math.floor(sec / 60);
+    const s = Math.floor(sec % 60);
+    return (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+}
+
 let fpsFrames = 0, fpsLast = performance.now(), fpsValue = 60;
 function updateHUD() {
     const s = document.getElementById('starroad-score');
@@ -755,13 +1010,44 @@ function updateHUD() {
     const now = performance.now();
     if (now - fpsLast >= 1000) { fpsValue = Math.round(fpsFrames * 1000 / (now - fpsLast)); fpsFrames = 0; fpsLast = now; }
     if (f) f.textContent = fpsValue;
+    // Update top bar time
+    if (srState.ytPlayer && srState.ytReady) {
+        const nt = document.getElementById('sr-now-time');
+        if (nt) {
+            try {
+                const cur = srState.ytPlayer.getCurrentTime();
+                const author = srState.ytPlayer.getVideoData()?.author || 'Unknown';
+                nt.textContent = author + ' - ' + formatTime(cur) + ' / ' + formatTime(srState.ytDuration);
+            } catch(_) {}
+        }
+    }
 }
 
 // ── Key Input ──────────────────────────────────────────────
 function handleKeyDown(e) {
     if (e.key === ' ' || e.code === 'Space') {
         e.preventDefault();
-        if (srState.ytPlayer && srState.ytReady) { const s = srState.ytPlayer.getPlayerState(); if (s === 1) srState.ytPlayer.pauseVideo(); else srState.ytPlayer.playVideo(); }
+        if (srState.ytPlayer && srState.ytReady) {
+            const s = srState.ytPlayer.getPlayerState();
+            const pauseEl = document.getElementById('sr-pause-overlay');
+            const mutedFrame = srState._mutedYtFrame;
+            if (s === 1) {
+                srState.ytPlayer.pauseVideo();
+                if (mutedFrame) mutedFrame.contentWindow?.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+                srState.isActive = false;
+                if (srState.animFrame) { cancelAnimationFrame(srState.animFrame); srState.animFrame = null; }
+                if (srState.spawnTimer) { clearInterval(srState.spawnTimer); srState.spawnTimer = null; }
+                if (pauseEl) pauseEl.classList.remove('hidden');
+            } else {
+                srState.ytPlayer.playVideo();
+                if (mutedFrame) mutedFrame.contentWindow?.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+                srState.isActive = true;
+                srState.lastFrame = 0;
+                startSpawner();
+                srState.animFrame = requestAnimationFrame(gameLoop);
+                if (pauseEl) pauseEl.classList.add('hidden');
+            }
+        }
         return;
     }
     if (e.key.toLowerCase() === 'r' && srState.videoId) { e.preventDefault(); startGame(srState.videoId); return; }
@@ -825,6 +1111,14 @@ async function startGame(videoId) {
     srState.totalNotes = 0; srState.nextNoteId = 0; srState.lastFrame = 0;
     srState.isActive = true; srState.videoId = videoId;
     srState.noteSpeed = SPEED_MAP[srState.speed] || SPEED_MAP.normal;
+    srState.noteQueueIdx = 0;
+    // If we have a beatmap loaded, use its notes as the queue
+    if (srState.beatmap && srState.beatmap.notes.length > 0) {
+        srState.noteQueue = [...srState.beatmap.notes];
+        srState.totalNotes = srState.noteQueue.length;
+    } else {
+        srState.noteQueue = [];
+    }
 
     document.querySelectorAll('.sr-note').forEach(el => el.remove());
     document.getElementById('starroad-setup').classList.add('hidden');
@@ -844,7 +1138,27 @@ async function startGame(videoId) {
     if (w) w.classList.remove('hidden');
 
     await loadYouTubeAPI();
-    await createYTPlayer(videoId);
+    // SoundCloud = audio source, YouTube = visual only (muted)
+    if (srState.currentSong?.soundcloudUrl) {
+        // Show muted YouTube video for visuals
+        if (videoId) {
+            const c = document.getElementById('sr-yt-visible');
+            if (c) {
+                c.innerHTML = '';
+                const mutedFrame = document.createElement('iframe');
+                mutedFrame.width = '380';
+                mutedFrame.height = '214';
+                mutedFrame.style.cssText = 'border:none;border-radius:8px;pointer-events:none;';
+                mutedFrame.src = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&mute=1&controls=0&loop=1&playlist=${videoId}&disablekb=1&fs=0&modestbranding=1&start=6&enablejsapi=1`;
+                mutedFrame.allow = 'autoplay';
+                c.appendChild(mutedFrame);
+                srState._mutedYtFrame = mutedFrame;
+            }
+        }
+        await createSCPlayer(srState.currentSong.soundcloudUrl);
+    } else {
+        await createYTPlayer(videoId, srState.currentSong?.startTime || 0);
+    }
     if (w) w.classList.add('hidden');
 
     setTimeout(() => {
@@ -876,6 +1190,7 @@ function cleanup() {
     srState.isActive = false; stopSpawner();
     if (srState.animFrame) { cancelAnimationFrame(srState.animFrame); srState.animFrame = null; }
     destroyYTPlayer(); destroyStarfield();
+    if (srState._mutedYtFrame) { srState._mutedYtFrame = null; }
     document.removeEventListener('keydown', handleKeyDown);
     document.removeEventListener('keyup', handleKeyUp);
     document.querySelectorAll('.sr-note').forEach(el => el.remove());
@@ -887,7 +1202,13 @@ window.showStarRoadOverlay = function () {
     if (!overlay) return;
     overlay.classList.remove('hidden');
     initStarfield();
-    document.getElementById('starroad-setup').classList.remove('hidden');
+    // Show song select if we have songs, otherwise show URL input
+    const songSelect = document.getElementById('starroad-song-select');
+    const setup = document.getElementById('starroad-setup');
+    songSelect?.classList.remove('hidden');
+    setup.classList.add('hidden');
+    renderSongList();
+    renderFeaturedMaps();
     document.getElementById('starroad-game').classList.add('hidden');
     document.getElementById('starroad-results').classList.add('hidden');
     document.addEventListener('keydown', handleKeyDown);
@@ -905,6 +1226,456 @@ window.hideStarRoadOverlay = function () {
 
 window.initSplashStarfield = initSplashStarfield;
 window.destroySplashStarfield = destroySplashStarfield;
+
+// ── Song Selection UI ──────────────────────────────────────
+function renderSongList() {
+    const grid = document.getElementById('sr-song-grid');
+    if (!grid) return;
+    grid.innerHTML = '';
+    SONG_LIBRARY.forEach((song, idx) => {
+        const card = document.createElement('div');
+        card.className = 'sr-song-card';
+        card.dataset.idx = idx;
+        card.innerHTML = `
+            <div class="sr-song-thumb" style="background-image:url(https://img.youtube.com/vi/${song.youtubeId}/mqdefault.jpg)"></div>
+            <div class="sr-song-info">
+                <div class="sr-song-title">${song.title}</div>
+                <div class="sr-song-artist">${song.artist}</div>
+                <div class="sr-song-meta">
+                    <span class="sr-song-diff sr-diff-${(song.difficulty || 'normal').toLowerCase()}">${song.difficulty || 'Normal'}</span>
+                    ${song.bpm ? `<span class="sr-song-bpm">${song.bpm} BPM</span>` : ''}
+                </div>
+            </div>
+        `;
+        card.addEventListener('click', () => selectSong(idx));
+        grid.appendChild(card);
+    });
+}
+
+async function selectSong(idx) {
+    const song = SONG_LIBRARY[idx];
+    if (!song) return;
+    srState.currentSong = song;
+
+    // Show loading state
+    const grid = document.getElementById('sr-song-grid');
+    const cards = grid?.querySelectorAll('.sr-song-card');
+    cards?.forEach(c => c.classList.remove('sr-song-selected'));
+    cards?.[idx]?.classList.add('sr-song-selected');
+
+    try {
+        // Load beatmap
+        if (song.osuData) {
+            // Inline .osu data (string)
+            srState.beatmap = parseOsuBeatmap(song.osuData);
+        } else if (song.osuFile) {
+            srState.beatmap = await loadBeatmap(song.osuFile);
+        } else {
+            srState.beatmap = null;
+        }
+
+        // Switch to game
+        document.getElementById('starroad-song-select')?.classList.add('hidden');
+        document.getElementById('starroad-setup')?.classList.add('hidden');
+        startGame(song.youtubeId);
+    } catch (err) {
+        console.error('Failed to load beatmap:', err);
+        // Fallback: play with random notes
+        srState.beatmap = null;
+        document.getElementById('starroad-song-select')?.classList.add('hidden');
+        startGame(song.youtubeId);
+    }
+}
+
+// ── Featured Maps (curated osu!mania 4K links) ─────────────
+const FEATURED_MAPS = [
+    {
+        title: 'Bad Apple!! feat. nomico',
+        artist: 'Alstroemeria Records',
+        mapper: 'ZenType',
+        difficulty: 'Easy',
+        bpm: 138,
+        stars: 2.0,
+        youtubeId: 'FtutLA63Cp8',
+        osuFile: 'src/data/beatmaps/badapple.osu',
+    },
+    {
+        title: 'Bokutachi no Tabi to Epilogue.[Long ver.]',
+        artist: 'aaaa',
+        mapper: 'Dailyji',
+        difficulty: 'Hard',
+        bpm: 183,
+        stars: 5.1,
+        osuId: 381334,
+        youtubeId: 'nLt34T-Q7-0',
+    },
+    {
+        title: 'Language of the Lost (feat. Kasane Teto SV)',
+        artist: 'R.I.P',
+        mapper: 'real_BCMC',
+        difficulty: 'Normal',
+        bpm: 130,
+        stars: 3.88,
+        osuId: 2306785,
+        youtubeId: '1xEfMnXyGkA',
+        soundcloudUrl: 'https://soundcloud.com/irfan-s-761237717/language-of-the-lost-feat',
+    },
+    {
+        title: 'Renai Circulation',
+        artist: 'Kana Hanazawa',
+        mapper: 'ZenType',
+        difficulty: 'Easy',
+        bpm: 130,
+        stars: 1.8,
+        youtubeId: 'uKxyLmbOc0Q',
+        osuFile: 'src/data/beatmaps/renaicirculation.osu',
+    },
+    {
+        title: 'Night of Nights',
+        artist: 'BEAT MARIO',
+        mapper: 'ZenType',
+        difficulty: 'Insane',
+        bpm: 220,
+        stars: 6.5,
+        youtubeId: 'vS_a8Edde8k',
+        osuFile: 'src/data/beatmaps/nightofnights.osu',
+    },
+];
+
+function renderFeaturedMaps() {
+    const grid = document.getElementById('sr-featured-grid');
+    if (!grid) return;
+    grid.innerHTML = '';
+
+    if (FEATURED_MAPS.length === 0) {
+        grid.innerHTML = `<p class="sr-featured-empty">No featured maps yet!</p>`;
+        return;
+    }
+
+    FEATURED_MAPS.forEach((map, idx) => {
+        const thumb = map.osuId
+            ? `https://assets.ppy.sh/beatmaps/${map.osuId}/covers/list.jpg`
+            : `https://img.youtube.com/vi/${map.youtubeId}/mqdefault.jpg`;
+        const osuUrl = `https://osu.ppy.sh/beatmapsets/${map.osuId}`;
+        const diffClass = map.stars >= 6 ? 'insane' : map.stars >= 4 ? 'hard' : map.stars >= 2.5 ? 'normal' : 'easy';
+
+        const card = document.createElement('div');
+        card.className = 'sr-song-card sr-featured-card';
+        card.dataset.idx = idx;
+        card.innerHTML = `
+            <div class="sr-song-thumb" style="background-image:url(${thumb})"></div>
+            <div class="sr-song-info">
+                <div class="sr-song-title">${map.title}</div>
+                <div class="sr-song-artist">${map.artist}${map.mapper ? ` · <span class="sr-mapper-credit">mapped by ${map.mapper}</span>` : ''}</div>
+                <div class="sr-song-meta">
+                    <span class="sr-song-diff sr-diff-${diffClass}">⭐ ${map.stars}</span>
+                    ${map.bpm ? `<span class="sr-song-bpm">${map.bpm} BPM</span>` : ''}
+                </div>
+            </div>
+            <div class="sr-featured-actions">
+                <button class="sr-featured-play-btn" data-idx="${idx}" title="Play now">
+                    <i class="ri-play-fill"></i> PLAY
+                </button>
+                <a class="sr-featured-btn sr-featured-osu" href="${osuUrl}" target="_blank" rel="noopener noreferrer" title="Open on osu!">
+                    <i class="ri-external-link-line"></i>
+                </a>
+            </div>
+        `;
+
+        // PLAY button
+        card.querySelector('.sr-featured-play-btn').addEventListener('click', () => playFeaturedMap(map, card));
+        grid.appendChild(card);
+    });
+}
+
+async function playFeaturedMap(map, card) {
+    if (!map.youtubeId && !map.soundcloudUrl) {
+        alert('No audio source set for this map yet.');
+        return;
+    }
+
+    const playBtn = card.querySelector('.sr-featured-play-btn');
+    playBtn.disabled = true;
+    playBtn.innerHTML = '<i class="ri-loader-4-line"></i> Loading...';
+
+    try {
+        srState.currentSong = map;
+
+        if (map.osuFile) {
+            // Direct .osu file (auto-generated or bundled)
+            const resp = await fetch(map.osuFile);
+            if (!resp.ok) throw new Error('not_found');
+            const text = await resp.text();
+            srState.beatmap = parseOsuBeatmap(text);
+        } else if (map.osuId) {
+            // .osz bundle
+            const resp = await fetch(`src/data/beatmaps/${map.osuId}.osz`);
+            if (!resp.ok) throw new Error('not_found');
+            const arrayBuffer = await resp.arrayBuffer();
+            const osuFiles = await extractOsuFromOsz(arrayBuffer);
+            const mania4k = osuFiles.find(f => f.parsed.notes.length > 0);
+            srState.beatmap = mania4k ? mania4k.parsed : null;
+        } else {
+            srState.beatmap = null;
+        }
+
+        document.getElementById('starroad-song-select')?.classList.add('hidden');
+        startGame(map.youtubeId);
+
+    } catch (err) {
+        playBtn.disabled = false;
+        playBtn.innerHTML = '<i class="ri-play-fill"></i> PLAY';
+
+        if (err.message === 'not_found') {
+            // File not bundled yet — show instructions
+            showFeaturedDownloadHint(map, card);
+        } else {
+            console.error('Failed to load featured map:', err);
+            playBtn.innerHTML = '<i class="ri-error-warning-line"></i> Error';
+        }
+    }
+}
+
+function showFeaturedDownloadHint(map, card) {
+    // Show a small inline hint under the card
+    let hint = card.parentNode.querySelector(`.sr-featured-hint[data-id="${map.osuId}"]`);
+    if (hint) { hint.remove(); return; } // toggle off if already shown
+
+    hint = document.createElement('div');
+    hint.className = 'sr-featured-hint';
+    hint.dataset.id = map.osuId;
+    hint.innerHTML = `
+        <i class="ri-information-line"></i>
+        Beatmap file not found. <a href="https://osu.ppy.sh/beatmapsets/${map.osuId}" target="_blank">Download from osu!</a>,
+        rename to <code>${map.osuId}.osz</code> and place in <code>src/data/beatmaps/</code>
+    `;
+    card.after(hint);
+}
+
+// ── Import .osu File ───────────────────────────────────────
+let importedOsuText = null;
+
+function showImportModal() {
+    const modal = document.getElementById('sr-import-modal');
+    if (modal) modal.classList.remove('hidden');
+    importedOsuText = null;
+    const fileInput = document.getElementById('sr-import-file');
+    if (fileInput) fileInput.value = '';
+    const fname = document.getElementById('sr-import-filename');
+    if (fname) { fname.textContent = ''; fname.classList.add('hidden'); }
+    const dropzone = document.getElementById('sr-import-dropzone');
+    if (dropzone) dropzone.classList.remove('has-file');
+    const playBtn = document.getElementById('sr-import-play');
+    if (playBtn) playBtn.disabled = true;
+    const err = document.getElementById('sr-import-error');
+    if (err) { err.textContent = ''; err.classList.add('hidden'); }
+    const ytInput = document.getElementById('sr-import-yt-url');
+    if (ytInput) ytInput.value = '';
+}
+
+function hideImportModal() {
+    const modal = document.getElementById('sr-import-modal');
+    if (modal) modal.classList.add('hidden');
+}
+
+// ── .osz (zip) extraction using browser native APIs ────────
+async function extractOsuFromOsz(arrayBuffer) {
+    const data = new Uint8Array(arrayBuffer);
+    const files = [];
+
+    // Find all local file headers (PK\x03\x04)
+    for (let i = 0; i < data.length - 4; i++) {
+        if (data[i] === 0x50 && data[i+1] === 0x4B && data[i+2] === 0x03 && data[i+3] === 0x04) {
+            const compressionMethod = data[i+8] | (data[i+9] << 8);
+            const compressedSize = data[i+18] | (data[i+19] << 8) | (data[i+20] << 16) | (data[i+21] << 24);
+            const nameLen = data[i+26] | (data[i+27] << 8);
+            const extraLen = data[i+28] | (data[i+29] << 8);
+            const nameBytes = data.slice(i+30, i+30+nameLen);
+            const fileName = new TextDecoder().decode(nameBytes);
+            const dataStart = i + 30 + nameLen + extraLen;
+            const fileData = data.slice(dataStart, dataStart + compressedSize);
+
+            if (fileName.endsWith('.osu')) {
+                let text;
+                if (compressionMethod === 0) {
+                    // STORED — no compression
+                    text = new TextDecoder().decode(fileData);
+                } else if (compressionMethod === 8) {
+                    // DEFLATE — use browser DecompressionStream
+                    try {
+                        const blob = new Blob([fileData]);
+                        const ds = new DecompressionStream('deflate-raw');
+                        const stream = blob.stream().pipeThrough(ds);
+                        const decompressed = await new Response(stream).arrayBuffer();
+                        text = new TextDecoder().decode(decompressed);
+                    } catch (e) {
+                        console.warn('Failed to decompress', fileName, e);
+                        continue;
+                    }
+                } else {
+                    continue; // unsupported compression
+                }
+
+                const parsed = parseOsuBeatmap(text);
+                // Only include mania maps (Mode: 3) with 4 keys
+                files.push({ fileName, text, parsed });
+            }
+        }
+    }
+    return files;
+}
+
+// Store extracted .osu files for selection
+let oszExtractedFiles = [];
+
+function handleOsuFile(file) {
+    if (!file) return;
+    const isOsz = file.name.endsWith('.osz');
+    const isOsu = file.name.endsWith('.osu');
+
+    if (!isOsz && !isOsu) {
+        const err = document.getElementById('sr-import-error');
+        if (err) { err.textContent = 'Please select a .osu or .osz file'; err.classList.remove('hidden'); }
+        return;
+    }
+
+    const errEl = document.getElementById('sr-import-error');
+    if (errEl) errEl.classList.add('hidden');
+
+    if (isOsu) {
+        // Direct .osu file
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            importedOsuText = e.target.result;
+            oszExtractedFiles = [];
+            const parsed = parseOsuBeatmap(importedOsuText);
+            showImportedFileInfo(file.name, parsed);
+        };
+        reader.readAsText(file);
+    } else {
+        // .osz file — extract .osu files from the zip
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            try {
+                const osuFiles = await extractOsuFromOsz(e.target.result);
+                if (osuFiles.length === 0) {
+                    if (errEl) { errEl.textContent = 'No osu!mania maps found in this .osz file. Make sure it\'s a mania (4K) beatmap.'; errEl.classList.remove('hidden'); }
+                    return;
+                }
+                oszExtractedFiles = osuFiles;
+                // If only one, auto-select it
+                if (osuFiles.length === 1) {
+                    importedOsuText = osuFiles[0].text;
+                    showImportedFileInfo(osuFiles[0].fileName, osuFiles[0].parsed);
+                } else {
+                    // Multiple difficulties — show picker
+                    showDifficultyPicker(osuFiles);
+                }
+            } catch (err) {
+                console.error('Failed to extract .osz:', err);
+                if (errEl) { errEl.textContent = 'Failed to read .osz file'; errEl.classList.remove('hidden'); }
+            }
+        };
+        reader.readAsArrayBuffer(file);
+    }
+}
+
+function showImportedFileInfo(fileName, parsed) {
+    const fname = document.getElementById('sr-import-filename');
+    if (fname) {
+        fname.textContent = `${parsed.title || fileName} by ${parsed.artist || 'Unknown'} [${parsed.version || '?'}] — ${parsed.notes.length} notes`;
+        fname.classList.remove('hidden');
+    }
+    const dropzone = document.getElementById('sr-import-dropzone');
+    if (dropzone) dropzone.classList.add('has-file');
+    // Hide difficulty picker if showing
+    const picker = document.getElementById('sr-import-diffpicker');
+    if (picker) picker.classList.add('hidden');
+    updateImportPlayBtn();
+}
+
+function showDifficultyPicker(osuFiles) {
+    const dropzone = document.getElementById('sr-import-dropzone');
+    if (dropzone) dropzone.classList.add('has-file');
+    const fname = document.getElementById('sr-import-filename');
+    if (fname) {
+        fname.textContent = `${osuFiles[0].parsed.title || 'Unknown'} — ${osuFiles.length} difficulties found. Pick one:`;
+        fname.classList.remove('hidden');
+    }
+
+    // Create or get difficulty picker
+    let picker = document.getElementById('sr-import-diffpicker');
+    if (!picker) {
+        picker = document.createElement('div');
+        picker.id = 'sr-import-diffpicker';
+        picker.className = 'sr-import-diffpicker';
+        fname.parentNode.insertBefore(picker, fname.nextSibling);
+    }
+    picker.classList.remove('hidden');
+    picker.innerHTML = '';
+
+    osuFiles.forEach((f, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'sr-diff-pick-btn';
+        btn.textContent = `${f.parsed.version || 'Diff ' + (idx+1)} (${f.parsed.notes.length} notes)`;
+        btn.addEventListener('click', () => {
+            importedOsuText = f.text;
+            picker.querySelectorAll('.sr-diff-pick-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            showImportedFileInfo(f.fileName, f.parsed);
+        });
+        picker.appendChild(btn);
+    });
+}
+
+function updateImportPlayBtn() {
+    const playBtn = document.getElementById('sr-import-play');
+    const ytUrl = document.getElementById('sr-import-yt-url')?.value.trim();
+    const hasFile = importedOsuText !== null;
+    const hasUrl = ytUrl && extractVideoId(ytUrl);
+    if (playBtn) playBtn.disabled = !(hasFile && hasUrl);
+}
+
+function playImported() {
+    const ytUrl = document.getElementById('sr-import-yt-url')?.value.trim();
+    const videoId = extractVideoId(ytUrl);
+    if (!importedOsuText || !videoId) return;
+
+    const parsed = parseOsuBeatmap(importedOsuText);
+    srState.beatmap = parsed;
+
+    // Add to session library so it shows in song list
+    const song = {
+        id: 'imported-' + Date.now(),
+        title: parsed.title || 'Imported Beatmap',
+        artist: parsed.artist || 'Unknown Artist',
+        youtubeId: videoId,
+        difficulty: parsed.version || 'Normal',
+        bpm: '',
+        osuData: importedOsuText,
+    };
+    registerSong(song);
+    srState.currentSong = song;
+
+    hideImportModal();
+    document.getElementById('starroad-song-select')?.classList.add('hidden');
+    startGame(videoId);
+}
+
+// Allow switching back to URL input mode
+function showCustomUrlMode() {
+    document.getElementById('starroad-song-select')?.classList.add('hidden');
+    document.getElementById('starroad-setup')?.classList.remove('hidden');
+    srState.beatmap = null;
+}
+
+// Go back to song select from setup
+function showSongSelect() {
+    document.getElementById('starroad-setup')?.classList.add('hidden');
+    document.getElementById('starroad-song-select')?.classList.remove('hidden');
+    renderSongList();
+    renderFeaturedMaps();
+}
 
 // ── Wire up DOM ────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
@@ -924,6 +1695,76 @@ document.addEventListener('DOMContentLoaded', () => {
         startGame(videoId);
     });
     document.getElementById('starroad-exit-btn')?.addEventListener('click', () => { window.hideStarRoadOverlay(); window.exitStarRoad?.(); });
-    document.getElementById('starroad-retry-btn')?.addEventListener('click', () => { if (srState.videoId) startGame(srState.videoId); });
-    document.getElementById('starroad-leave-btn')?.addEventListener('click', () => { window.hideStarRoadOverlay(); window.exitStarRoad?.(); });
+    document.getElementById('starroad-retry-btn')?.addEventListener('click', () => {
+        if (srState.videoId) startGame(srState.videoId);
+    });
+    document.getElementById('starroad-leave-btn')?.addEventListener('click', () => {
+        // Go back to song select instead of exiting entirely
+        document.getElementById('starroad-results')?.classList.add('hidden');
+        if (SONG_LIBRARY.length > 0) {
+            showSongSelect();
+        } else {
+            document.getElementById('starroad-setup')?.classList.remove('hidden');
+        }
+    });
+    // Volume controls
+    let currentVolume = 80;
+    function updateVolumeUI() {
+        document.querySelectorAll('#sr-vol-blocks .sr-vol-block').forEach(b => {
+            const vol = parseInt(b.dataset.vol);
+            b.classList.toggle('active', vol <= currentVolume);
+        });
+    }
+    function setVolume(vol) {
+        currentVolume = Math.max(0, Math.min(100, vol));
+        if (srState.ytPlayer && srState.ytReady) srState.ytPlayer.setVolume(currentVolume);
+        updateVolumeUI();
+    }
+    document.getElementById('sr-vol-down')?.addEventListener('click', () => setVolume(currentVolume - 10));
+    document.getElementById('sr-vol-up')?.addEventListener('click', () => setVolume(currentVolume + 10));
+    document.querySelectorAll('#sr-vol-blocks .sr-vol-block').forEach(b => {
+        b.addEventListener('click', () => setVolume(parseInt(b.dataset.vol)));
+    });
+
+    // Game exit button — stop and go back to song select
+    document.getElementById('sr-game-exit-btn')?.addEventListener('click', () => {
+        srState.isActive = false;
+        stopSpawner();
+        if (srState.animFrame) { cancelAnimationFrame(srState.animFrame); srState.animFrame = null; }
+        destroyYTPlayer();
+        document.getElementById('starroad-game')?.classList.add('hidden');
+        if (SONG_LIBRARY.length > 0) {
+            showSongSelect();
+        } else {
+            document.getElementById('starroad-setup')?.classList.remove('hidden');
+        }
+    });
+    // Song select wiring
+    document.getElementById('sr-custom-url-btn')?.addEventListener('click', showCustomUrlMode);
+    document.getElementById('sr-back-to-songs-btn')?.addEventListener('click', showSongSelect);
+    document.getElementById('sr-song-exit-btn')?.addEventListener('click', () => { window.hideStarRoadOverlay(); window.exitStarRoad?.(); });
+
+    // Import modal wiring
+    document.getElementById('sr-import-btn')?.addEventListener('click', showImportModal);
+    document.getElementById('sr-import-cancel')?.addEventListener('click', hideImportModal);
+    document.getElementById('sr-import-play')?.addEventListener('click', playImported);
+
+    // File input
+    const dropzone = document.getElementById('sr-import-dropzone');
+    const fileInput = document.getElementById('sr-import-file');
+    dropzone?.addEventListener('click', () => fileInput?.click());
+    fileInput?.addEventListener('change', (e) => { if (e.target.files[0]) handleOsuFile(e.target.files[0]); });
+
+    // Drag & drop
+    dropzone?.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('dragover'); });
+    dropzone?.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+    dropzone?.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropzone.classList.remove('dragover');
+        const file = e.dataTransfer?.files?.[0];
+        if (file) handleOsuFile(file);
+    });
+
+    // YouTube URL input updates play button state
+    document.getElementById('sr-import-yt-url')?.addEventListener('input', updateImportPlayBtn);
 });

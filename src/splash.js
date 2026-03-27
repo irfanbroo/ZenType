@@ -127,9 +127,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Start Typing → just close splash
     document.getElementById('splash-classic-btn')?.addEventListener('click', hideSplash);
 
-    // Music Mode → open overlay first, then fade splash out on top
+    // Rhythm Mode → open Star Road
     document.getElementById('splash-music-btn')?.addEventListener('click', () => {
-        document.getElementById('golden-brown-card')?.click();
         hideSplash();
+        window.startStarRoad?.();
     });
 });

@@ -821,6 +821,9 @@ function setupSettingsListeners() {
 
         const starRoadCard = document.getElementById('starroad-mode-card');
         if (starRoadCard) starRoadCard.addEventListener('click', () => { startStarRoad(); closeSettingsForMode(); });
+
+        const devCard = document.getElementById('dev-mode-card');
+        if (devCard) devCard.addEventListener('click', () => { startDevMode(); closeSettingsForMode(); });
     }
 
     // ═══════════════════════════════════════════════════════
@@ -9587,6 +9590,8 @@ let submittedWords = []; // { typed, correctChars, totalChars, rawKeystrokes, co
 // MonkeyType-style accuracy: count every keystroke as it happens,
 // including ones the user later backspaces — so corrections don't hide errors.
 UI.input.addEventListener('keydown', (e) => {
+    // Dev mode handles its own input
+    if (state.gameMode === 'dev') return;
     // Allow first keystroke through (isActive becomes true after input event fires startTimer)
     if (!state.isActive && state.timeLeft !== state.timeLimit) return;
 
@@ -9695,6 +9700,8 @@ UI.input.addEventListener('keydown', (e) => {
 });
 
 UI.input.addEventListener('input', (e) => {
+    // Dev mode handles its own input
+    if (state.gameMode === 'dev') return;
     if (!state.isActive && state.timeLeft > 0) startTimer();
 
     // Init audio on first interaction
@@ -10724,6 +10731,9 @@ function updateCaretPosition() {
 }
 
 document.addEventListener('keydown', (e) => {
+    // Dev mode handles its own key events
+    if (state.gameMode === 'dev') return;
+
     // Don't steal focus if user is typing in another field (like login)
     if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
         if (e.target !== UI.input) return;
@@ -11932,12 +11942,988 @@ function exitRainMode() {
 }
 
 // ═══════════════════════════════════════════════════════
+//              DEVELOPMENT MODE (Monkeytype Replica)
+//     "Pure typing. No distractions."
+// ═══════════════════════════════════════════════════════
+
+const devState = {
+    words: [],
+    wordIndex: 0,
+    input: '',
+    inputHistory: [],      // what was typed for each completed word
+    timeLimit: 15,
+    timeLeft: 15,
+    timer: null,
+    isActive: false,
+    startTime: null,
+    correctChars: 0,
+    incorrectChars: 0,
+    extraChars: 0,
+    missedChars: 0,
+    totalKeypresses: 0,
+    scrollOffset: 0,
+    punctuation: false,
+    numbers: false,
+    theme: 'sparkling',
+    particleType: 'sparkles',
+    _blinkTimeout: null,
+    _keyHandler: null,
+    _globalKeyHandler: null,
+};
+
+let devWasPlaying = { masterPlaying: false, bgAudioPlaying: false, bgVideoMuted: true };
+
+// ── Dev Mode Sparkle System ──────────────────────────────
+let devSparkleCanvas = null;
+let devSparkleCtx = null;
+let devSparkleFrame = null;
+let devParticles = [];
+
+const DEV_SPARKLE_PALETTES = {
+    sparkling: ['#e2b714', '#ffd700', '#ffec7a', '#ff9500', '#ffffff', '#ffb347'],
+    sakura:    ['#ff8fa3', '#ffb3c6', '#ff4d6d', '#ffc8dd', '#ffffff', '#ff006e'],
+    neon:      ['#39ff14', '#00ff88', '#ccff00', '#ffffff', '#00cc6a', '#a8ff3e'],
+    ice:       ['#00d4ff', '#66e0ff', '#0099ff', '#ffffff', '#b3f0ff', '#00aaff'],
+    blood:     ['#ff4444', '#ff8888', '#cc0000', '#ffaaaa', '#ff0000', '#ff6666'],
+    void:      ['#c4a1ff', '#e0ccff', '#8b5cf6', '#ffffff', '#a78bfa', '#ddd6fe'],
+    classic:   [],
+};
+
+let DEV_SPARKLE_COLORS = DEV_SPARKLE_PALETTES.sparkling;
+
+function devGetCaretScreenPos() {
+    const caret = document.getElementById('dev-caret');
+    if (caret) {
+        const r = caret.getBoundingClientRect();
+        return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+    }
+    return { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+}
+
+function devSpawnSparkles(x, y, count = 4, burst = false) {
+    const type = devState.particleType || 'sparkles';
+    if (type === 'none') return;
+
+    for (let i = 0; i < count; i++) {
+        const angle = Math.random() * Math.PI * 2;
+
+        if (type === 'sparkles') {
+            const speed = burst ? (Math.random() * 4 + 2) : (Math.random() * 2 + 0.8);
+            devParticles.push({
+                type: 'sparkle',
+                x: x + (Math.random() - 0.5) * 12,
+                y: y + (Math.random() - 0.5) * 12,
+                vx: Math.cos(angle) * speed * 0.55,
+                vy: Math.sin(angle) * speed - (burst ? 3.5 : 2.2),
+                life: 1, decay: burst ? 0.016 : 0.024,
+                size: burst ? (Math.random() * 5 + 3) : (Math.random() * 3 + 1.5),
+                color: DEV_SPARKLE_COLORS[Math.floor(Math.random() * DEV_SPARKLE_COLORS.length)],
+                isStar: Math.random() > 0.45,
+                rotation: Math.random() * Math.PI,
+                rotSpeed: (Math.random() - 0.5) * 0.12,
+            });
+        } else if (type === 'leaves') {
+            const speed = burst ? (Math.random() * 2 + 1) : (Math.random() * 1.5 + 0.5);
+            const colors = ['#6fcf4a','#4a9e2a','#8fd460','#b5e679','#2d8a1e','#a3d977'];
+            devParticles.push({
+                type: 'leaf',
+                x: x + (Math.random() - 0.5) * 16,
+                y: y + (Math.random() - 0.5) * 8,
+                vx: (Math.random() - 0.5) * speed * 1.2,
+                vy: Math.random() * speed * 0.5 - speed,
+                life: 1, decay: burst ? 0.012 : 0.018,
+                size: burst ? (Math.random() * 10 + 7) : (Math.random() * 7 + 4),
+                color: colors[Math.floor(Math.random() * colors.length)],
+                rotation: Math.random() * Math.PI * 2,
+                rotSpeed: (Math.random() - 0.5) * 0.08,
+                swing: Math.random() * 0.04 + 0.01,
+                swingT: Math.random() * Math.PI * 2,
+            });
+        } else if (type === 'bubbles') {
+            const speed = burst ? (Math.random() * 2 + 1.5) : (Math.random() * 1.5 + 0.8);
+            const colors = ['#a8d8ff','#ffffff','#c8eeff','#7fc8ff','#4fa8ff'];
+            devParticles.push({
+                type: 'bubble',
+                x: x + (Math.random() - 0.5) * 20,
+                y: y + (Math.random() - 0.5) * 8,
+                vx: (Math.random() - 0.5) * speed * 0.6,
+                vy: -(Math.random() * speed + 0.5),
+                life: 1, decay: burst ? 0.012 : 0.018,
+                size: burst ? (Math.random() * 8 + 5) : (Math.random() * 5 + 3),
+                color: colors[Math.floor(Math.random() * colors.length)],
+                wobble: Math.random() * Math.PI * 2,
+                wobbleSpeed: (Math.random() - 0.5) * 0.05,
+            });
+        } else if (type === 'fire') {
+            const speed = burst ? (Math.random() * 5 + 3) : (Math.random() * 3 + 1.5);
+            const colors = ['#ffdd57','#ff9500','#ff6b00','#ff4500','#ffaa00','#ffffff'];
+            devParticles.push({
+                type: 'fire',
+                x: x + (Math.random() - 0.5) * 14,
+                y: y + (Math.random() - 0.5) * 6,
+                vx: (Math.random() - 0.5) * speed * 0.5,
+                vy: -(Math.random() * speed + 1),
+                life: 1, decay: burst ? 0.025 : 0.035,
+                size: burst ? (Math.random() * 6 + 3) : (Math.random() * 4 + 2),
+                color: colors[Math.floor(Math.random() * colors.length)],
+            });
+        } else if (type === 'snow') {
+            const speed = burst ? (Math.random() * 2 + 1) : (Math.random() * 1 + 0.3);
+            devParticles.push({
+                type: 'snow',
+                x: x + (Math.random() - 0.5) * 20,
+                y: y + (Math.random() - 0.5) * 6,
+                vx: (Math.random() - 0.5) * 0.8,
+                vy: Math.random() * speed + 0.3,
+                life: 1, decay: burst ? 0.012 : 0.016,
+                size: burst ? (Math.random() * 5 + 3) : (Math.random() * 3 + 1.5),
+                color: '#ffffff',
+                drift: Math.random() * 0.03,
+                driftT: Math.random() * Math.PI * 2,
+            });
+        }
+    }
+}
+
+function devDrawStar4(ctx, x, y, r, rot) {
+    ctx.beginPath();
+    for (let i = 0; i < 8; i++) {
+        const a = (i / 8) * Math.PI * 2 + rot;
+        const radius = i % 2 === 0 ? r : r * 0.32;
+        const px = x + Math.cos(a) * radius;
+        const py = y + Math.sin(a) * radius;
+        i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+    }
+    ctx.closePath();
+    ctx.fill();
+}
+
+function devSparkleLoop() {
+    if (!devSparkleCtx || !devSparkleCanvas) return;
+    devSparkleCtx.clearRect(0, 0, devSparkleCanvas.width, devSparkleCanvas.height);
+    devParticles = devParticles.filter(p => p.life > 0.02);
+
+    for (const p of devParticles) {
+        p.life -= p.decay;
+        const alpha = Math.max(0, p.life * p.life);
+        devSparkleCtx.save();
+        devSparkleCtx.globalAlpha = alpha;
+
+        if (p.type === 'sparkle') {
+            p.x += p.vx; p.y += p.vy;
+            p.vy += 0.05; p.vx *= 0.97;
+            p.rotation += p.rotSpeed;
+            devSparkleCtx.fillStyle = p.color;
+            devSparkleCtx.shadowColor = p.color;
+            devSparkleCtx.shadowBlur = p.size * 4;
+            p.isStar
+                ? devDrawStar4(devSparkleCtx, p.x, p.y, p.size, p.rotation)
+                : (devSparkleCtx.beginPath(), devSparkleCtx.arc(p.x, p.y, p.size * 0.55, 0, Math.PI * 2), devSparkleCtx.fill());
+
+        } else if (p.type === 'leaf') {
+            p.swingT += p.swing;
+            p.x += p.vx + Math.sin(p.swingT) * 0.6;
+            p.y += p.vy; p.vy += 0.03;
+            p.rotation += p.rotSpeed;
+            devSparkleCtx.translate(p.x, p.y);
+            devSparkleCtx.rotate(p.rotation);
+            devSparkleCtx.fillStyle = p.color;
+            devSparkleCtx.shadowColor = p.color;
+            devSparkleCtx.shadowBlur = 4;
+            devSparkleCtx.beginPath();
+            devSparkleCtx.ellipse(0, 0, p.size * 0.4, p.size, 0, 0, Math.PI * 2);
+            devSparkleCtx.fill();
+
+        } else if (p.type === 'bubble') {
+            p.wobble += p.wobbleSpeed;
+            p.x += p.vx + Math.sin(p.wobble) * 0.5;
+            p.y += p.vy;
+            devSparkleCtx.strokeStyle = p.color;
+            devSparkleCtx.lineWidth = 1.2;
+            devSparkleCtx.shadowColor = p.color;
+            devSparkleCtx.shadowBlur = p.size * 2;
+            devSparkleCtx.beginPath();
+            devSparkleCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            devSparkleCtx.stroke();
+            // Shine
+            devSparkleCtx.globalAlpha = alpha * 0.4;
+            devSparkleCtx.fillStyle = '#ffffff';
+            devSparkleCtx.beginPath();
+            devSparkleCtx.arc(p.x - p.size * 0.3, p.y - p.size * 0.3, p.size * 0.25, 0, Math.PI * 2);
+            devSparkleCtx.fill();
+
+        } else if (p.type === 'fire') {
+            p.x += p.vx; p.y += p.vy;
+            p.vx *= 0.95; p.vy -= 0.02;
+            devSparkleCtx.fillStyle = p.color;
+            devSparkleCtx.shadowColor = p.color;
+            devSparkleCtx.shadowBlur = p.size * 6;
+            devSparkleCtx.beginPath();
+            devSparkleCtx.arc(p.x, p.y, p.size * 0.6, 0, Math.PI * 2);
+            devSparkleCtx.fill();
+
+        } else if (p.type === 'snow') {
+            p.driftT += p.drift;
+            p.x += p.vx + Math.sin(p.driftT) * 0.4;
+            p.y += p.vy;
+            devSparkleCtx.fillStyle = '#ffffff';
+            devSparkleCtx.shadowColor = '#c8eeff';
+            devSparkleCtx.shadowBlur = p.size * 3;
+            devSparkleCtx.beginPath();
+            devSparkleCtx.arc(p.x, p.y, p.size * 0.5, 0, Math.PI * 2);
+            devSparkleCtx.fill();
+        }
+
+        devSparkleCtx.restore();
+    }
+    devSparkleFrame = requestAnimationFrame(devSparkleLoop);
+}
+
+function devInitSparkles() {
+    devSparkleCanvas = document.getElementById('dev-sparkle-canvas');
+    if (!devSparkleCanvas) return;
+    devSparkleCanvas.width = window.innerWidth;
+    devSparkleCanvas.height = window.innerHeight;
+    devSparkleCtx = devSparkleCanvas.getContext('2d');
+    devParticles = [];
+    devSparkleFrame = requestAnimationFrame(devSparkleLoop);
+}
+
+function devDestroySparkles() {
+    if (devSparkleFrame) { cancelAnimationFrame(devSparkleFrame); devSparkleFrame = null; }
+    devSparkleCanvas = null;
+    devSparkleCtx = null;
+    devParticles = [];
+}
+
+// ── Word generation ──────────────────────────────────────
+function devGenerateWords(count = 120) {
+    const pool = wordPools[0];
+    const words = [];
+    let sentenceStart = true;
+
+    for (let i = 0; i < count; i++) {
+        let word = pool[Math.floor(Math.random() * pool.length)].toLowerCase();
+
+        // Insert numbers occasionally
+        if (devState.numbers && Math.random() < 0.1) {
+            word = String(Math.floor(Math.random() * 1000));
+        }
+
+        // Punctuation: capitalize sentence starts, add punctuation
+        if (devState.punctuation) {
+            if (sentenceStart) {
+                word = word.charAt(0).toUpperCase() + word.slice(1);
+                sentenceStart = false;
+            }
+            if (Math.random() < 0.15 && i > 0) {
+                const puncts = ['.', ',', ';', '!', '?'];
+                const p = puncts[Math.floor(Math.random() * puncts.length)];
+                // Attach to previous word
+                if (words.length > 0) {
+                    words[words.length - 1] += p;
+                    if (p === '.' || p === '!' || p === '?') sentenceStart = true;
+                }
+            }
+        }
+
+        words.push(word);
+    }
+    return words;
+}
+
+// ── Render words ─────────────────────────────────────────
+function devRenderWords() {
+    const container = document.getElementById('dev-words');
+    if (!container) return;
+
+    container.style.marginTop = '0px';
+    devState.scrollOffset = 0;
+
+    container.innerHTML = devState.words.map((word, i) => {
+        let cls = 'dev-word';
+        if (i < devState.wordIndex) cls += ' typed';
+        if (i === devState.wordIndex) cls += ' active';
+        const letters = word.split('').map(ch => `<letter>${ch}</letter>`).join('');
+        return `<div class="${cls}" data-word="${i}">${letters}</div>`;
+    }).join('');
+}
+
+// ── Update active word letters ───────────────────────────
+function devUpdateLetters() {
+    const wordEl = document.querySelector(`#dev-words .dev-word[data-word="${devState.wordIndex}"]`);
+    if (!wordEl) return;
+
+    const word = devState.words[devState.wordIndex];
+    const input = devState.input;
+    const originalLetters = wordEl.querySelectorAll('letter:not(.extra)');
+
+    // Remove old extra letters
+    wordEl.querySelectorAll('letter.extra').forEach(el => el.remove());
+
+    // Update existing letters
+    for (let i = 0; i < originalLetters.length; i++) {
+        const letter = originalLetters[i];
+        letter.classList.remove('correct', 'incorrect');
+        if (i < input.length) {
+            if (input[i] === word[i]) {
+                letter.classList.add('correct');
+            } else {
+                letter.classList.add('incorrect');
+            }
+        }
+    }
+
+    // Extra typed characters
+    if (input.length > word.length) {
+        for (let i = word.length; i < input.length; i++) {
+            const extra = document.createElement('letter');
+            extra.className = 'extra';
+            extra.textContent = input[i];
+            wordEl.appendChild(extra);
+        }
+    }
+}
+
+// ── Smooth caret positioning ─────────────────────────────
+function devUpdateCaret() {
+    const caret = document.getElementById('dev-caret');
+    const activeWord = document.querySelector('#dev-words .dev-word.active');
+    const wordsContainer = document.getElementById('dev-words');
+    if (!activeWord || !caret || !wordsContainer) return;
+
+    const allLetters = activeWord.querySelectorAll('letter');
+    const originalLetters = activeWord.querySelectorAll('letter:not(.extra)');
+    const inputLen = devState.input.length;
+
+    let left, top;
+
+    if (inputLen === 0) {
+        left = activeWord.offsetLeft;
+        top = activeWord.offsetTop;
+    } else if (inputLen <= originalLetters.length - 1) {
+        const targetLetter = originalLetters[inputLen];
+        left = activeWord.offsetLeft + targetLetter.offsetLeft;
+        top = activeWord.offsetTop + targetLetter.offsetTop;
+    } else {
+        const lastLetter = allLetters[allLetters.length - 1];
+        if (lastLetter) {
+            left = activeWord.offsetLeft + lastLetter.offsetLeft + lastLetter.offsetWidth;
+            top = activeWord.offsetTop + lastLetter.offsetTop;
+        } else {
+            left = activeWord.offsetLeft;
+            top = activeWord.offsetTop;
+        }
+    }
+
+    // Account for margin-top scrolling on #dev-words
+    const marginTop = parseFloat(wordsContainer.style.marginTop) || 0;
+    top += marginTop;
+
+    caret.style.transform = `translate(${left}px, ${top}px)`;
+
+    // Pause blink while typing
+    caret.classList.add('typing');
+    clearTimeout(devState._blinkTimeout);
+    devState._blinkTimeout = setTimeout(() => {
+        caret.classList.remove('typing');
+    }, 500);
+}
+
+// ── Line-jump scrolling ──────────────────────────────────
+// Monkeytype rule: once the user reaches line 2, they stay on line 2.
+// When the active word would appear on line 3, scroll up one line.
+function devCheckLineJump() {
+    const activeWord = document.querySelector('#dev-words .dev-word.active');
+    const container = document.getElementById('dev-words');
+    if (!activeWord || !container) return;
+
+    // Get line height from computed style (more reliable than offsetHeight in flex-wrap)
+    const wrapper = document.getElementById('dev-words-wrapper');
+    if (!wrapper) return;
+    const fontSize = parseFloat(getComputedStyle(wrapper).fontSize);
+    const lineH = fontSize * 1.5; // matches line-height: 1.5em
+    if (!lineH || lineH < 1) return;
+
+    const wordTop = activeWord.offsetTop;
+
+    // Which visual line is the active word on? (0-indexed, relative to scroll)
+    const visualLine = Math.floor((wordTop - devState.scrollOffset + 2) / lineH);
+
+    // If on line 2 (3rd row) or beyond, scroll until it's on line 1 (2nd row)
+    while (visualLine >= 2 && wordTop >= devState.scrollOffset + lineH * 1.5) {
+        devState.scrollOffset += lineH;
+        container.style.marginTop = `-${devState.scrollOffset}px`;
+        break; // scroll one line at a time for smooth animation
+    }
+}
+
+// ── Submit word (space pressed) ──────────────────────────
+function devSubmitWord() {
+    const word = devState.words[devState.wordIndex];
+    const input = devState.input;
+
+    // Save input for going back
+    devState.inputHistory.push(input);
+
+    // Count chars
+    const minLen = Math.min(input.length, word.length);
+    for (let i = 0; i < minLen; i++) {
+        if (input[i] === word[i]) devState.correctChars++;
+        else devState.incorrectChars++;
+    }
+    // Extra chars beyond word length
+    if (input.length > word.length) {
+        devState.extraChars += input.length - word.length;
+    }
+    // Missed chars (untyped)
+    if (input.length < word.length) {
+        devState.missedChars += word.length - input.length;
+    }
+
+    // Mark word as typed in DOM
+    const wordEl = document.querySelector(`#dev-words .dev-word[data-word="${devState.wordIndex}"]`);
+    if (wordEl) {
+        wordEl.classList.remove('active');
+        const isCorrect = (input === word);
+        wordEl.classList.add(isCorrect ? 'typed' : 'typed-wrong');
+
+        // For wrong words, mark untyped letters
+        if (!isCorrect) {
+            const letters = wordEl.querySelectorAll('letter:not(.extra)');
+            for (let i = input.length; i < letters.length; i++) {
+                letters[i].classList.add('incorrect');
+            }
+        }
+    }
+
+    // Burst sparkles on word completion
+    const burstPos = devGetCaretScreenPos();
+    devSpawnSparkles(burstPos.x, burstPos.y, 14, true);
+
+    // Advance
+    devState.wordIndex++;
+    devState.input = '';
+
+    // Mark next word as active
+    const nextWordEl = document.querySelector(`#dev-words .dev-word[data-word="${devState.wordIndex}"]`);
+    if (nextWordEl) {
+        nextWordEl.classList.add('active');
+    }
+
+    // Generate more words if running low
+    if (devState.wordIndex > devState.words.length - 30) {
+        const newWords = devGenerateWords(60);
+        devState.words.push(...newWords);
+        // Append to DOM
+        const container = document.getElementById('dev-words');
+        if (container) {
+            const startIdx = devState.words.length - newWords.length;
+            newWords.forEach((w, j) => {
+                const idx = startIdx + j;
+                const div = document.createElement('div');
+                div.className = 'dev-word';
+                div.dataset.word = idx;
+                div.innerHTML = w.split('').map(ch => `<letter>${ch}</letter>`).join('');
+                container.appendChild(div);
+            });
+        }
+    }
+
+    devCheckLineJump();
+    devUpdateCaret();
+}
+
+// ── Go back to previous word ─────────────────────────────
+function devGoBack() {
+    if (devState.wordIndex === 0 || devState.inputHistory.length === 0) return;
+
+    const prevInput = devState.inputHistory[devState.inputHistory.length - 1];
+    const prevWord = devState.words[devState.wordIndex - 1];
+
+    // Only allow going back if previous word was wrong
+    if (prevInput === prevWord) return;
+
+    // Undo char counts for the previous word
+    const minLen = Math.min(prevInput.length, prevWord.length);
+    for (let i = 0; i < minLen; i++) {
+        if (prevInput[i] === prevWord[i]) devState.correctChars--;
+        else devState.incorrectChars--;
+    }
+    if (prevInput.length > prevWord.length) devState.extraChars -= (prevInput.length - prevWord.length);
+    if (prevInput.length < prevWord.length) devState.missedChars -= (prevWord.length - prevInput.length);
+
+    devState.inputHistory.pop();
+    devState.wordIndex--;
+    devState.input = prevInput;
+
+    // Update DOM: remove typed/typed-wrong from prev word, add active
+    const prevWordEl = document.querySelector(`#dev-words .dev-word[data-word="${devState.wordIndex}"]`);
+    const currWordEl = document.querySelector(`#dev-words .dev-word[data-word="${devState.wordIndex + 1}"]`);
+
+    if (prevWordEl) {
+        prevWordEl.classList.remove('typed', 'typed-wrong');
+        prevWordEl.classList.add('active');
+        // Re-render letters for this word
+        const word = devState.words[devState.wordIndex];
+        prevWordEl.innerHTML = word.split('').map(ch => `<letter>${ch}</letter>`).join('');
+    }
+    if (currWordEl) {
+        currWordEl.classList.remove('active');
+    }
+
+    devUpdateLetters();
+    devUpdateCaret();
+}
+
+// ── Timer ────────────────────────────────────────────────
+function devStartTimer() {
+    if (devState.isActive) return;
+    devState.isActive = true;
+    devState.startTime = Date.now();
+    devState.timeLeft = devState.timeLimit;
+
+    const timerEl = document.getElementById('dev-live-timer');
+    const wpmEl = document.getElementById('dev-live-wpm');
+
+    devState.timer = setInterval(() => {
+        devState.timeLeft--;
+        if (timerEl) timerEl.textContent = devState.timeLeft;
+
+        // Live WPM
+        const elapsed = (Date.now() - devState.startTime) / 60000;
+        if (elapsed > 0 && wpmEl) {
+            const wpm = Math.round((devState.correctChars / 5) / elapsed);
+            wpmEl.textContent = wpm;
+        }
+
+        if (devState.timeLeft <= 0) {
+            devEndTest();
+        }
+    }, 1000);
+}
+
+// ── End test ─────────────────────────────────────────────
+function devEndTest() {
+    clearInterval(devState.timer);
+    devState.timer = null;
+    devState.isActive = false;
+
+    const elapsed = devState.timeLimit;
+    const minutes = elapsed / 60;
+    const wpm = minutes > 0 ? Math.round((devState.correctChars / 5) / minutes) : 0;
+    const rawWpm = minutes > 0 ? Math.round((devState.totalKeypresses / 5) / minutes) : 0;
+    const totalChars = devState.correctChars + devState.incorrectChars + devState.extraChars + devState.missedChars;
+    const acc = totalChars > 0 ? Math.round((devState.correctChars / totalChars) * 100) : 100;
+
+    // Populate results
+    document.getElementById('dev-final-wpm').textContent = wpm;
+    document.getElementById('dev-final-acc').textContent = acc + '%';
+    document.getElementById('dev-final-raw').textContent = rawWpm;
+    document.getElementById('dev-final-chars').textContent = `${devState.correctChars}/${devState.incorrectChars}/${devState.extraChars}/${devState.missedChars}`;
+    document.getElementById('dev-final-time').textContent = elapsed + 's';
+
+    // Show results
+    document.getElementById('dev-results').classList.remove('hidden');
+
+    // Remove input handlers
+    devRemoveInputHandlers();
+}
+
+// ── Init / restart test ──────────────────────────────────
+function devInitTest() {
+    // Reset state
+    clearInterval(devState.timer);
+    devState.timer = null;
+    devState.isActive = false;
+    devState.startTime = null;
+    devState.wordIndex = 0;
+    devState.input = '';
+    devState.inputHistory = [];
+    devState.correctChars = 0;
+    devState.incorrectChars = 0;
+    devState.extraChars = 0;
+    devState.missedChars = 0;
+    devState.totalKeypresses = 0;
+    devState.timeLeft = devState.timeLimit;
+    devState.scrollOffset = 0;
+
+    // Hide results
+    document.getElementById('dev-results').classList.add('hidden');
+
+    // Generate words
+    devState.words = devGenerateWords();
+
+    // Render
+    devRenderWords();
+
+    // Reset caret
+    const caret = document.getElementById('dev-caret');
+    if (caret) {
+        caret.classList.remove('typing');
+        caret.style.transform = 'translate(0px, 0px)';
+    }
+
+    // Reset live stats
+    const timerEl = document.getElementById('dev-live-timer');
+    const wpmEl = document.getElementById('dev-live-wpm');
+    if (timerEl) timerEl.textContent = devState.timeLimit;
+    if (wpmEl) wpmEl.textContent = '';
+
+    // Focus input after render settles
+    setTimeout(() => {
+        UI.input.value = '';
+        UI.input.focus();
+        devUpdateCaret();
+    }, 20);
+
+    // Attach input handlers
+    devAttachInputHandlers();
+}
+
+// ── Input handlers (keydown-based, like Monkeytype) ──────
+function devAttachInputHandlers() {
+    devRemoveInputHandlers();
+
+    // All input handled via keydown — no 'input' event
+    devState._keyHandler = (e) => {
+        if (state.gameMode !== 'dev') return;
+
+        const word = devState.words[devState.wordIndex];
+        if (!word) return;
+
+        // ── Tab = restart ──
+        if (e.key === 'Tab') {
+            e.preventDefault();
+            devInitTest();
+            return;
+        }
+
+        // ── Escape = exit ──
+        if (e.key === 'Escape') {
+            e.preventDefault();
+            exitDevMode();
+            return;
+        }
+
+        // ── Filter: ignore modifier combos (except Ctrl+Backspace) ──
+        if (e.altKey || e.metaKey) return;
+        if (e.ctrlKey && e.key !== 'Backspace') return;
+
+        // ── Filter: ignore non-character keys ──
+        if (['Shift', 'Control', 'Alt', 'Meta', 'CapsLock',
+             'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown',
+             'Home', 'End', 'PageUp', 'PageDown',
+             'Insert', 'Delete', 'F1', 'F2', 'F3', 'F4', 'F5',
+             'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12',
+             'NumLock', 'ScrollLock', 'Pause', 'PrintScreen',
+             'ContextMenu', 'Enter'].includes(e.key)) {
+            e.preventDefault();
+            return;
+        }
+
+        // ── Ctrl+Backspace = clear entire current input ──
+        if (e.key === 'Backspace' && e.ctrlKey) {
+            e.preventDefault();
+            devState.input = '';
+            UI.input.value = '';
+            devUpdateLetters();
+            devUpdateCaret();
+            return;
+        }
+
+        // ── Backspace ──
+        if (e.key === 'Backspace') {
+            e.preventDefault();
+            if (devState.input.length > 0) {
+                // Remove last char
+                devState.input = devState.input.slice(0, -1);
+                UI.input.value = devState.input;
+                devUpdateLetters();
+                devUpdateCaret();
+            } else {
+                // Empty input → go back to previous wrong word
+                devGoBack();
+            }
+            return;
+        }
+
+        // ── Space = submit word ──
+        if (e.key === ' ') {
+            e.preventDefault();
+            // Ignore space on empty input (no submitting empty words)
+            if (devState.input.length === 0) return;
+            // Start timer if not active
+            if (!devState.isActive && devState.timeLeft > 0) devStartTimer();
+            devState.totalKeypresses++;
+            devSubmitWord();
+            devState.input = '';
+            UI.input.value = '';
+            return;
+        }
+
+        // ── Character input (only single printable chars) ──
+        if (e.key.length !== 1) return;
+        e.preventDefault();
+
+        // Start timer on first char
+        if (!devState.isActive && devState.timeLeft > 0) devStartTimer();
+
+        // Limit extra chars to 10 beyond word length
+        if (devState.input.length >= word.length + 10) return;
+
+        devState.input += e.key;
+        devState.totalKeypresses++;
+        UI.input.value = devState.input;
+        devUpdateLetters();
+        devUpdateCaret();
+
+        // Sparkle on each keystroke
+        const charPos = devGetCaretScreenPos();
+        devSpawnSparkles(charPos.x, charPos.y, 4);
+    };
+
+    devState._globalKeyHandler = (e) => {
+        if (state.gameMode !== 'dev') return;
+        if (e.target.tagName === 'BUTTON') return;
+        if (e.target.tagName === 'INPUT' && e.target !== UI.input) return;
+        if (e.target.tagName === 'TEXTAREA') return;
+        // Keep focus on hidden input
+        UI.input.focus();
+    };
+
+    UI.input.addEventListener('keydown', devState._keyHandler);
+    document.addEventListener('keydown', devState._globalKeyHandler);
+}
+
+function devRemoveInputHandlers() {
+    if (devState._keyHandler) {
+        UI.input.removeEventListener('keydown', devState._keyHandler);
+        devState._keyHandler = null;
+    }
+    if (devState._globalKeyHandler) {
+        document.removeEventListener('keydown', devState._globalKeyHandler);
+        devState._globalKeyHandler = null;
+    }
+}
+
+// ── Start / Exit ─────────────────────────────────────────
+function startDevMode() {
+    // Hide main UI
+    ['game-ui', 'modes-modal'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('hidden');
+    });
+
+    const appHeader = document.getElementById('app-header');
+    const navButtons = document.getElementById('top-nav-buttons');
+    const footer = document.querySelector('footer') || document.querySelector('.site-footer');
+    if (appHeader) appHeader.style.display = 'none';
+    if (navButtons) navButtons.style.display = 'none';
+    if (footer) footer.style.display = 'none';
+
+    // Save & mute audio
+    devWasPlaying.masterPlaying = !masterAudio.paused;
+    devWasPlaying.bgAudioPlaying = currentBgAudio && !currentBgAudio.paused;
+    devWasPlaying.bgVideoMuted = UI.bgVideo ? UI.bgVideo.muted : true;
+    masterAudio.pause();
+    if (currentBgAudio) currentBgAudio.pause();
+    if (UI.bgVideo) UI.bgVideo.muted = true;
+
+    // Show dev mode UI
+    const devUI = document.getElementById('dev-mode-ui');
+    if (devUI) devUI.classList.remove('hidden');
+
+    state.gameMode = 'dev';
+
+    // Init sparkles
+    devInitSparkles();
+
+    // Apply default theme
+    devApplyTheme(devState.theme);
+
+    // Init the test
+    devInitTest();
+
+    // Setup option buttons
+    devSetupOptions();
+}
+
+function exitDevMode() {
+    clearInterval(devState.timer);
+    devState.timer = null;
+    devState.isActive = false;
+    devRemoveInputHandlers();
+    devDestroySparkles();
+
+    // Hide dev UI
+    const devUI = document.getElementById('dev-mode-ui');
+    if (devUI) devUI.classList.add('hidden');
+
+    // Restore main UI
+    const gameUI = document.getElementById('game-ui');
+    const appHeader = document.getElementById('app-header');
+    const navButtons = document.getElementById('top-nav-buttons');
+    const footer = document.querySelector('footer') || document.querySelector('.site-footer');
+    if (gameUI) gameUI.classList.remove('hidden');
+    if (appHeader) appHeader.style.display = '';
+    if (navButtons) navButtons.style.display = '';
+    if (footer) footer.style.display = '';
+
+    // Restore audio
+    if (devWasPlaying.masterPlaying) masterAudio.play().catch(() => {});
+    if (devWasPlaying.bgAudioPlaying && currentBgAudio) currentBgAudio.play().catch(() => {});
+    if (UI.bgVideo) UI.bgVideo.muted = devWasPlaying.bgVideoMuted;
+
+    state.gameMode = 'time';
+    initGame();
+}
+
+// ── Setup option buttons ─────────────────────────────────
+function devSetupOptions() {
+    // Back button
+    const backBtn = document.getElementById('dev-back-btn');
+    if (backBtn) backBtn.onclick = () => exitDevMode();
+
+    // Time buttons
+    document.querySelectorAll('.dev-time-btn').forEach(btn => {
+        btn.onclick = () => {
+            document.querySelectorAll('.dev-time-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            devState.timeLimit = parseInt(btn.dataset.time);
+            devInitTest();
+        };
+    });
+
+    // Punctuation toggle
+    document.querySelectorAll('.dev-opt-btn').forEach(btn => {
+        btn.onclick = () => {
+            btn.classList.toggle('active');
+            if (btn.dataset.opt === 'punctuation') devState.punctuation = btn.classList.contains('active');
+            if (btn.dataset.opt === 'numbers') devState.numbers = btn.classList.contains('active');
+            devInitTest();
+        };
+    });
+
+    // Restart button
+    const restartBtn = document.getElementById('dev-restart-btn');
+    if (restartBtn) restartBtn.onclick = () => devInitTest();
+
+    // Results restart
+    const resultsRestart = document.getElementById('dev-results-restart');
+    if (resultsRestart) resultsRestart.onclick = () => devInitTest();
+
+    // ── Particle dropdown ──
+    const particleBtn = document.getElementById('dev-particle-btn');
+    const particleDropdown = document.getElementById('dev-particle-dropdown');
+    if (particleBtn && particleDropdown) {
+        const toggleParticleDropdown = (e) => {
+            e.stopPropagation(); e.preventDefault();
+            const isOpen = !particleDropdown.classList.contains('hidden');
+            particleDropdown.classList.toggle('hidden');
+            particleBtn.classList.toggle('open', !isOpen);
+        };
+        particleBtn.addEventListener('click', toggleParticleDropdown);
+        particleBtn.querySelector('i')?.addEventListener('click', toggleParticleDropdown);
+        document.addEventListener('mousedown', (e) => {
+            if (state.gameMode !== 'dev') return;
+            const wrapper = document.getElementById('dev-particle-wrapper');
+            if (wrapper && !wrapper.contains(e.target)) {
+                particleDropdown.classList.add('hidden');
+                particleBtn.classList.remove('open');
+            }
+        });
+    }
+    document.querySelectorAll('.dev-particle-option').forEach(opt => {
+        opt.addEventListener('click', (e) => {
+            e.stopPropagation();
+            document.querySelectorAll('.dev-particle-option').forEach(o => o.classList.remove('active'));
+            opt.classList.add('active');
+            devState.particleType = opt.dataset.particle;
+            const label = document.getElementById('dev-particle-label');
+            if (label) label.textContent = opt.dataset.particle;
+            if (particleDropdown) particleDropdown.classList.add('hidden');
+            if (particleBtn) particleBtn.classList.remove('open');
+            // Restart particles if needed
+            if (devState.particleType === 'none') {
+                devDestroySparkles();
+            } else {
+                if (!devSparkleFrame) devInitSparkles();
+            }
+        });
+    });
+
+    // Theme button toggle
+    const themeBtn = document.getElementById('dev-theme-btn');
+    const themeDropdown = document.getElementById('dev-theme-dropdown');
+    if (themeBtn && themeDropdown) {
+        const toggleThemeDropdown = (e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            const isOpen = !themeDropdown.classList.contains('hidden');
+            themeDropdown.classList.toggle('hidden');
+            themeBtn.classList.toggle('open', !isOpen);
+        };
+        themeBtn.addEventListener('click', toggleThemeDropdown);
+        themeBtn.querySelector('i')?.addEventListener('click', toggleThemeDropdown);
+
+        // Close on outside click
+        document.addEventListener('mousedown', (e) => {
+            if (state.gameMode !== 'dev') return;
+            const wrapper = document.getElementById('dev-theme-wrapper');
+            if (wrapper && !wrapper.contains(e.target)) {
+                themeDropdown.classList.add('hidden');
+                themeBtn.classList.remove('open');
+            }
+        });
+    }
+
+    // Theme options
+    document.querySelectorAll('.dev-theme-option').forEach(opt => {
+        opt.addEventListener('click', (e) => {
+            e.stopPropagation();
+            document.querySelectorAll('.dev-theme-option').forEach(o => o.classList.remove('active'));
+            opt.classList.add('active');
+            devApplyTheme(opt.dataset.devTheme);
+            themeDropdown.classList.add('hidden');
+        });
+    });
+}
+
+// ── Theme application ────────────────────────────────────
+function devApplyTheme(themeName) {
+    const ui = document.getElementById('dev-mode-ui');
+    if (!ui) return;
+
+    // Remove all theme classes
+    ui.className = ui.className.replace(/dev-theme-\S+/g, '').trim();
+
+    // Apply new theme class (always add — sparkling is the base but still class-tagged)
+    ui.classList.add(`dev-theme-${themeName}`);
+    devState.theme = themeName;
+
+    // Update button label
+    const label = document.getElementById('dev-theme-label');
+    if (label) label.textContent = themeName === 'blood' ? 'blood moon' : themeName;
+
+    // Update sparkle colors for theme
+    DEV_SPARKLE_COLORS = DEV_SPARKLE_PALETTES[themeName] || DEV_SPARKLE_PALETTES.sparkling;
+
+    // Sparkles for all themes except classic
+    if (themeName === 'classic') {
+        devDestroySparkles();
+    } else {
+        if (!devSparkleFrame) devInitSparkles();
+    }
+}
+
+// ═══════════════════════════════════════════════════════
 //                    STAR ROAD MODE
 //     "Hit notes to the beat"
 // ═══════════════════════════════════════════════════════
 let starRoadWasPlaying = { masterPlaying: false, bgAudioPlaying: false, bgVideoMuted: true };
 
-function startStarRoad() {
+window.startStarRoad = function startStarRoad() {
     // Show splash
     const splash = document.getElementById('starroad-splash');
     if (!splash) return;

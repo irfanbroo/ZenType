@@ -16,8 +16,8 @@
         window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
     </script>
     <script defer src="/_vercel/insights/script.js"></script>
-  <script type="module" crossorigin src="/assets/index-DpifoShy.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-CuBLTt5Q.css">
+  <script type="module" crossorigin src="/assets/index-zpQwvskr.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-tlgCFM2L.css">
 </head>
 
 <body>
@@ -33,9 +33,9 @@
             </div>
             <div id="splash-buttons">
                 <button id="splash-music-btn">
-                    <i class="ri-music-fill"></i>
-                    Music Mode
-                    <span class="splash-beta">BETA</span>
+                    <i class="ri-rhythm-line"></i>
+                    Rhythm Mode
+                    <span class="splash-beta">NEW</span>
                 </button>
                 <button id="splash-classic-btn">
                     <i class="ri-keyboard-line"></i>
@@ -3737,10 +3737,20 @@
     <!-- STAR ROAD SPLASH -->
     <div id="starroad-splash" class="hidden">
         <canvas id="starroad-splash-canvas"></canvas>
+        <div class="sr-splash-glow"></div>
+        <div class="sr-splash-rings">
+            <div class="sr-splash-ring sr-ring-1"></div>
+            <div class="sr-splash-ring sr-ring-2"></div>
+            <div class="sr-splash-ring sr-ring-3"></div>
+        </div>
         <div class="starroad-splash-inner">
+            <div class="sr-splash-icon">
+                <span class="sr-splash-star">&#9733;</span>
+            </div>
             <h1 class="starroad-splash-title">STAR ROAD</h1>
             <p class="starroad-splash-subtitle">feel the rhythm</p>
             <div class="starroad-splash-bar"><div class="starroad-splash-fill"></div></div>
+            <p class="sr-splash-hint">loading beats...</p>
         </div>
     </div>
 
@@ -3748,14 +3758,77 @@
     <div id="starroad-overlay" class="hidden">
         <canvas id="starroad-bg-canvas"></canvas>
 
-        <!-- SETUP SCREEN -->
-        <div id="starroad-setup" class="starroad-screen">
+        <!-- SONG SELECT SCREEN -->
+        <div id="starroad-song-select" class="starroad-screen hidden">
+            <button class="starroad-exit-btn" id="sr-song-exit-btn">
+                <i class="ri-logout-box-r-line"></i> EXIT
+            </button>
+            <div class="sr-song-select-inner">
+                <h2 class="starroad-setup-title">STAR ROAD</h2>
+                <p class="starroad-setup-subtitle">choose a song to play</p>
+
+                <!-- Featured osu! maps section -->
+                <div class="sr-section-divider"><span>FEATURED BEATMAPS — click to download from osu!</span></div>
+                <div class="sr-song-grid" id="sr-featured-grid"></div>
+                <p class="sr-featured-tip">Download the .osz → drag it into the import button below</p>
+
+                <!-- Divider -->
+                <div class="sr-section-divider"><span>YOUR IMPORTED SONGS</span></div>
+
+                <div class="sr-song-grid" id="sr-song-grid"></div>
+                <div class="sr-song-select-footer">
+                    <button class="sr-import-btn" id="sr-import-btn">
+                        <i class="ri-upload-2-line"></i> Import .osz / .osu
+                    </button>
+                    <button class="sr-custom-url-btn" id="sr-custom-url-btn">
+                        <i class="ri-youtube-line"></i> Custom YouTube URL
+                    </button>
+</div>
+            </div>
+
+            <!-- Import .osu modal -->
+            <div class="sr-import-modal hidden" id="sr-import-modal">
+                <div class="sr-import-box">
+                    <h3 class="sr-import-title">Import osu!mania 4K Beatmap</h3>
+                    <p class="sr-import-desc">Download any osu!mania 4K map from <strong>osu.ppy.sh</strong> and drop the .osz file directly here. No extracting needed!</p>
+
+                    <div class="sr-import-dropzone" id="sr-import-dropzone">
+                        <i class="ri-file-music-line"></i>
+                        <span>Drop .osz or .osu file here or click to browse</span>
+                        <input type="file" id="sr-import-file" accept=".osu,.osz" hidden>
+                    </div>
+                    <div class="sr-import-filename hidden" id="sr-import-filename"></div>
+
+                    <div class="sr-import-url-wrap">
+                        <label class="sr-import-label">YouTube URL for this song</label>
+                        <div class="starroad-url-wrap">
+                            <i class="ri-youtube-line"></i>
+                            <input type="text" id="sr-import-yt-url" placeholder="https://youtube.com/watch?v=..." spellcheck="false" autocomplete="off">
+                        </div>
+                    </div>
+
+                    <div class="sr-import-actions">
+                        <button class="sr-import-cancel" id="sr-import-cancel">Cancel</button>
+                        <button class="sr-import-play" id="sr-import-play" disabled>
+                            <i class="ri-play-fill"></i> Play
+                        </button>
+                    </div>
+                    <p class="sr-import-error hidden" id="sr-import-error"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SETUP SCREEN (custom URL) -->
+        <div id="starroad-setup" class="starroad-screen hidden">
             <button class="starroad-exit-btn" id="starroad-exit-btn">
                 <i class="ri-logout-box-r-line"></i> EXIT
             </button>
             <div class="starroad-setup-inner">
                 <h2 class="starroad-setup-title">STAR ROAD</h2>
                 <p class="starroad-setup-subtitle">paste a youtube link and ride the beat</p>
+                <button class="sr-back-btn" id="sr-back-to-songs-btn">
+                    <i class="ri-arrow-left-line"></i> Back to Songs
+                </button>
                 <div class="starroad-url-wrap">
                     <i class="ri-youtube-line"></i>
                     <input type="text" id="starroad-url-input" placeholder="https://youtube.com/watch?v=..." spellcheck="false" autocomplete="off">
@@ -3775,6 +3848,19 @@
 
         <!-- GAME BOARD -->
         <div id="starroad-game" class="starroad-screen hidden">
+            <!-- Exit button during gameplay -->
+            <button class="starroad-exit-btn" id="sr-game-exit-btn">
+                <i class="ri-logout-box-r-line"></i> EXIT
+            </button>
+            <!-- Top bar — gpop style branding + now playing -->
+            <div class="sr-top-bar">
+                <div class="sr-top-brand">ZENTYPE.IN</div>
+                <div class="sr-top-nowplaying">
+                    <div class="sr-top-title" id="sr-now-playing">Now playing: Nothing</div>
+                    <div class="sr-top-time" id="sr-now-time">Unknown - --:-- / --:--</div>
+                </div>
+            </div>
+
             <!-- Left panel (gpop retro style) -->
             <div class="sr-left-panel">
                 <!-- Score block — gpop style -->
@@ -3783,6 +3869,21 @@
                     <div class="pp-longest" id="starroad-best-streak">0</div>
                     <div class="pp-score2" id="starroad-accuracy">0%</div>
                     <div class="pp-fps" id="starroad-fps">60</div>
+                </div>
+
+                <!-- Dancer character (gpop Gbob style) — in left panel below scores -->
+                <div class="sr-dancer-area" id="sr-dancer-area">
+                    <div class="sr-dancer-character">
+                        <canvas id="sr-dancer-canvas" width="16" height="22"></canvas>
+                        <canvas id="sr-dancer-glow" class="sr-dancer-glow-layer" width="16" height="22"></canvas>
+                    </div>
+                    <!-- Mini lane indicators (gpop plp-notes) — 3D tilted under dancer -->
+                    <div class="sr-dancer-lanes">
+                        <div class="sr-dancer-lane sr-dancer-lane-a" data-lane="0"><div class="sr-dancer-lane-fill"></div></div>
+                        <div class="sr-dancer-lane sr-dancer-lane-s" data-lane="1"><div class="sr-dancer-lane-fill"></div></div>
+                        <div class="sr-dancer-lane sr-dancer-lane-d" data-lane="2"><div class="sr-dancer-lane-fill"></div></div>
+                        <div class="sr-dancer-lane sr-dancer-lane-f" data-lane="3"><div class="sr-dancer-lane-fill"></div></div>
+                    </div>
                 </div>
 
                 <!-- Controls help — dashed border box like challenge rules -->
@@ -3809,6 +3910,24 @@
 
             <!-- YouTube player visible top-right (like gpop) -->
             <div id="sr-yt-visible"></div>
+            <!-- Volume control — gpop style blocks -->
+            <div class="sr-volume-row" id="sr-volume-row">
+                <button class="sr-vol-btn" id="sr-vol-down">-</button>
+                <span class="sr-volume-label">VOLUME</span>
+                <div class="sr-vol-blocks" id="sr-vol-blocks">
+                    <div class="sr-vol-block active" data-vol="10"></div>
+                    <div class="sr-vol-block active" data-vol="20"></div>
+                    <div class="sr-vol-block active" data-vol="30"></div>
+                    <div class="sr-vol-block active" data-vol="40"></div>
+                    <div class="sr-vol-block active" data-vol="50"></div>
+                    <div class="sr-vol-block active" data-vol="60"></div>
+                    <div class="sr-vol-block active" data-vol="70"></div>
+                    <div class="sr-vol-block active" data-vol="80"></div>
+                    <div class="sr-vol-block" data-vol="90"></div>
+                    <div class="sr-vol-block" data-vol="100"></div>
+                </div>
+                <button class="sr-vol-btn" id="sr-vol-up">+</button>
+            </div>
 
             <!-- Ratings display (gpop pp-ratings style) -->
             <div class="pp-ratings-container" id="sr-ratings"></div>
@@ -3835,6 +3954,12 @@
             </div>
 
             <!-- Waiting message (shown until YT plays) -->
+            <!-- Pause overlay -->
+            <div class="sr-pause-overlay hidden" id="sr-pause-overlay">
+                <div class="sr-pause-text">PAUSED</div>
+                <div class="sr-pause-sub">Press <span class="sr-pause-key">SPACE</span> to continue</div>
+            </div>
+
             <div class="sr-waiting" id="sr-waiting">
                 <div class="sr-waiting-title">Waiting for Video to Play...</div>
                 <div class="sr-waiting-sub">(Click play video if the level is not starting)</div>
