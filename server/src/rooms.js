@@ -264,6 +264,32 @@ function registerRoomHandlers(io, socket) {
   });
 
 
+  // Chat
+  let lastChatTime = 0;
+  socket.on('chat:message', ({ text }) => {
+    if (!text || typeof text !== 'string') return;
+    const now = Date.now();
+    if (now - lastChatTime < 1000) return; // rate limit: 1 msg/sec
+    lastChatTime = now;
+
+    const room = findRoomBySocket(socket.id);
+    if (!room) return;
+
+    const player = room.players.get(socket.id);
+    if (!player) return;
+
+    const msg = {
+      playerId: player.id,
+      username: player.username,
+      emoji: player.emoji,
+      text: text.slice(0, 200),
+      timestamp: now
+    };
+
+    io.to(room.code).emit('chat:message', msg);
+  });
+
+
   // Handle disconnect
   socket.on('disconnect', () => {
     const room = findRoomBySocket(socket.id);

@@ -39,7 +39,9 @@ function registerGameHandlers(io, socket) {
     player.wpm = Math.min(MAX_WPM, data.wpm || 0);
     player.accuracy = Math.min(100, Math.max(0, data.accuracy || 0));
 
-    const percent = Math.min(100, Math.round((data.wordIndex / room.words.length) * 100));
+    // Scale to time limit: assume ~90 WPM baseline so bar fills properly
+    const expectedWords = Math.max(1, Math.floor(room.timeLimit * 1.5));
+    const percent = Math.min(100, Math.round((data.wordIndex / expectedWords) * 100));
 
     // Broadcast to others in room
     socket.to(room.code).emit('game:player_progress', {

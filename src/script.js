@@ -10008,7 +10008,7 @@ function endGame() {
     }
 
     // In multiplayer, send results to server instead of showing normal results
-    if (window.mpState?.isMultiplayer && window.onMultiplayerGameEnd) {
+    if ((window.mpState?.isMultiplayer || window.mpState?.room?.status === 'racing' || window.mpState?.room?.status === 'finished') && window.onMultiplayerGameEnd) {
         window.onMultiplayerGameEnd({
             netWpm, rawWpm, accuracy, consistency, maxCombo: state.maxCombo, wpmHistory: state.wpmHistory
         });
@@ -13077,7 +13077,7 @@ window.getTypingState = function() {
         totalCharsTyped: state.totalCharsTyped,
         rawKeystrokes: state.rawKeystrokes,
         correctKeystrokes: state.correctKeystrokes,
-        wpm: parseInt(UI.wpm.innerText) || 0,
+        wpm: state.startTime ? Math.round((state.correctChars / 5) / ((Date.now() - state.startTime) / 60000)) || 0 : 0,
         accuracy: state.rawKeystrokes > 0
             ? Math.round((state.correctKeystrokes / state.rawKeystrokes) * 100)
             : 100,

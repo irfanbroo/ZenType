@@ -110,6 +110,11 @@ function hideSplash() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Skip splash — go straight to app
+    const splashEl = document.getElementById('splash-overlay');
+    if (splashEl) splashEl.style.display = 'none';
+    return;
+
     const canvas = document.getElementById('splash-canvas');
     if (canvas) {
         splashGL = initSplashGL(canvas);

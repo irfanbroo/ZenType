@@ -31,29 +31,6 @@
 
 <body>
 
-    <!-- SPLASH SCREEN -->
-    <div id="splash-overlay">
-        <canvas id="splash-canvas"></canvas>
-        <div id="splash-content">
-            <div id="splash-title-block">
-                <p id="splash-eyebrow">Welcome to</p>
-                <h1 id="splash-title">ZenType</h1>
-                <p id="splash-tagline">Master your keyboard</p>
-            </div>
-            <div id="splash-buttons">
-                <button id="splash-music-btn">
-                    <i class="ri-rhythm-line"></i>
-                    Rhythm Mode
-                    <span class="splash-beta">NEW</span>
-                </button>
-                <button id="splash-classic-btn">
-                    <i class="ri-keyboard-line"></i>
-                    Start Typing
-                </button>
-            </div>
-        </div>
-    </div>
-
     <!-- Custom Titlebar / Window Controls -->
     <div data-tauri-drag-region class="titlebar">
         <div class="titlebar-button" id="titlebar-minimize">
@@ -2089,117 +2066,143 @@
 
     <!-- ═══════════════════ MULTIPLAYER ═══════════════════ -->
 
-    <!-- MP MODAL (Menu + Lobby) -->
+    <!-- MP MODAL (Menu + Lobby) — Japanese Scroll -->
     <div id="mp-modal" class="hidden">
-        <div class="settings-content mp-content">
-            <!-- MAIN MENU VIEW -->
-            <div id="mp-menu" class="mp-view">
-                <div class="settings-header">
-                    <div class="settings-header-left">
-                        <div class="settings-icon-wrap" style="background: rgba(0, 212, 255, 0.2); color: #00d4ff;">
-                            <i class="ri-group-line"></i>
+        <div class="mp-scroll-outer">
+            <div class="mp-scroll-rod mp-scroll-rod-top"></div>
+            <div class="mp-scroll-body">
+                <div class="settings-content mp-content">
+                    <!-- MAIN MENU VIEW -->
+                    <div id="mp-menu" class="mp-view">
+                        <button id="close-mp" class="mp-scroll-close"><i class="ri-close-line"></i></button>
+                        <div class="mp-scroll-header">
+                            <div class="mp-scroll-seal">武</div>
+                            <h2 class="mp-scroll-title">Battle Invitation</h2>
+                            <p class="mp-scroll-sub">Multiplayer Race</p>
                         </div>
-                        <div>
-                            <h2 class="settings-title">Multiplayer Race</h2>
-                            <p class="settings-subtitle">Challenge your friends</p>
+                        <div class="mp-scroll-divider"></div>
+                        <div class="mp-menu-body">
+                            <div class="mp-name-picker" style="padding: 0;">
+                                <label class="mp-scroll-label">Warrior Name</label>
+                                <input type="text" id="mp-name-input" class="mp-name-input" placeholder="Enter your name" maxlength="15" autocomplete="off" spellcheck="false">
+                            </div>
+                            <button id="mp-create-btn" class="mp-action-btn">
+                                <span class="mp-btn-content">
+                                    <i class="ri-sword-line"></i>
+                                    Create Room
+                                </span>
+                                <span class="mp-btn-arrow"><i class="ri-arrow-right-line"></i></span>
+                            </button>
+                            <div class="mp-divider"><span>or join a friend</span></div>
+                            <div class="mp-join-section">
+                                <input type="text" id="mp-join-code" class="mp-code-input" placeholder="ROOM CODE" maxlength="6"
+                                    autocomplete="off" spellcheck="false">
+                                <button id="mp-join-btn" class="mp-action-btn mp-join">
+                                    <i class="ri-login-box-line"></i>
+                                    Join Room
+                                </button>
+                            </div>
                         </div>
                     </div>
-                    <button id="close-mp" class="close-btn"><i class="ri-close-line"></i></button>
-                </div>
-                <div class="mp-menu-body">
-                    <div class="mp-name-picker" style="padding: 0;">
-                        <input type="text" id="mp-name-input" class="mp-name-input" placeholder="Your name" maxlength="15" autocomplete="off" spellcheck="false" style="width:100%;">
-                    </div>
-                    <button id="mp-create-btn" class="mp-action-btn">
-                        <i class="ri-add-circle-line"></i>
-                        Create Room
-                    </button>
-                    <div class="mp-divider"><span>or</span></div>
-                    <div class="mp-join-section">
-                        <input type="text" id="mp-join-code" class="mp-code-input" placeholder="ROOM CODE" maxlength="6"
-                            autocomplete="off" spellcheck="false">
-                        <button id="mp-join-btn" class="mp-action-btn mp-join">
-                            <i class="ri-login-box-line"></i>
-                            Join Room
-                        </button>
+
+                    <!-- LOBBY VIEW -->
+                    <div id="mp-lobby" class="mp-view hidden">
+                        <div class="mp-scroll-header">
+                            <div class="mp-scroll-seal">道</div>
+                            <h2 class="mp-scroll-title">Room <span id="mp-room-code" class="mp-code-display"></span></h2>
+                            <p class="mp-scroll-sub" id="mp-player-count">1/5 warriors</p>
+                            <button id="mp-copy-code" class="mp-copy-btn" title="Copy invite link">
+                                <i class="ri-link"></i> Copy Link
+                            </button>
+                        </div>
+
+                        <div class="mp-scroll-divider"></div>
+
+                        <div class="mp-scroll-section">
+                            <label class="mp-scroll-label">Your Emblem</label>
+                            <div class="mp-emoji-picker">
+                                <div id="mp-emoji-options" class="mp-emoji-row">
+                                    <button class="mp-emoji-opt active" data-emoji="🚀">🚀</button>
+                                    <button class="mp-emoji-opt" data-emoji="🔥">🔥</button>
+                                    <button class="mp-emoji-opt" data-emoji="⚡">⚡</button>
+                                    <button class="mp-emoji-opt" data-emoji="👻">👻</button>
+                                    <button class="mp-emoji-opt" data-emoji="🐉">🐉</button>
+                                    <button class="mp-emoji-opt" data-emoji="🎯">🎯</button>
+                                    <button class="mp-emoji-opt" data-emoji="💎">💎</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mp-scroll-section">
+                            <label class="mp-scroll-label">Battle Effects</label>
+                            <div class="mp-emoji-picker">
+                                <div id="mp-particle-options" class="mp-emoji-row">
+                                    <button class="mp-particle-opt" data-particle="none" title="None">✕</button>
+                                    <button class="mp-particle-opt active" data-particle="petals" title="Petals">🌸</button>
+                                    <button class="mp-particle-opt" data-particle="fire" title="Fire">🔥</button>
+                                    <button class="mp-particle-opt" data-particle="snow" title="Snow">❄</button>
+                                    <button class="mp-particle-opt" data-particle="leaves" title="Leaves">🍃</button>
+                                    <button class="mp-particle-opt" data-particle="sparks" title="Sparks">✧</button>
+                                    <button class="mp-particle-opt" data-particle="bubbles" title="Bubbles">◯</button>
+                                    <button class="mp-particle-opt" data-particle="default" title="Default">✦</button>
+                                    <button class="mp-particle-opt" data-particle="lightning" title="Lightning">⚡</button>
+                                    <button class="mp-particle-opt" data-particle="confetti" title="Confetti">🎊</button>
+                                    <button class="mp-particle-opt" data-particle="diamonds" title="Diamonds">◆</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mp-scroll-section">
+                            <label class="mp-scroll-label">Duration</label>
+                            <div id="mp-time-selector" class="mp-time-modes">
+                                <button class="mp-time-btn" data-time="15">15s</button>
+                                <button class="mp-time-btn active" data-time="30">30s</button>
+                                <button class="mp-time-btn" data-time="60">60s</button>
+                            </div>
+                        </div>
+
+                        <div class="mp-scroll-divider"></div>
+
+                        <div class="mp-scroll-section">
+                            <label class="mp-scroll-label">Warriors</label>
+                            <div id="mp-players-list" class="mp-players"></div>
+                        </div>
+
+                        <div class="mp-perf-toggle">
+                            <label class="mp-perf-label">
+                                <input type="checkbox" id="mp-low-perf" class="mp-perf-checkbox">
+                                <span class="mp-perf-text">Low performance mode</span>
+                            </label>
+                        </div>
+
+                        <div class="mp-lobby-actions">
+                            <button id="mp-leave-btn" class="mp-btn-secondary">
+                                <i class="ri-logout-box-line"></i> Leave
+                            </button>
+                            <button id="mp-start-btn" class="mp-btn-primary mp-fight-btn" disabled>
+                                <span class="mp-fight-kanji">戦</span>
+                                <span class="mp-fight-text">FIGHT</span>
+                                <span class="mp-fight-splash mp-splash-1"></span>
+                                <span class="mp-fight-splash mp-splash-2"></span>
+                                <span class="mp-fight-splash mp-splash-3"></span>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
-
-            <!-- LOBBY VIEW -->
-            <div id="mp-lobby" class="mp-view hidden">
-                <div class="settings-header">
-                    <div class="settings-header-left">
-                        <div class="settings-icon-wrap" style="background: rgba(0, 212, 255, 0.2); color: #00d4ff;">
-                            <i class="ri-group-line"></i>
-                        </div>
-                        <div>
-                            <h2 class="settings-title">Room <span id="mp-room-code" class="mp-code-display"></span></h2>
-                            <p class="settings-subtitle" id="mp-player-count">1/5 players</p>
-                        </div>
-                    </div>
-                    <button id="mp-copy-code" class="mp-copy-btn" title="Copy room code">
-                        <i class="ri-file-copy-line"></i>
-                    </button>
-                </div>
-
-                <div class="mp-emoji-picker">
-                    <span class="mp-emoji-label">Your icon:</span>
-                    <div id="mp-emoji-options" class="mp-emoji-row">
-                        <button class="mp-emoji-opt active" data-emoji="🚀">🚀</button>
-                        <button class="mp-emoji-opt" data-emoji="🔥">🔥</button>
-                        <button class="mp-emoji-opt" data-emoji="⚡">⚡</button>
-                        <button class="mp-emoji-opt" data-emoji="👻">👻</button>
-                        <button class="mp-emoji-opt" data-emoji="🐉">🐉</button>
-                        <button class="mp-emoji-opt" data-emoji="🎯">🎯</button>
-                        <button class="mp-emoji-opt" data-emoji="💎">💎</button>
-                    </div>
-                </div>
-
-                <div class="mp-emoji-picker">
-                    <span class="mp-emoji-label">Particles:</span>
-                    <div id="mp-particle-options" class="mp-emoji-row">
-                        <button class="mp-particle-opt" data-particle="none" title="None">✕</button>
-                        <button class="mp-particle-opt active" data-particle="petals" title="Petals">🌸</button>
-                        <button class="mp-particle-opt" data-particle="fire" title="Fire">🔥</button>
-                        <button class="mp-particle-opt" data-particle="snow" title="Snow">❄</button>
-                        <button class="mp-particle-opt" data-particle="leaves" title="Leaves">🍃</button>
-                        <button class="mp-particle-opt" data-particle="sparks" title="Sparks">✧</button>
-                        <button class="mp-particle-opt" data-particle="bubbles" title="Bubbles">◯</button>
-                        <button class="mp-particle-opt" data-particle="default" title="Default">✦</button>
-                        <button class="mp-particle-opt" data-particle="lightning" title="Lightning">⚡</button>
-                        <button class="mp-particle-opt" data-particle="confetti" title="Confetti">🎊</button>
-                        <button class="mp-particle-opt" data-particle="diamonds" title="Diamonds">◆</button>
-                    </div>
-                </div>
-
-                <div id="mp-time-selector" class="mp-time-modes">
-                    <button class="mp-time-btn" data-time="15">15s</button>
-                    <button class="mp-time-btn active" data-time="30">30s</button>
-                    <button class="mp-time-btn" data-time="60">60s</button>
-                </div>
-
-                <div id="mp-players-list" class="mp-players">
-                    <!-- Player cards rendered by JS -->
-                </div>
-
-                <div class="mp-lobby-actions">
-                    <button id="mp-leave-btn" class="mp-btn-secondary">
-                        <i class="ri-logout-box-line"></i> Leave
-                    </button>
-                    <button id="mp-start-btn" class="mp-btn-primary" disabled>
-                        <i class="ri-play-fill"></i> Start Race
-                    </button>
-                </div>
-            </div>
+            <div class="mp-scroll-rod mp-scroll-rod-bottom"></div>
         </div>
     </div>
 
     <!-- MP RACE BAR (Progress tracks during race) -->
     <div id="mp-race-bar" class="hidden">
-        <div id="mp-race-players">
-            <!-- Dynamically rendered player lanes -->
-        </div>
+        <canvas id="mp-race-canvas"></canvas>
+        <div id="mp-race-players"><!-- kept for JS compat --></div>
+    </div>
+
+    <!-- MP FLOATING CROWN (below typing panel during race) -->
+    <div id="mp-crown-area" class="hidden">
+        <canvas id="mp-crown-canvas" width="200" height="120"></canvas>
     </div>
 
     <!-- MP COUNTDOWN OVERLAY -->
@@ -2211,22 +2214,26 @@
 
     <!-- MP RESULTS OVERLAY -->
     <div id="mp-results-overlay" class="hidden">
-        <div class="mp-results-content">
-            <h1 class="mp-results-title">Race Results</h1>
-            <div id="mp-podium" class="mp-podium">
-                <!-- Podium rendered by JS -->
-            </div>
-            <div id="mp-standings-extra" class="mp-standings-extra">
-                <!-- 4th-5th place if applicable -->
-            </div>
-            <div class="mp-results-actions">
-                <button id="mp-rematch-btn" class="mp-btn-primary">
-                    <i class="ri-restart-line"></i> Back to Lobby
-                </button>
-                <button id="mp-leave-results-btn" class="mp-btn-secondary">
-                    <i class="ri-logout-box-line"></i> Leave Room
-                </button>
-            </div>
+        <canvas id="mp-results-canvas"></canvas>
+        <div class="mp-results-buttons">
+            <button id="mp-rematch-btn" class="mp-btn-primary">
+                <i class="ri-restart-line"></i> Back to Lobby
+            </button>
+            <button id="mp-leave-results-btn" class="mp-btn-secondary">
+                <i class="ri-logout-box-line"></i> Leave Room
+            </button>
+        </div>
+    </div>
+
+    <!-- MP CHAT PANEL -->
+    <div id="mp-chat-panel" class="hidden">
+        <div class="mp-chat-header">
+            <span style="font-family:serif; font-size:1rem; color:rgba(255,200,100,0.4);">語</span> War Room
+        </div>
+        <div id="mp-chat-messages"></div>
+        <div class="mp-chat-input-wrap">
+            <input type="text" id="mp-chat-input" placeholder="Type a message..." maxlength="200" autocomplete="off" spellcheck="false">
+            <button id="mp-chat-send"><i class="ri-send-plane-fill"></i></button>
         </div>
     </div>
 
@@ -3908,7 +3915,6 @@
     <script type="module" src="/src/music-mode.js"></script>
     <script type="module" src="/src/starroad.js"></script>
     <script type="module" src="/src/multiplayer.js"></script>
-    <script type="module" src="/src/splash.js"></script>
 
     <!-- STAR ROAD SPLASH -->
     <div id="starroad-splash" class="hidden">
