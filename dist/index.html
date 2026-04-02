@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google-site-verification" content="BWW0hMMw7Y84Myib4JPiUWQOsNLHf9sGvL9Ad4H39FQ" />
     <title>ZenType - Professional Typing Practice</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link
         href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Montserrat:wght@400;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;500;600;700&family=Shojumaru&display=swap"
         rel="stylesheet">
@@ -16,8 +16,8 @@
         window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
     </script>
     <script defer src="/_vercel/insights/script.js"></script>
-  <script type="module" crossorigin src="/assets/index-zpQwvskr.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-tlgCFM2L.css">
+  <script type="module" crossorigin src="/assets/index-DnBAYy0a.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-AasLjXfo.css">
 </head>
 
 <body>
@@ -125,6 +125,10 @@
         <!-- Developer Note -->
         <button id="dev-note-btn" class="glass-icon" aria-label="Note from Developer" title="Message from Dev">
             <i class="ri-mail-star-line text-xl" style="color: #00d4ff; text-shadow: 0 0 8px rgba(0,212,255,0.4);"></i>
+        </button>
+
+        <button id="mp-btn" class="glass-icon" aria-label="Multiplayer Race" title="Multiplayer Race">
+            <i class="ri-group-line text-xl" style="color: #00d4ff; text-shadow: 0 0 8px rgba(0,212,255,0.4);"></i>
         </button>
 
         <button id="settings-btn" class="glass-icon" aria-label="Settings">
@@ -525,6 +529,14 @@
                         <div class="clean-tile-info">
                             <span class="clean-tile-name">Star Road</span>
                             <span class="clean-tile-desc">Hit notes to the beat</span>
+                        </div>
+                        <i class="ri-arrow-right-s-line clean-tile-arrow"></i>
+                    </div>
+                    <div class="clean-mode-tile" id="dev-mode-card">
+                        <div class="clean-tile-icon"><i class="ri-terminal-box-line"></i></div>
+                        <div class="clean-tile-info">
+                            <span class="clean-tile-name">Development</span>
+                            <span class="clean-tile-desc">Monkeytype-style typing</span>
                         </div>
                         <i class="ri-arrow-right-s-line clean-tile-arrow"></i>
                     </div>
@@ -2065,6 +2077,132 @@
             </div>
         </div>
     </div>
+
+    <!-- ═══════════════════ MULTIPLAYER ═══════════════════ -->
+
+    <!-- MP MODAL (Menu + Lobby) -->
+    <div id="mp-modal" class="hidden">
+        <div class="settings-content mp-content">
+            <!-- MAIN MENU VIEW -->
+            <div id="mp-menu" class="mp-view">
+                <div class="settings-header">
+                    <div class="settings-header-left">
+                        <div class="settings-icon-wrap" style="background: rgba(0, 212, 255, 0.2); color: #00d4ff;">
+                            <i class="ri-group-line"></i>
+                        </div>
+                        <div>
+                            <h2 class="settings-title">Multiplayer Race</h2>
+                            <p class="settings-subtitle">Challenge your friends</p>
+                        </div>
+                    </div>
+                    <button id="close-mp" class="close-btn"><i class="ri-close-line"></i></button>
+                </div>
+                <div class="mp-menu-body">
+                    <button id="mp-create-btn" class="mp-action-btn">
+                        <i class="ri-add-circle-line"></i>
+                        Create Room
+                    </button>
+                    <div class="mp-divider"><span>or</span></div>
+                    <div class="mp-join-section">
+                        <input type="text" id="mp-join-code" class="mp-code-input" placeholder="ROOM CODE" maxlength="6"
+                            autocomplete="off" spellcheck="false">
+                        <button id="mp-join-btn" class="mp-action-btn mp-join">
+                            <i class="ri-login-box-line"></i>
+                            Join Room
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- LOBBY VIEW -->
+            <div id="mp-lobby" class="mp-view hidden">
+                <div class="settings-header">
+                    <div class="settings-header-left">
+                        <div class="settings-icon-wrap" style="background: rgba(0, 212, 255, 0.2); color: #00d4ff;">
+                            <i class="ri-group-line"></i>
+                        </div>
+                        <div>
+                            <h2 class="settings-title">Room <span id="mp-room-code" class="mp-code-display"></span></h2>
+                            <p class="settings-subtitle" id="mp-player-count">1/5 players</p>
+                        </div>
+                    </div>
+                    <button id="mp-copy-code" class="mp-copy-btn" title="Copy room code">
+                        <i class="ri-file-copy-line"></i>
+                    </button>
+                </div>
+
+                <div class="mp-emoji-picker">
+                    <span class="mp-emoji-label">Your icon:</span>
+                    <div id="mp-emoji-options" class="mp-emoji-row">
+                        <button class="mp-emoji-opt active" data-emoji="🏎️">🏎️</button>
+                        <button class="mp-emoji-opt" data-emoji="🚀">🚀</button>
+                        <button class="mp-emoji-opt" data-emoji="🔥">🔥</button>
+                        <button class="mp-emoji-opt" data-emoji="⚡">⚡</button>
+                        <button class="mp-emoji-opt" data-emoji="👻">👻</button>
+                        <button class="mp-emoji-opt" data-emoji="🐉">🐉</button>
+                        <button class="mp-emoji-opt" data-emoji="🎯">🎯</button>
+                        <button class="mp-emoji-opt" data-emoji="💎">💎</button>
+                    </div>
+                </div>
+
+                <div id="mp-time-selector" class="mp-time-modes">
+                    <button class="mp-time-btn" data-time="15">15s</button>
+                    <button class="mp-time-btn active" data-time="30">30s</button>
+                    <button class="mp-time-btn" data-time="60">60s</button>
+                </div>
+
+                <div id="mp-players-list" class="mp-players">
+                    <!-- Player cards rendered by JS -->
+                </div>
+
+                <div class="mp-lobby-actions">
+                    <button id="mp-leave-btn" class="mp-btn-secondary">
+                        <i class="ri-logout-box-line"></i> Leave
+                    </button>
+                    <button id="mp-start-btn" class="mp-btn-primary" disabled>
+                        <i class="ri-play-fill"></i> Start Race
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MP RACE BAR (Progress tracks during race) -->
+    <div id="mp-race-bar" class="hidden">
+        <div id="mp-race-players">
+            <!-- Dynamically rendered player lanes -->
+        </div>
+    </div>
+
+    <!-- MP COUNTDOWN OVERLAY -->
+    <div id="mp-countdown" class="hidden">
+        <div class="mp-countdown-inner">
+            <span id="mp-countdown-number">3</span>
+        </div>
+    </div>
+
+    <!-- MP RESULTS OVERLAY -->
+    <div id="mp-results-overlay" class="hidden">
+        <div class="mp-results-content">
+            <h1 class="mp-results-title">Race Results</h1>
+            <div id="mp-podium" class="mp-podium">
+                <!-- Podium rendered by JS -->
+            </div>
+            <div id="mp-standings-extra" class="mp-standings-extra">
+                <!-- 4th-5th place if applicable -->
+            </div>
+            <div class="mp-results-actions">
+                <button id="mp-rematch-btn" class="mp-btn-primary">
+                    <i class="ri-restart-line"></i> Back to Lobby
+                </button>
+                <button id="mp-leave-results-btn" class="mp-btn-secondary">
+                    <i class="ri-logout-box-line"></i> Leave Room
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════ END MULTIPLAYER ═══════════════════ -->
 
     <div id="hagakure-leaderboard-modal" class="hidden">
         <div class="bushido-vignette"></div>
@@ -3732,7 +3870,7 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <!-- STAR ROAD SPLASH -->
     <div id="starroad-splash" class="hidden">
@@ -4065,6 +4203,140 @@
 
         </div>
     </div>
+
+    <!-- DEVELOPMENT MODE (Monkeytype Replica) -->
+    <div id="dev-mode-ui" class="hidden">
+        <div id="dev-top-bar">
+            <button id="dev-back-btn" title="Back to ZenType"><i class="ri-arrow-left-line"></i></button>
+            <div id="dev-options">
+                <button class="dev-opt-btn" data-opt="punctuation">@ punctuation</button>
+                <button class="dev-opt-btn" data-opt="numbers"># numbers</button>
+                <div class="dev-sep"></div>
+                <button class="dev-time-btn active" data-time="15">15</button>
+                <button class="dev-time-btn" data-time="30">30</button>
+                <button class="dev-time-btn" data-time="60">60</button>
+                <button class="dev-time-btn" data-time="120">120</button>
+                <div class="dev-sep"></div>
+                <div id="dev-particle-wrapper">
+                    <button id="dev-particle-btn"><i class="ri-magic-line"></i> <span id="dev-particle-label">sparkles</span></button>
+                    <div id="dev-particle-dropdown" class="hidden">
+                        <div class="dev-particle-option active" data-particle="sparkles">
+                            <span class="dev-theme-dot" style="background: linear-gradient(135deg,#ffd700,#ff6b35);"></span>
+                            <span>sparkles</span>
+                            <i class="ri-check-line dev-theme-check"></i>
+                        </div>
+                        <div class="dev-particle-option" data-particle="leaves">
+                            <span class="dev-theme-dot" style="background: linear-gradient(135deg,#6fcf4a,#2d8a1e);"></span>
+                            <span>leaves</span>
+                            <i class="ri-check-line dev-theme-check"></i>
+                        </div>
+                        <div class="dev-particle-option" data-particle="bubbles">
+                            <span class="dev-theme-dot" style="background: linear-gradient(135deg,#a8d8ff,#4fa8ff);"></span>
+                            <span>bubbles</span>
+                            <i class="ri-check-line dev-theme-check"></i>
+                        </div>
+                        <div class="dev-particle-option" data-particle="fire">
+                            <span class="dev-theme-dot" style="background: linear-gradient(135deg,#ffdd57,#ff4500);"></span>
+                            <span>fire</span>
+                            <i class="ri-check-line dev-theme-check"></i>
+                        </div>
+                        <div class="dev-particle-option" data-particle="snow">
+                            <span class="dev-theme-dot" style="background: linear-gradient(135deg,#ffffff,#c8e6ff);"></span>
+                            <span>snow</span>
+                            <i class="ri-check-line dev-theme-check"></i>
+                        </div>
+                        <div class="dev-particle-option" data-particle="none">
+                            <span class="dev-theme-dot" style="background: #2a2c30; border: 1px solid #444;"></span>
+                            <span>none</span>
+                            <i class="ri-check-line dev-theme-check"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="dev-sep"></div>
+                <div id="dev-theme-wrapper">
+                    <button id="dev-theme-btn"><i class="ri-palette-line"></i> <span id="dev-theme-label">sparkling</span></button>
+                    <div id="dev-theme-dropdown" class="hidden">
+                        <div class="dev-theme-option active" data-dev-theme="sparkling">
+                            <span class="dev-theme-dot" style="background: linear-gradient(135deg, #ffd700, #ff6b35);"></span>
+                            <span class="dev-theme-name">sparkling</span>
+                            <i class="ri-check-line dev-theme-check"></i>
+                        </div>
+                        <div class="dev-theme-option" data-dev-theme="classic">
+                            <span class="dev-theme-dot" style="background: #d1d0c5;"></span>
+                            <span class="dev-theme-name">classic</span>
+                            <i class="ri-check-line dev-theme-check"></i>
+                        </div>
+                        <div class="dev-theme-option" data-dev-theme="sakura">
+                            <span class="dev-theme-dot" style="background: linear-gradient(135deg, #ff8fa3, #ff4d6d);"></span>
+                            <span class="dev-theme-name">sakura</span>
+                            <i class="ri-check-line dev-theme-check"></i>
+                        </div>
+                        <div class="dev-theme-option" data-dev-theme="neon">
+                            <span class="dev-theme-dot" style="background: linear-gradient(135deg, #39ff14, #00ff88);"></span>
+                            <span class="dev-theme-name">neon</span>
+                            <i class="ri-check-line dev-theme-check"></i>
+                        </div>
+                        <div class="dev-theme-option" data-dev-theme="ice">
+                            <span class="dev-theme-dot" style="background: linear-gradient(135deg, #00d4ff, #0099ff);"></span>
+                            <span class="dev-theme-name">ice</span>
+                            <i class="ri-check-line dev-theme-check"></i>
+                        </div>
+                        <div class="dev-theme-option" data-dev-theme="blood">
+                            <span class="dev-theme-dot" style="background: linear-gradient(135deg, #ff4444, #cc0000);"></span>
+                            <span class="dev-theme-name">blood moon</span>
+                            <i class="ri-check-line dev-theme-check"></i>
+                        </div>
+                        <div class="dev-theme-option" data-dev-theme="void">
+                            <span class="dev-theme-dot" style="background: linear-gradient(135deg, #c4a1ff, #8b5cf6);"></span>
+                            <span class="dev-theme-name">void</span>
+                            <i class="ri-check-line dev-theme-check"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="dev-lang-label"><i class="ri-earth-line"></i> english</div>
+        <div id="dev-words-wrapper">
+            <div id="dev-words"></div>
+            <div id="dev-caret"></div>
+        </div>
+        <canvas id="dev-sparkle-canvas"></canvas>
+        <button id="dev-restart-btn" title="Restart test (Tab)"><i class="ri-refresh-line"></i></button>
+        <div id="dev-live-stats">
+            <span id="dev-live-wpm"></span>
+            <span id="dev-live-timer"></span>
+        </div>
+        <div id="dev-results" class="hidden">
+            <div id="dev-results-inner">
+                <div class="dev-result-row">
+                    <div class="dev-result-block">
+                        <span class="dev-result-label">wpm</span>
+                        <span id="dev-final-wpm" class="dev-result-big">0</span>
+                    </div>
+                    <div class="dev-result-block">
+                        <span class="dev-result-label">acc</span>
+                        <span id="dev-final-acc" class="dev-result-big">0%</span>
+                    </div>
+                </div>
+                <div class="dev-result-row">
+                    <div class="dev-result-block">
+                        <span class="dev-result-label">raw</span>
+                        <span id="dev-final-raw" class="dev-result-val">0</span>
+                    </div>
+                    <div class="dev-result-block">
+                        <span class="dev-result-label">characters</span>
+                        <span id="dev-final-chars" class="dev-result-val">0/0/0/0</span>
+                    </div>
+                    <div class="dev-result-block">
+                        <span class="dev-result-label">time</span>
+                        <span id="dev-final-time" class="dev-result-val">0s</span>
+                    </div>
+                </div>
+                <button id="dev-results-restart"><i class="ri-refresh-line"></i> next test</button>
+            </div>
+        </div>
+    </div>
+
 </body>
 
 </html>

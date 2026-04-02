@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="/src/starroad.css">
     <link rel="stylesheet" href="/src/starroad-gpop.css">
     <link rel="stylesheet" href="/src/dev.css">
+    <link rel="stylesheet" href="/src/multiplayer.css">
     <link
         href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Montserrat:wght@400;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;500;600;700&family=Shojumaru&display=swap"
         rel="stylesheet">
@@ -133,6 +134,10 @@
         <!-- Developer Note -->
         <button id="dev-note-btn" class="glass-icon" aria-label="Note from Developer" title="Message from Dev">
             <i class="ri-mail-star-line text-xl" style="color: #00d4ff; text-shadow: 0 0 8px rgba(0,212,255,0.4);"></i>
+        </button>
+
+        <button id="mp-btn" class="glass-icon" aria-label="Multiplayer Race" title="Multiplayer Race">
+            <i class="ri-group-line text-xl" style="color: #00d4ff; text-shadow: 0 0 8px rgba(0,212,255,0.4);"></i>
         </button>
 
         <button id="settings-btn" class="glass-icon" aria-label="Settings">
@@ -2082,6 +2087,151 @@
         </div>
     </div>
 
+    <!-- ═══════════════════ MULTIPLAYER ═══════════════════ -->
+
+    <!-- MP MODAL (Menu + Lobby) -->
+    <div id="mp-modal" class="hidden">
+        <div class="settings-content mp-content">
+            <!-- MAIN MENU VIEW -->
+            <div id="mp-menu" class="mp-view">
+                <div class="settings-header">
+                    <div class="settings-header-left">
+                        <div class="settings-icon-wrap" style="background: rgba(0, 212, 255, 0.2); color: #00d4ff;">
+                            <i class="ri-group-line"></i>
+                        </div>
+                        <div>
+                            <h2 class="settings-title">Multiplayer Race</h2>
+                            <p class="settings-subtitle">Challenge your friends</p>
+                        </div>
+                    </div>
+                    <button id="close-mp" class="close-btn"><i class="ri-close-line"></i></button>
+                </div>
+                <div class="mp-menu-body">
+                    <div class="mp-name-picker" style="padding: 0;">
+                        <input type="text" id="mp-name-input" class="mp-name-input" placeholder="Your name" maxlength="15" autocomplete="off" spellcheck="false" style="width:100%;">
+                    </div>
+                    <button id="mp-create-btn" class="mp-action-btn">
+                        <i class="ri-add-circle-line"></i>
+                        Create Room
+                    </button>
+                    <div class="mp-divider"><span>or</span></div>
+                    <div class="mp-join-section">
+                        <input type="text" id="mp-join-code" class="mp-code-input" placeholder="ROOM CODE" maxlength="6"
+                            autocomplete="off" spellcheck="false">
+                        <button id="mp-join-btn" class="mp-action-btn mp-join">
+                            <i class="ri-login-box-line"></i>
+                            Join Room
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- LOBBY VIEW -->
+            <div id="mp-lobby" class="mp-view hidden">
+                <div class="settings-header">
+                    <div class="settings-header-left">
+                        <div class="settings-icon-wrap" style="background: rgba(0, 212, 255, 0.2); color: #00d4ff;">
+                            <i class="ri-group-line"></i>
+                        </div>
+                        <div>
+                            <h2 class="settings-title">Room <span id="mp-room-code" class="mp-code-display"></span></h2>
+                            <p class="settings-subtitle" id="mp-player-count">1/5 players</p>
+                        </div>
+                    </div>
+                    <button id="mp-copy-code" class="mp-copy-btn" title="Copy room code">
+                        <i class="ri-file-copy-line"></i>
+                    </button>
+                </div>
+
+                <div class="mp-emoji-picker">
+                    <span class="mp-emoji-label">Your icon:</span>
+                    <div id="mp-emoji-options" class="mp-emoji-row">
+                        <button class="mp-emoji-opt active" data-emoji="🚀">🚀</button>
+                        <button class="mp-emoji-opt" data-emoji="🔥">🔥</button>
+                        <button class="mp-emoji-opt" data-emoji="⚡">⚡</button>
+                        <button class="mp-emoji-opt" data-emoji="👻">👻</button>
+                        <button class="mp-emoji-opt" data-emoji="🐉">🐉</button>
+                        <button class="mp-emoji-opt" data-emoji="🎯">🎯</button>
+                        <button class="mp-emoji-opt" data-emoji="💎">💎</button>
+                    </div>
+                </div>
+
+                <div class="mp-emoji-picker">
+                    <span class="mp-emoji-label">Particles:</span>
+                    <div id="mp-particle-options" class="mp-emoji-row">
+                        <button class="mp-particle-opt" data-particle="none" title="None">✕</button>
+                        <button class="mp-particle-opt active" data-particle="petals" title="Petals">🌸</button>
+                        <button class="mp-particle-opt" data-particle="fire" title="Fire">🔥</button>
+                        <button class="mp-particle-opt" data-particle="snow" title="Snow">❄</button>
+                        <button class="mp-particle-opt" data-particle="leaves" title="Leaves">🍃</button>
+                        <button class="mp-particle-opt" data-particle="sparks" title="Sparks">✧</button>
+                        <button class="mp-particle-opt" data-particle="bubbles" title="Bubbles">◯</button>
+                        <button class="mp-particle-opt" data-particle="default" title="Default">✦</button>
+                        <button class="mp-particle-opt" data-particle="lightning" title="Lightning">⚡</button>
+                        <button class="mp-particle-opt" data-particle="confetti" title="Confetti">🎊</button>
+                        <button class="mp-particle-opt" data-particle="diamonds" title="Diamonds">◆</button>
+                    </div>
+                </div>
+
+                <div id="mp-time-selector" class="mp-time-modes">
+                    <button class="mp-time-btn" data-time="15">15s</button>
+                    <button class="mp-time-btn active" data-time="30">30s</button>
+                    <button class="mp-time-btn" data-time="60">60s</button>
+                </div>
+
+                <div id="mp-players-list" class="mp-players">
+                    <!-- Player cards rendered by JS -->
+                </div>
+
+                <div class="mp-lobby-actions">
+                    <button id="mp-leave-btn" class="mp-btn-secondary">
+                        <i class="ri-logout-box-line"></i> Leave
+                    </button>
+                    <button id="mp-start-btn" class="mp-btn-primary" disabled>
+                        <i class="ri-play-fill"></i> Start Race
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MP RACE BAR (Progress tracks during race) -->
+    <div id="mp-race-bar" class="hidden">
+        <div id="mp-race-players">
+            <!-- Dynamically rendered player lanes -->
+        </div>
+    </div>
+
+    <!-- MP COUNTDOWN OVERLAY -->
+    <div id="mp-countdown" class="hidden">
+        <div class="mp-countdown-inner">
+            <span id="mp-countdown-number">3</span>
+        </div>
+    </div>
+
+    <!-- MP RESULTS OVERLAY -->
+    <div id="mp-results-overlay" class="hidden">
+        <div class="mp-results-content">
+            <h1 class="mp-results-title">Race Results</h1>
+            <div id="mp-podium" class="mp-podium">
+                <!-- Podium rendered by JS -->
+            </div>
+            <div id="mp-standings-extra" class="mp-standings-extra">
+                <!-- 4th-5th place if applicable -->
+            </div>
+            <div class="mp-results-actions">
+                <button id="mp-rematch-btn" class="mp-btn-primary">
+                    <i class="ri-restart-line"></i> Back to Lobby
+                </button>
+                <button id="mp-leave-results-btn" class="mp-btn-secondary">
+                    <i class="ri-logout-box-line"></i> Leave Room
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════ END MULTIPLAYER ═══════════════════ -->
+
     <div id="hagakure-leaderboard-modal" class="hidden">
         <div class="bushido-vignette"></div>
         <div class="katana-slash"></div>
@@ -3757,6 +3907,7 @@
     <script type="module" src="/src/devnote.js"></script>
     <script type="module" src="/src/music-mode.js"></script>
     <script type="module" src="/src/starroad.js"></script>
+    <script type="module" src="/src/multiplayer.js"></script>
     <script type="module" src="/src/splash.js"></script>
 
     <!-- STAR ROAD SPLASH -->

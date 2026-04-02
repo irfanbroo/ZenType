@@ -1,0 +1,1120 @@
+/* ═══════════════════════════════════════════════════════════
+   ZENTYPE MULTIPLAYER — STYLES
+   ═══════════════════════════════════════════════════════════ */
+
+/* ─── HIDDEN STATE (must override ID selectors) ─── */
+#mp-modal.hidden,
+#mp-countdown.hidden,
+#mp-results-overlay.hidden,
+#mp-race-bar.hidden {
+  display: none !important;
+}
+
+/* ─── MP MODAL ─── */
+#mp-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  animation: mpFadeIn 0.2s ease;
+}
+
+@keyframes mpFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.mp-content {
+  width: 520px;
+  max-width: 95vw;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.mp-view.hidden { display: none; }
+
+/* ─── MENU ─── */
+.mp-menu-body {
+  padding: 28px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.mp-action-btn {
+  width: 100%;
+  padding: 15px 20px;
+  background: rgba(0, 212, 255, 0.1);
+  border: 1px solid rgba(0, 212, 255, 0.25);
+  border-radius: 12px;
+  color: #00d4ff;
+  font-size: 0.95rem;
+  font-weight: 600;
+  font-family: 'Outfit', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  letter-spacing: 0.02em;
+}
+
+.mp-action-btn:hover {
+  background: rgba(0, 212, 255, 0.2);
+  border-color: rgba(0, 212, 255, 0.45);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(0, 212, 255, 0.15);
+}
+
+.mp-action-btn:active {
+  transform: translateY(0);
+}
+
+.mp-divider {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  color: rgba(255, 255, 255, 0.25);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+}
+
+.mp-divider::before,
+.mp-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.mp-join-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mp-code-input {
+  width: 100%;
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  color: #fff;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.3rem;
+  font-weight: 700;
+  text-align: center;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.mp-code-input::placeholder {
+  color: rgba(255, 255, 255, 0.2);
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  font-size: 0.9rem;
+}
+
+.mp-code-input:focus {
+  border-color: rgba(0, 212, 255, 0.4);
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.1);
+}
+
+/* ─── LOBBY ─── */
+.mp-code-display {
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.25em;
+  color: #00d4ff;
+  font-weight: 700;
+}
+
+.mp-copy-btn {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.6);
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 1rem;
+}
+
+.mp-copy-btn:hover {
+  background: rgba(0, 212, 255, 0.15);
+  color: #00d4ff;
+}
+
+.mp-copy-btn.copied {
+  color: #00ff88;
+  border-color: rgba(0, 255, 136, 0.3);
+}
+
+/* Name picker */
+.mp-name-picker {
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mp-name-input {
+  flex: 1;
+  padding: 7px 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  color: #fff;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  font-weight: 600;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.mp-name-input::placeholder {
+  color: rgba(255, 255, 255, 0.2);
+  font-weight: 400;
+}
+
+.mp-name-input:focus {
+  border-color: rgba(0, 212, 255, 0.3);
+}
+
+/* Emoji picker */
+.mp-emoji-picker {
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mp-emoji-label {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.4);
+  white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.mp-emoji-row {
+  display: flex;
+  gap: 4px;
+}
+
+.mp-emoji-opt {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background: rgba(255, 255, 255, 0.04);
+  cursor: pointer;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
+
+.mp-emoji-opt:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: scale(1.1);
+}
+
+.mp-emoji-opt.active {
+  border-color: #00d4ff;
+  background: rgba(0, 212, 255, 0.15);
+  box-shadow: 0 0 12px rgba(0, 212, 255, 0.2);
+}
+
+/* Particle picker — same style as emoji picker */
+.mp-particle-opt {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background: rgba(255, 255, 255, 0.04);
+  cursor: pointer;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.mp-particle-opt:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: scale(1.1);
+}
+
+.mp-particle-opt.active {
+  border-color: #ffd700;
+  background: rgba(255, 215, 0, 0.12);
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.15);
+  color: #ffd700;
+}
+
+/* Time selector */
+.mp-time-modes {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 24px;
+}
+
+.mp-time-btn {
+  padding: 6px 18px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.5);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.mp-time-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.mp-time-btn.active {
+  background: rgba(0, 212, 255, 0.15);
+  border-color: rgba(0, 212, 255, 0.3);
+  color: #00d4ff;
+}
+
+/* Player list */
+.mp-players {
+  padding: 12px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 80px;
+}
+
+.mp-player-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  animation: mpSlideIn 0.3s ease;
+}
+
+@keyframes mpSlideIn {
+  from { opacity: 0; transform: translateX(-10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.mp-player-emoji {
+  font-size: 1.3rem;
+  width: 32px;
+  text-align: center;
+}
+
+.mp-player-name {
+  flex: 1;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.mp-player-host {
+  font-size: 0.6rem;
+  color: #ffd700;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  background: rgba(255, 215, 0, 0.1);
+  border-radius: 4px;
+}
+
+.mp-player-you {
+  font-size: 0.6rem;
+  color: #00d4ff;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+/* Lobby actions */
+.mp-lobby-actions {
+  padding: 16px 24px;
+  display: flex;
+  gap: 12px;
+}
+
+.mp-btn-primary {
+  flex: 1;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.25), rgba(0, 255, 136, 0.2));
+  border: 1px solid rgba(0, 212, 255, 0.35);
+  border-radius: 10px;
+  color: #fff;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.mp-btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.4), rgba(0, 255, 136, 0.35));
+  transform: translateY(-1px);
+  box-shadow: 0 4px 24px rgba(0, 212, 255, 0.2);
+}
+
+.mp-btn-primary:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.mp-btn-primary:not(:disabled) {
+  animation: mpPulseGlow 2s ease-in-out infinite;
+}
+
+@keyframes mpPulseGlow {
+  0%, 100% { box-shadow: 0 0 0 rgba(0, 212, 255, 0); }
+  50% { box-shadow: 0 0 20px rgba(0, 212, 255, 0.15); }
+}
+
+.mp-btn-secondary {
+  padding: 12px 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  color: rgba(255, 255, 255, 0.6);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.mp-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+
+/* ═══════════════════════════════════════════════════════════
+   RACE BAR
+   Glass panel, solid fills, wave overlay, proper typography
+   ═══════════════════════════════════════════════════════════ */
+
+#mp-race-bar {
+  position: fixed;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 88%;
+  max-width: 920px;
+  z-index: 100;
+  padding: 12px 18px 14px;
+  background: rgba(10, 10, 18, 0.85);
+  backdrop-filter: blur(24px) saturate(1.4);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow:
+    0 2px 20px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* ─── Player row ─── */
+.mp-race-player {
+  display: grid;
+  grid-template-columns: 60px 1fr 42px;
+  align-items: center;
+  gap: 10px;
+  height: 36px;
+}
+
+/* ─── Emoji ─── */
+.mp-race-emoji {
+  font-size: 1.15rem;
+  text-align: center;
+  line-height: 1;
+}
+
+/* ─── Name: left column ─── */
+.mp-race-name {
+  font-size: 0.65rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mp-race-name.is-you {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* ─── Track ─── */
+.mp-race-track {
+  height: 36px;
+  border-radius: 10px;
+  position: relative;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+/* Background subtle stripes */
+.mp-race-track::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent 0%,
+    transparent 19.8%,
+    rgba(255,255,255,0.025) 19.8%,
+    rgba(255,255,255,0.025) 20%,
+    transparent 20%,
+    transparent 39.8%,
+    rgba(255,255,255,0.025) 39.8%,
+    rgba(255,255,255,0.025) 40%,
+    transparent 40%,
+    transparent 59.8%,
+    rgba(255,255,255,0.025) 59.8%,
+    rgba(255,255,255,0.025) 60%,
+    transparent 60%,
+    transparent 79.8%,
+    rgba(255,255,255,0.025) 79.8%,
+    rgba(255,255,255,0.025) 80%,
+    transparent 80%
+  );
+  border-radius: 10px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* SVG wave sits on top of the fill */
+.mp-race-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.mp-race-wave {
+  opacity: 0.6;
+}
+
+/* ─── Progress fill ─── */
+.mp-race-progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  border-radius: 10px;
+  transition: width 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  z-index: 2;
+}
+
+/* Rider emoji at the leading edge */
+.mp-race-rider {
+  position: absolute;
+  right: -2px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.05rem;
+  z-index: 5;
+  filter: drop-shadow(0 1px 3px rgba(0,0,0,0.6));
+}
+
+/* ─── WPM ─── */
+.mp-race-wpm {
+  font-size: 0.78rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.75);
+  text-align: right;
+  letter-spacing: -0.03em;
+}
+
+/* ─── Player colors ─── */
+.mp-race-player[data-color="0"] .mp-race-progress {
+  background: linear-gradient(90deg, rgba(0,212,255,0.12), rgba(0,212,255,0.35));
+}
+.mp-race-player[data-color="0"] .mp-race-wave { stroke: #00d4ff; }
+.mp-race-player[data-color="0"] .mp-race-wpm { color: #00d4ff; }
+
+.mp-race-player[data-color="1"] .mp-race-progress {
+  background: linear-gradient(90deg, rgba(255,0,200,0.12), rgba(255,0,200,0.35));
+}
+.mp-race-player[data-color="1"] .mp-race-wave { stroke: #ff00c8; }
+.mp-race-player[data-color="1"] .mp-race-wpm { color: #ff00c8; }
+
+.mp-race-player[data-color="2"] .mp-race-progress {
+  background: linear-gradient(90deg, rgba(255,215,0,0.12), rgba(255,215,0,0.35));
+}
+.mp-race-player[data-color="2"] .mp-race-wave { stroke: #ffd700; }
+.mp-race-player[data-color="2"] .mp-race-wpm { color: #ffd700; }
+
+.mp-race-player[data-color="3"] .mp-race-progress {
+  background: linear-gradient(90deg, rgba(0,255,136,0.12), rgba(0,255,136,0.35));
+}
+.mp-race-player[data-color="3"] .mp-race-wave { stroke: #00ff88; }
+.mp-race-player[data-color="3"] .mp-race-wpm { color: #00ff88; }
+
+.mp-race-player[data-color="4"] .mp-race-progress {
+  background: linear-gradient(90deg, rgba(180,100,255,0.12), rgba(180,100,255,0.35));
+}
+.mp-race-player[data-color="4"] .mp-race-wave { stroke: #b464ff; }
+.mp-race-player[data-color="4"] .mp-race-wpm { color: #b464ff; }
+
+/* ─── Leader state — golden crown effect ─── */
+.mp-race-player.is-leader .mp-race-track {
+  border: 1px solid rgba(255, 215, 0, 0.15);
+}
+
+.mp-race-player.is-leader .mp-race-progress {
+  background: linear-gradient(90deg, rgba(255,215,0,0.1), rgba(255,215,0,0.35)) !important;
+}
+
+.mp-race-player.is-leader .mp-race-wave {
+  stroke: #ffd700 !important;
+  opacity: 0.8;
+}
+
+.mp-race-player.is-leader .mp-race-wpm {
+  color: #ffd700 !important;
+}
+
+/* Animated shimmer sweep across the leader's bar */
+.mp-race-player.is-leader .mp-race-track::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 215, 0, 0.08),
+    rgba(255, 215, 0, 0.15),
+    rgba(255, 215, 0, 0.08),
+    transparent
+  );
+  animation: mpLeaderShimmer 2.5s ease-in-out infinite;
+  z-index: 4;
+  pointer-events: none;
+  border-radius: 10px;
+}
+
+@keyframes mpLeaderShimmer {
+  0% { left: -60%; }
+  100% { left: 100%; }
+}
+
+/* ─── Finished ─── */
+.mp-race-player.finished .mp-race-progress {
+  background: linear-gradient(90deg, rgba(255,215,0,0.15), rgba(255,215,0,0.45)) !important;
+}
+.mp-race-player.finished .mp-race-wave { stroke: #ffd700 !important; }
+.mp-race-player.finished .mp-race-wpm { color: #ffd700 !important; }
+
+.mp-race-player.finished .mp-race-rider {
+  animation: mpFinishPop 0.4s ease;
+}
+
+@keyframes mpFinishPop {
+  0%, 100% { transform: translateY(-50%) scale(1); }
+  40% { transform: translateY(-50%) scale(1.4); }
+}
+
+/* ─── Disconnected ─── */
+.mp-race-player.disconnected {
+  opacity: 0.2;
+  filter: grayscale(1);
+}
+
+
+/* ═══════════════════════════════════════════════════════════
+   EMOJI CURSORS ON TYPING TEXT
+   ═══════════════════════════════════════════════════════════ */
+
+.mp-word-cursor {
+  position: absolute;
+  pointer-events: none;
+  z-index: 10;
+  font-size: 0.85rem;
+  line-height: 1;
+  transition: left 0.25s ease, top 0.25s ease;
+  filter: drop-shadow(0 0 4px var(--cursor-glow, rgba(0,212,255,0.5)));
+}
+
+/* Leader golden glow on emoji cursor */
+.mp-word-cursor.is-leader {
+  filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.7)) drop-shadow(0 0 16px rgba(255, 215, 0, 0.3));
+}
+
+/* Player color assignments for cursors */
+.mp-word-cursor[data-color="0"] { --cursor-color: #00d4ff; --cursor-glow: rgba(0,212,255,0.5); }
+.mp-word-cursor[data-color="1"] { --cursor-color: #ff00c8; --cursor-glow: rgba(255,0,200,0.5); }
+.mp-word-cursor[data-color="2"] { --cursor-color: #ffd700; --cursor-glow: rgba(255,215,0,0.5); }
+.mp-word-cursor[data-color="3"] { --cursor-color: #00ff88; --cursor-glow: rgba(0,255,136,0.5); }
+.mp-word-cursor[data-color="4"] { --cursor-color: #b464ff; --cursor-glow: rgba(180,100,255,0.5); }
+
+
+/* ═══════════════════════════════════════════════════════════
+   POSITION STRIP — live rankings below typing area
+   ═══════════════════════════════════════════════════════════ */
+
+#mp-position-strip {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  padding: 10px 0;
+  margin-top: 8px;
+}
+
+#mp-position-strip.hidden { display: none !important; }
+
+.mp-pos-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.35);
+  transition: all 0.3s ease;
+}
+
+.mp-pos-item.is-first {
+  color: #ffd700;
+  filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.3));
+}
+
+.mp-pos-item.is-you {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.mp-pos-item.is-first.is-you {
+  color: #ffd700;
+}
+
+.mp-pos-num {
+  font-weight: 800;
+  font-size: 0.75rem;
+}
+
+.mp-pos-emoji {
+  font-size: 0.85rem;
+}
+
+.mp-pos-name {
+  font-weight: 500;
+  max-width: 60px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mp-pos-wpm {
+  font-weight: 700;
+  opacity: 0.7;
+}
+
+
+/* ═══════════════════════════════════════════════════════════
+   COUNTDOWN — CINEMATIC
+   ═══════════════════════════════════════════════════════════ */
+
+#mp-countdown {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+}
+
+/* Vignette */
+#mp-countdown::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.6) 100%);
+  pointer-events: none;
+}
+
+.mp-countdown-inner {
+  position: relative;
+}
+
+#mp-countdown-number {
+  font-size: 10rem;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 800;
+  color: #00d4ff;
+  text-shadow:
+    0 0 40px rgba(0, 212, 255, 0.5),
+    0 0 80px rgba(0, 212, 255, 0.3),
+    0 0 120px rgba(0, 212, 255, 0.1);
+  animation: mpCountPulse 0.9s ease-out;
+  user-select: none;
+}
+
+/* Escalating intensity via JS-toggled classes */
+#mp-countdown.count-3 #mp-countdown-number {
+  color: #00d4ff;
+  text-shadow: 0 0 40px rgba(0,212,255,0.5), 0 0 80px rgba(0,212,255,0.3);
+  animation: mpCountPulse 0.9s ease-out;
+}
+
+#mp-countdown.count-2 #mp-countdown-number {
+  color: #ffcc00;
+  text-shadow: 0 0 40px rgba(255,204,0,0.6), 0 0 80px rgba(255,204,0,0.3);
+  animation: mpCountShake 0.9s ease-out;
+}
+
+#mp-countdown.count-1 #mp-countdown-number {
+  color: #ff3344;
+  text-shadow: 0 0 50px rgba(255,51,68,0.7), 0 0 100px rgba(255,51,68,0.4);
+  animation: mpCountShake 0.7s ease-out;
+}
+
+#mp-countdown.count-go #mp-countdown-number {
+  color: #ffd700;
+  font-size: 8rem;
+  text-shadow: 0 0 60px rgba(255,215,0,0.8), 0 0 120px rgba(255,215,0,0.4);
+  animation: mpCountExplode 0.6s ease-out forwards;
+}
+
+@keyframes mpCountPulse {
+  0% { transform: scale(0.5); opacity: 0; }
+  40% { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes mpCountShake {
+  0% { transform: scale(0.5); opacity: 0; }
+  30% { transform: scale(1.15) rotate(-2deg); opacity: 1; }
+  50% { transform: scale(1.05) rotate(2deg); }
+  70% { transform: scale(1.1) rotate(-1deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+
+@keyframes mpCountExplode {
+  0% { transform: scale(0.3); opacity: 0; }
+  40% { transform: scale(1.3); opacity: 1; }
+  70% { transform: scale(1.1); }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+
+/* Screen shake on the game container */
+.mp-screen-shake {
+  animation: mpShake 0.3s ease-in-out;
+}
+
+@keyframes mpShake {
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(-2px, 1px); }
+  50% { transform: translate(2px, -1px); }
+  75% { transform: translate(-1px, 2px); }
+}
+
+
+/* ═══════════════════════════════════════════════════════════
+   RESULTS — PODIUM REVEAL
+   ═══════════════════════════════════════════════════════════ */
+
+#mp-results-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 950;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(10px);
+  animation: mpFadeIn 0.4s ease;
+}
+
+.mp-results-content {
+  text-align: center;
+  max-width: 600px;
+  width: 95%;
+  padding: 40px 32px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 24px;
+  backdrop-filter: blur(20px);
+}
+
+.mp-results-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 32px;
+  letter-spacing: -0.02em;
+}
+
+/* Podium */
+.mp-podium {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 24px;
+  min-height: 260px;
+}
+
+.mp-podium-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 14px 14px 6px 6px;
+  padding: 20px 16px 16px;
+  position: relative;
+  transition: all 0.5s ease;
+  transform: translateY(100%);
+  opacity: 0;
+}
+
+.mp-podium-block.reveal {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* 1st place */
+.mp-podium-block.rank-1 {
+  background: linear-gradient(180deg, rgba(255,215,0,0.15), rgba(255,215,0,0.05));
+  border: 1px solid rgba(255,215,0,0.25);
+  min-height: 220px;
+  width: 160px;
+  box-shadow: 0 0 40px rgba(255,215,0,0.15);
+  transition-delay: 0.6s;
+}
+
+/* 2nd place */
+.mp-podium-block.rank-2 {
+  background: linear-gradient(180deg, rgba(192,192,192,0.12), rgba(192,192,192,0.04));
+  border: 1px solid rgba(192,192,192,0.2);
+  min-height: 180px;
+  width: 140px;
+  box-shadow: 0 0 30px rgba(192,192,192,0.1);
+  transition-delay: 0.3s;
+}
+
+/* 3rd place */
+.mp-podium-block.rank-3 {
+  background: linear-gradient(180deg, rgba(205,127,50,0.12), rgba(205,127,50,0.04));
+  border: 1px solid rgba(205,127,50,0.2);
+  min-height: 140px;
+  width: 130px;
+  box-shadow: 0 0 25px rgba(205,127,50,0.1);
+  transition-delay: 0s;
+}
+
+.mp-podium-rank {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 800;
+}
+
+.rank-1 .mp-podium-rank { color: #ffd700; }
+.rank-2 .mp-podium-rank { color: #c0c0c0; }
+.rank-3 .mp-podium-rank { color: #cd7f32; }
+
+.mp-podium-emoji {
+  font-size: 2rem;
+  margin: 8px 0;
+}
+
+.mp-podium-name {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+  margin-bottom: 4px;
+}
+
+.mp-podium-wpm {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.mp-podium-acc {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin-top: 2px;
+}
+
+.mp-podium-trophy {
+  position: absolute;
+  top: -16px;
+  font-size: 1.4rem;
+  animation: mpTrophyBounce 0.8s ease 0.8s both;
+}
+
+@keyframes mpTrophyBounce {
+  0% { transform: scale(0) rotate(-20deg); opacity: 0; }
+  50% { transform: scale(1.3) rotate(5deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0); opacity: 1; }
+}
+
+/* 4th-5th extra standings */
+.mp-standings-extra {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 24px;
+}
+
+.mp-standing-extra {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.mp-standing-extra.is-you {
+  background: rgba(0, 212, 255, 0.06);
+  border-color: rgba(0, 212, 255, 0.15);
+}
+
+.mp-standing-extra-rank {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.4);
+  min-width: 28px;
+}
+
+.mp-standing-extra-name {
+  flex: 1;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.mp-standing-extra-stats {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Results actions */
+.mp-results-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.mp-results-actions .mp-btn-primary,
+.mp-results-actions .mp-btn-secondary {
+  flex: 0;
+  min-width: 160px;
+}
+
+
+/* ═══════════════════════════════════════════════════════════
+   CONFETTI
+   ═══════════════════════════════════════════════════════════ */
+
+.mp-confetti-piece {
+  position: fixed;
+  width: 8px;
+  height: 8px;
+  z-index: 9999;
+  pointer-events: none;
+  animation: mpConfettiFall var(--fall-duration, 3s) ease-in forwards;
+  animation-delay: var(--fall-delay, 0s);
+}
+
+@keyframes mpConfettiFall {
+  0% {
+    opacity: 1;
+    transform: translateY(0) rotate(0deg) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(100vh) rotate(var(--spin, 720deg)) scale(0.5);
+  }
+}
+
+
+/* ═══════════════════════════════════════════════════════════
+   TOAST NOTIFICATIONS
+   ═══════════════════════════════════════════════════════════ */
+
+.mp-toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  padding: 10px 24px;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  color: rgba(255, 255, 255, 0.85);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  z-index: 10000;
+  opacity: 0;
+  transition: all 0.3s ease;
+  pointer-events: none;
+}
+
+.mp-toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 600px) {
+  .mp-content { width: 100%; max-width: 100%; border-radius: 0; }
+  .mp-podium { gap: 6px; }
+  .mp-podium-block.rank-1 { width: 130px; }
+  .mp-podium-block.rank-2 { width: 110px; }
+  .mp-podium-block.rank-3 { width: 100px; }
+  #mp-race-bar { width: 98%; border-radius: 10px; }
+  .mp-race-name { min-width: 60px; max-width: 60px; font-size: 0.65rem; }
+}

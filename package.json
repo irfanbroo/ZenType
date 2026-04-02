@@ -10,7 +10,8 @@
     "@tauri-apps/plugin-deep-link": "^2.4.7",
     "@tauri-apps/plugin-shell": "^2.3.5",
     "@vercel/analytics": "^1.6.1",
-    "discord-rpc": "^4.0.1"
+    "discord-rpc": "^4.0.1",
+    "socket.io-client": "^4.8.3"
   },
   "devDependencies": {
     "@tauri-apps/api": "^2.0.0",

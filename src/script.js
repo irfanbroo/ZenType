@@ -9717,6 +9717,16 @@ UI.input.addEventListener('input', (e) => {
         const trimmedVal = typedVal.trim();
         let wordCorrect = userConfig.instantLegend ? true : (trimmedVal === currentWordStr);
 
+        // Multiplayer: block advancing on wrong word — must type it correctly
+        if (window.mpState?.isMultiplayer && !wordCorrect) {
+            // Strip the trailing space but keep their typed text so they can backspace and fix
+            UI.input.value = trimmedVal;
+            // Flash the word red
+            currentWordEl.classList.add('typed-wrong');
+            setTimeout(() => currentWordEl.classList.remove('typed-wrong'), 300);
+            return;
+        }
+
         // Snapshot counters BEFORE adding this word (for backspace undo)
         const prevCorrectChars = state.correctChars;
         const prevTotalChars = state.totalCharsTyped;
@@ -9833,7 +9843,6 @@ UI.input.addEventListener('input', (e) => {
     const caret = document.getElementById('caret');
     if (caret) {
         const rect = caret.getBoundingClientRect();
-        // Adjust for center of caret
         spawnKeypressParticles(rect.left + rect.width / 2, rect.top + rect.height / 2);
     }
     // Caret fire combo particles
@@ -9993,9 +10002,17 @@ function endGame() {
     // Draw Graph
     drawResultChart(state.wpmHistory);
 
-    // Save stats if user is logged in — skip if Instant Legend is active
-    if (window.updateUserStats && !userConfig.instantLegend) {
+    // Save stats if user is logged in — skip if Instant Legend or Multiplayer
+    if (window.updateUserStats && !userConfig.instantLegend && !window.mpState?.isMultiplayer) {
         window.updateUserStats(netWpm, finalTimeMin * 60);
+    }
+
+    // In multiplayer, send results to server instead of showing normal results
+    if (window.mpState?.isMultiplayer && window.onMultiplayerGameEnd) {
+        window.onMultiplayerGameEnd({
+            netWpm, rawWpm, accuracy, consistency, maxCombo: state.maxCombo, wpmHistory: state.wpmHistory
+        });
+        return; // Skip normal results display
     }
 
     UI.results.classList.remove('hidden');
@@ -10748,6 +10765,7 @@ document.addEventListener('keydown', (e) => {
     if (e.key !== 'Tab') UI.input.focus();
     if (e.key === 'Tab') {
         e.preventDefault();
+        if (window.mpState?.isMultiplayer) return; // Don't restart during MP race
         clearInterval(state.timerInterval);
         initGame();
     }
@@ -13003,4 +13021,68 @@ document.addEventListener('keydown', event => {
         event.preventDefault();
     }
 });
+
+// ═══════════════════════════════════════════════════════════
+// MULTIPLAYER BRIDGE — called from multiplayer.js
+// ═══════════════════════════════════════════════════════════
+
+// Expose userConfig for multiplayer particle picker
+window.userConfig = userConfig;
+
+window.startMultiplayerRace = function(words, timeLimit) {
+    // Override word list and time limit with server-provided values
+    state.timeLimit = timeLimit;
+    state.timeLeft = timeLimit;
+    state.words = words;
+    state.currWordIndex = 0;
+    state.correctChars = 0;
+    state.totalCharsTyped = 0;
+    state.rawKeystrokes = 0;
+    state.correctKeystrokes = 0;
+    state.isActive = false;
+    state.startTime = null;
+    state.combo = 0;
+    state.maxCombo = 0;
+    state.wpmHistory = [];
+    state.lastRecordTime = 0;
+    state.lastTotalChars = 0;
+    submittedWords = [];
+
+    UI.input.value = '';
+    UI.input.disabled = false;
+    UI.input.focus();
+    UI.timer.innerText = timeLimit + "s";
+    UI.wpm.innerText = "0 WPM";
+    const cleanWpmNum = document.getElementById('clean-wpm-number');
+    if (cleanWpmNum) cleanWpmNum.textContent = '0';
+    UI.results.classList.add('hidden');
+    document.body.classList.remove('is-typing');
+    resetAllComboVisuals();
+    applyComboStyle(userConfig.comboStyle || 'heatbar');
+
+    renderWords();
+    setTimeout(() => {
+        updateCaretPosition();
+        UI.container.scrollTop = 0;
+    }, 10);
+
+    // Auto-start timer immediately (no waiting for first keystroke)
+    startTimer();
+};
+
+window.getTypingState = function() {
+    return {
+        wordIndex: state.currWordIndex,
+        correctChars: state.correctChars,
+        totalCharsTyped: state.totalCharsTyped,
+        rawKeystrokes: state.rawKeystrokes,
+        correctKeystrokes: state.correctKeystrokes,
+        wpm: parseInt(UI.wpm.innerText) || 0,
+        accuracy: state.rawKeystrokes > 0
+            ? Math.round((state.correctKeystrokes / state.rawKeystrokes) * 100)
+            : 100,
+        isActive: state.isActive,
+        finished: !state.isActive && state.startTime !== null
+    };
+};
 

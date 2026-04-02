@@ -1,0 +1,148 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - generic [ref=e4]:
+        - link "TYPER.IO" [ref=e5] [cursor=pointer]:
+          - /url: /
+        - navigation [ref=e6]:
+          - link "Home Home" [ref=e7] [cursor=pointer]:
+            - /url: /
+            - img "Home" [ref=e8]
+            - generic [ref=e9]: Home
+          - link "Discuss Discuss" [ref=e10] [cursor=pointer]:
+            - /url: /forum?page=1
+            - img "Discuss" [ref=e11]
+            - generic [ref=e12]: Discuss
+          - link "Hiscores Hiscores" [ref=e13] [cursor=pointer]:
+            - /url: /hiscores?query=top_speed&page=1&type=all
+            - img "Hiscores" [ref=e14]
+            - generic [ref=e15]: Hiscores
+        - textbox "Search for users" [ref=e18]:
+          - /placeholder: Search for players...
+        - button "dark-mode moon" [ref=e19] [cursor=pointer]:
+          - img "dark-mode moon" [ref=e20]
+        - generic [ref=e21]:
+          - button "sign up" [ref=e22] [cursor=pointer]
+          - button "log in" [ref=e23] [cursor=pointer]
+    - main [ref=e25]:
+      - generic [ref=e26]:
+        - generic [ref=e27]:
+          - generic [ref=e28]:
+            - heading "You" [level=3] [ref=e30]
+            - generic [ref=e32]:
+              - generic [ref=e33]:
+                - generic [ref=e34]: 👻
+                - textbox "Enter nickname" [ref=e35]
+              - generic [ref=e36]:
+                - generic [ref=e37]:
+                  - button "🤡" [ref=e38] [cursor=pointer]
+                  - button "👹" [ref=e39] [cursor=pointer]
+                  - button "👺" [ref=e40] [cursor=pointer]
+                  - button "👻" [ref=e41] [cursor=pointer]
+                  - button "👽" [ref=e42] [cursor=pointer]
+                  - button "👾" [ref=e43] [cursor=pointer]
+                  - button "🤖" [ref=e44] [cursor=pointer]
+                  - button "🧞" [ref=e45] [cursor=pointer]
+                  - button "🐌" [ref=e46] [cursor=pointer]
+                  - button "🦋" [ref=e47] [cursor=pointer]
+                  - button "🐛" [ref=e48] [cursor=pointer]
+                  - button "🐜" [ref=e49] [cursor=pointer]
+                  - button "🐑" [ref=e50] [cursor=pointer]
+                  - button "🐐" [ref=e51] [cursor=pointer]
+                  - button "💗" [ref=e52] [cursor=pointer]
+                  - button "🧠" [ref=e53] [cursor=pointer]
+                - generic [ref=e54]:
+                  - button "1" [ref=e55] [cursor=pointer]
+                  - button "<" [ref=e56] [cursor=pointer]
+                  - generic [ref=e57]: "1"
+                  - button ">" [ref=e58] [cursor=pointer]
+                  - button "18" [ref=e59] [cursor=pointer]
+          - generic [ref=e60]:
+            - link "Quick Play ➜ Play against others" [ref=e61] [cursor=pointer]:
+              - /url: /play
+              - text: Quick Play ➜
+              - generic [ref=e62]: Play against others
+            - link "Solo Play ➜ Play on your own" [ref=e63] [cursor=pointer]:
+              - /url: /solo
+              - text: Solo Play ➜
+              - generic [ref=e64]: Play on your own
+            - link "Group Play ➜ Play against friends" [ref=e65] [cursor=pointer]:
+              - /url: /lobby
+              - text: Group Play ➜
+              - generic [ref=e66]: Play against friends
+          - generic [ref=e68]:
+            - heading "Hiscores" [level=3] [ref=e70]
+            - generic [ref=e71]:
+              - generic [ref=e72]:
+                - button "daily" [ref=e73] [cursor=pointer]
+                - button "weekly" [ref=e74] [cursor=pointer]
+                - button "monthly" [ref=e75] [cursor=pointer]
+              - generic [ref=e76]:
+                - generic [ref=e77]: "#"
+                - generic [ref=e78]: Name
+                - generic [ref=e79]: Accuracy
+                - generic [ref=e80]: WPM
+        - generic [ref=e83]:
+          - heading "News" [level=3] [ref=e85]
+          - generic [ref=e88]:
+            - heading "Improve your typing speed and race your friends!" [level=2] [ref=e89]
+            - generic [ref=e90]: updated 4 months ago
+            - paragraph [ref=e91]: Hello, thank you for visiting the website. Join the Discord to arrange very large lobbies!
+            - link "Join the Discord ➜" [ref=e92] [cursor=pointer]:
+              - /url: https://discord.gg/E2Fj4h3JCa
+            - heading "(Nov. 24nd, 2025) Updates :" [level=3] [ref=e93]
+            - list [ref=e95]:
+              - listitem [ref=e96]: Improved email verification
+              - listitem [ref=e97]: Added daily match goal
+              - listitem [ref=e98]: You can now use custom text in private lobbies
+        - generic [ref=e99]:
+          - generic [ref=e101]:
+            - heading "Recent Posts" [level=3] [ref=e103]
+            - img [ref=e106]
+          - heading "Recent Matches" [level=3] [ref=e112]
+    - contentinfo [ref=e115]:
+      - generic [ref=e116]:
+        - generic [ref=e117]:
+          - generic [ref=e118]: © 2022 Typer.io
+          - generic [ref=e119]:
+            - text: created by
+            - link "Jaden" [ref=e120] [cursor=pointer]:
+              - /url: https://github.com/jdyn
+        - generic [ref=e121]:
+          - generic [ref=e122]:
+            - heading "Races" [level=3] [ref=e123]
+            - list [ref=e124]:
+              - listitem [ref=e125] [cursor=pointer]:
+                - link "Quick Play" [ref=e126]:
+                  - /url: /play
+              - listitem [ref=e127] [cursor=pointer]:
+                - link "Solo Play" [ref=e128]:
+                  - /url: /solo
+              - listitem [ref=e129] [cursor=pointer]:
+                - link "Custom Play" [ref=e130]:
+                  - /url: /lobby
+          - generic [ref=e131]:
+            - heading "Forums" [level=3] [ref=e132]
+            - list [ref=e133]:
+              - listitem [ref=e134] [cursor=pointer]:
+                - link "Posts" [ref=e135]:
+                  - /url: /forum
+              - listitem [ref=e136] [cursor=pointer]:
+                - link "Create Post" [ref=e137]:
+                  - /url: /forum/post
+              - listitem [ref=e138] [cursor=pointer]:
+                - link "Discord" [ref=e139]:
+                  - /url: https://discord.gg/E2Fj4h3JCa
+          - generic [ref=e140]:
+            - heading "Account" [level=3] [ref=e141]
+            - list [ref=e142]:
+              - listitem [ref=e143] [cursor=pointer]:
+                - link "Log In" [ref=e144]:
+                  - /url: /login
+              - listitem [ref=e145] [cursor=pointer]:
+                - link "Sign Up" [ref=e146]:
+                  - /url: /signup
+              - listitem [ref=e147] [cursor=pointer]:
+                - link "Recover" [ref=e148]:
+                  - /url: /u/reset
+  - alert [ref=e149]

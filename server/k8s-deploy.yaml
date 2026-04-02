@@ -1,0 +1,117 @@
+---
+# ═══════════════════════════════════════════
+# POSTGRES FOR MULTIPLAYER
+# ═══════════════════════════════════════════
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zentype-pg
+  namespace: ns-ts2raneh
+  labels:
+    app: zentype-pg
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: zentype-pg
+  template:
+    metadata:
+      labels:
+        app: zentype-pg
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: postgres
+          image: postgres:16-alpine
+          env:
+            - name: POSTGRES_DB
+              value: zentype_mp
+            - name: POSTGRES_USER
+              value: zentype
+            - name: POSTGRES_PASSWORD
+              value: zentype_mp_2026
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+          ports:
+            - containerPort: 5432
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          volumeMounts:
+            - name: pgdata
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: pgdata
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: zentype-pg
+  namespace: ns-ts2raneh
+spec:
+  selector:
+    app: zentype-pg
+  ports:
+    - port: 5432
+      targetPort: 5432
+
+---
+# ═══════════════════════════════════════════
+# ZENTYPE MULTIPLAYER WEBSOCKET SERVER
+# ═══════════════════════════════════════════
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zentype-ws
+  namespace: ns-ts2raneh
+  labels:
+    app: zentype-ws
+    cloud.sealos.io/app-deploy-manager: zentype-ws
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: zentype-ws
+  template:
+    metadata:
+      labels:
+        app: zentype-ws
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: zentype-ws
+          image: docker.io/ir7fan/zentype-ws:latest
+          imagePullPolicy: Always
+          env:
+            - name: DATABASE_URL
+              value: postgresql://zentype:zentype_mp_2026@zentype-pg:5432/zentype_mp
+            - name: FRONTEND_URL
+              value: "*"
+            - name: PORT
+              value: "3001"
+          ports:
+            - containerPort: 3001
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: zentype-ws
+  namespace: ns-ts2raneh
+spec:
+  selector:
+    app: zentype-ws
+  ports:
+    - port: 3001
+      targetPort: 3001
