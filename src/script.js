@@ -23,7 +23,7 @@ import { initThreeScene, onThreeKeyPress, updateThreeWPM,
     setThreeBrightness, setThreeKeyFlash, setKeyboardPosition, setKeyboardTheme,
     setThreeColorTheme, setThreeQuality, setThreeWordSpeed,
     setThreeExitAnim, setSceneType, getSceneType,
-    setCameraPreset, getCameraPresets } from './three-scene.js';
+    setCameraPreset, getCameraPresets, setZenGroundType } from './three-scene.js';
 
 
 
@@ -8607,6 +8607,10 @@ if (threeSceneSelect) {
         document.body.classList.toggle('forge-scene', newType === 'forge');
         document.body.classList.toggle('zen-scene', newType === 'zen');
 
+        // Show ground toggle only for zen
+        const zenGroundRow = document.getElementById('zen-ground-row');
+        if (zenGroundRow) zenGroundRow.style.display = newType === 'zen' ? '' : 'none';
+
         // Reset camera and repopulate presets for new scene
         setCameraPreset(0);
         populateCamPresets();
@@ -8625,6 +8629,21 @@ if (threeSceneSelect) {
         saveConfig();
     });
 }
+
+// Zen ground toggle
+const zenGroundSelect = document.getElementById('zen-ground-select');
+if (zenGroundSelect) {
+    zenGroundSelect.addEventListener('change', (e) => {
+        setZenGroundType(e.target.value);
+    });
+}
+// Show ground row if zen is already active on load
+(function () {
+    const row = document.getElementById('zen-ground-row');
+    if (row && typeof getSceneType === 'function' && getSceneType() === 'zen') {
+        row.style.display = '';
+    }
+})();
 
 // Exit 3D mode from settings
 if (exitThreeModeBtn) {

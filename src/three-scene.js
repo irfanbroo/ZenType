@@ -75,6 +75,8 @@ let fireflyData = [];
 let FIREFLY_COUNT = 150;
 let zenLanternLights = [];
 let reflectorMesh = null;
+let zenGroundMesh = null;
+let zenGroundType = 'obsidian'; // 'obsidian' | 'stone'
 
 // 3D Keyboard
 const KEYBOARD_ROWS = [
@@ -1136,6 +1138,15 @@ function buildZenLighting() {
     scene.add(keypressLight);
 }
 
+// ── Seeded RNG — same seed = same stars/cracks every reload ──
+function makeRng(seed) {
+    let s = seed >>> 0;
+    return function() {
+        s = Math.imul(1664525, s) + 1013904223 >>> 0;
+        return s / 0x100000000;
+    };
+}
+
 // ── Stars + Moon ──
 let zenSkySphere = null;
 let zenSkyYOff = 0.50; // locked at horizon level
@@ -1147,7 +1158,8 @@ function buildZenSky(yOff = zenSkyYOff) {
     const c = document.createElement('canvas');
     c.width = W; c.height = H;
     const ctx = c.getContext('2d');
-    const rng = (a, b) => a + Math.random() * (b - a);
+    const _sr = makeRng(0x5A7E5EED);
+    const rng = (a, b) => a + _sr() * (b - a);
 
     // ── 1. Deep night sky gradient — darker/moodier ──
     const bg = ctx.createLinearGradient(0, 0, 0, H);
@@ -1329,115 +1341,232 @@ function buildZenSky(yOff = zenSkyYOff) {
 }
 
 function buildZenGround() {
-    // ── Dark stone slab floor — matches nebula night sky ──
     const texW = 1024, texH = 1024;
+    const gr = makeRng(98765); // fixed seed — cracks never change
+
+    // ── Obsidian base texture ──
     const c = document.createElement('canvas');
     c.width = texW; c.height = texH;
     const ctx = c.getContext('2d');
 
-    // Deep dark slate base
-    ctx.fillStyle = '#1a1e2e';
+    // Near-black obsidian base with faint blue-black tint
+    ctx.fillStyle = '#07080f';
     ctx.fillRect(0, 0, texW, texH);
 
-    // Stone slab grid — irregular tiles
-    ctx.strokeStyle = 'rgba(40, 55, 90, 0.6)';
-    ctx.lineWidth = 2;
-    const slabW = 128, slabH = 96;
-    for (let row = 0; row < texH / slabH + 1; row++) {
-        const yy = row * slabH;
-        const rowOff = (row % 2) * (slabW * 0.4); // offset every other row
-        for (let col = -1; col < texW / slabW + 1; col++) {
-            const xx = col * slabW + rowOff;
-            // Each slab gets a slight color variation
-            const v = Math.floor(22 + Math.random() * 18);
-            ctx.fillStyle = `rgb(${v}, ${v + 3}, ${v + 12})`;
-            ctx.fillRect(xx + 2, yy + 2, slabW - 4, slabH - 4);
-            // Slab border (grout lines)
-            ctx.strokeRect(xx, yy, slabW, slabH);
-        }
+    // Glassy surface variation — subtle lighter patches like real obsidian
+    for (let i = 0; i < 35000; i++) {
+        const nx = gr() * texW;
+        const ny = gr() * texH;
+        const v = Math.floor(8 + gr() * 18);
+        ctx.fillStyle = `rgba(${v}, ${v + 2}, ${v + 10}, 0.25)`;
+        ctx.fillRect(nx, ny, 2, 2);
     }
 
-    // Surface noise — fine speckle for stone grain
-    for (let i = 0; i < 50000; i++) {
-        const nx = Math.random() * texW;
-        const ny = Math.random() * texH;
-        const v = Math.floor(20 + Math.random() * 30);
-        ctx.fillStyle = `rgba(${v}, ${v + 5}, ${v + 20}, 0.12)`;
-        ctx.fillRect(nx, ny, 1, 1);
-    }
-
-    // Blue-purple veining — subtle cracks catching moonlight
-    ctx.lineWidth = 0.8;
-    for (let i = 0; i < 40; i++) {
-        const sx = Math.random() * texW;
-        const sy = Math.random() * texH;
+    // Dark crack shadows on base (depth, not glow)
+    function drawCrackShadow(x, y, angle, length, depth) {
+        if (depth > 3 || length < 15) return;
+        const endX = x + Math.cos(angle) * length;
+        const endY = y + Math.sin(angle) * length;
+        const midX = (x + endX) / 2 + (gr() - 0.5) * 25;
+        const midY = (y + endY) / 2 + (gr() - 0.5) * 25;
         ctx.beginPath();
-        ctx.moveTo(sx, sy);
-        let px = sx, py = sy;
-        const segs = 3 + Math.floor(Math.random() * 6);
-        for (let s = 0; s < segs; s++) {
-            px += (Math.random() - 0.5) * 60;
-            py += (Math.random() - 0.5) * 40;
-            ctx.lineTo(px, py);
-        }
-        const b = Math.floor(120 + Math.random() * 60);
-        ctx.strokeStyle = `rgba(${b - 40}, ${b - 20}, ${b + 30}, 0.15)`;
+        ctx.moveTo(x, y);
+        ctx.quadraticCurveTo(midX, midY, endX, endY);
+        ctx.strokeStyle = `rgba(0, 0, 5, ${0.6 - depth * 0.12})`;
+        ctx.lineWidth = Math.max(0.5, 1.5 - depth * 0.3);
         ctx.stroke();
-    }
-
-    // Moonlight highlights on some slab edges
-    for (let i = 0; i < 25; i++) {
-        const hx = Math.random() * texW;
-        const hy = Math.random() * texH;
-        ctx.fillStyle = `rgba(130, 150, 200, ${0.03 + Math.random() * 0.05})`;
-        ctx.fillRect(hx, hy, slabW * 0.6, 2);
-    }
-
-    const stoneTex = new THREE.CanvasTexture(c);
-    stoneTex.wrapS = THREE.RepeatWrapping;
-    stoneTex.wrapT = THREE.RepeatWrapping;
-    stoneTex.repeat.set(3, 5);
-
-    // ── Normal map — slab edges + surface bump ──
-    const nc = document.createElement('canvas');
-    nc.width = 512; nc.height = 512;
-    const nCtx = nc.getContext('2d');
-    nCtx.fillStyle = '#8080ff'; // neutral
-    nCtx.fillRect(0, 0, 512, 512);
-    // Slab edge normals
-    const ns = 512 / (texW / slabW);
-    const nsH = 512 / (texH / slabH);
-    for (let row = 0; row < 512 / nsH + 1; row++) {
-        for (let col = 0; col < 512 / ns + 1; col++) {
-            const ex = col * ns, ey = row * nsH;
-            nCtx.fillStyle = '#6868ff'; // groove shadow
-            nCtx.fillRect(ex, ey, ns, 2);
-            nCtx.fillRect(ex, ey, 2, nsH);
-            nCtx.fillStyle = '#9898ff'; // ridge highlight
-            nCtx.fillRect(ex, ey + nsH - 2, ns, 2);
-            nCtx.fillRect(ex + ns - 2, ey, 2, nsH);
+        if (gr() > 0.45) {
+            drawCrackShadow(endX, endY, angle + (gr() - 0.5) * 1.1,
+                length * (0.45 + gr() * 0.3), depth + 1);
+        }
+        if (gr() > 0.55) {
+            const forkAt = 0.35 + gr() * 0.4;
+            drawCrackShadow(
+                x + Math.cos(angle) * length * forkAt,
+                y + Math.sin(angle) * length * forkAt,
+                angle + (gr() - 0.5) * 1.4,
+                length * (0.3 + gr() * 0.25), depth + 1);
         }
     }
-    const normalTex = new THREE.CanvasTexture(nc);
-    normalTex.wrapS = THREE.RepeatWrapping;
-    normalTex.wrapT = THREE.RepeatWrapping;
-    normalTex.repeat.set(3, 5);
+    ctx.save();
+    for (let i = 0; i < 12; i++) {
+        drawCrackShadow(
+            gr() * texW, gr() * texH,
+            gr() * Math.PI * 2,
+            70 + gr() * 110, 0);
+    }
+    ctx.restore();
 
+    const obsidianTex = new THREE.CanvasTexture(c);
+    obsidianTex.wrapS = THREE.RepeatWrapping;
+    obsidianTex.wrapT = THREE.RepeatWrapping;
+    obsidianTex.repeat.set(2, 3);
+
+    // ── Emissive crack map — same crack network but glowing blue ──
+    const ec = document.createElement('canvas');
+    ec.width = texW; ec.height = texH;
+    const ectx = ec.getContext('2d');
+    ectx.fillStyle = '#000000';
+    ectx.fillRect(0, 0, texW, texH);
+
+    // Reset seed so glow cracks match shadow cracks exactly
+    const gr2 = makeRng(98765);
+    // burn through surface variation calls to sync state
+    for (let i = 0; i < 35000 * 3; i++) gr2();
+    // burn through shadow crack seed state (approximate — glow uses fresh seed)
+    const gr3 = makeRng(11111);
+
+    function drawCrackGlow(x, y, angle, length, depth) {
+        if (depth > 3 || length < 15) return;
+        const endX = x + Math.cos(angle) * length;
+        const endY = y + Math.sin(angle) * length;
+        const midX = (x + endX) / 2 + (gr3() - 0.5) * 25;
+        const midY = (y + endY) / 2 + (gr3() - 0.5) * 25;
+
+        // Outer soft halo
+        ectx.beginPath();
+        ectx.moveTo(x, y);
+        ectx.quadraticCurveTo(midX, midY, endX, endY);
+        ectx.strokeStyle = `rgba(80, 120, 255, ${0.18 - depth * 0.03})`;
+        ectx.lineWidth = Math.max(2, 7 - depth * 1.5);
+        ectx.stroke();
+
+        // Bright core
+        ectx.beginPath();
+        ectx.moveTo(x, y);
+        ectx.quadraticCurveTo(midX, midY, endX, endY);
+        ectx.strokeStyle = `rgba(170, 200, 255, ${0.9 - depth * 0.15})`;
+        ectx.lineWidth = Math.max(0.4, 1.2 - depth * 0.25);
+        ectx.stroke();
+
+        if (gr3() > 0.45) {
+            drawCrackGlow(endX, endY, angle + (gr3() - 0.5) * 1.1,
+                length * (0.45 + gr3() * 0.3), depth + 1);
+        }
+        if (gr3() > 0.55) {
+            const forkAt = 0.35 + gr3() * 0.4;
+            drawCrackGlow(
+                x + Math.cos(angle) * length * forkAt,
+                y + Math.sin(angle) * length * forkAt,
+                angle + (gr3() - 0.5) * 1.4,
+                length * (0.3 + gr3() * 0.25), depth + 1);
+        }
+    }
+
+    const gr4 = makeRng(22222);
+    for (let i = 0; i < 12; i++) {
+        drawCrackGlow(
+            gr4() * texW, gr4() * texH,
+            gr4() * Math.PI * 2,
+            70 + gr4() * 110, 0);
+    }
+
+    const crackTex = new THREE.CanvasTexture(ec);
+    crackTex.wrapS = THREE.RepeatWrapping;
+    crackTex.wrapT = THREE.RepeatWrapping;
+    crackTex.repeat.set(2, 3);
+
+    // ── Ground mesh — glassy obsidian with glowing cracks ──
     const groundGeo = new THREE.PlaneGeometry(22, 42);
     const groundMat = new THREE.MeshStandardMaterial({
-        map: stoneTex,
-        normalMap: normalTex,
-        normalScale: new THREE.Vector2(0.4, 0.4),
-        roughness: 0.82,
-        metalness: 0.08,
-        emissive: 0x060a18,
-        emissiveIntensity: 0.3,
+        map: obsidianTex,
+        emissiveMap: crackTex,
+        emissive: new THREE.Color(0x3355ee),
+        emissiveIntensity: 1.6,
+        roughness: 0.12,
+        metalness: 0.55,
     });
     const ground = new THREE.Mesh(groundGeo, groundMat);
     ground.rotation.x = -Math.PI / 2;
     ground.position.set(0, 0, -5);
     ground.receiveShadow = true;
     scene.add(ground);
+    zenGroundMesh = ground;
+}
+
+function buildZenGroundStone() {
+    const texW = 1024, texH = 1024;
+    const c = document.createElement('canvas');
+    c.width = texW; c.height = texH;
+    const ctx = c.getContext('2d');
+
+    ctx.fillStyle = '#07080f';
+    ctx.fillRect(0, 0, texW, texH);
+    const slabW = 128, slabH = 96;
+    ctx.strokeStyle = 'rgba(40, 55, 90, 0.6)';
+    ctx.lineWidth = 2;
+    for (let row = 0; row < texH / slabH + 1; row++) {
+        const yy = row * slabH;
+        const rowOff = (row % 2) * (slabW * 0.4);
+        for (let col = -1; col < texW / slabW + 1; col++) {
+            const xx = col * slabW + rowOff;
+            const v = Math.floor(22 + Math.random() * 18);
+            ctx.fillStyle = `rgb(${v}, ${v + 3}, ${v + 12})`;
+            ctx.fillRect(xx + 2, yy + 2, slabW - 4, slabH - 4);
+            ctx.strokeRect(xx, yy, slabW, slabH);
+        }
+    }
+    for (let i = 0; i < 50000; i++) {
+        const nx = Math.random() * texW, ny = Math.random() * texH;
+        const v = Math.floor(20 + Math.random() * 30);
+        ctx.fillStyle = `rgba(${v}, ${v + 5}, ${v + 20}, 0.12)`;
+        ctx.fillRect(nx, ny, 1, 1);
+    }
+    ctx.lineWidth = 0.8;
+    for (let i = 0; i < 40; i++) {
+        let px = Math.random() * texW, py = Math.random() * texH;
+        ctx.beginPath(); ctx.moveTo(px, py);
+        for (let s = 0; s < 5 + Math.floor(Math.random() * 4); s++) {
+            px += (Math.random() - 0.5) * 60; py += (Math.random() - 0.5) * 40;
+            ctx.lineTo(px, py);
+        }
+        const b = Math.floor(120 + Math.random() * 60);
+        ctx.strokeStyle = `rgba(${b - 40}, ${b - 20}, ${b + 30}, 0.15)`;
+        ctx.stroke();
+    }
+    const stoneTex = new THREE.CanvasTexture(c);
+    stoneTex.wrapS = stoneTex.wrapT = THREE.RepeatWrapping;
+    stoneTex.repeat.set(3, 5);
+
+    const nc = document.createElement('canvas');
+    nc.width = 512; nc.height = 512;
+    const nCtx = nc.getContext('2d');
+    nCtx.fillStyle = '#8080ff'; nCtx.fillRect(0, 0, 512, 512);
+    const ns = 512 / (texW / slabW), nsH = 512 / (texH / slabH);
+    for (let row = 0; row < 512 / nsH + 1; row++) {
+        for (let col = 0; col < 512 / ns + 1; col++) {
+            const ex = col * ns, ey = row * nsH;
+            nCtx.fillStyle = '#6868ff'; nCtx.fillRect(ex, ey, ns, 2); nCtx.fillRect(ex, ey, 2, nsH);
+            nCtx.fillStyle = '#9898ff'; nCtx.fillRect(ex, ey + nsH - 2, ns, 2); nCtx.fillRect(ex + ns - 2, ey, 2, nsH);
+        }
+    }
+    const normalTex = new THREE.CanvasTexture(nc);
+    normalTex.wrapS = normalTex.wrapT = THREE.RepeatWrapping;
+    normalTex.repeat.set(3, 5);
+
+    const ground = new THREE.Mesh(
+        new THREE.PlaneGeometry(22, 42),
+        new THREE.MeshStandardMaterial({
+            map: stoneTex, normalMap: normalTex,
+            normalScale: new THREE.Vector2(0.4, 0.4),
+            roughness: 0.82, metalness: 0.08,
+            emissive: 0x060a18, emissiveIntensity: 0.3,
+        })
+    );
+    ground.rotation.x = -Math.PI / 2;
+    ground.position.set(0, 0, -5);
+    ground.receiveShadow = true;
+    scene.add(ground);
+    zenGroundMesh = ground;
+}
+
+export function setZenGroundType(type) {
+    if (sceneType !== 'zen' || !scene) return;
+    zenGroundType = type;
+    // Remove current ground
+    if (zenGroundMesh) { scene.remove(zenGroundMesh); zenGroundMesh = null; }
+    if (type === 'obsidian') buildZenGround();
+    else buildZenGroundStone();
 }
 
 function buildKoiPond() {
@@ -1483,6 +1612,7 @@ function buildKoiPond() {
     inner.position.set(0, 0.01, -4);
     scene.add(inner);
 }
+
 
 function buildStoneLanterns() {
     const positions = [
@@ -1711,7 +1841,8 @@ function buildGuardianLions() {
 function buildSteppingStones() {
     const stoneMat = new THREE.MeshStandardMaterial({
         color: 0x2a3040, roughness: 0.85, metalness: 0.04,
-        emissive: 0x0a0e18, emissiveIntensity: 0.15,
+        emissive: 0x1a2040, emissiveIntensity: 0.4,
+        transparent: true, opacity: 0.55, depthWrite: false,
     });
 
     const positions = [
@@ -2083,18 +2214,20 @@ function buildKeyboard() {
     keyboardGroup.add(spaceMesh);
     keys3D[' '] = { mesh: spaceMesh, topMat: spaceTopMat, pressAnim: 0, glowAnim: 0, baseY: SPACE_PROFILE.dy, idleEmissive: t.idleEmissive, pressColor: t.pressColor || null, worldX: 0.4, worldZ: spaceZ };
 
-    // Base plate
-    const plateD = (KEYBOARD_ROWS.length + 1) * (KEY_D + KEY_GAP) + 0.6;
-    const plate = new THREE.Mesh(
-        new THREE.BoxGeometry(8, 0.05, plateD),
-        new THREE.MeshStandardMaterial({
-            color: t.plateColor, roughness: 0.9, metalness: 0.1,
-            emissive: t.plateEmissive, emissiveIntensity: 0.3,
-            transparent: true, opacity: 0.8,
-        })
-    );
-    plate.position.set(0.2, -KEY_H / 2 - 0.03, plateD / 2 - 0.3);
-    keyboardGroup.add(plate);
+    // Base plate — hidden in zen scene (obsidian ground handles the look)
+    if (sceneType !== 'zen') {
+        const plateD = (KEYBOARD_ROWS.length + 1) * (KEY_D + KEY_GAP) + 0.6;
+        const plate = new THREE.Mesh(
+            new THREE.BoxGeometry(8, 0.05, plateD),
+            new THREE.MeshStandardMaterial({
+                color: t.plateColor, roughness: 0.9, metalness: 0.1,
+                emissive: t.plateEmissive, emissiveIntensity: 0.3,
+                transparent: true, opacity: 0.8,
+            })
+        );
+        plate.position.set(0.2, -KEY_H / 2 - 0.03, plateD / 2 - 0.3);
+        keyboardGroup.add(plate);
+    }
 
     // Underglow
     const glow = new THREE.PointLight(t.underglow, t.underglowIntensity || 4, 8);
@@ -3976,6 +4109,7 @@ export function destroyThreeScene() {
     fireflyMesh = null;
     zenLanternLights = [];
     reflectorMesh = null;
+    zenGroundMesh = null;
     if (scene && scene.environment) { scene.environment.dispose(); }
     keypressFlash = 0;
     keypressLight = null;
