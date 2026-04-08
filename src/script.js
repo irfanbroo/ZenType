@@ -17,6 +17,14 @@ import { initParticles, initKeypressParticles, loopKeypressParticles,
     setEffectsRefs, effectAnimId, setEffectAnimId,
     getKeypressAnimId, setKeypressAnimId, getKeyParticles } from './effects.js';
 
+import { initThreeScene, onThreeKeyPress, updateThreeWPM,
+    destroyThreeScene, isThreeSceneRunning,
+    initThreeQueue, updateThreeTyping, advanceThreeQueue,
+    setThreeBrightness, setThreeKeyFlash, setKeyboardPosition, setKeyboardTheme,
+    setThreeColorTheme, setThreeQuality, setThreeWordSpeed,
+    setThreeExitAnim, setSceneType, getSceneType,
+    setCameraPreset, getCameraPresets } from './three-scene.js';
+
 
 
 let userConfig = {
@@ -43,7 +51,9 @@ let userConfig = {
     comboStyle: 'heatbar', // 'heatbar' | 'classic' | 'edgeglow' | 'minimal' | 'off'
     instantLegend: false, // When true, all keystrokes register as correct
     cleanTheme: 'koi', // default theme for first-time users
-    paceWPM: 90 // 0=off, 30, 60, 90, 120
+    paceWPM: 90, // 0=off, 30, 60, 90, 120
+    threeMode: false, // 3D Dojo Mode
+    threeScene: 'dojo' // 'dojo' | 'forge'
 };
 
 const UI = {
@@ -406,6 +416,24 @@ function initTheme() {
             delete userConfig.showCombo;
         }
         if (!userConfig.comboStyle) userConfig.comboStyle = 'heatbar';
+    }
+
+    // Restore 3D scene type
+    if (userConfig.threeScene) {
+        setSceneType(userConfig.threeScene);
+        const scSel = document.getElementById('three-scene-select');
+        if (scSel) scSel.value = userConfig.threeScene;
+        const glyph = document.getElementById('three-scene-glyph');
+        const title = document.getElementById('three-scene-title');
+        if (userConfig.threeScene === 'forge') {
+            if (glyph) glyph.textContent = '🔨';
+            if (title) title.textContent = '3D Forge Mode';
+            document.body.classList.add('forge-scene');
+        } else if (userConfig.threeScene === 'zen') {
+            if (glyph) glyph.textContent = '🪷';
+            if (title) title.textContent = '3D Zen Garden';
+            document.body.classList.add('zen-scene');
+        }
     }
 
     // Restore sound preference
@@ -4173,6 +4201,7 @@ function launchZenGarden() {
             }
         }
     };
+    if (zenState._typeHandler) document.removeEventListener('keydown', zenState._typeHandler);
     document.addEventListener('keydown', zenState._typeHandler);
 
     // ESC to exit, TAB to skip to next quote
@@ -7796,6 +7825,10 @@ function exitHagakureMode() {
 
     state.gameMode = 'time'; // Default back to time or previous
 
+    // Remove force-visible override added by hagakure blood splash
+    const kpCanvas = document.getElementById('keypress-canvas');
+    if (kpCanvas) kpCanvas.classList.remove('force-visible');
+
     // Stop Hagakure theme music
     hagakureAudio.pause();
     hagakureAudio.currentTime = 0;
@@ -7859,11 +7892,16 @@ function initHagakureGame() {
     // Clear any existing timer
     if (state.timerInterval) clearInterval(state.timerInterval);
 
-    // Reset State
-    state.words = [];
-    const count = state.hagakureWordCount || 50;
-    for (let i = 0; i < count; i++) {
-        state.words.push(hagakureWords[Math.floor(Math.random() * hagakureWords.length)]);
+    // Reset State — use server words for multiplayer, random for solo
+    if (state._mpHagakureWords) {
+        state.words = state._mpHagakureWords;
+        state._mpHagakureWords = null;
+    } else {
+        state.words = [];
+        const count = state.hagakureWordCount || 50;
+        for (let i = 0; i < count; i++) {
+            state.words.push(hagakureWords[Math.floor(Math.random() * hagakureWords.length)]);
+        }
     }
     state.currWordIndex = 0;
     state.correctChars = 0;
@@ -7896,16 +7934,18 @@ function initHagakureGame() {
 
     // Focus Input force
     hInput.value = '';
+    hInput.disabled = false;
     hInput.focus();
     hInput.click();
 
-    // Auto-focus listener
-    document.addEventListener('click', (e) => {
-        // Only refocus if we are actually in Hagakure mode and clicked HUI
+    // Auto-focus listener — remove old one first to prevent stacking
+    if (window._hagakureClickHandler) document.removeEventListener('click', window._hagakureClickHandler);
+    window._hagakureClickHandler = (e) => {
         if (state.gameMode === 'hagakure' && e.target.closest('#hagakure-ui')) {
             hInput.focus();
         }
-    });
+    };
+    document.addEventListener('click', window._hagakureClickHandler);
 
     // Input Handling
     hInput.oninput = (e) => {
@@ -7989,6 +8029,9 @@ function initHagakureGame() {
     };
 }
 
+// Expose for multiplayer bridge (must be in same scope as initHagakureGame)
+window._initHagakureGame = function() { initHagakureGame(); };
+
 function updateHagakureVisuals(typedLength = 0) {
     const hContainer = document.getElementById('h-words-container');
     const words = hContainer.children;
@@ -8046,6 +8089,12 @@ function startHagakureTimer() {
 function showHagakureVictory() {
     state.isActive = false;
     clearInterval(state.timerInterval);
+
+    // Multiplayer: redirect to MP completion handler
+    if (window.mpState?.isMultiplayer && window.onHagakureMultiplayerComplete) {
+        window.onHagakureMultiplayerComplete();
+        return;
+    }
 
     // Calculate Final WPM
     const elapsed = (Date.now() - state.startTime) / 1000 / 60;
@@ -8123,6 +8172,12 @@ function showHagakureVictory() {
 function gameOverHagakure() {
     state.isActive = false;
     clearInterval(state.timerInterval);
+
+    // Multiplayer: redirect to MP death handler
+    if (window.mpState?.isMultiplayer && window.onHagakureMultiplayerDeath) {
+        window.onHagakureMultiplayerDeath();
+        return;
+    }
 
     const hContainer = document.getElementById('h-words-container');
     const failMsg = hagakureFailMessages[Math.floor(Math.random() * hagakureFailMessages.length)];
@@ -8253,7 +8308,7 @@ UI.tintBtns.forEach(btn => {
 // Sound toggle
 UI.soundBtn.addEventListener('click', () => {
     initAudio();
-    toggleSound();
+    toggleSound(UI.soundBtn);
 });
 
 // Wallpaper Audio toggle
@@ -8407,6 +8462,246 @@ if (fontOptions) {
 if (UI.zenBtn) {
     UI.zenBtn.addEventListener('click', () => {
         toggleZenMode();
+    });
+}
+
+// ── 3D Dojo Mode Toggle ───────────────────────────────────────────
+const threeModeBtn = document.getElementById('three-mode-btn');
+const threeCanvas = document.getElementById('three-canvas');
+const threeModeToast = document.getElementById('three-mode-toast');
+const threeSlidersCtrl = document.getElementById('three-sliders');
+const threeSettingsBtn = document.getElementById('three-settings-btn');
+
+// 3D floating settings button → opens the main settings modal
+if (threeSettingsBtn) {
+    threeSettingsBtn.addEventListener('click', () => {
+        UI.settingsModal.classList.remove('hidden');
+
+    });
+}
+const threeBrightnessSlider = document.getElementById('three-brightness');
+const threeKeylightSlider = document.getElementById('three-keylight');
+
+// Sync both bottom sliders and settings sliders
+const threeBrightnessSettings = document.getElementById('three-brightness-settings');
+const threeKeylightSettings = document.getElementById('three-keylight-settings');
+const exitThreeModeBtn = document.getElementById('exit-three-mode-btn');
+const threeDojoSettings = document.getElementById('three-dojo-settings');
+
+function syncBrightness(val) {
+    setThreeBrightness(val / 100);
+    if (threeBrightnessSlider) threeBrightnessSlider.value = val;
+    if (threeBrightnessSettings) threeBrightnessSettings.value = val;
+}
+function syncKeyFlash(val) {
+    setThreeKeyFlash(val / 100);
+    if (threeKeylightSlider) threeKeylightSlider.value = val;
+    if (threeKeylightSettings) threeKeylightSettings.value = val;
+}
+
+if (threeBrightnessSlider) threeBrightnessSlider.addEventListener('input', (e) => syncBrightness(e.target.value));
+if (threeKeylightSlider) threeKeylightSlider.addEventListener('input', (e) => syncKeyFlash(e.target.value));
+if (threeBrightnessSettings) threeBrightnessSettings.addEventListener('input', (e) => syncBrightness(e.target.value));
+if (threeKeylightSettings) threeKeylightSettings.addEventListener('input', (e) => syncKeyFlash(e.target.value));
+
+// Exit animation selector
+const threeExitAnimSelect = document.getElementById('three-exit-anim');
+if (threeExitAnimSelect) {
+    threeExitAnimSelect.addEventListener('change', (e) => setThreeExitAnim(e.target.value));
+}
+
+// Reset buttons for 3D sliders
+document.querySelectorAll('.three-reset-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const targetId = btn.dataset.target;
+        const slider = document.getElementById(targetId);
+        if (!slider) return;
+        const def = parseFloat(slider.dataset.default);
+        slider.value = def;
+        slider.dispatchEvent(new Event('input'));
+    });
+});
+
+// Word speed slider
+const threeWordSpeedSlider = document.getElementById('three-word-speed');
+if (threeWordSpeedSlider) {
+    threeWordSpeedSlider.addEventListener('input', (e) => {
+        setThreeWordSpeed(e.target.value / 100);
+    });
+}
+
+// Quality slider
+const threeQualitySlider = document.getElementById('three-quality');
+if (threeQualitySlider) {
+    threeQualitySlider.addEventListener('input', (e) => {
+        setThreeQuality(e.target.value / 100);
+    });
+}
+
+// Color theme selector
+const threeColorSelect = document.getElementById('three-color-theme');
+if (threeColorSelect) {
+    threeColorSelect.addEventListener('change', (e) => {
+        setThreeColorTheme(e.target.value);
+    });
+}
+
+// Keyboard position selector
+const threeKBSelect = document.getElementById('three-kb-position');
+if (threeKBSelect) {
+    threeKBSelect.addEventListener('change', (e) => {
+        setKeyboardPosition(parseInt(e.target.value));
+    });
+}
+
+// Keyboard theme selector
+const threeKBThemeSelect = document.getElementById('three-kb-theme');
+if (threeKBThemeSelect) {
+    threeKBThemeSelect.addEventListener('change', (e) => {
+        setKeyboardTheme(e.target.value);
+    });
+}
+
+
+// Camera preset selector
+const threeCamSelect = document.getElementById('three-cam-preset');
+function populateCamPresets() {
+    if (!threeCamSelect) return;
+    const presets = getCameraPresets();
+    threeCamSelect.innerHTML = presets.map(p =>
+        `<option value="${p.index}">${p.label}</option>`
+    ).join('');
+}
+populateCamPresets();
+if (threeCamSelect) {
+    threeCamSelect.addEventListener('change', (e) => {
+        const idx = parseInt(e.target.value);
+        setCameraPreset(idx);
+        // Reinit scene to apply new camera
+        const threeCanvas = document.getElementById('three-canvas');
+        if (isThreeSceneRunning()) {
+            destroyThreeScene();
+            if (threeCanvas) initThreeScene(threeCanvas);
+            if (state.words.length > 0) initThreeQueue(state.words, state.currWordIndex);
+        }
+    });
+}
+
+// Scene selector (dojo / forge / zen)
+const threeSceneSelect = document.getElementById('three-scene-select');
+if (threeSceneSelect) {
+    threeSceneSelect.addEventListener('change', (e) => {
+        const newType = e.target.value;
+        userConfig.threeScene = newType;
+        setSceneType(newType);
+
+        // Update header
+        const glyph = document.getElementById('three-scene-glyph');
+        const title = document.getElementById('three-scene-title');
+        if (glyph) glyph.textContent = newType === 'forge' ? '🔨' : newType === 'zen' ? '🪷' : '⛩';
+        if (title) title.textContent = newType === 'forge' ? '3D Forge Mode'
+                                     : newType === 'zen'   ? '3D Zen Garden'
+                                     : '3D Dojo Mode';
+
+        // Toggle body class for CSS theming
+        document.body.classList.toggle('forge-scene', newType === 'forge');
+        document.body.classList.toggle('zen-scene', newType === 'zen');
+
+        // Reset camera and repopulate presets for new scene
+        setCameraPreset(0);
+        populateCamPresets();
+
+
+        // Reinit scene if currently running
+        const threeCanvas = document.getElementById('three-canvas');
+        if (isThreeSceneRunning()) {
+            destroyThreeScene();
+            if (threeCanvas) initThreeScene(threeCanvas);
+            if (state.words.length > 0) {
+                initThreeQueue(state.words, state.currWordIndex);
+            }
+        }
+
+        saveConfig();
+    });
+}
+
+// Exit 3D mode from settings
+if (exitThreeModeBtn) {
+    exitThreeModeBtn.addEventListener('click', () => {
+        userConfig.threeMode = false;
+        if (threeModeBtn) threeModeBtn.classList.remove('active');
+        document.body.classList.remove('three-mode');
+        destroyThreeScene();
+        if (threeSlidersCtrl) threeSlidersCtrl.classList.add('hidden');
+        if (threeDojoSettings) threeDojoSettings.style.display = 'none';
+        UI.settingsModal.classList.add('hidden');
+        const exitSceneName = getSceneType() === 'forge' ? '3D Forge Mode' : getSceneType() === 'zen' ? '3D Zen Garden' : '3D Dojo Mode';
+        showThreeModeToast(`${exitSceneName}  —  disabled`);
+        document.body.classList.remove('forge-scene', 'zen-scene');
+    });
+}
+
+let threeModeToastTimer = null;
+
+function showThreeModeToast(msg) {
+    if (!threeModeToast) return;
+    threeModeToast.textContent = msg;
+    threeModeToast.classList.add('show');
+    clearTimeout(threeModeToastTimer);
+    threeModeToastTimer = setTimeout(() => {
+        threeModeToast.classList.remove('show');
+    }, 2200);
+}
+
+if (threeModeBtn) {
+    threeModeBtn.addEventListener('click', () => {
+        userConfig.threeMode = !userConfig.threeMode;
+        threeModeBtn.classList.toggle('active', userConfig.threeMode);
+        document.body.classList.toggle('three-mode', userConfig.threeMode);
+
+        if (userConfig.threeMode) {
+            // Apply forge CSS accent if needed
+            document.body.classList.toggle('forge-scene', getSceneType() === 'forge');
+            document.body.classList.toggle('zen-scene', getSceneType() === 'zen');
+            // Lazy-init the Three.js scene on first activation
+            if (threeCanvas && !isThreeSceneRunning()) {
+                initThreeScene(threeCanvas);
+            }
+            // Init word queue with current words
+            if (isThreeSceneRunning() && state.words.length > 0) {
+                initThreeQueue(state.words, state.currWordIndex);
+            }
+            if (threeSlidersCtrl) threeSlidersCtrl.classList.remove('hidden');
+            if (threeDojoSettings) threeDojoSettings.style.display = '';
+    
+            const enableIcon = getSceneType() === 'forge' ? '🔨' : getSceneType() === 'zen' ? '🪷' : '⛩';
+            const enableName = getSceneType() === 'forge' ? '3D Forge Mode' : getSceneType() === 'zen' ? '3D Zen Garden' : '3D Dojo Mode';
+            showThreeModeToast(`${enableIcon}  ${enableName}  —  enabled`);
+        } else {
+            destroyThreeScene();
+            if (threeSlidersCtrl) threeSlidersCtrl.classList.add('hidden');
+            if (threeDojoSettings) threeDojoSettings.style.display = 'none';
+            const disableName = getSceneType() === 'forge' ? '3D Forge Mode' : getSceneType() === 'zen' ? '3D Zen Garden' : '3D Dojo Mode';
+            showThreeModeToast(`${disableName}  —  disabled`);
+            document.body.classList.remove('forge-scene', 'zen-scene');
+        }
+    });
+}
+
+// Nav Tray Toggle
+const navTray = document.getElementById('nav-tray');
+const navTrayBtn = document.getElementById('nav-tray-btn');
+if (navTray && navTrayBtn) {
+    const trayOpen = localStorage.getItem('nav-tray-open') === 'true';
+    if (trayOpen) {
+        navTray.classList.remove('collapsed');
+        navTrayBtn.classList.add('active');
+    }
+    navTrayBtn.addEventListener('click', () => {
+        const isCollapsed = navTray.classList.toggle('collapsed');
+        navTrayBtn.classList.toggle('active', !isCollapsed);
+        localStorage.setItem('nav-tray-open', String(!isCollapsed));
     });
 }
 
@@ -9181,6 +9476,10 @@ const tapeMode = {
 
     activate() {
         if (!document.getElementById('words-wrapper')) return;
+        // Guard: remove any existing listeners first to prevent duplicates
+        if (this._inputHandler) UI.input.removeEventListener('input', this._inputHandler);
+        if (this._keyHandler) UI.input.removeEventListener('keydown', this._keyHandler);
+
         // Snap to position instantly (no transition for first frame)
         UI.container.style.transition = 'none';
         UI.container.style.transform = `translateX(${this._calc()}px)`;
@@ -9228,11 +9527,14 @@ const tapeMode = {
 
 // Monkey-patch initGame: deactivate tape before, reactivate after
 const _origInitGame = initGame;
+let _tapeActivateTimer = null;
 initGame = function() {
+    // Clear pending activate so we never get duplicate listeners
+    if (_tapeActivateTimer) { clearTimeout(_tapeActivateTimer); _tapeActivateTimer = null; }
     tapeMode.deactivate();
     _origInitGame();
     if (userConfig.uiMode === 'clean') {
-        setTimeout(() => tapeMode.activate(), 15);
+        _tapeActivateTimer = setTimeout(() => { _tapeActivateTimer = null; tapeMode.activate(); }, 15);
     }
 };
 
@@ -9557,6 +9859,11 @@ function renderWords() {
         </div>`
     ).join('');
     UI.container.innerHTML = wordsHTML + `<div id="caret"></div><div id="caret-trail"></div>`;
+
+    // 3D mode: init word queue
+    if (userConfig.threeMode && isThreeSceneRunning()) {
+        initThreeQueue(state.words, 0);
+    }
 }
 
 function appendWords(count = 30) {
@@ -9776,6 +10083,12 @@ UI.input.addEventListener('input', (e) => {
         UI.input.value = '';
         hasError = false;
 
+        // 3D queue: advance — fly current word away, slide queue up
+        if (userConfig.threeMode && isThreeSceneRunning()) {
+            const nextBackIdx = state.currWordIndex + 4; // queue has 5 slots
+            advanceThreeQueue(wordCorrect, state.words, nextBackIdx);
+        }
+
         // Infinite Scroll: Append words if running low
         if (state.words.length - state.currWordIndex < 25) {
             appendWords(30);
@@ -9813,6 +10126,11 @@ UI.input.addEventListener('input', (e) => {
         }
     }
 
+    // 3D queue: update per-character coloring on current word
+    if (userConfig.threeMode && isThreeSceneRunning()) {
+        updateThreeTyping(typedVal, currentWordStr);
+    }
+
     // Show extra typed characters beyond word length (MonkeyType overflow)
     if (typedVal.length > currentWordStr.length) {
         const extraChars = typedVal.slice(currentWordStr.length);
@@ -9847,9 +10165,13 @@ UI.input.addEventListener('input', (e) => {
     }
     // Caret fire combo particles
     spawnCaretFireParticles();
+
+    // 3D scene keypress flash
+    if (userConfig.threeMode) onThreeKeyPress();
 });
 
 function startTimer() {
+    if (window.mpModalActive) return; // Don't start typing test while in multiplayer
     state.isActive = true;
     document.body.classList.add('is-typing');
     state.startTime = Date.now();
@@ -9882,6 +10204,9 @@ function startTimer() {
         const wpm = Math.round((effectiveChars / 5) / timeElapsedMin) || 0;
 
         UI.wpm.innerText = wpm + " WPM";
+
+        // 3D mode wind speed
+        if (userConfig.threeMode) updateThreeWPM(wpm);
 
         // Clean mode: big WPM counter
         const cleanWpmNum = document.getElementById('clean-wpm-number');
@@ -9977,9 +10302,6 @@ function endGame() {
         resultsCard.style.setProperty('--rank-color', rank.color);
     }
 
-    // Particle burst celebration
-    spawnResultsParticles(rank.color);
-
     if (rankDescEl) {
         rankDescEl.innerText = rank.desc;
         rankDescEl.style.opacity = 0;
@@ -10015,6 +10337,8 @@ function endGame() {
         return; // Skip normal results display
     }
 
+    // Don't show results if multiplayer modal is open
+    if (window.mpModalActive) return;
     UI.results.classList.remove('hidden');
 
     // Animate Numbers — main stats
@@ -13028,6 +13352,48 @@ document.addEventListener('keydown', event => {
 
 // Expose userConfig for multiplayer particle picker
 window.userConfig = userConfig;
+
+// (hagakure bridge moved next to initHagakureGame)
+
+// Apply visual mode for multiplayer (temporary — does NOT save to localStorage)
+window.applyThemeForMultiplayer = function(mode, theme) {
+    userConfig.uiMode = mode;
+    if (theme) userConfig.cleanTheme = theme;
+    applyTheme(true); // skipLoader = true, no wallpaper transition
+};
+
+// Reset typing engine to fresh state (used by multiplayer when reverting mode)
+window.resetTypingEngine = function() {
+    initGame();
+};
+
+// Start multiplayer Hagakure race — sets up Hagakure UI with server words
+window.startMultiplayerHagakure = function(words) {
+    // Show Hagakure UI, hide normal game UI
+    const hUI = document.getElementById('hagakure-ui');
+    const gameUI = document.getElementById('game-ui');
+    if (hUI) hUI.classList.remove('hidden');
+    if (gameUI) gameUI.classList.add('hidden');
+
+    // Hide hagakure setup, show game board
+    const setup = document.getElementById('h-setup');
+    const board = document.getElementById('h-game-board');
+    if (setup) setup.classList.add('hidden');
+    if (board) board.classList.remove('hidden');
+
+    // Set mode + inject server words BEFORE initHagakureGame runs
+    state.gameMode = 'hagakure';
+    state._mpHagakureWords = words;
+    state.hagakureWordCount = words.length;
+
+    // Call the real init which sets up input handler, visuals, everything
+    try {
+        window._initHagakureGame();
+    } catch (e) {
+        const _dbg = document.getElementById('h-words-container');
+        if (_dbg) _dbg.textContent = 'ERROR in initHagakureGame: ' + e.message + ' | at: ' + e.stack?.split('\n')[1];
+    }
+};
 
 window.startMultiplayerRace = function(words, timeLimit) {
     // Override word list and time limit with server-provided values

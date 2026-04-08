@@ -1,0 +1,614 @@
+/* ══════════════════════════════════════════════════════════
+   ZENTYPE — 3D Dojo Scene Styles
+   ══════════════════════════════════════════════════════════ */
+
+/* Canvas sits between the bg-video (-2) and particles (-1)
+   When 3D mode is active it fades in; bg-video fades out.    */
+#three-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -2;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 1.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 3D mode ON — canvas fades in */
+body.three-mode #three-canvas {
+    opacity: 1;
+}
+
+/* Fade out the video wallpaper while 3D mode is active */
+body.three-mode #bg-video {
+    opacity: 0 !important;
+    transition: opacity 1.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* ── Full immersion: hide ALL top UI ──────────────────────────── */
+body.three-mode #top-nav-buttons,
+body.three-mode #app-header {
+    display: none !important;
+}
+
+/* Floating settings gear — only visible in 3D mode */
+#three-settings-btn {
+    display: none;
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 9999;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: rgba(10, 10, 25, 0.7);
+    border: 1px solid rgba(0, 180, 255, 0.2);
+    color: rgba(0, 212, 255, 0.7);
+    font-size: 1.2rem;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(8px);
+    transition: background 0.2s, border-color 0.2s;
+}
+
+#three-settings-btn:hover {
+    background: rgba(10, 10, 30, 0.9);
+    border-color: rgba(0, 212, 255, 0.5);
+    color: rgba(0, 212, 255, 1);
+}
+
+body.three-mode #three-settings-btn {
+    display: flex;
+}
+
+/* In 3D mode, hide everything in settings except the 3D Dojo section */
+body.three-mode .settings-content > *:not(#three-dojo-settings):not(.settings-header) {
+    display: none !important;
+}
+
+/* Kill ALL 2D particles/effects in 3D mode */
+body.three-mode #particles,
+body.three-mode #keypress-canvas {
+    opacity: 0 !important;
+    pointer-events: none;
+}
+
+/* ══════════════════════════════════════════════════════════
+   HOLOGRAPHIC HUD — No panel. Text floats in the dojo.
+   ══════════════════════════════════════════════════════════ */
+
+/* ── 1. Kill the panel completely ─────────────────────────────── */
+body.three-mode .glass-panel {
+    background: transparent !important;
+    backdrop-filter: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    animation: none !important;
+    transform: none !important;
+    position: relative;
+}
+
+/* ── 2. Kill ALL pseudo-element borders/brackets ──────────────── */
+body.three-mode .glass-panel::before,
+body.three-mode .glass-panel::after,
+body.three-mode #words-container::before,
+body.three-mode #words-container::after {
+    display: none !important;
+}
+
+/* ── 3. Holographic text ──────────────────────────────────────── */
+
+/* Untyped letters — dim holographic with depth */
+body.three-mode .glass-panel .word .letter {
+    color: rgba(180, 200, 230, 0.55) !important;
+    text-shadow:
+        0 0 6px rgba(0, 150, 255, 0.1),
+        0 2px 4px rgba(0, 0, 0, 0.6);
+}
+
+/* Correct — bright cyan hologram glow */
+body.three-mode .glass-panel .word .letter.correct {
+    color: rgba(220, 255, 255, 0.95) !important;
+    text-shadow:
+        0 0 8px rgba(0, 212, 255, 0.8),
+        0 0 20px rgba(0, 180, 255, 0.4),
+        0 0 40px rgba(0, 150, 255, 0.15),
+        0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+/* Incorrect — red warning glow */
+body.three-mode .glass-panel .word .letter.incorrect {
+    color: rgba(255, 120, 120, 0.95) !important;
+    text-shadow:
+        0 0 8px rgba(255, 50, 50, 0.8),
+        0 0 20px rgba(255, 30, 30, 0.4),
+        0 0 40px rgba(255, 0, 0, 0.12),
+        0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+/* Typed (completed) words — dimmer */
+body.three-mode .glass-panel .word.typed .letter {
+    color: rgba(100, 140, 170, 0.35) !important;
+    text-shadow: 0 0 4px rgba(0, 120, 200, 0.1);
+}
+
+/* ── 4. Floating stats — no container ─────────────────────────── */
+body.three-mode .stats-bar {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+body.three-mode .stats-bar * {
+    text-shadow:
+        0 0 10px rgba(0, 200, 255, 0.4),
+        0 0 25px rgba(0, 150, 255, 0.15);
+}
+
+body.three-mode #timer {
+    color: rgba(0, 212, 255, 0.9) !important;
+    text-shadow:
+        0 0 12px rgba(0, 212, 255, 0.6),
+        0 0 30px rgba(0, 180, 255, 0.2);
+}
+
+body.three-mode #wpm {
+    color: rgba(255, 220, 180, 0.9) !important;
+    text-shadow:
+        0 0 12px rgba(255, 180, 100, 0.5),
+        0 0 25px rgba(255, 150, 50, 0.15);
+}
+
+/* ── 5. Scan-line overlay ─────────────────────────────────────── */
+body.three-mode .glass-panel #words-container {
+    background-image: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 3px,
+        rgba(0, 180, 255, 0.015) 3px,
+        rgba(0, 180, 255, 0.015) 4px
+    );
+}
+
+/* ── 6. Caret glow ────────────────────────────────────────────── */
+body.three-mode #caret {
+    box-shadow:
+        0 0 8px rgba(0, 212, 255, 0.8),
+        0 0 20px rgba(0, 180, 255, 0.4),
+        0 0 40px rgba(0, 150, 255, 0.15) !important;
+    background: rgba(0, 212, 255, 0.9) !important;
+}
+
+/* ── 7. Hide HTML text — 3D text takes over ──────────────────── */
+body.three-mode #words-container .word .letter {
+    color: transparent !important;
+    text-shadow: none !important;
+}
+
+body.three-mode #caret,
+body.three-mode #caret-trail {
+    opacity: 0 !important;
+}
+
+/* ── 8. Hide ALL UI chrome — full immersion ───────────────────── */
+body.three-mode .time-modes,
+body.three-mode .stats-bar,
+body.three-mode #clean-toolbar,
+body.three-mode .glass-panel [class*="restart"],
+body.three-mode .glass-panel [id*="restart"] {
+    display: none !important;
+}
+
+/* Hide TAB TO RESTART text */
+body.three-mode #game-ui > *:not(#words-container) {
+    visibility: hidden !important;
+}
+
+/* Footer hint (TAB TO RESTART) + clean toolbar — hidden */
+body.three-mode .footer-hint,
+body.three-mode #clean-toolbar {
+    display: none !important;
+    border: none !important;
+}
+
+/* ── 3D toggle button active state ────────────────────────────── */
+#three-mode-btn.active i {
+    color: #ff99bb;
+    text-shadow:
+        0 0 8px rgba(255, 153, 187, 0.9),
+        0 0 18px rgba(255, 100, 140, 0.6),
+        0 0 32px rgba(255, 60, 100, 0.3);
+    animation: three-btn-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes three-btn-pulse {
+    0%, 100% { text-shadow: 0 0 8px rgba(255, 153, 187, 0.9), 0 0 18px rgba(255, 100, 140, 0.6); }
+    50%       { text-shadow: 0 0 12px rgba(255, 153, 187, 1.0), 0 0 28px rgba(255, 100, 140, 0.8), 0 0 44px rgba(255, 60, 100, 0.4); }
+}
+
+/* ── Entry notification toast ─────────────────────────────────── */
+#three-mode-toast {
+    position: fixed;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: rgba(5, 5, 15, 0.85);
+    border: 1px solid rgba(255, 136, 170, 0.4);
+    color: #ffccdd;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 10px 22px;
+    border-radius: 6px;
+    backdrop-filter: blur(12px);
+    box-shadow:
+        0 0 20px rgba(255, 100, 140, 0.25),
+        0 4px 20px rgba(0, 0, 0, 0.6);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    z-index: 9999;
+    white-space: nowrap;
+}
+
+#three-mode-toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* ── 3D Brightness slider ─────────────────────────────────────── */
+/* Bottom-left sliders — removed */
+#three-sliders {
+    display: none !important;
+}
+
+/* ── 3D Dojo Settings — redesigned ────────────────────────────── */
+#three-dojo-settings {
+    padding: 0;
+    margin: 0 -24px;
+    border-top: 1px solid rgba(0, 180, 255, 0.12);
+    border-bottom: 1px solid rgba(0, 180, 255, 0.08);
+    background: linear-gradient(180deg, rgba(0, 15, 35, 0.65) 0%, rgba(0, 8, 20, 0.45) 100%);
+    overflow: hidden;
+}
+
+/* Header */
+.dojo-settings-hd {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 24px 12px;
+    border-bottom: 1px solid rgba(0, 180, 255, 0.1);
+    background: linear-gradient(90deg, rgba(0, 212, 255, 0.05) 0%, transparent 100%);
+}
+
+.dojo-settings-hd-glyph {
+    font-size: 1.35rem;
+    line-height: 1;
+    filter: drop-shadow(0 0 8px rgba(0, 212, 255, 0.5));
+}
+
+.dojo-settings-hd-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.dojo-settings-hd-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(0, 212, 255, 1);
+    text-shadow: 0 0 14px rgba(0, 212, 255, 0.45);
+}
+
+.dojo-settings-hd-sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.14em;
+    color: rgba(80, 150, 200, 0.5);
+    text-transform: uppercase;
+}
+
+/* Group separators */
+.dojo-group-sep {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.57rem;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: rgba(0, 180, 255, 0.35);
+    padding: 10px 24px 5px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.dojo-group-sep::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(0, 180, 255, 0.2), transparent);
+}
+
+/* Rows */
+#three-dojo-settings .settings-row {
+    display: flex;
+    align-items: center;
+    padding: 7px 24px;
+    margin-bottom: 0;
+    gap: 12px;
+    border-left: 2px solid transparent;
+    transition: background 0.15s, border-color 0.15s;
+}
+
+#three-dojo-settings .settings-row:hover {
+    background: rgba(0, 180, 255, 0.04);
+    border-left-color: rgba(0, 212, 255, 0.3);
+}
+
+/* Labels */
+#three-dojo-settings .settings-label {
+    color: rgba(155, 190, 220, 0.75);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.67rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    min-width: 115px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    flex-shrink: 0;
+}
+
+#three-dojo-settings .settings-label i {
+    color: rgba(0, 180, 255, 0.5);
+    font-size: 0.82rem;
+}
+
+/* Sliders */
+#three-dojo-settings input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    flex: 1;
+    height: 3px;
+    background: linear-gradient(90deg, rgba(0, 180, 255, 0.22), rgba(0, 80, 160, 0.08));
+    border-radius: 3px;
+    outline: none;
+    cursor: pointer;
+    margin: 0;
+    min-width: 0;
+}
+
+#three-dojo-settings input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #d8f4ff 0%, rgba(0, 212, 255, 0.95) 65%);
+    box-shadow:
+        0 0 0 2px rgba(0, 150, 220, 0.25),
+        0 0 10px rgba(0, 212, 255, 0.65),
+        0 0 20px rgba(0, 180, 255, 0.25);
+    cursor: pointer;
+    transition: box-shadow 0.2s, transform 0.15s;
+}
+
+#three-dojo-settings input[type="range"]:hover::-webkit-slider-thumb {
+    box-shadow:
+        0 0 0 2px rgba(0, 180, 255, 0.45),
+        0 0 14px rgba(0, 212, 255, 0.9),
+        0 0 28px rgba(0, 180, 255, 0.4);
+    transform: scale(1.18);
+}
+
+/* Selects */
+#three-dojo-settings select {
+    -webkit-appearance: none;
+    appearance: none;
+    flex: 1;
+    max-width: 175px;
+    background: rgba(0, 10, 25, 0.85);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='rgba(0,180,255,0.45)'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    border: 1px solid rgba(0, 180, 255, 0.18);
+    color: rgba(0, 212, 255, 0.9);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.67rem;
+    letter-spacing: 0.06em;
+    padding: 7px 28px 7px 10px;
+    border-radius: 6px;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+#three-dojo-settings select:hover,
+#three-dojo-settings select:focus {
+    border-color: rgba(0, 212, 255, 0.4);
+    box-shadow: 0 0 10px rgba(0, 180, 255, 0.1), inset 0 0 8px rgba(0, 180, 255, 0.04);
+}
+
+#three-dojo-settings select option {
+    background: #060c18;
+    color: #88ccff;
+}
+
+/* Reset buttons */
+.three-reset-btn {
+    background: transparent;
+    border: none;
+    color: rgba(0, 180, 255, 0.22);
+    cursor: pointer;
+    padding: 3px 5px;
+    font-size: 0.82rem;
+    border-radius: 4px;
+    transition: color 0.2s, transform 0.2s;
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+.three-reset-btn:hover {
+    color: rgba(0, 212, 255, 0.8);
+    transform: rotate(-30deg);
+}
+
+.three-reset-btn:active {
+    transform: rotate(-180deg);
+    transition: transform 0.3s ease;
+}
+
+/* Exit button */
+#exit-three-mode-btn {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: calc(100% - 48px);
+    margin: 10px 24px 18px;
+    padding: 11px 0;
+    background: rgba(255, 30, 30, 0.05) !important;
+    border: 1px solid rgba(255, 60, 60, 0.18) !important;
+    color: rgba(255, 90, 90, 0.8) !important;
+    border-radius: 7px !important;
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: 0.67rem !important;
+    letter-spacing: 0.14em !important;
+    text-transform: uppercase !important;
+    transition: all 0.2s;
+}
+
+#exit-three-mode-btn:hover {
+    background: rgba(255, 40, 40, 0.12) !important;
+    border-color: rgba(255, 80, 80, 0.4) !important;
+    color: #ff7777 !important;
+    box-shadow: 0 0 18px rgba(255, 40, 40, 0.1), inset 0 0 12px rgba(255, 30, 30, 0.04);
+}
+
+/* ── Nordic Forge accent overrides ───────────────────────── */
+body.forge-scene .dojo-settings-hd {
+    background: linear-gradient(90deg, rgba(255, 140, 40, 0.06) 0%, transparent 100%);
+}
+
+body.forge-scene .dojo-settings-hd-title {
+    color: rgba(255, 160, 60, 1);
+    text-shadow: 0 0 14px rgba(255, 120, 40, 0.5);
+}
+
+body.forge-scene .dojo-group-sep {
+    color: rgba(255, 140, 60, 0.35);
+}
+
+body.forge-scene .dojo-group-sep::after {
+    background: linear-gradient(90deg, rgba(255, 140, 60, 0.2), transparent);
+}
+
+body.forge-scene #three-dojo-settings .settings-label i {
+    color: rgba(255, 140, 60, 0.5);
+}
+
+body.forge-scene #three-dojo-settings .settings-row:hover {
+    background: rgba(255, 140, 60, 0.04);
+    border-left-color: rgba(255, 160, 60, 0.3);
+}
+
+body.forge-scene #three-dojo-settings input[type="range"] {
+    background: linear-gradient(90deg, rgba(255, 140, 60, 0.22), rgba(180, 80, 20, 0.08));
+}
+
+body.forge-scene #three-dojo-settings input[type="range"]::-webkit-slider-thumb {
+    background: radial-gradient(circle, #fff4e0 0%, rgba(255, 160, 60, 0.95) 65%);
+    box-shadow:
+        0 0 0 2px rgba(200, 100, 30, 0.25),
+        0 0 10px rgba(255, 140, 50, 0.65),
+        0 0 20px rgba(255, 120, 40, 0.25);
+}
+
+body.forge-scene #three-dojo-settings select {
+    border-color: rgba(255, 140, 60, 0.18);
+    color: rgba(255, 160, 60, 0.9);
+}
+
+body.forge-scene #three-dojo-settings select:hover,
+body.forge-scene #three-dojo-settings select:focus {
+    border-color: rgba(255, 160, 60, 0.4);
+    box-shadow: 0 0 10px rgba(255, 120, 40, 0.1);
+}
+
+body.forge-scene #three-dojo-settings {
+    border-top-color: rgba(255, 140, 60, 0.12);
+    border-bottom-color: rgba(255, 140, 60, 0.08);
+    background: linear-gradient(180deg, rgba(35, 15, 0, 0.65) 0%, rgba(20, 8, 0, 0.45) 100%);
+}
+
+body.forge-scene .three-reset-btn:hover {
+    color: rgba(255, 160, 60, 0.8);
+}
+
+/* ── Zen Garden accent overrides ─────────────────────────── */
+body.zen-scene .dojo-settings-hd {
+    background: linear-gradient(90deg, rgba(100, 180, 80, 0.06) 0%, transparent 100%);
+}
+
+body.zen-scene .dojo-settings-hd-title {
+    color: rgba(140, 200, 100, 1);
+    text-shadow: 0 0 14px rgba(100, 180, 60, 0.5);
+}
+
+body.zen-scene .dojo-group-sep {
+    color: rgba(140, 200, 100, 0.35);
+}
+
+body.zen-scene .dojo-group-sep::after {
+    background: linear-gradient(90deg, rgba(140, 200, 100, 0.2), transparent);
+}
+
+body.zen-scene #three-dojo-settings .settings-label i {
+    color: rgba(140, 200, 100, 0.5);
+}
+
+body.zen-scene #three-dojo-settings .settings-row:hover {
+    background: rgba(100, 180, 80, 0.04);
+    border-left-color: rgba(140, 200, 100, 0.3);
+}
+
+body.zen-scene #three-dojo-settings input[type="range"] {
+    background: linear-gradient(90deg, rgba(140, 200, 100, 0.22), rgba(80, 140, 40, 0.08));
+}
+
+body.zen-scene #three-dojo-settings input[type="range"]::-webkit-slider-thumb {
+    background: radial-gradient(circle, #f0ffe0 0%, rgba(140, 200, 100, 0.95) 65%);
+    box-shadow:
+        0 0 0 2px rgba(80, 160, 40, 0.25),
+        0 0 10px rgba(120, 200, 80, 0.65),
+        0 0 20px rgba(100, 180, 60, 0.25);
+}
+
+body.zen-scene #three-dojo-settings select {
+    border-color: rgba(140, 200, 100, 0.18);
+    color: rgba(160, 210, 120, 0.9);
+}
+
+body.zen-scene #three-dojo-settings select:hover,
+body.zen-scene #three-dojo-settings select:focus {
+    border-color: rgba(140, 200, 100, 0.4);
+    box-shadow: 0 0 10px rgba(120, 200, 80, 0.1);
+}
+
+body.zen-scene #three-dojo-settings {
+    border-top-color: rgba(140, 200, 100, 0.12);
+    border-bottom-color: rgba(140, 200, 100, 0.08);
+    background: linear-gradient(180deg, rgba(10, 25, 5, 0.65) 0%, rgba(5, 15, 2, 0.45) 100%);
+}
+
+body.zen-scene .three-reset-btn:hover {
+    color: rgba(160, 210, 120, 0.8);
+}

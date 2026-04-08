@@ -1,7 +1,16 @@
-const { generateWordList } = require('./words');
+const { generateWordList, generateHagakureWordList } = require('./words');
 
 // In-memory room store
 const rooms = new Map();
+
+// Valid clean mode themes
+const VALID_THEMES = new Set([
+  'default','dracula','nord','botanical','bushido','midnight','sunset','ocean',
+  'lavender','neon','sakura','mocha','arctic','ember','void','copper',
+  'paper','snow','cream','linen','sepia','frost',
+  'koi','bloodscroll','sumi','torii','oni','matcha','tsunami','hanami',
+  'shogun','wabisabi','yokai','ukiyo','fuji','ryokan','karesansui'
+]);
 
 // Default emoji set for players
 const DEFAULT_EMOJIS = ['\u{1F680}', '\u{1F525}', '\u26A1', '\u{1F47B}', '\u{1F409}'];
@@ -30,6 +39,7 @@ function createPlayer(userId, username, socketId, emoji) {
     accuracy: 100,
     finished: false,
     finishTime: null,
+    dead: false,
     disconnected: false,
     lastProgressTime: 0
   };
@@ -54,6 +64,9 @@ function serializeRoom(room) {
     hostId: room.hostId,
     status: room.status,
     timeLimit: room.timeLimit,
+    visualMode: room.visualMode,
+    cleanTheme: room.cleanTheme,
+    hagakureLineCount: room.hagakureLineCount,
     players: [...room.players.values()].map(serializePlayer)
   };
 }
@@ -84,6 +97,7 @@ function resetPlayerStats(player) {
   player.accuracy = 100;
   player.finished = false;
   player.finishTime = null;
+  player.dead = false;
   player.lastProgressTime = 0;
 }
 
@@ -105,6 +119,9 @@ function registerRoomHandlers(io, socket) {
       players: new Map(),
       status: 'lobby',
       timeLimit: Math.min(120, Math.max(15, timeLimit)),
+      visualMode: 'zen',
+      cleanTheme: 'koi',
+      hagakureLineCount: 25,
       words: [],
       createdAt: Date.now(),
       countdownTimer: null,
@@ -190,14 +207,23 @@ function registerRoomHandlers(io, socket) {
   });
 
 
-  socket.on('room:settings', ({ timeLimit }) => {
+  socket.on('room:settings', ({ timeLimit, visualMode, cleanTheme, hagakureLineCount }) => {
     const room = findRoomBySocket(socket.id);
     if (!room) return;
     if (room.hostId !== socket.user.id) return;
     if (room.status !== 'lobby') return;
 
-    room.timeLimit = Math.min(120, Math.max(15, timeLimit));
-    io.to(room.code).emit('room:settings_updated', { timeLimit: room.timeLimit });
+    if (timeLimit != null) room.timeLimit = Math.min(120, Math.max(15, timeLimit));
+    if (visualMode === 'zen' || visualMode === 'clean' || visualMode === 'hagakure') room.visualMode = visualMode;
+    if (typeof cleanTheme === 'string' && VALID_THEMES.has(cleanTheme)) room.cleanTheme = cleanTheme;
+    if ([10, 25, 40, 60].includes(hagakureLineCount)) room.hagakureLineCount = hagakureLineCount;
+
+    io.to(room.code).emit('room:settings_updated', {
+      timeLimit: room.timeLimit,
+      visualMode: room.visualMode,
+      cleanTheme: room.cleanTheme,
+      hagakureLineCount: room.hagakureLineCount
+    });
   });
 
 
@@ -208,18 +234,38 @@ function registerRoomHandlers(io, socket) {
     if (room.status !== 'lobby') return;
     if (room.players.size < 2) return;
 
+    // Clear any stale timers from previous race
+    clearInterval(room.countdownTimer);
+    clearTimeout(room.gameTimer);
+    room.countdownTimer = null;
+    room.gameTimer = null;
+
     room.status = 'countdown';
-    room.words = generateWordList(120);
+    const isHagakure = room.visualMode === 'hagakure';
+    room.words = isHagakure
+      ? generateHagakureWordList(room.hagakureLineCount)
+      : generateWordList(120);
 
     // Reset all player stats for new race
     for (const p of room.players.values()) {
       resetPlayerStats(p);
     }
 
+    // Pick random countdown style for all players to see the same thing
+    const cdSkins = ['skin-portal','skin-blade','skin-glitch','skin-fire','skin-ink','skin-shock','skin-grav','skin-pulse','skin-warp','skin-nova'];
+    const cdWords = [null,['BREATHE','FOCUS','FIGHT!'],['READY','STEADY','STRIKE!'],['LOCK IN','AIM','DESTROY!'],['SILENCE','TENSION','WAR!'],['INHALE','EXHALE','KILL!'],['CALM','STORM','CHAOS!'],['STEEL','BLADE','BLOOD!']];
+    const cdSkin = cdSkins[Math.floor(Math.random() * cdSkins.length)];
+    const cdWordSet = cdWords[Math.floor(Math.random() * cdWords.length)];
+
     io.to(room.code).emit('room:countdown', {
       seconds: 3,
       words: room.words,
-      timeLimit: room.timeLimit
+      timeLimit: isHagakure ? 0 : room.timeLimit,
+      visualMode: room.visualMode,
+      cleanTheme: room.cleanTheme,
+      hagakureLineCount: isHagakure ? room.hagakureLineCount : undefined,
+      countdownSkin: cdSkin,
+      countdownWords: cdWordSet
     });
 
     let count = 3;
@@ -232,11 +278,14 @@ function registerRoomHandlers(io, socket) {
         room.startTime = Date.now();
         io.to(room.code).emit('game:start', { startTime: room.startTime });
 
-        // Server-side game timer (authoritative)
-        room.gameTimer = setTimeout(() => {
-          const { endRace } = require('./game');
-          endRace(io, room);
-        }, room.timeLimit * 1000 + 1000); // +1s grace for network lag
+        // Server-side game timer — only for non-hagakure modes
+        if (!isHagakure) {
+          room.gameTimer = setTimeout(() => {
+            const { endRace } = require('./game');
+            endRace(io, room);
+          }, room.timeLimit * 1000 + 1000);
+        }
+        // Hagakure: no timer — race ends when all players finish or die
       } else {
         io.to(room.code).emit('room:countdown_tick', { seconds: count });
       }
@@ -249,7 +298,15 @@ function registerRoomHandlers(io, socket) {
   socket.on('room:back_to_lobby', () => {
     const room = findRoomBySocket(socket.id);
     if (!room) return;
-    if (room.status !== 'finished') return;
+    if (room.status !== 'finished' && room.status !== 'racing') return;
+
+    // Clear any lingering timers
+    clearInterval(room.countdownTimer);
+    clearTimeout(room.gameTimer);
+    clearTimeout(room.cleanupTimer);
+    room.countdownTimer = null;
+    room.gameTimer = null;
+    room.cleanupTimer = null;
 
     room.status = 'lobby';
     room.words = [];
@@ -287,6 +344,23 @@ function registerRoomHandlers(io, socket) {
     };
 
     io.to(room.code).emit('chat:message', msg);
+  });
+
+  // Chat typing indicator
+  let lastTypingTime = 0;
+  socket.on('chat:typing', () => {
+    const now = Date.now();
+    if (now - lastTypingTime < 2000) return; // throttle
+    lastTypingTime = now;
+    const room = findRoomBySocket(socket.id);
+    if (!room) return;
+    const player = room.players.get(socket.id);
+    if (!player) return;
+    socket.to(room.code).emit('chat:typing', {
+      playerId: player.id,
+      username: player.username,
+      emoji: player.emoji
+    });
   });
 
 

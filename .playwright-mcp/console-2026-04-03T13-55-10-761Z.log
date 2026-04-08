@@ -1,0 +1,16 @@
+[     973ms] [WARNING] cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation @ https://cdn.tailwindcss.com/:63
+[     981ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:5173/_vercel/insights/script.js:0
+[    1252ms] [LOG] Supabase initialized successfully @ http://localhost:5173/src/auth.js:22
+[    1253ms] [LOG] Auth.js: Initializing... @ http://localhost:5173/src/auth.js:124
+[    1253ms] [LOG] Auth.js: UI Elements found: {modal: div#auth-modal.hidden, openBtn: button#login-btn.glass-icon, closeBtn: button#close-auth.close-btn, authForms: div#auth-forms, userProfile: div#user-profile.hidden} @ http://localhost:5173/src/auth.js:174
+[    1253ms] [LOG] Auth.js: Attached click listener to Login Button @ http://localhost:5173/src/auth.js:199
+[    1359ms] [LOG] Auth.js: Not in Tauri, skipping deep link listener setup. @ http://localhost:5173/src/auth.js:115
+[    1374ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost:5173/:0
+[    1374ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost:5173/:0
+[    1592ms] [WARNING] The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio @ http://localhost:5173/src/sounds.js:30
+[    1592ms] [WARNING] The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio @ http://localhost:5173/src/sounds.js:39
+[    1592ms] [WARNING] The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio @ http://localhost:5173/src/sounds.js:48
+[    4566ms] [LOG] [MP] Connected @ http://localhost:5173/src/multiplayer.js?t=1775224169804:76
+[    4566ms] [LOG] [MP] Assigned ID: guest-bz5e10re @ http://localhost:5173/src/multiplayer.js?t=1775224169804:80
+[   24531ms] [WARNING] AudioCtx state is: suspended @ http://localhost:5173/src/sounds.js:89
+[   24595ms] [LOG] AudioContext resumed successfully @ http://localhost:5173/src/sounds.js:40

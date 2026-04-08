@@ -1038,7 +1038,18 @@ export function spawnKeypressParticles(x, y) {
 }
 
 export function spawnHagakureParticles(x, y) {
-    if (!_config.particle) return;
+    // Blood splash is intrinsic to hagakure mode — always spawn regardless of particle toggle
+
+    // Ensure keypress canvas context is ready
+    if (!keyCtx && _keypressCanvas) {
+        keyCtx = _keypressCanvas.getContext('2d');
+        _keypressCanvas.width = window.innerWidth;
+        _keypressCanvas.height = window.innerHeight;
+    }
+    if (!keyCtx) return;
+
+    // Force canvas visible (overrides clean-mode display:none !important)
+    if (_keypressCanvas) _keypressCanvas.classList.add('force-visible');
 
     // 1. Blood Spray
     const bloodCount = 8 + Math.random() * 8;

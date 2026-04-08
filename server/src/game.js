@@ -16,8 +16,8 @@ function registerGameHandlers(io, socket) {
     // Anti-cheat: WPM sanity
     if (data.wpm > MAX_WPM) return;
 
-    // Anti-cheat: word index can only advance by 1
-    if (data.wordIndex > player.currentWordIndex + 1) return;
+    // Anti-cheat: word index can't jump too far per update (allows bursts + instant legend)
+    if (data.wordIndex > player.currentWordIndex + 5) return;
     if (data.wordIndex < 0) return;
 
     // Anti-cheat: timestamp monotonicity
@@ -39,9 +39,9 @@ function registerGameHandlers(io, socket) {
     player.wpm = Math.min(MAX_WPM, data.wpm || 0);
     player.accuracy = Math.min(100, Math.max(0, data.accuracy || 0));
 
-    // Scale to time limit: assume ~90 WPM baseline so bar fills properly
-    const expectedWords = Math.max(1, Math.floor(room.timeLimit * 1.5));
-    const percent = Math.min(100, Math.round((data.wordIndex / expectedWords) * 100));
+    // Scale progress bar based on actual word list length
+    const expectedWords = Math.max(1, room.words.length);
+    const percent = Math.min(99, Math.round((data.wordIndex / expectedWords) * 100));
 
     // Broadcast to others in room
     socket.to(room.code).emit('game:player_progress', {
@@ -79,6 +79,30 @@ function registerGameHandlers(io, socket) {
 
     checkRaceEnd(io, room);
   });
+
+
+  // Hagakure: player made a mistake and died
+  socket.on('game:player_died', (data) => {
+    const room = findRoomBySocket(socket.id);
+    if (!room || room.status !== 'racing') return;
+
+    const player = room.players.get(socket.id);
+    if (!player || player.finished || player.disconnected) return;
+
+    player.finished = true;
+    player.dead = true;
+    player.finishTime = Date.now() - room.startTime;
+    player.wpm = Math.min(MAX_WPM, data.wpm || 0);
+    player.currentWordIndex = data.wordIndex || player.currentWordIndex;
+
+    io.to(room.code).emit('game:player_died_broadcast', {
+      playerId: player.id,
+      wordIndex: player.currentWordIndex,
+      wpm: player.wpm
+    });
+
+    checkRaceEnd(io, room);
+  });
 }
 
 
@@ -102,12 +126,20 @@ function endRace(io, room) {
   clearTimeout(room.gameTimer);
   room.gameTimer = null;
 
-  // Build standings sorted by WPM descending
+  // Build standings
+  const isHagakure = room.visualMode === 'hagakure';
   const standings = [...room.players.values()]
     .sort((a, b) => {
       // Disconnected players rank last
       if (a.disconnected && !b.disconnected) return 1;
       if (!a.disconnected && b.disconnected) return -1;
+
+      if (isHagakure) {
+        // Hagakure score = wordsCompleted × WPM (balances speed vs survival)
+        const scoreA = a.currentWordIndex * (a.wpm || 1);
+        const scoreB = b.currentWordIndex * (b.wpm || 1);
+        return scoreB - scoreA;
+      }
       return b.wpm - a.wpm;
     })
     .map((p, i) => ({
@@ -118,7 +150,8 @@ function endRace(io, room) {
       wpm: p.wpm,
       accuracy: p.accuracy,
       wordsCompleted: p.currentWordIndex,
-      disconnected: p.disconnected
+      disconnected: p.disconnected,
+      dead: !!p.dead
     }));
 
   io.to(room.code).emit('game:race_results', { standings });
@@ -126,8 +159,9 @@ function endRace(io, room) {
   // Save to DB (fire-and-forget)
   saveMatchResult(room, standings).catch(() => {});
 
-  // Auto-cleanup room after 2 minutes
-  setTimeout(() => {
+  // Auto-cleanup room after 2 minutes (clear previous cleanup timer if any)
+  clearTimeout(room.cleanupTimer);
+  room.cleanupTimer = setTimeout(() => {
     if (rooms.has(room.code) && room.status === 'finished') {
       rooms.delete(room.code);
       console.log(`[ROOM] ${room.code} cleaned up (timeout)`);

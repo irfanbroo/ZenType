@@ -454,6 +454,12 @@ function initAuth() {
             .eq('id', user.id)
             .single();
 
+        if (fetchError && !current) {
+            // Real fetch error (network, RLS, etc.) — abort to avoid overwriting existing data
+            console.error("[SCORE SAVE] Failed to fetch profile, aborting to protect data:", fetchError);
+            return;
+        }
+
         if (!current) {
             console.warn("Profile missing during update. Creating...");
             const { error: insertError } = await supabaseClient.from('profiles').insert([
@@ -1224,7 +1230,9 @@ function initAuth() {
         const numRows = 5;
         const totalCells = numCols * numRows;
 
-        const today = new Date();
+        // Anchor to today's UTC date (matches how activity is saved)
+        const todayUTC = new Date();
+        todayUTC.setUTCHours(0, 0, 0, 0);
 
         for (let c = 0; c < numCols; c++) {
             const colDiv = document.createElement('div');
@@ -1236,8 +1244,8 @@ function initAuth() {
                 const cellIndex = (colIndex * numRows) + rowIndex;
                 const daysAgo = (totalCells - 1) - cellIndex;
 
-                const date = new Date();
-                date.setDate(today.getDate() - daysAgo);
+                const date = new Date(todayUTC);
+                date.setUTCDate(todayUTC.getUTCDate() - daysAgo);
                 const dateStr = date.toISOString().split('T')[0];
 
                 const count = activityLog && activityLog[dateStr] ? activityLog[dateStr] : 0;

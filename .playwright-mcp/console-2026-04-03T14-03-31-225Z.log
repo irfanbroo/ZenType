@@ -1,0 +1,33 @@
+[    1495ms] [WARNING] cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation @ https://cdn.tailwindcss.com/:63
+[    1503ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:5173/_vercel/insights/script.js:0
+[    1752ms] [LOG] Supabase initialized successfully @ http://localhost:5173/src/auth.js:22
+[    1753ms] [LOG] Auth.js: Initializing... @ http://localhost:5173/src/auth.js:124
+[    1754ms] [LOG] Auth.js: UI Elements found: {modal: div#auth-modal.hidden, openBtn: button#login-btn.glass-icon, closeBtn: button#close-auth.close-btn, authForms: div#auth-forms, userProfile: div#user-profile.hidden} @ http://localhost:5173/src/auth.js:174
+[    1754ms] [LOG] Auth.js: Attached click listener to Login Button @ http://localhost:5173/src/auth.js:199
+[    1840ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost:5173/:0
+[    1840ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost:5173/:0
+[    1843ms] [LOG] Auth.js: Not in Tauri, skipping deep link listener setup. @ http://localhost:5173/src/auth.js:115
+[    5193ms] [LOG] [MP] Connected @ http://localhost:5173/src/multiplayer.js?t=1775224771131:76
+[    5193ms] [LOG] [MP] Assigned ID: guest-76wuiyp5 @ http://localhost:5173/src/multiplayer.js?t=1775224771131:80
+[   13058ms] [WARNING] cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation @ https://cdn.tailwindcss.com/:63
+[   13073ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:5173/_vercel/insights/script.js:0
+[   13235ms] [LOG] Supabase initialized successfully @ http://localhost:5173/src/auth.js:22
+[   13237ms] [LOG] Auth.js: Initializing... @ http://localhost:5173/src/auth.js:124
+[   13237ms] [LOG] Auth.js: UI Elements found: {modal: div#auth-modal.hidden, openBtn: button#login-btn.glass-icon, closeBtn: button#close-auth.close-btn, authForms: div#auth-forms, userProfile: div#user-profile.hidden} @ http://localhost:5173/src/auth.js:174
+[   13237ms] [LOG] Auth.js: Attached click listener to Login Button @ http://localhost:5173/src/auth.js:199
+[   13238ms] [LOG] Auth.js: Not in Tauri, skipping deep link listener setup. @ http://localhost:5173/src/auth.js:115
+[   13287ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost:5173/:0
+[   13287ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost:5173/:0
+[   14312ms] [LOG] [MP] Connected @ http://localhost:5173/src/multiplayer.js?t=1775224771131:76
+[   14312ms] [LOG] [MP] Assigned ID: guest-h2zsyuiw @ http://localhost:5173/src/multiplayer.js?t=1775224771131:80
+[  124299ms] [WARNING] cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation @ https://cdn.tailwindcss.com/:63
+[  124325ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:5173/_vercel/insights/script.js:0
+[  124512ms] [LOG] Supabase initialized successfully @ http://localhost:5173/src/auth.js:22
+[  124513ms] [LOG] Auth.js: Initializing... @ http://localhost:5173/src/auth.js:124
+[  124513ms] [LOG] Auth.js: UI Elements found: {modal: div#auth-modal.hidden, openBtn: button#login-btn.glass-icon, closeBtn: button#close-auth.close-btn, authForms: div#auth-forms, userProfile: div#user-profile.hidden} @ http://localhost:5173/src/auth.js:174
+[  124513ms] [LOG] Auth.js: Attached click listener to Login Button @ http://localhost:5173/src/auth.js:199
+[  124516ms] [LOG] Auth.js: Not in Tauri, skipping deep link listener setup. @ http://localhost:5173/src/auth.js:115
+[  124558ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost:5173/:0
+[  124558ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost:5173/:0
+[  125992ms] [LOG] [MP] Connected @ http://localhost:5173/src/multiplayer.js?t=1775224771131:76
+[  125992ms] [LOG] [MP] Assigned ID: guest-kvlv8kyb @ http://localhost:5173/src/multiplayer.js?t=1775224771131:80

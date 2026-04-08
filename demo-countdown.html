@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Countdown Skins — Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@800;900&family=Noto+Serif+JP:wght@900&family=JetBrains+Mono:wght@800&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #050505; font-family: 'Outfit', sans-serif; overflow: hidden; min-height: 100vh; }
+
+  .picker {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    display: flex; gap: 8px; z-index: 99999; flex-wrap: wrap; justify-content: center;
+    padding: 10px 16px; background: rgba(0,0,0,0.85); border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.06); backdrop-filter: blur(10px);
+  }
+  .pbtn {
+    padding: 6px 14px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.5);
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .pbtn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+  .pbtn.on { border-color: rgba(255,220,80,0.5); color: #ffd700; background: rgba(255,220,80,0.06); }
+
+  #lbl {
+    position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 4px;
+    color: rgba(255,255,255,0.15); text-transform: uppercase; z-index: 99999;
+  }
+
+  /* BASE */
+  #cd { position: fixed; inset: 0; z-index: 9999; display: flex; align-items: center; justify-content: center; background: #000; overflow: hidden; }
+  #cd::before, #cd::after { content: ''; position: absolute; pointer-events: none; }
+  #cd::before { inset: 0; }
+  #cd::after { width: 300px; height: 300px; border-radius: 50%; border: 2px solid transparent; }
+  .inner { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; }
+  #n { font-size: 10rem; font-family: 'Outfit', sans-serif; font-weight: 900; user-select: none; line-height: 1; }
+
+  /* ════════════════════════════════════════
+     PORTAL
+  ════════════════════════════════════════ */
+  #cd.portal::before { background: radial-gradient(ellipse at center, rgba(0,0,0,.95) 0%, rgba(5,0,15,.9) 40%, rgba(0,0,0,.6) 70%, transparent 100%); }
+  #cd.portal.c3::after { border-color: rgba(80,0,180,.4); box-shadow: 0 0 40px rgba(80,0,180,.2), inset 0 0 60px rgba(80,0,180,.1); animation: mpPortalOpen .9s cubic-bezier(.22,1,.36,1) both; }
+  #cd.portal.c2::after { border-color: rgba(140,0,255,.6); box-shadow: 0 0 60px rgba(140,0,255,.3), inset 0 0 80px rgba(140,0,255,.15); animation: mpPortalGrow .8s cubic-bezier(.22,1,.36,1) both; }
+  #cd.portal.c1::after { border-color: rgba(200,0,255,.8); box-shadow: 0 0 80px rgba(200,0,255,.5), inset 0 0 100px rgba(200,0,255,.25); animation: mpPortalPulse .7s cubic-bezier(.22,1,.36,1) both; }
+  #cd.portal.cgo::after { animation: mpPortalExplode .5s ease-out forwards; }
+  #cd.portal.c3 #n { color: #a040ff; text-shadow: 0 0 30px rgba(140,40,255,.6), 0 0 60px rgba(140,40,255,.3); animation: mpNumDrop .8s cubic-bezier(.22,1,.36,1) forwards; }
+  #cd.portal.c2 #n { color: #c050ff; text-shadow: 0 0 40px rgba(180,60,255,.7), 0 0 80px rgba(180,60,255,.3); animation: mpNumDrop .7s cubic-bezier(.22,1,.36,1) forwards; }
+  #cd.portal.c1 #n { color: #e070ff; text-shadow: 0 0 50px rgba(220,80,255,.8), 0 0 100px rgba(220,80,255,.4); animation: mpNumDrop .6s cubic-bezier(.22,1,.36,1) forwards; }
+  #cd.portal.cgo #n { color: #fff; font-size: 7rem; letter-spacing: 8px; text-shadow: 0 0 30px rgba(255,255,255,.9), 0 0 60px rgba(200,100,255,.6); animation: mpGoFlash .9s ease-out forwards; }
+  #cd.portal.cgo::before { background: radial-gradient(ellipse at center, rgba(220,140,255,.3) 0%, rgba(100,0,200,.4) 40%, rgba(0,0,0,.7) 100%); animation: mpVoidFlash .5s ease-out forwards; }
+  @keyframes mpPortalOpen { 0%{transform:scale(0);opacity:0} 60%{transform:scale(1.05);opacity:1} 100%{transform:scale(1);opacity:1} }
+  @keyframes mpPortalGrow { 0%{transform:scale(.9)} 50%{transform:scale(1.15)} 100%{transform:scale(1.1)} }
+  @keyframes mpPortalPulse { 0%{transform:scale(1.1)} 30%{transform:scale(1.3)} 60%{transform:scale(1.2)} 100%{transform:scale(1.25)} }
+  @keyframes mpPortalExplode { 0%{transform:scale(1.25);opacity:1} 40%{transform:scale(4);opacity:.6} 100%{transform:scale(8);opacity:0} }
+  @keyframes mpNumDrop { 0%{transform:translateY(-60px) scale(1.4);opacity:0;filter:blur(8px)} 50%{opacity:1;filter:blur(0)} 75%{transform:translateY(6px) scale(.97)} 100%{transform:translateY(0) scale(1);opacity:1} }
+  @keyframes mpGoFlash { 0%{transform:scale(1);opacity:1;letter-spacing:8px} 40%{transform:scale(1.08);opacity:1} 70%{transform:scale(1.05);opacity:1} 100%{transform:scale(1.5);opacity:0;letter-spacing:14px} }
+  @keyframes mpVoidFlash { 0%{opacity:1} 30%{opacity:.3;background:radial-gradient(ellipse at center,rgba(255,255,255,.8) 0%,rgba(200,100,255,.4) 50%,transparent 100%)} 100%{opacity:0} }
+
+  /* ════════════════════════════════════════
+     BLADE
+  ════════════════════════════════════════ */
+  #cd.blade::before { background: radial-gradient(ellipse at center, rgba(0,0,0,.92) 0%, rgba(10,0,0,.85) 50%, rgba(0,0,0,.5) 100%); }
+  #cd.blade.c3 #n, #cd.blade.c2 #n { color: #fff; text-shadow: 0 0 20px rgba(255,255,255,.3); animation: mpBladeSlash .7s cubic-bezier(.22,1,.36,1) both; }
+  #cd.blade.c1 #n { color: #ff3333; text-shadow: 0 0 30px rgba(255,50,50,.8), 0 0 60px rgba(255,50,50,.4); animation: mpBladeSlash .7s cubic-bezier(.22,1,.36,1) both; }
+  #cd.blade.cgo #n { color: #ff4444; letter-spacing: 6px; text-shadow: 0 0 40px rgba(255,60,60,.9), 0 0 80px rgba(255,60,60,.5); animation: mpGoFlash .5s ease-out forwards; }
+  #cd.blade.c3::after, #cd.blade.c2::after, #cd.blade.c1::after { width:0;height:1px;border:none;border-radius:0;top:50%;left:-10%;background:linear-gradient(90deg,transparent,rgba(255,50,50,.8),transparent);animation:mpSlashLine .5s .1s ease-out forwards; }
+  #cd.blade.cgo::after { width:0;height:2px;border:none;border-radius:0;top:50%;left:-10%;background:linear-gradient(90deg,transparent,rgba(255,80,80,.9),transparent);animation:mpSlashLine .3s ease-out forwards,mpSlashFade .3s .2s ease-out forwards; }
+  @keyframes mpBladeSlash { 0%{transform:translateX(-100px) skewX(-20deg);opacity:0;clip-path:inset(0 100% 0 0)} 50%{clip-path:inset(0 0% 0 0);opacity:1} 75%{transform:translateX(5px) skewX(2deg)} 100%{transform:translateX(0) skewX(0);opacity:1} }
+  @keyframes mpSlashLine { 0%{width:0;left:-10%} 100%{width:120%;left:-10%} }
+  @keyframes mpSlashFade { to{opacity:0} }
+
+  /* ════════════════════════════════════════
+     GLITCH
+  ════════════════════════════════════════ */
+  #cd.glitch::before { background: radial-gradient(ellipse at center, rgba(0,5,20,.95) 0%, rgba(0,0,10,.85) 60%, rgba(0,0,0,.5) 100%); }
+  #cd.glitch.c3 #n { color: #00ffcc; text-shadow: 2px 0 rgba(255,0,80,.7),-2px 0 rgba(0,200,255,.7),0 0 30px rgba(0,255,200,.5); animation: mpGlitchIn .8s ease both; }
+  #cd.glitch.c2 #n { color: #00eeff; text-shadow: 3px 0 rgba(255,0,80,.8),-3px 0 rgba(0,200,255,.8),0 0 40px rgba(0,220,255,.6); animation: mpGlitchIn .7s ease both; }
+  #cd.glitch.c1 #n { color: #ff0066; text-shadow: 4px 0 rgba(0,255,200,.8),-4px 0 rgba(255,200,0,.8),0 0 50px rgba(255,0,100,.7); animation: mpGlitchIn .6s ease both; }
+  #cd.glitch.cgo #n { color: #fff; text-shadow: 0 0 20px rgba(255,255,255,.9),4px 0 rgba(255,0,80,.5),-4px 0 rgba(0,255,200,.5); animation: mpGoFlash .5s ease-out forwards; }
+  @keyframes mpGlitchIn { 0%{opacity:0;transform:scale(1.2);clip-path:inset(30% 0 30% 0)} 20%{clip-path:inset(0 0 0 0);opacity:1;transform:scale(1.05) translateX(4px)} 40%{transform:scale(1.05) translateX(-4px)} 60%{transform:scale(1.02) translateX(2px)} 80%{transform:scale(1) translateX(-1px)} 100%{transform:scale(1) translateX(0);opacity:1} }
+
+  /* ════════════════════════════════════════
+     FIRE
+  ════════════════════════════════════════ */
+  #cd.fire::before { background: radial-gradient(ellipse at center, rgba(20,5,0,.97) 0%, rgba(10,0,0,.9) 50%, rgba(0,0,0,.55) 100%); }
+  #cd.fire.c3 #n { color: #ff8800; text-shadow: 0 0 30px rgba(255,140,0,.7),0 0 60px rgba(255,80,0,.4); animation: mpFireIn .9s ease both; }
+  #cd.fire.c2 #n { color: #ff6600; text-shadow: 0 0 40px rgba(255,120,0,.8),0 0 80px rgba(255,60,0,.5); animation: mpFireIn .8s ease both; }
+  #cd.fire.c1 #n { color: #ff3300; text-shadow: 0 0 50px rgba(255,80,0,.9),0 0 100px rgba(255,30,0,.6); animation: mpFireIn .6s ease both; }
+  #cd.fire.cgo #n { color: #ffdd00; letter-spacing: 4px; text-shadow: 0 0 40px rgba(255,220,0,.9),0 0 80px rgba(255,140,0,.6); animation: mpGoFlash .55s ease-out forwards; }
+  @keyframes mpFireIn { 0%{transform:translateY(60px) scale(.8);opacity:0;filter:blur(6px)} 40%{opacity:1;filter:blur(0)} 70%{transform:translateY(-6px) scale(1.05)} 85%{transform:translateY(3px) scale(.98)} 100%{transform:translateY(0) scale(1);opacity:1} }
+
+  /* ════════════════════════════════════════
+     INK
+  ════════════════════════════════════════ */
+  #cd.ink::before { background: radial-gradient(ellipse at center, rgba(5,3,0,.97) 0%, rgba(3,2,0,.92) 50%, rgba(0,0,0,.6) 100%); }
+  #cd.ink.c3 #n, #cd.ink.c2 #n { font-family:'Noto Serif JP',serif; color:rgba(220,200,160,.95); text-shadow:0 0 20px rgba(200,180,120,.3); animation:mpInkBrush 1s cubic-bezier(.22,1,.36,1) both; }
+  #cd.ink.c1 #n { font-family:'Noto Serif JP',serif; color:rgba(200,80,60,.95); text-shadow:0 0 20px rgba(200,60,40,.4); animation:mpInkBrush 1s cubic-bezier(.22,1,.36,1) both; }
+  #cd.ink.cgo #n { font-family:'Noto Serif JP',serif; color:rgba(220,180,80,.95); font-size:6rem; letter-spacing:12px; text-shadow:0 0 30px rgba(220,180,80,.4); animation:mpInkGo .7s ease-out forwards; }
+  #cd.ink.c3::after, #cd.ink.c2::after, #cd.ink.c1::after { width:200px;height:200px;border:none;background:radial-gradient(circle,rgba(180,160,100,.08) 0%,transparent 70%);animation:mpInkSplash .8s ease-out both; }
+  @keyframes mpInkBrush { 0%{opacity:0;transform:scale(1.3);filter:blur(12px)} 30%{opacity:.8;filter:blur(2px)} 60%{transform:scale(.97);filter:blur(0)} 100%{opacity:1;transform:scale(1)} }
+  @keyframes mpInkGo { 0%{opacity:0;letter-spacing:30px;filter:blur(8px)} 40%{opacity:1;filter:blur(0);letter-spacing:12px} 70%{letter-spacing:14px} 100%{opacity:0;letter-spacing:20px} }
+  @keyframes mpInkSplash { 0%{transform:scale(0);opacity:.8} 100%{transform:scale(3);opacity:0} }
+
+  /* ════════════════════════════════════════
+     SHOCKWAVE
+  ════════════════════════════════════════ */
+  #cd.sw::before { background: radial-gradient(ellipse at center, rgba(0,0,0,.95) 0%, rgba(0,10,30,.9) 60%, #000 100%); }
+  #cd.sw.c3 #n { color: #40e0ff; text-shadow: 0 0 40px rgba(64,224,255,.6); animation: swSlam .7s cubic-bezier(.22,1,.36,1) both; }
+  #cd.sw.c2 #n { color: #20c0ff; text-shadow: 0 0 50px rgba(32,192,255,.7); animation: swSlam .7s cubic-bezier(.22,1,.36,1) both; }
+  #cd.sw.c1 #n { color: #00a0ff; text-shadow: 0 0 60px rgba(0,160,255,.8), 0 0 120px rgba(0,100,255,.3); animation: swSlam .6s cubic-bezier(.22,1,.36,1) both; }
+  #cd.sw.cgo #n { color: #fff; font-size: 7rem; letter-spacing: 6px; text-shadow: 0 0 50px rgba(64,224,255,.9), 0 0 100px rgba(0,150,255,.5); animation: swGo .8s ease-out both; }
+  #cd.sw.c3::after, #cd.sw.c2::after, #cd.sw.c1::after { border-color: rgba(64,224,255,.3); animation: swRing .8s ease-out both; }
+  #cd.sw.cgo::after { animation: swBoom .6s ease-out both; }
+  @keyframes swSlam { 0%{transform:scale(2.5);opacity:0;filter:blur(12px)} 35%{transform:scale(.9);opacity:1;filter:blur(0)} 55%{transform:scale(1.08)} 100%{transform:scale(1)} }
+  @keyframes swRing { 0%{transform:scale(0);opacity:.8;border-width:4px} 100%{transform:scale(2.5);opacity:0;border-width:1px} }
+  @keyframes swGo { 0%{transform:scale(.5);opacity:0} 30%{transform:scale(1.05);opacity:1} 60%{opacity:1} 100%{transform:scale(1.4);opacity:0} }
+  @keyframes swBoom { 0%{transform:scale(0);opacity:1;border-width:6px;border-color:rgba(255,255,255,.6);box-shadow:0 0 80px rgba(64,224,255,.5)} 100%{transform:scale(6);opacity:0;border-width:1px} }
+
+  /* ════════════════════════════════════════
+     GRAVITY
+  ════════════════════════════════════════ */
+  #cd.grav::before { background: radial-gradient(ellipse at center, rgba(0,0,0,.97) 0%, rgba(5,5,5,.95) 60%, #000 100%); }
+  #cd.grav.c3 #n { color: #e8e0d0; text-shadow: 0 0 20px rgba(200,180,140,.3); animation: gvDrop .65s cubic-bezier(.6,.04,.98,.34) both; }
+  #cd.grav.c2 #n { color: #d8c8a8; text-shadow: 0 0 30px rgba(200,170,120,.4); animation: gvDrop .6s cubic-bezier(.6,.04,.98,.34) both; }
+  #cd.grav.c1 #n { color: #ffd080; text-shadow: 0 0 40px rgba(255,200,100,.6), 0 0 80px rgba(255,160,50,.3); animation: gvDrop .55s cubic-bezier(.6,.04,.98,.34) both; }
+  #cd.grav.cgo #n { color: #fff; font-size: 7rem; letter-spacing: 6px; text-shadow: 0 0 50px rgba(255,220,100,.8); animation: gvGoSmash .8s ease-out both; }
+  #cd.grav.c3::after, #cd.grav.c2::after, #cd.grav.c1::after { width:100%;height:2px;border:none;border-radius:0;top:55%;background:linear-gradient(90deg,transparent 10%,rgba(255,200,100,.15) 40%,rgba(255,200,100,.3) 50%,rgba(255,200,100,.15) 60%,transparent 90%);animation:gvCrack .5s .2s ease-out both; }
+  #cd.grav.cgo::after { width:100%;height:3px;border:none;border-radius:0;top:55%;background:linear-gradient(90deg,transparent 5%,rgba(255,255,255,.4) 40%,rgba(255,255,255,.6) 50%,rgba(255,255,255,.4) 60%,transparent 95%);animation:gvCrack .3s ease-out both,gvCrackFade .4s .3s ease-out forwards; }
+  #cd.grav.c3, #cd.grav.c2, #cd.grav.c1 { animation: gvShake .15s .28s ease-out; }
+  #cd.grav.cgo { animation: gvShake .2s ease-out; }
+  @keyframes gvDrop { 0%{transform:translateY(-120vh) scale(1.2);opacity:1} 70%{transform:translateY(8px) scale(.95)} 85%{transform:translateY(-4px) scale(1.02)} 100%{transform:translateY(0) scale(1)} }
+  @keyframes gvCrack { 0%{transform:scaleX(0);opacity:0} 100%{transform:scaleX(1);opacity:1} }
+  @keyframes gvCrackFade { to{opacity:0} }
+  @keyframes gvShake { 0%,100%{transform:translate(0)} 25%{transform:translate(-3px,2px)} 50%{transform:translate(3px,-2px)} 75%{transform:translate(-2px,1px)} }
+  @keyframes gvGoSmash { 0%{transform:translateY(-120vh);opacity:1} 35%{transform:translateY(5px) scale(1.1);opacity:1} 55%{transform:translateY(0) scale(1);opacity:1} 100%{transform:scale(1.4);opacity:0} }
+
+  /* ════════════════════════════════════════
+     HEARTBEAT
+  ════════════════════════════════════════ */
+  #cd.hb::before { background: radial-gradient(ellipse at center, rgba(15,0,5,.98) 0%, rgba(5,0,2,.97) 50%, #000 100%); }
+  #cd.hb.c3 #n { color: #ff2050; text-shadow: 0 0 30px rgba(255,32,80,.4); animation: hbPump .8s ease both; }
+  #cd.hb.c2 #n { color: #ff1040; text-shadow: 0 0 40px rgba(255,16,64,.6); animation: hbPump .7s ease both; }
+  #cd.hb.c1 #n { color: #ff0030; text-shadow: 0 0 60px rgba(255,0,48,.8), 0 0 120px rgba(255,0,48,.3); animation: hbPump .5s ease both; }
+  #cd.hb.cgo #n { color: #fff; font-size: 7rem; letter-spacing: 6px; text-shadow: 0 0 50px rgba(255,40,80,.9), 0 0 100px rgba(255,0,50,.5); animation: hbGo .8s ease-out both; }
+  #cd.hb.c3::after, #cd.hb.c2::after, #cd.hb.c1::after { border:none;width:100%;height:100%;border-radius:0;background:radial-gradient(circle at center,rgba(255,20,60,.08) 0%,transparent 50%);animation:hbBeat .5s ease-out both; }
+  #cd.hb.c1::after { background:radial-gradient(circle at center,rgba(255,20,60,.15) 0%,transparent 50%); }
+  #cd.hb.cgo::after { border:none;width:100%;height:100%;border-radius:0;animation:hbFlat .5s ease-out both; }
+  @keyframes hbPump { 0%{transform:scale(.85);opacity:0} 15%{transform:scale(1.2);opacity:1} 30%{transform:scale(.95)} 45%{transform:scale(1.08)} 60%{transform:scale(.98)} 100%{transform:scale(1)} }
+  @keyframes hbBeat { 0%{transform:scale(.5);opacity:0} 30%{transform:scale(1.2);opacity:1} 100%{transform:scale(1);opacity:.5} }
+  @keyframes hbGo { 0%{transform:scale(.7);opacity:0} 20%{transform:scale(1.15);opacity:1} 40%{transform:scale(.97)} 60%{transform:scale(1.02);opacity:1} 100%{transform:scale(1.5);opacity:0} }
+  @keyframes hbFlat { 0%{background:radial-gradient(circle,rgba(255,20,60,.3) 0%,transparent 60%);transform:scale(1)} 100%{background:transparent;transform:scale(3);opacity:0} }
+
+  /* ════════════════════════════════════════
+     WARP
+  ════════════════════════════════════════ */
+  #cd.warp::before { background: radial-gradient(ellipse at center, rgba(0,0,5,.97) 0%, rgba(0,0,15,.95) 40%, #000 100%); }
+  #cd.warp.c3 #n { color: #aaccff; text-shadow: 0 0 30px rgba(170,200,255,.5); animation: wpZoom .8s cubic-bezier(.22,1,.36,1) both; }
+  #cd.warp.c2 #n { color: #88bbff; text-shadow: 0 0 40px rgba(136,187,255,.6); animation: wpZoom .7s cubic-bezier(.22,1,.36,1) both; }
+  #cd.warp.c1 #n { color: #66aaff; text-shadow: 0 0 50px rgba(102,170,255,.8), 0 0 100px rgba(60,120,255,.3); animation: wpZoom .6s cubic-bezier(.22,1,.36,1) both; }
+  #cd.warp.cgo #n { color: #fff; font-size: 7rem; letter-spacing: 10px; text-shadow: 0 0 50px rgba(180,200,255,.9); animation: wpJump .7s ease-out both; }
+  #cd.warp.c3::after, #cd.warp.c2::after, #cd.warp.c1::after { width:100%;height:100%;border:none;border-radius:0;background:radial-gradient(circle at center,transparent 20%,rgba(100,150,255,.03) 50%,rgba(60,100,200,.06) 80%,transparent 100%);animation:wpStr .9s ease both; }
+  #cd.warp.cgo::after { width:100%;height:100%;border:none;border-radius:0;background:radial-gradient(circle at center,rgba(255,255,255,.15) 0%,rgba(100,150,255,.1) 30%,transparent 60%);animation:wpFl .4s ease-out both; }
+  @keyframes wpZoom { 0%{transform:scale(.1);opacity:0;filter:blur(20px)} 40%{filter:blur(2px);opacity:1} 70%{transform:scale(1.05);filter:blur(0)} 100%{transform:scale(1)} }
+  @keyframes wpStr { 0%{transform:scale(.5);opacity:0} 100%{transform:scale(1);opacity:1} }
+  @keyframes wpJump { 0%{transform:scale(1);opacity:1;letter-spacing:10px} 40%{transform:scale(1.05);opacity:1} 100%{transform:scale(.1);opacity:0;letter-spacing:80px;filter:blur(10px)} }
+  @keyframes wpFl { 0%{opacity:1} 100%{opacity:0;transform:scale(3)} }
+
+  /* ════════════════════════════════════════
+     SUPERNOVA — star collapse then explode
+  ════════════════════════════════════════ */
+  #cd.nova::before { background: radial-gradient(ellipse at center, rgba(5,2,10,.98) 0%, rgba(2,0,5,.97) 50%, #000 100%); }
+  #cd.nova.c3 #n { color: #ff80c0; text-shadow: 0 0 30px rgba(255,128,192,.5), 0 0 60px rgba(200,50,150,.2); animation: nvCollapse .8s cubic-bezier(.22,1,.36,1) both; }
+  #cd.nova.c2 #n { color: #ff60a0; text-shadow: 0 0 40px rgba(255,96,160,.6), 0 0 80px rgba(200,40,140,.3); animation: nvCollapse .7s cubic-bezier(.22,1,.36,1) both; }
+  #cd.nova.c1 #n { color: #ff4080; text-shadow: 0 0 50px rgba(255,64,128,.8), 0 0 100px rgba(200,30,120,.4), 0 0 160px rgba(160,20,100,.2); animation: nvCollapse .6s cubic-bezier(.22,1,.36,1) both; }
+  #cd.nova.cgo #n { color: #ffffff; font-size: 7rem; letter-spacing: 6px; text-shadow: 0 0 60px rgba(255,255,255,.9), 0 0 120px rgba(255,100,200,.5); animation: nvExplode .8s ease-out both; }
+  /* Star core — bright center that intensifies */
+  #cd.nova.c3::after, #cd.nova.c2::after { width:120px;height:120px;border:none;background:radial-gradient(circle,rgba(255,128,192,.1) 0%,transparent 70%);animation:nvCore .8s ease both; }
+  #cd.nova.c1::after { width:150px;height:150px;border:none;background:radial-gradient(circle,rgba(255,64,128,.2) 0%,transparent 70%);box-shadow:0 0 80px rgba(255,64,128,.1);animation:nvCorePulse .6s ease both; }
+  #cd.nova.cgo::after { width:200px;height:200px;border:none;background:radial-gradient(circle,rgba(255,255,255,.5) 0%,rgba(255,100,200,.2) 30%,transparent 60%);animation:nvBurst .5s ease-out both; }
+  @keyframes nvCollapse {
+    0% { transform: scale(3); opacity: 0; filter: blur(15px); }
+    30% { filter: blur(3px); }
+    50% { transform: scale(.92); opacity: 1; filter: blur(0); }
+    70% { transform: scale(1.06); }
+    100% { transform: scale(1); }
+  }
+  @keyframes nvCore { 0%{transform:scale(0);opacity:0} 100%{transform:scale(1);opacity:1} }
+  @keyframes nvCorePulse { 0%{transform:scale(.8)} 50%{transform:scale(1.3)} 100%{transform:scale(1)} }
+  @keyframes nvExplode {
+    0% { transform: scale(.6); opacity: 1; filter: brightness(3); }
+    25% { transform: scale(1.1); opacity: 1; filter: brightness(1); }
+    50% { opacity: 1; }
+    100% { transform: scale(2); opacity: 0; }
+  }
+  @keyframes nvBurst { 0%{transform:scale(.5);opacity:1} 100%{transform:scale(8);opacity:0} }
+</style>
+</head>
+<body>
+
+<div id="lbl">SHOCKWAVE</div>
+
+<div id="cd" class="sw c3">
+  <div class="inner"><div id="n">3</div></div>
+</div>
+
+<div class="picker">
+  <button class="pbtn" data-s="portal">Portal</button>
+  <button class="pbtn" data-s="blade">Blade</button>
+  <button class="pbtn" data-s="glitch">Glitch</button>
+  <button class="pbtn" data-s="fire">Fire</button>
+  <button class="pbtn" data-s="ink">Ink</button>
+  <span style="width:1px;height:20px;background:rgba(255,255,255,0.1);align-self:center"></span>
+  <button class="pbtn on" data-s="sw">Shockwave</button>
+  <button class="pbtn" data-s="grav">Gravity</button>
+  <button class="pbtn" data-s="hb">Heartbeat</button>
+  <button class="pbtn" data-s="warp">Warp</button>
+  <button class="pbtn" data-s="nova">Supernova</button>
+  <span style="width:1px;height:20px;background:rgba(255,255,255,0.1);align-self:center"></span>
+  <button class="pbtn" data-m="random" id="randBtn">RANDOM</button>
+</div>
+
+<script>
+  const SKINS = ['portal','blade','glitch','fire','ink','sw','grav','hb','warp','nova'];
+  const WORD_SETS = [
+    ['3', '2', '1', 'GO!'],
+    ['BREATHE', 'FOCUS', 'FIGHT!'],
+    ['READY', 'STEADY', 'STRIKE!'],
+    ['LOCK IN', 'AIM', 'DESTROY!'],
+    ['SILENCE', 'TENSION', 'WAR!'],
+    ['INHALE', 'EXHALE', 'KILL!'],
+    ['CALM', 'STORM', 'CHAOS!'],
+    ['STEEL', 'BLADE', 'BLOOD!'],
+  ];
+
+  let sk = 'sw', wordSet = 0, run = false, autoRandom = false;
+
+  document.querySelectorAll('.pbtn[data-s]').forEach(b => {
+    b.addEventListener('click', () => {
+      sk = b.dataset.s;
+      autoRandom = false;
+      document.querySelectorAll('.pbtn').forEach(x => x.classList.remove('on'));
+      b.classList.add('on');
+      document.getElementById('randBtn').classList.remove('on');
+      updateLabel();
+      if (!run) go();
+    });
+  });
+
+  document.getElementById('randBtn').addEventListener('click', () => {
+    autoRandom = true;
+    document.querySelectorAll('.pbtn').forEach(x => x.classList.remove('on'));
+    document.getElementById('randBtn').classList.add('on');
+    if (!run) go();
+  });
+
+  function updateLabel() {
+    const skinName = {sw:'SHOCKWAVE',grav:'GRAVITY',hb:'HEARTBEAT',warp:'WARP',nova:'SUPERNOVA'}[sk];
+    const words = WORD_SETS[wordSet].slice(0,3).join(' → ');
+    document.getElementById('lbl').textContent = `${skinName} — ${words}`;
+  }
+
+  function go() {
+    if (run) return; run = true;
+    if (autoRandom) {
+      sk = SKINS[Math.floor(Math.random() * SKINS.length)];
+      wordSet = Math.floor(Math.random() * WORD_SETS.length);
+    } else {
+      wordSet = Math.floor(Math.random() * WORD_SETS.length);
+    }
+    updateLabel();
+
+    const el = document.getElementById('cd'), n = document.getElementById('n');
+    const words = WORD_SETS[wordSet];
+    // All sets use 3 steps: word[0] → word[1] → word[2] (last one = GO moment)
+    // Classic "3 2 1 GO!" has 4 items, word sets have 3
+    const steps = words.length === 4
+      ? [{t:words[0],c:'c3',sz:'10rem'}, {t:words[1],c:'c2',sz:'10rem'}, {t:words[2],c:'c1',sz:'10rem'}, {t:words[3],c:'cgo',sz:'7rem'}]
+      : [{t:words[0],c:'c3',sz:'4.5rem'}, {t:words[1],c:'c2',sz:'4.5rem'}, {t:words[2],c:'cgo',sz:'5.5rem'}];
+
+    let i = 0;
+    function next() {
+      n.style.animation = 'none'; el.style.animation = 'none';
+      void n.offsetWidth;
+      n.style.animation = ''; el.style.animation = '';
+
+      const step = steps[i];
+      el.className = `${sk} ${step.c}`;
+      n.textContent = step.t;
+      n.style.fontSize = step.sz;
+      n.style.letterSpacing = step.c === 'cgo' ? '8px' : '4px';
+
+      i++;
+      if (i < steps.length) {
+        setTimeout(next, 950);
+      } else {
+        setTimeout(() => { run = false; n.style.fontSize = ''; n.style.letterSpacing = ''; setTimeout(go, 1200); }, 900);
+      }
+    }
+    next();
+  }
+  go();
+</script>
+
+</body>
+</html>

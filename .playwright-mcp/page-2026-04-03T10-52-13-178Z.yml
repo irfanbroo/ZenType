@@ -1,0 +1,24 @@
+- generic [ref=e2]:
+  - img
+  - generic [ref=e5]:
+    - generic [ref=e6]: èªž WAR ROOM
+    - generic [ref=e7]:
+      - generic [ref=e8]: RACE COMPLETE
+      - generic [ref=e9]:
+        - generic [ref=e10]: Guest
+        - generic [ref=e11]: gg bro
+      - generic [ref=e12]:
+        - generic [ref=e13]: Safsdf (you)
+        - generic [ref=e14]: ez clap
+      - generic [ref=e15]:
+        - generic [ref=e16]: Guest
+        - generic [ref=e17]: rematch?
+      - generic [ref=e18]:
+        - generic [ref=e19]: Safsdf (you)
+        - generic [ref=e20]: lets go again
+      - generic [ref=e21]:
+        - generic [ref=e22]: Guest
+        - generic [ref=e23]: you were fast af ngl
+    - generic [ref=e24]:
+      - textbox "Type a message..." [ref=e25]
+      - button "â†‘" [ref=e26] [cursor=pointer]

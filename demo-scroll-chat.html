@@ -1,0 +1,2167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZenType — Scroll Chat Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Noto+Serif+JP:wght@400;700;900&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    min-height: 100vh;
+    background: #080706;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    overflow: hidden;
+  }
+
+  /* ═══════════════════════════════════════════════
+     THEME VARIABLES — DEFAULT (GOLD / PARCHMENT)
+     ═══════════════════════════════════════════════ */
+  .scroll-chat-outer {
+    /* Rods */
+    --rod-hi: #5a4828;
+    --rod-mid: #3a2a18;
+    --rod-lo: #2a1c10;
+    --rod-cap-bg: rgba(200,160,60,0.3);
+    --rod-cap-border: rgba(200,160,60,0.1);
+    --rod-highlight: rgba(255,220,160,0.15);
+    /* Strings */
+    --string-color: rgba(120, 80, 30, 0.4);
+    --tassel-color: rgba(180, 50, 30, 0.5);
+    /* Parchment */
+    --parch-1: rgba(32, 26, 18, 0.97);
+    --parch-2: rgba(22, 17, 12, 0.98);
+    --parch-3: rgba(18, 14, 10, 0.99);
+    --parch-4: rgba(24, 19, 14, 0.98);
+    --border-accent: rgba(80, 60, 30, 0.2);
+    --vignette: rgba(40, 25, 8, 0.3);
+    /* Header */
+    --kanji: rgba(220, 170, 70, 0.9);
+    --kanji-glow: rgba(220, 170, 70, 0.25);
+    --title: rgba(220, 180, 100, 0.7);
+    --header-line: rgba(180, 130, 50, 0.2);
+    --brush-under: rgba(180, 50, 30, 0.2);
+    /* Seal */
+    --seal: rgba(200, 50, 30, 0.65);
+    --seal-border: rgba(200, 50, 30, 0.45);
+    --seal-glow: rgba(180, 40, 25, 0.1);
+    /* Online */
+    --online: rgba(100, 200, 80, 0.8);
+    --player-count: rgba(200, 170, 90, 0.7);
+    /* Messages */
+    --msg-other-bg: rgba(35, 28, 16, 0.7);
+    --msg-other-border: rgba(100, 75, 30, 0.1);
+    --msg-other-text: rgba(210, 190, 150, 0.85);
+    --msg-other-hover: rgba(40, 32, 18, 0.75);
+    --name-other: rgba(160, 130, 80, 0.5);
+    --msg-you-bg: linear-gradient(135deg, rgba(150, 75, 18, 0.35), rgba(110, 55, 12, 0.28));
+    --msg-you-border: rgba(200, 110, 35, 0.15);
+    --msg-you-text: rgba(255, 225, 170, 0.92);
+    --name-you: rgba(200, 140, 55, 0.55);
+    --msg-you-glow: rgba(180, 100, 25, 0.04);
+    /* Winner */
+    --winner-name: #c8a030;
+    --winner-glow: rgba(200, 160, 50, 0.25);
+    --winner-bg1: rgba(180, 140, 30, 0.22);
+    --winner-bg2: rgba(140, 100, 20, 0.14);
+    --winner-border: rgba(200, 160, 50, 0.22);
+    /* System */
+    --system-text: rgba(180, 150, 100, 0.45);
+    --system-line: rgba(180, 150, 100, 0.2);
+    /* Results card */
+    --results-bg1: rgba(30, 22, 10, 0.75);
+    --results-bg2: rgba(12, 8, 4, 0.85);
+    --results-border: rgba(200, 160, 50, 0.14);
+    --results-sweep: rgba(200, 160, 50, 0.04);
+    --results-trophy-glow: rgba(200, 160, 50, 0.35);
+    --shimmer-1: #a08030;
+    --shimmer-2: #d0a840;
+    --shimmer-3: #c89830;
+    /* Podium */
+    --podium-glow-bg: rgba(255,215,0,0.12);
+    --podium-glow-border: rgba(255,215,0,0.18);
+    --podium-name: #ffd700;
+    --podium-crown-glow: rgba(255,200,0,0.5);
+    --acc-fill: linear-gradient(90deg, #ffd700, #ffaa00);
+    --acc-label: rgba(255,215,0,0.4);
+    --rank-silver-bg: rgba(192, 192, 192, 0.05);
+    --rank-silver-border: rgba(192, 192, 192, 0.08);
+    --rank-bronze-bg: rgba(205, 127, 50, 0.05);
+    --rank-bronze-border: rgba(205, 127, 50, 0.08);
+    /* Input */
+    --input-bg: rgba(255, 255, 255, 0.03);
+    --input-border: rgba(120, 85, 35, 0.15);
+    --input-focus-border: rgba(200, 140, 50, 0.3);
+    --input-text: rgba(220, 195, 145, 0.88);
+    --input-placeholder: rgba(180, 140, 60, 0.18);
+    --icon-btn: rgba(180, 140, 60, 0.25);
+    --icon-btn-hover: rgba(200, 160, 70, 0.6);
+    --send-bg1: rgba(170, 90, 18, 0.5);
+    --send-bg2: rgba(130, 60, 10, 0.4);
+    --send-border: rgba(200, 120, 35, 0.2);
+    --send-color: rgba(255, 210, 120, 0.75);
+    /* Glow */
+    --outer-glow: rgba(160, 100, 30, 0.06);
+    /* Toggle */
+    --toggle-bg: rgba(200, 150, 60, 0.08);
+    --toggle-border: rgba(200, 150, 60, 0.2);
+    --toggle-color: rgba(200, 150, 60, 0.5);
+    --toggle-hover: rgba(200, 150, 60, 0.15);
+    /* Timestamp */
+    --time-color: rgba(160, 130, 80, 0.15);
+    /* Deco lines */
+    --deco: rgba(100, 70, 25, 0.06);
+  }
+
+  /* ═══════════════════════════════════════════════
+     CRIMSON THEME
+     ═══════════════════════════════════════════════ */
+  .scroll-chat-outer[data-theme="crimson"] {
+    --rod-hi: #3a2020;
+    --rod-mid: #2a1515;
+    --rod-lo: #1a0a0a;
+    --rod-cap-bg: rgba(200,50,40,0.3);
+    --rod-cap-border: rgba(200,50,40,0.15);
+    --rod-highlight: rgba(255,100,80,0.1);
+    --string-color: rgba(150, 30, 20, 0.4);
+    --tassel-color: rgba(200, 30, 20, 0.6);
+    --parch-1: rgba(28, 12, 12, 0.97);
+    --parch-2: rgba(18, 8, 8, 0.98);
+    --parch-3: rgba(14, 6, 6, 0.99);
+    --parch-4: rgba(22, 10, 10, 0.98);
+    --border-accent: rgba(120, 25, 20, 0.25);
+    --vignette: rgba(60, 10, 8, 0.35);
+    --kanji: rgba(220, 50, 35, 0.9);
+    --kanji-glow: rgba(220, 50, 35, 0.3);
+    --title: rgba(220, 100, 80, 0.7);
+    --header-line: rgba(180, 40, 30, 0.2);
+    --brush-under: rgba(200, 30, 20, 0.3);
+    --seal: rgba(220, 40, 25, 0.75);
+    --seal-border: rgba(220, 40, 25, 0.5);
+    --seal-glow: rgba(220, 40, 25, 0.15);
+    --online: rgba(220, 60, 40, 0.8);
+    --player-count: rgba(220, 100, 80, 0.7);
+    --msg-other-bg: rgba(30, 14, 14, 0.7);
+    --msg-other-border: rgba(150, 40, 30, 0.1);
+    --msg-other-text: rgba(220, 180, 170, 0.85);
+    --msg-other-hover: rgba(35, 18, 18, 0.75);
+    --name-other: rgba(180, 90, 70, 0.55);
+    --msg-you-bg: linear-gradient(135deg, rgba(160, 30, 20, 0.35), rgba(120, 20, 15, 0.28));
+    --msg-you-border: rgba(220, 50, 35, 0.18);
+    --msg-you-text: rgba(255, 200, 185, 0.92);
+    --name-you: rgba(220, 80, 55, 0.6);
+    --msg-you-glow: rgba(200, 40, 25, 0.06);
+    --winner-name: #dc3020;
+    --winner-glow: rgba(220, 50, 30, 0.3);
+    --winner-bg1: rgba(200, 40, 20, 0.25);
+    --winner-bg2: rgba(150, 30, 15, 0.16);
+    --winner-border: rgba(220, 50, 30, 0.25);
+    --system-text: rgba(200, 90, 75, 0.45);
+    --system-line: rgba(200, 80, 60, 0.2);
+    --results-bg1: rgba(30, 10, 8, 0.75);
+    --results-bg2: rgba(15, 5, 4, 0.85);
+    --results-border: rgba(220, 50, 30, 0.16);
+    --results-sweep: rgba(220, 50, 30, 0.04);
+    --results-trophy-glow: rgba(220, 50, 30, 0.4);
+    --shimmer-1: #8b2020;
+    --shimmer-2: #dc3020;
+    --shimmer-3: #a82525;
+    --podium-glow-bg: rgba(220,50,30,0.12);
+    --podium-glow-border: rgba(220,50,30,0.2);
+    --podium-name: #ff4030;
+    --podium-crown-glow: rgba(220,50,30,0.5);
+    --acc-fill: linear-gradient(90deg, #dc3020, #ff4030);
+    --acc-label: rgba(220,50,30,0.4);
+    --rank-silver-bg: rgba(160, 160, 170, 0.05);
+    --rank-silver-border: rgba(160, 160, 170, 0.08);
+    --rank-bronze-bg: rgba(180, 100, 40, 0.05);
+    --rank-bronze-border: rgba(180, 100, 40, 0.08);
+    --input-bg: rgba(255, 255, 255, 0.02);
+    --input-border: rgba(150, 40, 30, 0.15);
+    --input-focus-border: rgba(220, 60, 40, 0.3);
+    --input-text: rgba(220, 190, 180, 0.88);
+    --input-placeholder: rgba(180, 70, 50, 0.2);
+    --icon-btn: rgba(180, 60, 40, 0.3);
+    --icon-btn-hover: rgba(220, 80, 50, 0.6);
+    --send-bg1: rgba(180, 35, 20, 0.5);
+    --send-bg2: rgba(140, 25, 15, 0.4);
+    --send-border: rgba(220, 50, 30, 0.25);
+    --send-color: rgba(255, 180, 150, 0.8);
+    --outer-glow: rgba(160, 30, 20, 0.06);
+    --toggle-bg: rgba(220, 50, 30, 0.08);
+    --toggle-border: rgba(220, 50, 30, 0.2);
+    --toggle-color: rgba(220, 80, 50, 0.5);
+    --toggle-hover: rgba(220, 50, 30, 0.15);
+    --time-color: rgba(180, 70, 60, 0.15);
+    --deco: rgba(120, 25, 15, 0.06);
+  }
+
+  /* ═══════════════════════════════════════════════
+     ICE & MOONLIGHT THEME
+     ═══════════════════════════════════════════════ */
+  .scroll-chat-outer[data-theme="ice"] {
+    --rod-hi: #2a3040;
+    --rod-mid: #1a2030;
+    --rod-lo: #0e1420;
+    --rod-cap-bg: rgba(100,160,220,0.25);
+    --rod-cap-border: rgba(100,160,220,0.12);
+    --rod-highlight: rgba(150,200,255,0.1);
+    --string-color: rgba(80, 140, 200, 0.3);
+    --tassel-color: rgba(100, 170, 240, 0.4);
+    --parch-1: rgba(14, 18, 28, 0.97);
+    --parch-2: rgba(10, 14, 22, 0.98);
+    --parch-3: rgba(8, 12, 20, 0.99);
+    --parch-4: rgba(12, 16, 26, 0.98);
+    --border-accent: rgba(60, 100, 160, 0.15);
+    --vignette: rgba(10, 20, 40, 0.35);
+    --kanji: rgba(140, 200, 255, 0.85);
+    --kanji-glow: rgba(100, 180, 255, 0.25);
+    --title: rgba(150, 200, 240, 0.65);
+    --header-line: rgba(80, 140, 200, 0.15);
+    --brush-under: rgba(100, 170, 240, 0.2);
+    --seal: rgba(100, 180, 255, 0.6);
+    --seal-border: rgba(100, 180, 255, 0.35);
+    --seal-glow: rgba(100, 180, 255, 0.1);
+    --online: rgba(100, 200, 255, 0.8);
+    --player-count: rgba(140, 190, 230, 0.6);
+    --msg-other-bg: rgba(15, 22, 35, 0.7);
+    --msg-other-border: rgba(60, 110, 180, 0.1);
+    --msg-other-text: rgba(190, 210, 235, 0.85);
+    --msg-other-hover: rgba(18, 26, 40, 0.75);
+    --name-other: rgba(110, 160, 210, 0.55);
+    --msg-you-bg: linear-gradient(135deg, rgba(40, 100, 180, 0.3), rgba(30, 80, 150, 0.22));
+    --msg-you-border: rgba(80, 150, 220, 0.15);
+    --msg-you-text: rgba(200, 225, 255, 0.92);
+    --name-you: rgba(100, 170, 240, 0.6);
+    --msg-you-glow: rgba(60, 140, 220, 0.05);
+    --winner-name: #60b0ff;
+    --winner-glow: rgba(80, 160, 255, 0.25);
+    --winner-bg1: rgba(40, 100, 200, 0.2);
+    --winner-bg2: rgba(30, 80, 160, 0.12);
+    --winner-border: rgba(80, 160, 255, 0.2);
+    --system-text: rgba(100, 150, 200, 0.4);
+    --system-line: rgba(80, 140, 200, 0.15);
+    --results-bg1: rgba(12, 18, 30, 0.75);
+    --results-bg2: rgba(8, 12, 22, 0.85);
+    --results-border: rgba(80, 150, 220, 0.14);
+    --results-sweep: rgba(100, 180, 255, 0.03);
+    --results-trophy-glow: rgba(100, 180, 255, 0.3);
+    --shimmer-1: #4080b0;
+    --shimmer-2: #60b0ff;
+    --shimmer-3: #5090d0;
+    --podium-glow-bg: rgba(80,160,255,0.1);
+    --podium-glow-border: rgba(80,160,255,0.18);
+    --podium-name: #80c8ff;
+    --podium-crown-glow: rgba(80,160,255,0.4);
+    --acc-fill: linear-gradient(90deg, #60b0ff, #80c8ff);
+    --acc-label: rgba(80,160,255,0.4);
+    --rank-silver-bg: rgba(160, 170, 190, 0.05);
+    --rank-silver-border: rgba(160, 170, 190, 0.08);
+    --rank-bronze-bg: rgba(140, 120, 80, 0.05);
+    --rank-bronze-border: rgba(140, 120, 80, 0.08);
+    --input-bg: rgba(255, 255, 255, 0.02);
+    --input-border: rgba(60, 110, 180, 0.15);
+    --input-focus-border: rgba(80, 160, 240, 0.3);
+    --input-text: rgba(190, 215, 240, 0.88);
+    --input-placeholder: rgba(80, 140, 200, 0.2);
+    --icon-btn: rgba(80, 140, 200, 0.25);
+    --icon-btn-hover: rgba(100, 170, 240, 0.6);
+    --send-bg1: rgba(40, 100, 200, 0.4);
+    --send-bg2: rgba(30, 80, 160, 0.3);
+    --send-border: rgba(80, 160, 240, 0.2);
+    --send-color: rgba(180, 220, 255, 0.8);
+    --outer-glow: rgba(60, 120, 200, 0.05);
+    --toggle-bg: rgba(80, 150, 220, 0.08);
+    --toggle-border: rgba(80, 150, 220, 0.2);
+    --toggle-color: rgba(80, 150, 220, 0.5);
+    --toggle-hover: rgba(80, 150, 220, 0.15);
+    --time-color: rgba(100, 150, 200, 0.15);
+    --deco: rgba(60, 110, 180, 0.05);
+  }
+
+  /* ═══════════════════════════════════════════════
+     SAKURA & DAWN THEME
+     ═══════════════════════════════════════════════ */
+  .scroll-chat-outer[data-theme="sakura"] {
+    --rod-hi: #3a2830;
+    --rod-mid: #2a1a22;
+    --rod-lo: #1a0e16;
+    --rod-cap-bg: rgba(220,130,160,0.25);
+    --rod-cap-border: rgba(220,130,160,0.12);
+    --rod-highlight: rgba(255,180,200,0.1);
+    --string-color: rgba(180, 100, 130, 0.3);
+    --tassel-color: rgba(220, 120, 150, 0.4);
+    --parch-1: rgba(24, 16, 20, 0.97);
+    --parch-2: rgba(18, 12, 16, 0.98);
+    --parch-3: rgba(14, 10, 14, 0.99);
+    --parch-4: rgba(20, 14, 18, 0.98);
+    --border-accent: rgba(140, 70, 90, 0.18);
+    --vignette: rgba(40, 15, 25, 0.3);
+    --kanji: rgba(240, 150, 180, 0.85);
+    --kanji-glow: rgba(240, 140, 170, 0.25);
+    --title: rgba(230, 160, 180, 0.65);
+    --header-line: rgba(200, 110, 140, 0.15);
+    --brush-under: rgba(220, 100, 130, 0.2);
+    --seal: rgba(230, 110, 140, 0.6);
+    --seal-border: rgba(230, 110, 140, 0.35);
+    --seal-glow: rgba(230, 110, 140, 0.1);
+    --online: rgba(240, 150, 180, 0.8);
+    --player-count: rgba(220, 160, 175, 0.6);
+    --msg-other-bg: rgba(28, 16, 22, 0.7);
+    --msg-other-border: rgba(160, 80, 110, 0.1);
+    --msg-other-text: rgba(230, 200, 210, 0.85);
+    --msg-other-hover: rgba(32, 20, 26, 0.75);
+    --name-other: rgba(190, 120, 145, 0.55);
+    --msg-you-bg: linear-gradient(135deg, rgba(180, 70, 100, 0.3), rgba(140, 50, 80, 0.22));
+    --msg-you-border: rgba(220, 100, 140, 0.15);
+    --msg-you-text: rgba(255, 220, 230, 0.92);
+    --name-you: rgba(230, 120, 155, 0.6);
+    --msg-you-glow: rgba(200, 80, 120, 0.05);
+    --winner-name: #e88aaa;
+    --winner-glow: rgba(230, 130, 160, 0.25);
+    --winner-bg1: rgba(200, 80, 120, 0.2);
+    --winner-bg2: rgba(160, 60, 90, 0.12);
+    --winner-border: rgba(230, 130, 160, 0.2);
+    --system-text: rgba(190, 120, 145, 0.4);
+    --system-line: rgba(180, 100, 130, 0.15);
+    --results-bg1: rgba(22, 12, 18, 0.75);
+    --results-bg2: rgba(14, 8, 12, 0.85);
+    --results-border: rgba(220, 110, 145, 0.14);
+    --results-sweep: rgba(240, 150, 180, 0.03);
+    --results-trophy-glow: rgba(240, 140, 170, 0.3);
+    --shimmer-1: #a06080;
+    --shimmer-2: #e88aaa;
+    --shimmer-3: #c07090;
+    --podium-glow-bg: rgba(230,120,155,0.1);
+    --podium-glow-border: rgba(230,120,155,0.18);
+    --podium-name: #f0a0c0;
+    --podium-crown-glow: rgba(240,140,170,0.4);
+    --acc-fill: linear-gradient(90deg, #e88aaa, #f0a0c0);
+    --acc-label: rgba(230,120,155,0.4);
+    --rank-silver-bg: rgba(170, 160, 165, 0.05);
+    --rank-silver-border: rgba(170, 160, 165, 0.08);
+    --rank-bronze-bg: rgba(160, 120, 100, 0.05);
+    --rank-bronze-border: rgba(160, 120, 100, 0.08);
+    --input-bg: rgba(255, 255, 255, 0.02);
+    --input-border: rgba(160, 80, 110, 0.15);
+    --input-focus-border: rgba(220, 110, 150, 0.3);
+    --input-text: rgba(230, 210, 215, 0.88);
+    --input-placeholder: rgba(180, 100, 130, 0.2);
+    --icon-btn: rgba(180, 100, 130, 0.25);
+    --icon-btn-hover: rgba(230, 130, 160, 0.6);
+    --send-bg1: rgba(180, 70, 110, 0.4);
+    --send-bg2: rgba(140, 50, 80, 0.3);
+    --send-border: rgba(220, 110, 150, 0.2);
+    --send-color: rgba(255, 200, 220, 0.8);
+    --outer-glow: rgba(180, 80, 120, 0.05);
+    --toggle-bg: rgba(220, 110, 150, 0.08);
+    --toggle-border: rgba(220, 110, 150, 0.2);
+    --toggle-color: rgba(220, 110, 150, 0.5);
+    --toggle-hover: rgba(220, 110, 150, 0.15);
+    --time-color: rgba(180, 110, 135, 0.15);
+    --deco: rgba(140, 60, 90, 0.05);
+  }
+
+  /* ═══════════════════════════════════════════════
+     VOID & NEON THEME
+     ═══════════════════════════════════════════════ */
+  .scroll-chat-outer[data-theme="void"] {
+    --rod-hi: #1a1a2a;
+    --rod-mid: #0e0e1a;
+    --rod-lo: #06060e;
+    --rod-cap-bg: rgba(140,60,255,0.25);
+    --rod-cap-border: rgba(140,60,255,0.12);
+    --rod-highlight: rgba(160,80,255,0.08);
+    --string-color: rgba(120, 50, 220, 0.3);
+    --tassel-color: rgba(0, 220, 200, 0.4);
+    --parch-1: rgba(10, 8, 18, 0.97);
+    --parch-2: rgba(6, 5, 14, 0.98);
+    --parch-3: rgba(4, 3, 12, 0.99);
+    --parch-4: rgba(8, 7, 16, 0.98);
+    --border-accent: rgba(100, 40, 200, 0.15);
+    --vignette: rgba(15, 5, 30, 0.35);
+    --kanji: rgba(0, 230, 210, 0.85);
+    --kanji-glow: rgba(0, 220, 200, 0.3);
+    --title: rgba(140, 100, 255, 0.7);
+    --header-line: rgba(120, 50, 220, 0.15);
+    --brush-under: rgba(0, 220, 200, 0.25);
+    --seal: rgba(140, 60, 255, 0.65);
+    --seal-border: rgba(140, 60, 255, 0.4);
+    --seal-glow: rgba(140, 60, 255, 0.15);
+    --online: rgba(0, 230, 210, 0.8);
+    --player-count: rgba(140, 110, 230, 0.6);
+    --msg-other-bg: rgba(12, 10, 24, 0.7);
+    --msg-other-border: rgba(100, 50, 180, 0.1);
+    --msg-other-text: rgba(200, 190, 230, 0.85);
+    --msg-other-hover: rgba(16, 14, 30, 0.75);
+    --name-other: rgba(130, 100, 200, 0.55);
+    --msg-you-bg: linear-gradient(135deg, rgba(100, 30, 200, 0.3), rgba(0, 180, 160, 0.18));
+    --msg-you-border: rgba(120, 50, 220, 0.18);
+    --msg-you-text: rgba(210, 230, 255, 0.92);
+    --name-you: rgba(0, 220, 200, 0.6);
+    --msg-you-glow: rgba(100, 40, 200, 0.06);
+    --winner-name: #00e6d0;
+    --winner-glow: rgba(0, 220, 200, 0.3);
+    --winner-bg1: rgba(0, 180, 160, 0.2);
+    --winner-bg2: rgba(100, 40, 200, 0.12);
+    --winner-border: rgba(0, 220, 200, 0.22);
+    --system-text: rgba(120, 90, 180, 0.4);
+    --system-line: rgba(100, 60, 180, 0.15);
+    --results-bg1: rgba(10, 8, 20, 0.75);
+    --results-bg2: rgba(5, 4, 14, 0.85);
+    --results-border: rgba(120, 50, 220, 0.14);
+    --results-sweep: rgba(0, 220, 200, 0.03);
+    --results-trophy-glow: rgba(0, 220, 200, 0.3);
+    --shimmer-1: #6030c0;
+    --shimmer-2: #00e6d0;
+    --shimmer-3: #8040e0;
+    --podium-glow-bg: rgba(0,220,200,0.1);
+    --podium-glow-border: rgba(0,220,200,0.18);
+    --podium-name: #00ffd4;
+    --podium-crown-glow: rgba(0,220,200,0.5);
+    --acc-fill: linear-gradient(90deg, #8040e0, #00e6d0);
+    --acc-label: rgba(0,220,200,0.4);
+    --rank-silver-bg: rgba(150, 150, 170, 0.05);
+    --rank-silver-border: rgba(150, 150, 170, 0.08);
+    --rank-bronze-bg: rgba(140, 110, 70, 0.05);
+    --rank-bronze-border: rgba(140, 110, 70, 0.08);
+    --input-bg: rgba(255, 255, 255, 0.02);
+    --input-border: rgba(100, 50, 180, 0.15);
+    --input-focus-border: rgba(0, 200, 180, 0.3);
+    --input-text: rgba(200, 195, 230, 0.88);
+    --input-placeholder: rgba(100, 60, 180, 0.22);
+    --icon-btn: rgba(120, 70, 200, 0.3);
+    --icon-btn-hover: rgba(0, 220, 200, 0.6);
+    --send-bg1: rgba(100, 30, 200, 0.4);
+    --send-bg2: rgba(0, 160, 140, 0.3);
+    --send-border: rgba(0, 200, 180, 0.2);
+    --send-color: rgba(180, 240, 230, 0.8);
+    --outer-glow: rgba(100, 40, 200, 0.05);
+    --toggle-bg: rgba(100, 50, 200, 0.08);
+    --toggle-border: rgba(100, 50, 200, 0.2);
+    --toggle-color: rgba(0, 200, 180, 0.5);
+    --toggle-hover: rgba(100, 50, 200, 0.15);
+    --time-color: rgba(100, 80, 160, 0.15);
+    --deco: rgba(80, 30, 160, 0.05);
+  }
+
+  /* ═══════════════════════════════════════════════
+     EMERALD SHADOW THEME
+     ═══════════════════════════════════════════════ */
+  .scroll-chat-outer[data-theme="emerald"] {
+    --rod-hi: #1a2a1a; --rod-mid: #0e1a0e; --rod-lo: #060e06;
+    --rod-cap-bg: rgba(40,200,100,0.25); --rod-cap-border: rgba(40,200,100,0.12);
+    --rod-highlight: rgba(60,220,120,0.08);
+    --string-color: rgba(30, 160, 80, 0.3); --tassel-color: rgba(40, 200, 100, 0.4);
+    --parch-1: rgba(8, 16, 10, 0.97); --parch-2: rgba(5, 12, 7, 0.98);
+    --parch-3: rgba(4, 10, 6, 0.99); --parch-4: rgba(6, 14, 8, 0.98);
+    --border-accent: rgba(30, 120, 60, 0.18); --vignette: rgba(5, 20, 10, 0.35);
+    --kanji: rgba(50, 220, 120, 0.85); --kanji-glow: rgba(40, 200, 100, 0.25);
+    --title: rgba(60, 200, 120, 0.65); --header-line: rgba(30, 160, 80, 0.15);
+    --brush-under: rgba(40, 200, 100, 0.2);
+    --seal: rgba(40, 200, 100, 0.6); --seal-border: rgba(40, 200, 100, 0.35);
+    --seal-glow: rgba(40, 200, 100, 0.1);
+    --online: rgba(50, 230, 120, 0.8); --player-count: rgba(60, 200, 120, 0.6);
+    --msg-other-bg: rgba(8, 18, 12, 0.7); --msg-other-border: rgba(30, 120, 60, 0.1);
+    --msg-other-text: rgba(190, 225, 200, 0.85); --msg-other-hover: rgba(10, 22, 14, 0.75);
+    --name-other: rgba(60, 160, 100, 0.55);
+    --msg-you-bg: linear-gradient(135deg, rgba(20, 140, 70, 0.3), rgba(15, 100, 50, 0.22));
+    --msg-you-border: rgba(40, 180, 90, 0.15); --msg-you-text: rgba(200, 250, 220, 0.92);
+    --name-you: rgba(50, 200, 110, 0.6); --msg-you-glow: rgba(30, 160, 80, 0.05);
+    --winner-name: #30d880; --winner-glow: rgba(40, 200, 100, 0.25);
+    --winner-bg1: rgba(20, 160, 80, 0.2); --winner-bg2: rgba(15, 120, 60, 0.12);
+    --winner-border: rgba(40, 200, 100, 0.2);
+    --system-text: rgba(50, 150, 90, 0.4); --system-line: rgba(30, 130, 70, 0.15);
+    --results-bg1: rgba(6, 14, 8, 0.75); --results-bg2: rgba(4, 10, 6, 0.85);
+    --results-border: rgba(40, 180, 90, 0.14); --results-sweep: rgba(40, 200, 100, 0.03);
+    --results-trophy-glow: rgba(40, 200, 100, 0.3);
+    --shimmer-1: #1a8050; --shimmer-2: #30d880; --shimmer-3: #20a060;
+    --podium-glow-bg: rgba(40,200,100,0.1); --podium-glow-border: rgba(40,200,100,0.18);
+    --podium-name: #40f090; --podium-crown-glow: rgba(40,200,100,0.4);
+    --acc-fill: linear-gradient(90deg, #30d880, #40f090); --acc-label: rgba(40,200,100,0.4);
+    --rank-silver-bg: rgba(150,165,155,0.05); --rank-silver-border: rgba(150,165,155,0.08);
+    --rank-bronze-bg: rgba(140,120,80,0.05); --rank-bronze-border: rgba(140,120,80,0.08);
+    --input-bg: rgba(255,255,255,0.02); --input-border: rgba(30,120,60,0.15);
+    --input-focus-border: rgba(40,180,100,0.3); --input-text: rgba(190,225,205,0.88);
+    --input-placeholder: rgba(40,140,70,0.2); --icon-btn: rgba(40,140,80,0.25);
+    --icon-btn-hover: rgba(50,200,110,0.6);
+    --send-bg1: rgba(20,140,70,0.4); --send-bg2: rgba(15,100,50,0.3);
+    --send-border: rgba(40,180,100,0.2); --send-color: rgba(180,250,210,0.8);
+    --outer-glow: rgba(30,140,70,0.05);
+    --toggle-bg: rgba(40,180,90,0.08); --toggle-border: rgba(40,180,90,0.2);
+    --toggle-color: rgba(40,180,90,0.5); --toggle-hover: rgba(40,180,90,0.15);
+    --time-color: rgba(50,140,80,0.15); --deco: rgba(30,100,50,0.05);
+  }
+
+  /* ═══════════════════════════════════════════════
+     SUNSET BLAZE THEME
+     ═══════════════════════════════════════════════ */
+  .scroll-chat-outer[data-theme="sunset"] {
+    --rod-hi: #3a2418; --rod-mid: #2a1810; --rod-lo: #1a0e08;
+    --rod-cap-bg: rgba(240,140,40,0.25); --rod-cap-border: rgba(240,140,40,0.12);
+    --rod-highlight: rgba(255,160,60,0.1);
+    --string-color: rgba(200, 100, 30, 0.3); --tassel-color: rgba(240, 120, 40, 0.4);
+    --parch-1: rgba(22, 12, 6, 0.97); --parch-2: rgba(16, 8, 4, 0.98);
+    --parch-3: rgba(12, 6, 3, 0.99); --parch-4: rgba(18, 10, 5, 0.98);
+    --border-accent: rgba(180, 80, 20, 0.18); --vignette: rgba(40, 15, 5, 0.35);
+    --kanji: rgba(255, 160, 50, 0.9); --kanji-glow: rgba(255, 140, 40, 0.3);
+    --title: rgba(255, 180, 80, 0.7); --header-line: rgba(220, 110, 30, 0.2);
+    --brush-under: rgba(240, 80, 30, 0.25);
+    --seal: rgba(240, 80, 30, 0.65); --seal-border: rgba(240, 80, 30, 0.4);
+    --seal-glow: rgba(240, 80, 30, 0.12);
+    --online: rgba(255, 170, 50, 0.8); --player-count: rgba(240, 160, 70, 0.65);
+    --msg-other-bg: rgba(24, 14, 6, 0.7); --msg-other-border: rgba(180, 80, 20, 0.1);
+    --msg-other-text: rgba(240, 210, 180, 0.85); --msg-other-hover: rgba(28, 18, 8, 0.75);
+    --name-other: rgba(200, 120, 50, 0.55);
+    --msg-you-bg: linear-gradient(135deg, rgba(220, 80, 15, 0.35), rgba(200, 120, 20, 0.25));
+    --msg-you-border: rgba(240, 120, 30, 0.18); --msg-you-text: rgba(255, 235, 200, 0.92);
+    --name-you: rgba(255, 150, 40, 0.65); --msg-you-glow: rgba(220, 100, 20, 0.06);
+    --winner-name: #ffa030; --winner-glow: rgba(255, 150, 40, 0.3);
+    --winner-bg1: rgba(240, 100, 20, 0.22); --winner-bg2: rgba(200, 80, 15, 0.14);
+    --winner-border: rgba(255, 150, 40, 0.22);
+    --system-text: rgba(200, 120, 50, 0.4); --system-line: rgba(180, 100, 30, 0.18);
+    --results-bg1: rgba(18, 10, 4, 0.75); --results-bg2: rgba(12, 6, 3, 0.85);
+    --results-border: rgba(240, 120, 30, 0.14); --results-sweep: rgba(255, 160, 40, 0.04);
+    --results-trophy-glow: rgba(255, 150, 40, 0.35);
+    --shimmer-1: #c06010; --shimmer-2: #ffa030; --shimmer-3: #e08020;
+    --podium-glow-bg: rgba(255,150,40,0.12); --podium-glow-border: rgba(255,150,40,0.2);
+    --podium-name: #ffc050; --podium-crown-glow: rgba(255,150,40,0.5);
+    --acc-fill: linear-gradient(90deg, #ffa030, #ffc050); --acc-label: rgba(255,150,40,0.4);
+    --rank-silver-bg: rgba(170,160,150,0.05); --rank-silver-border: rgba(170,160,150,0.08);
+    --rank-bronze-bg: rgba(160,120,60,0.05); --rank-bronze-border: rgba(160,120,60,0.08);
+    --input-bg: rgba(255,255,255,0.02); --input-border: rgba(180,80,20,0.15);
+    --input-focus-border: rgba(240,130,30,0.3); --input-text: rgba(240,215,180,0.88);
+    --input-placeholder: rgba(200,110,30,0.2); --icon-btn: rgba(200,110,40,0.25);
+    --icon-btn-hover: rgba(255,160,50,0.6);
+    --send-bg1: rgba(220,80,15,0.45); --send-bg2: rgba(200,100,20,0.35);
+    --send-border: rgba(240,130,30,0.22); --send-color: rgba(255,220,160,0.85);
+    --outer-glow: rgba(200,90,20,0.05);
+    --toggle-bg: rgba(240,120,30,0.08); --toggle-border: rgba(240,120,30,0.2);
+    --toggle-color: rgba(240,120,30,0.5); --toggle-hover: rgba(240,120,30,0.15);
+    --time-color: rgba(200,110,40,0.15); --deco: rgba(160,70,15,0.05);
+  }
+
+  /* ═══════════════════════════════════════════════
+     PHANTOM SMOKE THEME
+     ═══════════════════════════════════════════════ */
+  .scroll-chat-outer[data-theme="phantom"] {
+    --rod-hi: #222222; --rod-mid: #161616; --rod-lo: #0a0a0a;
+    --rod-cap-bg: rgba(180,180,180,0.2); --rod-cap-border: rgba(180,180,180,0.08);
+    --rod-highlight: rgba(200,200,200,0.06);
+    --string-color: rgba(140, 140, 140, 0.25); --tassel-color: rgba(160, 160, 160, 0.3);
+    --parch-1: rgba(14, 14, 14, 0.97); --parch-2: rgba(10, 10, 10, 0.98);
+    --parch-3: rgba(8, 8, 8, 0.99); --parch-4: rgba(12, 12, 12, 0.98);
+    --border-accent: rgba(100, 100, 100, 0.12); --vignette: rgba(20, 20, 20, 0.4);
+    --kanji: rgba(220, 220, 220, 0.8); --kanji-glow: rgba(200, 200, 200, 0.15);
+    --title: rgba(180, 180, 180, 0.6); --header-line: rgba(140, 140, 140, 0.1);
+    --brush-under: rgba(160, 160, 160, 0.12);
+    --seal: rgba(180, 180, 180, 0.45); --seal-border: rgba(180, 180, 180, 0.25);
+    --seal-glow: rgba(150, 150, 150, 0.06);
+    --online: rgba(180, 180, 180, 0.7); --player-count: rgba(160, 160, 160, 0.5);
+    --msg-other-bg: rgba(18, 18, 18, 0.7); --msg-other-border: rgba(80, 80, 80, 0.08);
+    --msg-other-text: rgba(200, 200, 200, 0.8); --msg-other-hover: rgba(22, 22, 22, 0.75);
+    --name-other: rgba(140, 140, 140, 0.5);
+    --msg-you-bg: linear-gradient(135deg, rgba(60, 60, 60, 0.3), rgba(40, 40, 40, 0.22));
+    --msg-you-border: rgba(120, 120, 120, 0.12); --msg-you-text: rgba(230, 230, 230, 0.9);
+    --name-you: rgba(180, 180, 180, 0.55); --msg-you-glow: rgba(100, 100, 100, 0.04);
+    --winner-name: #e0e0e0; --winner-glow: rgba(200, 200, 200, 0.15);
+    --winner-bg1: rgba(80, 80, 80, 0.18); --winner-bg2: rgba(50, 50, 50, 0.1);
+    --winner-border: rgba(160, 160, 160, 0.15);
+    --system-text: rgba(130, 130, 130, 0.35); --system-line: rgba(100, 100, 100, 0.1);
+    --results-bg1: rgba(14, 14, 14, 0.75); --results-bg2: rgba(8, 8, 8, 0.85);
+    --results-border: rgba(120, 120, 120, 0.1); --results-sweep: rgba(180, 180, 180, 0.02);
+    --results-trophy-glow: rgba(180, 180, 180, 0.2);
+    --shimmer-1: #666; --shimmer-2: #bbb; --shimmer-3: #888;
+    --podium-glow-bg: rgba(180,180,180,0.06); --podium-glow-border: rgba(180,180,180,0.12);
+    --podium-name: #ddd; --podium-crown-glow: rgba(200,200,200,0.3);
+    --acc-fill: linear-gradient(90deg, #aaa, #ddd); --acc-label: rgba(180,180,180,0.35);
+    --rank-silver-bg: rgba(150,150,150,0.04); --rank-silver-border: rgba(150,150,150,0.06);
+    --rank-bronze-bg: rgba(130,120,100,0.04); --rank-bronze-border: rgba(130,120,100,0.06);
+    --input-bg: rgba(255,255,255,0.02); --input-border: rgba(100,100,100,0.12);
+    --input-focus-border: rgba(160,160,160,0.25); --input-text: rgba(210,210,210,0.85);
+    --input-placeholder: rgba(120,120,120,0.2); --icon-btn: rgba(140,140,140,0.2);
+    --icon-btn-hover: rgba(200,200,200,0.5);
+    --send-bg1: rgba(80,80,80,0.35); --send-bg2: rgba(50,50,50,0.25);
+    --send-border: rgba(140,140,140,0.15); --send-color: rgba(220,220,220,0.75);
+    --outer-glow: rgba(100,100,100,0.03);
+    --toggle-bg: rgba(140,140,140,0.06); --toggle-border: rgba(140,140,140,0.15);
+    --toggle-color: rgba(160,160,160,0.4); --toggle-hover: rgba(140,140,140,0.1);
+    --time-color: rgba(120,120,120,0.12); --deco: rgba(80,80,80,0.04);
+  }
+
+  /* ═══════════════════════════════════════════════
+     SCROLL STRUCTURE
+     ═══════════════════════════════════════════════ */
+  .scroll-chat-outer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+
+  }
+
+  .scroll-chat-outer::before {
+    content: '';
+    position: absolute;
+    inset: -30px -20px;
+    background: radial-gradient(ellipse at 50% 50%, var(--outer-glow) 0%, transparent 70%);
+    z-index: -1;
+    animation: scrollGlow 4s ease-in-out infinite;
+  }
+
+  @keyframes scrollGlow {
+    0%, 100% { opacity: 0.6; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.05); }
+  }
+
+  /* ─── Rods ─── */
+  .scroll-chat-rod {
+    width: 115%;
+    height: 18px;
+    background: linear-gradient(180deg,
+      var(--rod-hi) 0%, var(--rod-mid) 30%, var(--rod-lo) 50%, var(--rod-mid) 70%, var(--rod-hi) 100%);
+    border-radius: 9px;
+    box-shadow:
+      0 4px 16px rgba(0,0,0,0.8),
+      0 1px 4px rgba(0,0,0,0.6),
+      inset 0 2px 4px var(--rod-highlight),
+      inset 0 -1px 3px rgba(0,0,0,0.5);
+    position: relative;
+    z-index: 2;
+    flex-shrink: 0;
+    transition: background 0.5s ease, box-shadow 0.5s ease;
+  }
+
+  .scroll-chat-rod::before,
+  .scroll-chat-rod::after {
+    content: '';
+    position: absolute;
+    top: 1px;
+    width: 24px;
+    height: 16px;
+    background: linear-gradient(180deg, var(--rod-hi), var(--rod-lo), var(--rod-mid));
+    border-radius: 8px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.7);
+    transition: background 0.5s ease;
+  }
+  .scroll-chat-rod::before { left: -7px; }
+  .scroll-chat-rod::after { right: -7px; }
+
+  .rod-cap {
+    position: absolute;
+    top: 3px;
+    width: 8px;
+    height: 12px;
+    border-radius: 4px;
+    background: var(--rod-cap-bg);
+    border: 1px solid var(--rod-cap-border);
+    transition: all 0.5s ease;
+  }
+  .rod-cap.left { left: -10px; }
+  .rod-cap.right { right: -10px; }
+
+  .scroll-string {
+    position: absolute;
+    width: 1px;
+    background: linear-gradient(to bottom, var(--string-color), transparent);
+    z-index: 3;
+  }
+  .scroll-string.left { left: 30px; top: 100%; height: 35px; }
+  .scroll-string.right { right: 30px; top: 100%; height: 28px; }
+
+  .scroll-string-tassel {
+    position: absolute;
+    bottom: -4px;
+    left: -3px;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--tassel-color), transparent);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    transition: background 0.5s ease;
+  }
+
+  /* ─── Parchment Body ─── */
+  .scroll-chat-body {
+    width: 310px;
+    height: 540px;
+    background: linear-gradient(170deg, var(--parch-1) 0%, var(--parch-2) 30%, var(--parch-3) 60%, var(--parch-4) 100%);
+    border-left: 3px solid var(--border-accent);
+    border-right: 3px solid var(--border-accent);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: background 0.5s ease, border-color 0.5s ease;
+  }
+
+  .scroll-chat-body::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    opacity: 0.6;
+    z-index: 0;
+    mix-blend-mode: overlay;
+  }
+
+  .scroll-chat-body::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    box-shadow:
+      inset 6px 0 30px var(--vignette),
+      inset -6px 0 30px var(--vignette),
+      inset 0 16px 40px rgba(0, 0, 0, 0.35),
+      inset 0 -16px 40px rgba(0, 0, 0, 0.35);
+    pointer-events: none;
+    z-index: 3;
+    transition: box-shadow 0.5s ease;
+  }
+
+  .scroll-deco-line {
+    position: absolute;
+    width: 1px;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .scroll-deco-line.left {
+    left: 12px; top: 15%; height: 70%;
+    background: linear-gradient(to bottom, transparent, var(--deco), transparent);
+  }
+  .scroll-deco-line.right {
+    right: 12px; top: 20%; height: 60%;
+    background: linear-gradient(to bottom, transparent, var(--deco), transparent);
+  }
+
+  /* ─── Header ─── */
+  .scroll-chat-header {
+    padding: 10px 16px 8px;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+    flex-shrink: 0;
+  }
+
+  .scroll-chat-header::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 10%;
+    right: 10%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--header-line), transparent);
+  }
+
+  .scroll-chat-kanji {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 20px;
+    font-weight: 900;
+    color: var(--kanji);
+    letter-spacing: 8px;
+    margin-bottom: 0;
+    text-shadow: 0 0 30px var(--kanji-glow), 0 2px 4px rgba(0, 0, 0, 0.4);
+    position: relative;
+    display: inline-block;
+    transition: color 0.5s ease, text-shadow 0.5s ease;
+  }
+
+  .scroll-chat-kanji::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 10%;
+    right: 10%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--brush-under), transparent);
+    border-radius: 1px;
+    transition: background 0.5s ease;
+  }
+
+  .scroll-chat-title {
+    font-size: 8px;
+    font-weight: 800;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--title);
+    margin-top: 2px;
+    transition: color 0.5s ease;
+  }
+
+  .scroll-chat-online {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 3px;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--online);
+    text-transform: uppercase;
+    transition: color 0.5s ease;
+  }
+
+  .scroll-chat-online .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--online);
+    box-shadow: 0 0 8px var(--online);
+    animation: onlinePulse 2s ease-in-out infinite;
+    transition: background 0.5s ease;
+  }
+
+  @keyframes onlinePulse {
+    0%, 100% { opacity: 0.5; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.3); }
+  }
+
+  /* ─── Seal ─── */
+  .scroll-chat-seal {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    width: 28px;
+    height: 28px;
+    border: 2px solid var(--seal-border);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Noto Serif JP', serif;
+    font-size: 13px;
+    font-weight: 900;
+    color: var(--seal);
+    transform: rotate(6deg);
+    z-index: 4;
+    pointer-events: none;
+    box-shadow: inset 0 0 8px var(--seal-glow), 0 0 15px var(--seal-glow);
+    animation: sealBreath 5s ease-in-out infinite;
+    transition: color 0.5s ease, border-color 0.5s ease, box-shadow 0.5s ease;
+  }
+
+  @keyframes sealBreath {
+    0%, 100% { opacity: 0.8; }
+    50% { opacity: 1; }
+  }
+
+  .scroll-player-count {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 9px;
+    font-weight: 600;
+    color: var(--player-count);
+    z-index: 4;
+    letter-spacing: 0.5px;
+    transition: color 0.5s ease;
+  }
+  .scroll-player-count i { font-size: 10px; opacity: 0.7; }
+
+  /* ─── Main Menu Popup ─── */
+  .sc-menu-wrap {
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .sc-menu {
+    position: absolute;
+    bottom: calc(100% + 12px);
+    right: -8px;
+    display: flex;
+    flex-direction: column;
+    padding: 6px;
+    background: rgba(16, 12, 9, 0.97);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.7), 0 2px 8px rgba(0,0,0,0.3);
+    backdrop-filter: blur(16px);
+    opacity: 0;
+    transform: translateY(8px) scale(0.92);
+    pointer-events: none;
+    transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+    z-index: 10;
+    min-width: 160px;
+  }
+
+  .sc-menu.open {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+  }
+
+  .sc-menu::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    right: 14px;
+    width: 9px;
+    height: 9px;
+    background: rgba(16, 12, 9, 0.97);
+    border-right: 1px solid rgba(255,255,255,0.06);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    transform: rotate(45deg);
+  }
+
+  /* ─── Menu Item (top-level) ─── */
+  .sc-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    border: none;
+    background: none;
+    transition: all 0.15s ease;
+    width: 100%;
+    text-align: left;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .sc-menu-item:hover {
+    background: rgba(255,255,255,0.05);
+  }
+
+  .sc-menu-item-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+  }
+
+  .sc-menu-item-icon.theme-icon {
+    background: linear-gradient(135deg, rgba(200, 150, 50, 0.2), rgba(180, 50, 30, 0.2));
+    color: rgba(220, 160, 60, 0.8);
+  }
+
+  .sc-menu-item-text {
+    font-size: 10px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.6);
+    letter-spacing: 0.3px;
+  }
+
+  .sc-menu-item-arrow {
+    margin-left: auto;
+    font-size: 10px;
+    color: rgba(255,255,255,0.15);
+    transition: transform 0.2s ease;
+  }
+
+  .sc-menu-item.expanded .sc-menu-item-arrow {
+    transform: rotate(90deg);
+    color: rgba(255,255,255,0.3);
+  }
+
+  /* ─── Submenu (themes list) ─── */
+  .sc-submenu {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    padding-left: 6px;
+  }
+
+  .sc-submenu.open {
+    max-height: 320px;
+  }
+
+  .sc-submenu-inner {
+    max-height: 260px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.08) transparent;
+  }
+
+  .sc-submenu-inner::-webkit-scrollbar { width: 3px; }
+  .sc-submenu-inner::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+
+  .sc-submenu-inner {
+    padding: 4px 0 2px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .sc-theme-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    border: none;
+    background: none;
+    transition: all 0.15s ease;
+    width: 100%;
+    text-align: left;
+  }
+
+  .sc-theme-option:hover {
+    background: rgba(255,255,255,0.04);
+  }
+
+  .sc-theme-option.active {
+    background: rgba(255,255,255,0.05);
+  }
+
+  .sc-theme-dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    border: 2px solid transparent;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+    transition: all 0.2s ease;
+  }
+
+  .sc-theme-option.active .sc-theme-dot {
+    border-color: rgba(255,255,255,0.4);
+    box-shadow: 0 0 8px rgba(255,255,255,0.08);
+  }
+
+  .sc-theme-dot[data-color="gold"] {
+    background: radial-gradient(circle, #c8a030, #8a6820);
+  }
+
+  .sc-theme-dot[data-color="crimson"] {
+    background: radial-gradient(circle, #c83020, #6a1510);
+  }
+
+  .sc-theme-dot[data-color="ice"] {
+    background: radial-gradient(circle, #60b0ff, #2060a0);
+  }
+
+  .sc-theme-dot[data-color="sakura"] {
+    background: radial-gradient(circle, #e88aaa, #8a3050);
+  }
+
+  .sc-theme-dot[data-color="void"] {
+    background: radial-gradient(circle, #8040e0, #00c8b4);
+  }
+
+  .sc-theme-dot[data-color="emerald"] {
+    background: radial-gradient(circle, #30d880, #0a5030);
+  }
+
+  .sc-theme-dot[data-color="sunset"] {
+    background: radial-gradient(circle, #ffa030, #c04010);
+  }
+
+  .sc-theme-dot[data-color="phantom"] {
+    background: radial-gradient(circle, #bbb, #333);
+  }
+
+  .sc-theme-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
+  }
+
+  .sc-theme-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8.5px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 0.3px;
+  }
+
+  .sc-theme-option.active .sc-theme-name {
+    color: rgba(255,255,255,0.75);
+  }
+
+  .sc-theme-desc {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 6px;
+    color: rgba(255,255,255,0.18);
+  }
+
+  /* ─── Typing Indicator ─── */
+  .sc-typing {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    align-self: flex-start;
+    animation: msgSlide 0.3s ease;
+  }
+
+  .sc-typing-avatar {
+    font-size: 10px;
+    flex-shrink: 0;
+  }
+
+  .sc-typing-content {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .sc-typing-name {
+    font-size: 0.48rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: var(--name-other);
+    text-transform: uppercase;
+  }
+
+  .sc-typing-dots {
+    display: flex;
+    gap: 3px;
+    align-items: center;
+  }
+
+  .sc-typing-dots span {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--name-other);
+    animation: typingBounce 1.4s ease-in-out infinite;
+  }
+
+  .sc-typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+  .sc-typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes typingBounce {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.3; }
+    30% { transform: translateY(-4px); opacity: 0.8; }
+  }
+
+  /* ─── Player Avatar + Name Row ─── */
+  .sc-msg-name-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 3px;
+    padding: 0 10px;
+  }
+
+  .sc-msg.is-you .sc-msg-name-row {
+    justify-content: flex-end;
+  }
+
+  .sc-msg-avatar {
+    font-size: 10px;
+    line-height: 1;
+  }
+
+  .sc-msg-name-row .sc-msg-name {
+    padding: 0;
+    margin-bottom: 0;
+  }
+
+  /* ─── Emoji Picker ─── */
+  .sc-emoji-wrap {
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .sc-emoji-popup {
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: -6px;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 2px;
+    padding: 8px;
+    background: rgba(16, 12, 9, 0.97);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 14px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+    backdrop-filter: blur(16px);
+    opacity: 0;
+    transform: translateY(6px) scale(0.92);
+    pointer-events: none;
+    transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+    z-index: 10;
+    width: 200px;
+  }
+
+  .sc-emoji-popup.open {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+  }
+
+  .sc-emoji-popup::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 14px;
+    width: 9px;
+    height: 9px;
+    background: rgba(16, 12, 9, 0.97);
+    border-right: 1px solid rgba(255,255,255,0.06);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    transform: rotate(45deg);
+  }
+
+  .sc-emoji-btn {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    border: none;
+    background: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    line-height: 1;
+  }
+
+  .sc-emoji-btn:hover {
+    background: rgba(255,255,255,0.08);
+    transform: scale(1.2);
+  }
+
+  /* ─── WPM (in name row, bracket style) ─── */
+  .sc-wpm {
+    display: none;
+  }
+
+
+  /* ─── Sound Toggle in Menu ─── */
+  .sc-menu-item-icon.sound-icon {
+    background: linear-gradient(135deg, rgba(80, 180, 120, 0.2), rgba(40, 140, 80, 0.15));
+    color: rgba(80, 200, 120, 0.8);
+  }
+
+  .sc-sound-toggle {
+    margin-left: auto;
+    width: 32px;
+    height: 16px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.06);
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+  }
+
+  .sc-sound-toggle.on {
+    background: rgba(80, 200, 120, 0.2);
+    border-color: rgba(80, 200, 120, 0.3);
+  }
+
+  .sc-sound-toggle::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.3);
+    transition: all 0.3s ease;
+  }
+
+  .sc-sound-toggle.on::after {
+    left: 18px;
+    background: rgba(80, 200, 120, 0.8);
+    box-shadow: 0 0 6px rgba(80, 200, 120, 0.4);
+  }
+
+  /* ─── Scroll Entrance — Slides up from below, snaps into place ─── */
+
+  .scroll-chat-outer.entering {
+    animation: scrollRise 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  @keyframes scrollRise {
+    0% {
+      opacity: 0;
+      transform: translateY(100vh) scale(0.85);
+    }
+    50% {
+      opacity: 1;
+      transform: translateY(-12px) scale(1.01);
+    }
+    70% {
+      transform: translateY(4px) scale(0.998);
+    }
+    85% {
+      transform: translateY(-1px) scale(1);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  /* Rods stretch wider on arrival */
+  .scroll-chat-outer.entering .scroll-chat-rod {
+    animation: rodStretch 0.4s 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  @keyframes rodStretch {
+    0% { transform: scaleX(0.92); }
+    50% { transform: scaleX(1.04); }
+    100% { transform: scaleX(1); }
+  }
+
+  /* Strings swing after snap */
+  .scroll-chat-outer.entering .scroll-string {
+    animation: stringSwing 1s 0.5s ease both;
+    transform-origin: top center;
+  }
+
+  @keyframes stringSwing {
+    0% { transform: rotate(40deg); opacity: 0; }
+    20% { opacity: 1; }
+    35% { transform: rotate(-15deg); }
+    55% { transform: rotate(8deg); }
+    70% { transform: rotate(-3deg); }
+    85% { transform: rotate(1deg); }
+    100% { transform: rotate(0deg); }
+  }
+
+  /* ─── Messages ─── */
+  .scroll-chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 14px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: relative;
+    z-index: 1;
+    scrollbar-width: none;
+    mask-image: linear-gradient(to bottom, transparent 0%, black 3%, black 97%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 3%, black 97%, transparent 100%);
+  }
+  .scroll-chat-messages::-webkit-scrollbar { display: none; }
+
+  .sc-msg {
+    display: flex;
+    flex-direction: column;
+    max-width: 82%;
+    animation: msgSlide 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  @keyframes msgSlide {
+    from { opacity: 0; transform: translateY(10px) scale(0.97); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .sc-msg.is-other { align-self: flex-start; }
+  .sc-msg.is-you { align-self: flex-end; }
+
+  .sc-msg-name {
+    font-size: 0.58rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 3px;
+    padding: 0 10px;
+    text-transform: uppercase;
+    transition: color 0.5s ease;
+  }
+
+  .sc-msg.is-other .sc-msg-name { color: var(--name-other); }
+  .sc-msg.is-you .sc-msg-name { text-align: right; color: var(--name-you); }
+
+  .sc-msg-bubble {
+    font-size: 0.72rem;
+    line-height: 1.5;
+    padding: 9px 14px;
+    word-break: break-word;
+    position: relative;
+    transition: all 0.4s ease;
+  }
+
+  .sc-msg.is-other .sc-msg-bubble {
+    background: var(--msg-other-bg);
+    border: 1px solid var(--msg-other-border);
+    border-radius: 16px 16px 16px 4px;
+    color: var(--msg-other-text);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+  .sc-msg.is-other .sc-msg-bubble:hover {
+    background: var(--msg-other-hover);
+  }
+
+  .sc-msg.is-you .sc-msg-bubble {
+    background: var(--msg-you-bg);
+    border: 1px solid var(--msg-you-border);
+    border-radius: 16px 16px 4px 16px;
+    color: var(--msg-you-text);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15), 0 0 20px var(--msg-you-glow);
+  }
+
+  /* Winner */
+  .sc-msg.is-winner .sc-msg-name {
+    color: var(--winner-name) !important;
+    text-shadow: 0 0 12px var(--winner-glow);
+    animation: winnerNameGlow 2s ease-in-out infinite;
+  }
+  @keyframes winnerNameGlow {
+    0%, 100% { text-shadow: 0 0 8px var(--winner-glow); }
+    50% { text-shadow: 0 0 18px var(--winner-glow); }
+  }
+
+  .sc-msg.is-winner .sc-msg-bubble {
+    background: linear-gradient(135deg, var(--winner-bg1), var(--winner-bg2));
+    border: 1px solid var(--winner-border);
+    box-shadow: 0 0 25px var(--winner-glow);
+    color: var(--msg-you-text);
+    animation: winnerPulse 3s ease-in-out infinite;
+  }
+  @keyframes winnerPulse {
+    0%, 100% { box-shadow: 0 0 20px var(--winner-glow); }
+    50% { box-shadow: 0 0 40px var(--winner-glow); }
+  }
+
+  .sc-msg.is-second .sc-msg-name { color: rgba(180, 180, 190, 0.55) !important; }
+  .sc-msg.is-third .sc-msg-name { color: rgba(180, 120, 50, 0.55) !important; }
+
+  /* System */
+  .sc-msg.is-system { align-self: center; max-width: 90%; }
+  .sc-msg.is-system .sc-msg-bubble {
+    font-size: 0.62rem;
+    color: var(--system-text);
+    font-style: italic;
+    text-align: center;
+    background: none;
+    border: none;
+    padding: 6px 0;
+    box-shadow: none;
+    transition: color 0.5s ease;
+  }
+  .sc-msg.is-system .sc-msg-bubble::before,
+  .sc-msg.is-system .sc-msg-bubble::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 35px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--system-line), transparent);
+  }
+  .sc-msg.is-system .sc-msg-bubble::before { right: calc(100% + 8px); }
+  .sc-msg.is-system .sc-msg-bubble::after { left: calc(100% + 8px); }
+
+  .sc-msg-time {
+    font-size: 0.42rem;
+    color: var(--time-color);
+    margin-top: 2px;
+    padding: 0 10px;
+    transition: color 0.5s ease;
+  }
+  .sc-msg.is-you .sc-msg-time { text-align: right; }
+
+  /* ─── Results Card ─── */
+  .sc-results-card {
+    background: linear-gradient(165deg, var(--results-bg1), var(--results-bg2));
+    border: 1px solid var(--results-border);
+    border-radius: 14px;
+    padding: 14px 12px;
+    margin: 4px 0;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.3), inset 0 1px 0 var(--results-border);
+    animation: msgSlide 0.3s ease;
+    position: relative;
+    overflow: visible;
+    transition: all 0.5s ease;
+  }
+
+  .sc-results-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%; width: 50%; height: 100%;
+    background: linear-gradient(90deg, transparent, var(--results-sweep), transparent);
+    animation: resultsSweep 4s ease-in-out infinite;
+  }
+  @keyframes resultsSweep {
+    0% { left: -50%; }
+    50% { left: 100%; }
+    100% { left: 100%; }
+  }
+
+  .sc-results-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid var(--results-border);
+  }
+
+  .sc-results-trophy {
+    font-size: 16px;
+    filter: drop-shadow(0 2px 8px var(--results-trophy-glow));
+    animation: trophyFloat 3s ease-in-out infinite;
+  }
+  @keyframes trophyFloat {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-3px) scale(1.05); }
+  }
+
+  .sc-results-title {
+    font-size: 0.6rem;
+    font-weight: 800;
+    letter-spacing: 0.3em;
+    color: var(--shimmer-2);
+    text-shadow: 0 0 12px var(--shimmer-1);
+  }
+  @keyframes shimmerGold {
+    0% { background-position: -300% 0; }
+    100% { background-position: 300% 0; }
+  }
+
+  /* ─── Podium ─── */
+  .sc-podium {
+    display: flex;
+    justify-content: center;
+    padding: 6px 0 10px;
+  }
+
+  .sc-podium-winner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+    padding: 10px 24px 8px;
+    border-radius: 14px;
+    background: radial-gradient(ellipse at center, var(--podium-glow-bg) 0%, transparent 70%);
+    border: 1px solid var(--podium-glow-border);
+    animation: winnerGlow 2s ease-in-out infinite;
+    transition: all 0.5s ease;
+  }
+  @keyframes winnerGlow {
+    0%, 100% { box-shadow: 0 0 15px var(--podium-glow-bg); }
+    50% { box-shadow: 0 0 30px var(--podium-glow-bg), inset 0 0 20px var(--podium-glow-bg); }
+  }
+
+  .sc-podium-crown {
+    font-size: 18px;
+    filter: drop-shadow(0 0 8px var(--podium-crown-glow));
+    animation: crownBob 3s ease-in-out infinite;
+  }
+  @keyframes crownBob {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-3px) scale(1.05); }
+  }
+
+  .sc-podium-emoji { font-size: 18px; }
+  .sc-podium-name {
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: var(--podium-name);
+    text-shadow: 0 0 10px var(--podium-crown-glow);
+    transition: color 0.5s ease;
+  }
+  .sc-podium-wpm {
+    font-size: 0.9rem;
+    font-weight: 900;
+    color: #fff;
+    text-shadow: 0 0 12px rgba(255,255,255,0.2);
+  }
+  .sc-podium-wpm small { font-size: 0.4rem; font-weight: 500; opacity: 0.5; }
+
+  .sc-podium-acc-bar {
+    width: 70px;
+    height: 3px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 3px;
+  }
+  .sc-podium-acc-fill {
+    height: 100%;
+    border-radius: 3px;
+    background: var(--acc-fill);
+    transition: background 0.5s ease;
+  }
+  .sc-podium-acc-label {
+    font-size: 0.38rem;
+    color: var(--acc-label);
+    margin-top: 1px;
+    transition: color 0.5s ease;
+  }
+
+  /* Runner-up rows */
+  .sc-rankings {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    border-top: 1px solid rgba(255,255,255,0.04);
+    padding-top: 8px;
+  }
+
+  .sc-rank-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 8px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.06);
+    background: rgba(255,255,255,0.03);
+    transition: all 0.5s ease;
+  }
+
+  .sc-rank-row.silver {
+    background: var(--rank-silver-bg);
+    border-color: var(--rank-silver-border);
+  }
+  .sc-rank-row.bronze {
+    background: var(--rank-bronze-bg);
+    border-color: var(--rank-bronze-border);
+  }
+
+  .sc-rank-medal { font-size: 12px; flex-shrink: 0; }
+  .sc-rank-emoji { font-size: 11px; flex-shrink: 0; }
+  .sc-rank-name { font-size: 0.6rem; font-weight: 600; color: rgba(255,255,255,0.5); flex: 1; }
+  .sc-rank-row.silver .sc-rank-name { color: #c0c0c0; }
+  .sc-rank-row.bronze .sc-rank-name { color: #cd7f32; }
+
+  .sc-rank-stats { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+  .sc-rank-wpm { font-size: 0.65rem; font-weight: 800; color: rgba(255,255,255,0.45); }
+  .sc-rank-wpm small { font-size: 0.4rem; font-weight: 500; opacity: 0.5; }
+
+  .sc-rank-acc-bar {
+    width: 45px; height: 2px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .sc-rank-acc-fill {
+    height: 100%;
+    border-radius: 2px;
+    background: rgba(255,255,255,0.2);
+  }
+  .sc-rank-acc-fill.silver { background: linear-gradient(90deg, #c0c0c0, #a0a0a0); }
+  .sc-rank-acc-fill.bronze { background: linear-gradient(90deg, #cd7f32, #a06020); }
+
+  /* ─── Input ─── */
+  .scroll-chat-input-area {
+    padding: 10px 12px 12px;
+    position: relative;
+    z-index: 2;
+    flex-shrink: 0;
+  }
+
+  .scroll-chat-input-area::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 10%; right: 10%; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--header-line), transparent);
+    transition: background 0.5s ease;
+  }
+
+  .sc-input-row { display: flex; align-items: center; gap: 8px; }
+
+  .sc-input-bar {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 22px;
+    padding: 4px 10px;
+    transition: all 0.4s ease;
+  }
+
+  .sc-input-bar:focus-within {
+    border-color: var(--input-focus-border);
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+  }
+
+  .sc-icon-btn {
+    width: 26px; height: 26px;
+    display: flex; align-items: center; justify-content: center;
+    background: none; border: none;
+    color: var(--icon-btn);
+    font-size: 14px; cursor: pointer;
+    flex-shrink: 0; border-radius: 50%;
+    transition: all 0.2s;
+  }
+  .sc-icon-btn:hover {
+    color: var(--icon-btn-hover);
+    transform: scale(1.1);
+  }
+
+  .sc-input {
+    flex: 1; min-width: 0;
+    padding: 7px 4px;
+    background: none; border: none;
+    color: var(--input-text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; outline: none;
+  }
+  .sc-input::placeholder { color: var(--input-placeholder); font-style: italic; }
+
+  .sc-send-btn {
+    width: 34px; height: 34px;
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, var(--send-bg1), var(--send-bg2));
+    border: 1px solid var(--send-border);
+    border-radius: 50%;
+    color: var(--send-color);
+    cursor: pointer; font-size: 14px;
+    flex-shrink: 0;
+    transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    position: relative; overflow: hidden;
+  }
+  .sc-send-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 20px var(--send-border);
+  }
+  .sc-send-btn:active { transform: scale(0.95); }
+</style>
+</head>
+<body>
+
+<div class="scroll-chat-outer" data-theme="">
+  <!-- Top Rod -->
+  <div class="scroll-chat-rod">
+    <div class="rod-cap left"></div>
+    <div class="rod-cap right"></div>
+    <div class="scroll-string left"><div class="scroll-string-tassel"></div></div>
+    <div class="scroll-string right"><div class="scroll-string-tassel"></div></div>
+  </div>
+
+  <!-- Scroll Body -->
+  <div class="scroll-chat-body">
+    <div class="scroll-deco-line left"></div>
+    <div class="scroll-deco-line right"></div>
+    <div class="scroll-chat-seal">戦</div>
+    <div class="scroll-player-count"><i class="ri-group-line"></i> 3 online</div>
+
+    <!-- Header -->
+    <div class="scroll-chat-header">
+      <div class="scroll-chat-kanji">戦室</div>
+      <div class="scroll-chat-title">War Room</div>
+      <div class="scroll-chat-online"><span class="dot"></span> LIVE</div>
+    </div>
+
+    <!-- Messages -->
+    <div class="scroll-chat-messages" id="chatMessages">
+      <div class="sc-msg is-system"><div class="sc-msg-bubble">Room created</div></div>
+      <div class="sc-msg is-system"><div class="sc-msg-bubble">ShadowKai joined the war room</div></div>
+
+      <div class="sc-msg is-other">
+        <div class="sc-msg-name-row"><span class="sc-msg-avatar">⚡</span><div class="sc-msg-name">ShadowKai (115)</div></div>
+        <div class="sc-msg-bubble">yo ready to race?</div>
+        <div class="sc-msg-time">2:14 PM</div>
+      </div>
+
+      <div class="sc-msg is-you">
+        <div class="sc-msg-name-row"><div class="sc-msg-name">You (128)</div><span class="sc-msg-avatar">🚀</span></div>
+        <div class="sc-msg-bubble">lets go, warming up rn</div>
+        <div class="sc-msg-time">2:14 PM</div>
+      </div>
+
+      <div class="sc-msg is-system"><div class="sc-msg-bubble">NightBlade joined the war room</div></div>
+
+      <div class="sc-msg is-other">
+        <div class="sc-msg-name-row"><span class="sc-msg-avatar">🗡️</span><div class="sc-msg-name">NightBlade (98)</div></div>
+        <div class="sc-msg-bubble">140wpm incoming watch out</div>
+        <div class="sc-msg-time">2:15 PM</div>
+      </div>
+
+      <div class="sc-msg is-you">
+        <div class="sc-msg-name-row"><div class="sc-msg-name">You (128)</div><span class="sc-msg-avatar">🚀</span></div>
+        <div class="sc-msg-bubble">cap, prove it lol</div>
+        <div class="sc-msg-time">2:15 PM</div>
+      </div>
+
+      <div class="sc-msg is-system"><div class="sc-msg-bubble">Race starting in 3...</div></div>
+
+      <!-- Race Results Card (proper structure) -->
+      <div class="sc-results-card">
+        <div class="sc-results-header">
+          <div class="sc-results-trophy">&#x1F3C6;</div>
+          <div class="sc-results-title">BATTLE OVER</div>
+        </div>
+        <div class="sc-podium">
+          <div class="sc-podium-winner">
+            <div class="sc-podium-crown">👑</div>
+            <div class="sc-podium-emoji">🚀</div>
+            <div class="sc-podium-name">You</div>
+            <div class="sc-podium-wpm">128 <small>WPM</small></div>
+            <div class="sc-podium-acc-bar"><div class="sc-podium-acc-fill" style="width:97%"></div></div>
+            <div class="sc-podium-acc-label">97% acc</div>
+          </div>
+        </div>
+        <div class="sc-rankings">
+          <div class="sc-rank-row silver">
+            <span class="sc-rank-medal">🥈</span>
+            <span class="sc-rank-emoji">⚡</span>
+            <span class="sc-rank-name">ShadowKai</span>
+            <div class="sc-rank-stats">
+              <span class="sc-rank-wpm">115 <small>WPM</small></span>
+              <div class="sc-rank-acc-bar"><div class="sc-rank-acc-fill silver" style="width:94%"></div></div>
+            </div>
+          </div>
+          <div class="sc-rank-row bronze">
+            <span class="sc-rank-medal">🥉</span>
+            <span class="sc-rank-emoji">🗡️</span>
+            <span class="sc-rank-name">NightBlade</span>
+            <div class="sc-rank-stats">
+              <span class="sc-rank-wpm">98 <small>WPM</small></span>
+              <div class="sc-rank-acc-bar"><div class="sc-rank-acc-fill bronze" style="width:89%"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sc-msg is-winner is-you">
+        <div class="sc-msg-name-row"><div class="sc-msg-name">You (128)</div><span class="sc-msg-avatar">🚀</span></div>
+        <div class="sc-msg-bubble">LETS GOOO</div>
+        <div class="sc-msg-time">2:16 PM</div>
+      </div>
+
+      <div class="sc-msg is-second is-other">
+        <div class="sc-msg-name-row"><span class="sc-msg-avatar">⚡</span><div class="sc-msg-name">ShadowKai (115)</div></div>
+        <div class="sc-msg-bubble">gg that was close</div>
+        <div class="sc-msg-time">2:16 PM</div>
+      </div>
+
+      <div class="sc-msg is-other is-third">
+        <div class="sc-msg-name-row"><span class="sc-msg-avatar">🗡️</span><div class="sc-msg-name">NightBlade (98)</div></div>
+        <div class="sc-msg-bubble">bruh i choked hard</div>
+        <div class="sc-msg-time">2:16 PM</div>
+      </div>
+
+      <!-- Typing indicator -->
+      <div class="sc-typing" id="typingIndicator">
+        <span class="sc-typing-avatar">⚡</span>
+        <div class="sc-typing-content">
+          <span class="sc-typing-name">ShadowKai</span>
+          <div class="sc-typing-dots"><span></span><span></span><span></span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Input -->
+    <div class="scroll-chat-input-area">
+      <div class="sc-input-row">
+        <div class="sc-input-bar">
+          <div class="sc-emoji-wrap">
+            <button class="sc-icon-btn" id="emojiToggleBtn"><i class="ri-emotion-line"></i></button>
+            <div class="sc-emoji-popup" id="emojiPopup"></div>
+          </div>
+          <input type="text" class="sc-input" id="chatInput" placeholder="Inscribe a message..." maxlength="200" autocomplete="off" spellcheck="false">
+          <div class="sc-menu-wrap">
+            <button class="sc-icon-btn" id="menuToggleBtn"><i class="ri-quill-pen-line"></i></button>
+            <div class="sc-menu" id="mainMenu">
+
+              <!-- Scroll Theme (expandable) -->
+              <button class="sc-menu-item" id="themeMenuItem">
+                <div class="sc-menu-item-icon theme-icon"><i class="ri-palette-line"></i></div>
+                <span class="sc-menu-item-text">Scroll Theme</span>
+                <span class="sc-menu-item-arrow"><i class="ri-arrow-right-s-line"></i></span>
+              </button>
+              <div class="sc-submenu" id="themeSubmenu">
+                <div class="sc-submenu-inner">
+                  <button class="sc-theme-option active" data-pick="gold">
+                    <div class="sc-theme-dot" data-color="gold"></div>
+                    <div class="sc-theme-info">
+                      <span class="sc-theme-name">Gold Parchment</span>
+                      <span class="sc-theme-desc">Classic war room</span>
+                    </div>
+                  </button>
+                  <button class="sc-theme-option" data-pick="crimson">
+                    <div class="sc-theme-dot" data-color="crimson"></div>
+                    <div class="sc-theme-info">
+                      <span class="sc-theme-name">Blood & Crimson</span>
+                      <span class="sc-theme-desc">Dark samurai</span>
+                    </div>
+                  </button>
+                  <button class="sc-theme-option" data-pick="ice">
+                    <div class="sc-theme-dot" data-color="ice"></div>
+                    <div class="sc-theme-info">
+                      <span class="sc-theme-name">Ice & Moonlight</span>
+                      <span class="sc-theme-desc">Frozen warrior</span>
+                    </div>
+                  </button>
+
+                  <button class="sc-theme-option" data-pick="void">
+                    <div class="sc-theme-dot" data-color="void"></div>
+                    <div class="sc-theme-info">
+                      <span class="sc-theme-name">Void & Neon</span>
+                      <span class="sc-theme-desc">Cyber samurai</span>
+                    </div>
+                  </button>
+                  <button class="sc-theme-option" data-pick="emerald">
+                    <div class="sc-theme-dot" data-color="emerald"></div>
+                    <div class="sc-theme-info">
+                      <span class="sc-theme-name">Emerald Shadow</span>
+                      <span class="sc-theme-desc">Forest assassin</span>
+                    </div>
+                  </button>
+                  <button class="sc-theme-option" data-pick="sunset">
+                    <div class="sc-theme-dot" data-color="sunset"></div>
+                    <div class="sc-theme-info">
+                      <span class="sc-theme-name">Sunset Blaze</span>
+                      <span class="sc-theme-desc">Burning horizon</span>
+                    </div>
+                  </button>
+                  <button class="sc-theme-option" data-pick="phantom">
+                    <div class="sc-theme-dot" data-color="phantom"></div>
+                    <div class="sc-theme-info">
+                      <span class="sc-theme-name">Phantom Smoke</span>
+                      <span class="sc-theme-desc">Monochrome ghost</span>
+                    </div>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Chat Sounds -->
+              <div class="sc-menu-item" id="soundMenuItem" style="cursor:pointer">
+                <div class="sc-menu-item-icon sound-icon"><i class="ri-volume-up-line"></i></div>
+                <span class="sc-menu-item-text">Chat Sounds</span>
+                <div class="sc-sound-toggle on" id="soundToggle"></div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+        <button class="sc-send-btn" id="sendBtn"><i class="ri-send-plane-fill"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Rod -->
+  <div class="scroll-chat-rod">
+    <div class="rod-cap left"></div>
+    <div class="rod-cap right"></div>
+  </div>
+</div>
+
+<script>
+  /* ═══════════════════════════════════════════════
+     THEME TOGGLE
+     ═══════════════════════════════════════════════ */
+  const outer = document.querySelector('.scroll-chat-outer');
+  const menuToggleBtn = document.getElementById('menuToggleBtn');
+  const mainMenu = document.getElementById('mainMenu');
+  const themeMenuItem = document.getElementById('themeMenuItem');
+  const themeSubmenu = document.getElementById('themeSubmenu');
+  const themeOptions = document.querySelectorAll('.sc-theme-option');
+
+  // Open/close main menu
+  menuToggleBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const opening = !mainMenu.classList.contains('open');
+    mainMenu.classList.toggle('open');
+    // Reset submenus when closing
+    if (!opening) {
+      themeSubmenu.classList.remove('open');
+      themeMenuItem.classList.remove('expanded');
+    }
+  });
+
+  document.addEventListener('click', () => {
+    mainMenu.classList.remove('open');
+    themeSubmenu.classList.remove('open');
+    themeMenuItem.classList.remove('expanded');
+  });
+  mainMenu.addEventListener('click', (e) => e.stopPropagation());
+
+  // Toggle theme submenu
+  themeMenuItem.addEventListener('click', () => {
+    themeSubmenu.classList.toggle('open');
+    themeMenuItem.classList.toggle('expanded');
+  });
+
+  // Theme selection
+  themeOptions.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const pick = btn.dataset.pick;
+      outer.setAttribute('data-theme', pick === 'gold' ? '' : pick);
+      themeOptions.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      // Close everything after a short delay
+      setTimeout(() => {
+        mainMenu.classList.remove('open');
+        themeSubmenu.classList.remove('open');
+        themeMenuItem.classList.remove('expanded');
+      }, 300);
+    });
+  });
+
+  /* ═══════════════════════════════════════════════
+     CHAT
+     ═══════════════════════════════════════════════ */
+  const input = document.getElementById('chatInput');
+  const sendBtn = document.getElementById('sendBtn');
+  const messages = document.getElementById('chatMessages');
+
+  const typingEl = document.getElementById('typingIndicator');
+  const playerEmojis = { ShadowKai: '⚡', NightBlade: '🗡️', You: '🚀' };
+  let soundEnabled = true;
+
+  // ─── Sound toggle ───
+  const soundToggle = document.getElementById('soundToggle');
+  const soundMenuItem = document.getElementById('soundMenuItem');
+  soundMenuItem.addEventListener('click', (e) => {
+    e.stopPropagation();
+    soundEnabled = !soundEnabled;
+    soundToggle.classList.toggle('on', soundEnabled);
+  });
+
+  // ─── Chat sounds (Web Audio) ───
+  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+  function playSendSound() {
+    if (!soundEnabled) return;
+    audioCtx.resume();
+    const t = audioCtx.currentTime;
+
+    // Bubble pop — satisfying little "bloop"
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(600, t);
+    osc.frequency.exponentialRampToValueAtTime(250, t + 0.08);
+    gain.gain.setValueAtTime(0.18, t);
+    gain.gain.setValueAtTime(0.18, t + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start(t);
+    osc.stop(t + 0.15);
+  }
+
+  function playReceiveSound() {
+    if (!soundEnabled) return;
+    audioCtx.resume();
+    const t = audioCtx.currentTime;
+
+    // Two-tone chime — like a gentle doorbell
+    [830, 1050].forEach((freq, i) => {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      const filter = audioCtx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.value = 3000;
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      const start = t + i * 0.1;
+      gain.gain.setValueAtTime(0, start);
+      gain.gain.linearRampToValueAtTime(0.12, start + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.001, start + 0.25);
+      osc.connect(filter);
+      filter.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(start);
+      osc.stop(start + 0.3);
+    });
+  }
+
+  // ─── Typing indicator helpers ───
+  function showTyping(name) {
+    typingEl.querySelector('.sc-typing-avatar').textContent = playerEmojis[name] || '💬';
+    typingEl.querySelector('.sc-typing-name').textContent = name;
+    typingEl.style.display = 'flex';
+    messages.scrollTop = messages.scrollHeight;
+  }
+  function hideTyping() { typingEl.style.display = 'none'; }
+  hideTyping(); // hidden by default
+
+  // ─── Send message ───
+  function sendMessage() {
+    const text = input.value.trim();
+    if (!text) return;
+
+    const now = new Date();
+    const time = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+
+    const msg = document.createElement('div');
+    msg.className = 'sc-msg is-you';
+    msg.innerHTML = `
+      <div class="sc-msg-name-row"><div class="sc-msg-name">You (128)</div><span class="sc-msg-avatar">🚀</span></div>
+      <div class="sc-msg-bubble">${text.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>
+      <div class="sc-msg-time">${time}</div>
+    `;
+    messages.insertBefore(msg, typingEl);
+    messages.scrollTop = messages.scrollHeight;
+    input.value = '';
+    playSendSound();
+
+
+    // Show typing, then reply
+    const names = ['ShadowKai', 'NightBlade'];
+    const name = names[Math.floor(Math.random() * names.length)];
+    const emoji = playerEmojis[name];
+
+    setTimeout(() => showTyping(name), 400 + Math.random() * 400);
+
+    setTimeout(() => {
+      hideTyping();
+      const replies = [
+        'nice one', 'gg', 'run it back?', 'that was close fr',
+        'bro ur cracked', 'im warming up still', 'rematch rn',
+        'no way lol', 'sheesh', 'lets run another', 'nah bro'
+      ];
+      const reply = document.createElement('div');
+      reply.className = 'sc-msg is-other';
+      reply.innerHTML = `
+        <div class="sc-msg-name-row"><span class="sc-msg-avatar">${emoji}</span><div class="sc-msg-name">${name} (${name === 'ShadowKai' ? '115' : '98'})</div></div>
+        <div class="sc-msg-bubble">${replies[Math.floor(Math.random() * replies.length)]}</div>
+        <div class="sc-msg-time">${time}</div>
+      `;
+      messages.insertBefore(reply, typingEl);
+      messages.scrollTop = messages.scrollHeight;
+      playReceiveSound();
+    }, 1200 + Math.random() * 1500);
+  }
+
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') sendMessage();
+  });
+  sendBtn.addEventListener('click', sendMessage);
+  messages.scrollTop = messages.scrollHeight;
+
+  // ─── Emoji picker ───
+  const emojiToggleBtn = document.getElementById('emojiToggleBtn');
+  const emojiPopup = document.getElementById('emojiPopup');
+  const emojis = ['😂','🔥','💀','😭','❤️','👑','⚡','🗡️','💪','🎯','👀','😤','🤣','💯','🚀','✨','😈','🏆','💥','🤝','😎','🥶','🫡','💬','⚔️','🎮','🐐','👏','😮','🤯'];
+
+  emojis.forEach(e => {
+    const btn = document.createElement('button');
+    btn.className = 'sc-emoji-btn';
+    btn.textContent = e;
+    btn.addEventListener('click', () => {
+      input.value += e;
+      input.focus();
+      emojiPopup.classList.remove('open');
+    });
+    emojiPopup.appendChild(btn);
+  });
+
+  emojiToggleBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    emojiPopup.classList.toggle('open');
+    mainMenu.classList.remove('open');
+  });
+
+  document.addEventListener('click', () => emojiPopup.classList.remove('open'));
+  emojiPopup.addEventListener('click', (e) => e.stopPropagation());
+
+  // ─── Entrance animation (demo: replay on click) ───
+  outer.classList.add('entering');
+  outer.addEventListener('animationend', () => outer.classList.remove('entering'), { once: true });
+</script>
+
+</body>
+</html>

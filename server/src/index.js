@@ -17,8 +17,8 @@ const io = new Server(server, {
     origin: FRONTEND_URL,
     methods: ['GET', 'POST']
   },
-  pingInterval: 10000,
-  pingTimeout: 5000
+  pingInterval: 25000,
+  pingTimeout: 20000
 });
 
 // Health check

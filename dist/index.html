@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google-site-verification" content="BWW0hMMw7Y84Myib4JPiUWQOsNLHf9sGvL9Ad4H39FQ" />
     <title>ZenType - Professional Typing Practice</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link
         href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Montserrat:wght@400;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;500;600;700&family=Shojumaru&display=swap"
         rel="stylesheet">
@@ -16,34 +16,11 @@
         window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
     </script>
     <script defer src="/_vercel/insights/script.js"></script>
-  <script type="module" crossorigin src="/assets/index-DnBAYy0a.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-AasLjXfo.css">
+  <script type="module" crossorigin src="/assets/index-Dxdwd2Te.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-C-vBSbvU.css">
 </head>
 
 <body>
-
-    <!-- SPLASH SCREEN -->
-    <div id="splash-overlay">
-        <canvas id="splash-canvas"></canvas>
-        <div id="splash-content">
-            <div id="splash-title-block">
-                <p id="splash-eyebrow">Welcome to</p>
-                <h1 id="splash-title">ZenType</h1>
-                <p id="splash-tagline">Master your keyboard</p>
-            </div>
-            <div id="splash-buttons">
-                <button id="splash-music-btn">
-                    <i class="ri-rhythm-line"></i>
-                    Rhythm Mode
-                    <span class="splash-beta">NEW</span>
-                </button>
-                <button id="splash-classic-btn">
-                    <i class="ri-keyboard-line"></i>
-                    Start Typing
-                </button>
-            </div>
-        </div>
-    </div>
 
     <!-- Custom Titlebar / Window Controls -->
     <div data-tauri-drag-region class="titlebar">
@@ -62,6 +39,7 @@
 
 
     <video id="bg-video" autoplay loop muted playsinline class="fade-out"></video>
+    <canvas id="three-canvas"></canvas>
     <canvas id="particles"></canvas>
     <canvas id="keypress-canvas"></canvas>
 
@@ -79,60 +57,65 @@
     </a>
 
     <div id="top-nav-buttons">
-        <!-- Track Selector (Moved here for Flexbox Alignment) -->
-        <div id="track-selector" class="hidden">
-            <div class="current-track">
-                <i class="ri-music-2-line"></i>
-                <span id="current-track-name">Track 1</span>
-                <i class="ri-arrow-down-s-line"></i>
+        <div id="nav-tray" class="collapsed">
+            <!-- Track Selector -->
+            <div id="track-selector" class="hidden">
+                <div class="current-track">
+                    <i class="ri-music-2-line"></i>
+                    <span id="current-track-name">Track 1</span>
+                    <i class="ri-arrow-down-s-line"></i>
+                </div>
+                <div class="track-list" id="track-list">
+                    <!-- Items added by JS -->
+                </div>
             </div>
-            <div class="track-list" id="track-list">
-                <!-- Items added by JS -->
-            </div>
+
+            <button id="zen-btn" class="glass-icon" aria-label="Zen Mode" title="Zen Mode">
+                <i class="ri-eye-off-line text-xl"></i>
+            </button>
+
+            <button id="sound-btn" class="glass-icon" aria-label="Toggle Sound">
+                <i class="ri-volume-up-line text-xl"></i>
+            </button>
+
+            <button id="login-btn" class="glass-icon" aria-label="Login"
+                onclick="document.getElementById('auth-modal').classList.remove('hidden')">
+                <i class="ri-user-line text-xl"></i>
+            </button>
+
+            <button id="wallpaper-sound-btn" class="glass-icon hidden" aria-label="Toggle Wallpaper Audio"
+                title="Mute Wallpaper Audio">
+                <i class="ri-volume-up-line text-xl"></i>
+            </button>
+
+            <button id="hagakure-leaderboard-btn" class="glass-icon" aria-label="Hagakure Leaderboard"
+                title="Hagakure Rankings">
+                <i class="ri-sword-fill text-xl"></i>
+            </button>
+
+            <button id="leaderboard-btn" class="glass-icon" aria-label="Leaderboard">
+                <i class="ri-trophy-line text-xl"></i>
+            </button>
+
+            <button id="dev-note-btn" class="glass-icon" aria-label="Note from Developer" title="Message from Dev">
+                <i class="ri-mail-star-line text-xl" style="color: #00d4ff; text-shadow: 0 0 8px rgba(0,212,255,0.4);"></i>
+            </button>
+
+            <button id="mp-btn" class="glass-icon" aria-label="Multiplayer Race" title="Multiplayer Race">
+                <i class="ri-group-line text-xl" style="color: #00d4ff; text-shadow: 0 0 8px rgba(0,212,255,0.4);"></i>
+            </button>
+
+            <button id="three-mode-btn" class="glass-icon" aria-label="3D Dojo Mode" title="3D Dojo Mode">
+                <i class="ri-box-3-line text-xl"></i>
+            </button>
+
+            <button id="settings-btn" class="glass-icon" aria-label="Settings">
+                <i class="ri-settings-4-line text-xl"></i>
+            </button>
         </div>
 
-        <!-- Buttons are reversed in HTML for Flexbox (Row-Reverse) or standard Row? Let's use Standard Row and Right Alignment -->
-        <!-- Order: Zen, Sound, Login, Leaderboard, Settings (Left to Right) -->
-
-        <button id="zen-btn" class="glass-icon" aria-label="Zen Mode" title="Zen Mode">
-            <i class="ri-eye-off-line text-xl"></i>
-        </button>
-
-        <button id="sound-btn" class="glass-icon" aria-label="Toggle Sound">
-            <i class="ri-volume-up-line text-xl"></i>
-        </button>
-
-        <button id="login-btn" class="glass-icon" aria-label="Login"
-            onclick="document.getElementById('auth-modal').classList.remove('hidden')">
-            <i class="ri-user-line text-xl"></i>
-        </button>
-
-        <button id="wallpaper-sound-btn" class="glass-icon hidden" aria-label="Toggle Wallpaper Audio"
-            title="Mute Wallpaper Audio">
-            <i class="ri-volume-up-line text-xl"></i>
-        </button>
-
-        <button id="hagakure-leaderboard-btn" class="glass-icon" aria-label="Hagakure Leaderboard"
-            title="Hagakure Rankings">
-            <i class="ri-sword-fill text-xl"></i>
-        </button>
-
-        <!-- Leaderboard (Added here) -->
-        <button id="leaderboard-btn" class="glass-icon" aria-label="Leaderboard">
-            <i class="ri-trophy-line text-xl"></i>
-        </button>
-
-        <!-- Developer Note -->
-        <button id="dev-note-btn" class="glass-icon" aria-label="Note from Developer" title="Message from Dev">
-            <i class="ri-mail-star-line text-xl" style="color: #00d4ff; text-shadow: 0 0 8px rgba(0,212,255,0.4);"></i>
-        </button>
-
-        <button id="mp-btn" class="glass-icon" aria-label="Multiplayer Race" title="Multiplayer Race">
-            <i class="ri-group-line text-xl" style="color: #00d4ff; text-shadow: 0 0 8px rgba(0,212,255,0.4);"></i>
-        </button>
-
-        <button id="settings-btn" class="glass-icon" aria-label="Settings">
-            <i class="ri-settings-4-line text-xl"></i>
+        <button id="nav-tray-btn" class="glass-icon" aria-label="Toggle Menu" title="Toggle Menu">
+            <i class="ri-equalizer-line text-xl"></i>
         </button>
     </div>
 
@@ -152,6 +135,7 @@
                 <button class="time-btn" data-time="120">120</button>
             </div>
             <div class="stats-right">
+                <div id="mp-clean-position" style="display:none;"></div>
                 <div id="wpm">0 WPM</div>
                 <div class="stats-divider"></div>
                 <div id="live-accuracy" style="display:none;">100%</div>
@@ -410,6 +394,128 @@
                 <button id="close-settings" class="close-btn">
                     <i class="ri-close-line"></i>
                 </button>
+            </div>
+
+            <!-- 3D Dojo Settings (only visible in 3D mode) -->
+            <div id="three-dojo-settings" class="settings-section" style="display:none;">
+
+                <div class="dojo-settings-hd">
+                    <div class="dojo-settings-hd-glyph" id="three-scene-glyph">⛩</div>
+                    <div class="dojo-settings-hd-text">
+                        <span class="dojo-settings-hd-title" id="three-scene-title">3D Dojo Mode</span>
+                        <span class="dojo-settings-hd-sub">Scene &amp; Gameplay</span>
+                    </div>
+                </div>
+
+                <div class="dojo-group-sep">Scene</div>
+
+                <div class="settings-row">
+                    <span class="settings-label"><i class="ri-landscape-line"></i> World</span>
+                    <select id="three-scene-select">
+                        <option value="dojo">Japanese Dojo</option>
+                        <option value="forge">Nordic Forge</option>
+                        <option value="zen">Zen Garden</option>
+                    </select>
+                </div>
+
+                <div class="dojo-group-sep">Visual</div>
+
+                <div class="settings-row">
+                    <span class="settings-label"><i class="ri-sun-line"></i> Brightness</span>
+                    <input type="range" id="three-brightness-settings" min="0" max="100" value="50" class="settings-slider" data-default="50">
+                    <button class="three-reset-btn" data-target="three-brightness-settings"><i class="ri-refresh-line"></i></button>
+                </div>
+                <div class="settings-row">
+                    <span class="settings-label"><i class="ri-flashlight-line"></i> Key Flash</span>
+                    <input type="range" id="three-keylight-settings" min="0" max="100" value="50" class="settings-slider" data-default="50">
+                    <button class="three-reset-btn" data-target="three-keylight-settings"><i class="ri-refresh-line"></i></button>
+                </div>
+                <div class="settings-row">
+                    <span class="settings-label"><i class="ri-palette-line"></i> Colors</span>
+                    <select id="three-color-theme">
+                        <option value="default">Default</option>
+                        <option value="sakura">Sakura</option>
+                        <option value="crimson">Crimson</option>
+                        <option value="emerald">Emerald</option>
+                        <option value="amber">Amber</option>
+                        <option value="phantom">Phantom</option>
+                        <option value="rainbow">Rainbow</option>
+                        <option value="synthwave">Synthwave</option>
+                        <option value="lava">Lava</option>
+                        <option value="ice">Ice</option>
+                        <option value="toxic">Toxic</option>
+                    </select>
+                </div>
+
+                <div class="dojo-group-sep">Gameplay</div>
+
+                <div class="settings-row">
+                    <span class="settings-label"><i class="ri-camera-line"></i> Camera</span>
+                    <select id="three-cam-preset"></select>
+                </div>
+                <div class="settings-row">
+                    <span class="settings-label"><i class="ri-keyboard-line"></i> Keyboard</span>
+                    <select id="three-kb-position">
+                        <option value="0">Floor Flat</option>
+                        <option value="1">Desk Tilt</option>
+                        <option value="2">Laptop Angle</option>
+                        <option value="3">Floor Close-up</option>
+                        <option value="4">Far Away</option>
+                    </select>
+                </div>
+                <div class="settings-row">
+                    <span class="settings-label"><i class="ri-paint-line"></i> KB Color</span>
+                    <select id="three-kb-theme">
+                        <option value="default">Default</option>
+                        <option value="jade">Jade ✦</option>
+                        <option value="forge">Ripple Forge ✦</option>
+                    </select>
+                </div>
+                <div class="settings-row">
+                    <span class="settings-label"><i class="ri-send-plane-line"></i> Word Exit</span>
+                    <select id="three-exit-anim">
+                        <option value="slash">Slash</option>
+                        <option value="drip">Drip</option>
+                        <option value="vortex">Vortex</option>
+                        <option value="glitch">Glitch</option>
+                        <option value="ignite">Ignite</option>
+                        <option value="flyup">Fly Up</option>
+                        <option value="evaporate">Evaporate</option>
+                        <option value="shatter">Shatter</option>
+                        <option value="implode">Implode</option>
+                        <option value="scatter">Scatter</option>
+                        <option value="ink-burst">Ink Burst ✦</option>
+                        <option value="ghost-dissolve">Ghost Dissolve ✦</option>
+                        <option value="ember-ash">Ember Ash ✦</option>
+                        <option value="katana-cut">Katana Cut ✦</option>
+                        <option value="kanji-morph">Kanji Morph ✦</option>
+                        <option value="blood-rain">Blood Rain ✦</option>
+                        <option value="lightning-arc">Lightning Arc ✦</option>
+                        <option value="crystal-freeze">Crystal Freeze ✦</option>
+                        <option value="void-pull">Void Pull ✦</option>
+                        <option value="neon-zip">Neon Zip ✦</option>
+                        <option value="ripple-cascade">Ripple Cascade ✦</option>
+                        <option value="oni-slam">Oni Slam ✦</option>
+                        <option value="lava-burst">Lava Burst ✦</option>
+                        <option value="poison-drip">Poison Drip ✦</option>
+                        <option value="gilded-cascade">Gilded Cascade ✦</option>
+                    </select>
+                </div>
+                <div class="settings-row">
+                    <span class="settings-label"><i class="ri-speed-line"></i> Word Speed</span>
+                    <input type="range" id="three-word-speed" min="0" max="100" value="30" class="settings-slider" data-default="30">
+                    <button class="three-reset-btn" data-target="three-word-speed"><i class="ri-refresh-line"></i></button>
+                </div>
+                <div class="settings-row">
+                    <span class="settings-label"><i class="ri-star-line"></i> Quality</span>
+                    <input type="range" id="three-quality" min="0" max="100" value="100" class="settings-slider" data-default="100">
+                    <button class="three-reset-btn" data-target="three-quality"><i class="ri-refresh-line"></i></button>
+                </div>
+
+                <button id="exit-three-mode-btn">
+                    <i class="ri-logout-box-line"></i> Exit 3D Mode
+                </button>
+
             </div>
 
             <!-- UI Mode Toggle -->
@@ -2080,98 +2186,217 @@
 
     <!-- ═══════════════════ MULTIPLAYER ═══════════════════ -->
 
-    <!-- MP MODAL (Menu + Lobby) -->
+    <!-- MP MODAL (Menu + Lobby) — Japanese Scroll -->
     <div id="mp-modal" class="hidden">
-        <div class="settings-content mp-content">
-            <!-- MAIN MENU VIEW -->
-            <div id="mp-menu" class="mp-view">
-                <div class="settings-header">
-                    <div class="settings-header-left">
-                        <div class="settings-icon-wrap" style="background: rgba(0, 212, 255, 0.2); color: #00d4ff;">
-                            <i class="ri-group-line"></i>
+        <div class="mp-scroll-outer">
+            <div class="mp-scroll-rod mp-scroll-rod-top"></div>
+            <div class="mp-scroll-body">
+                <div class="settings-content mp-content">
+                    <!-- MAIN MENU VIEW -->
+                    <div id="mp-menu" class="mp-view">
+                        <button id="close-mp" class="mp-scroll-close"><i class="ri-close-line"></i></button>
+                        <div class="mp-scroll-header">
+                            <div class="mp-scroll-seal">武</div>
+                            <h2 class="mp-scroll-title">Battle Invitation</h2>
+                            <p class="mp-scroll-sub">Multiplayer Race</p>
                         </div>
-                        <div>
-                            <h2 class="settings-title">Multiplayer Race</h2>
-                            <p class="settings-subtitle">Challenge your friends</p>
+                        <div class="mp-scroll-divider"></div>
+                        <div class="mp-menu-body">
+                            <div class="mp-name-picker" style="padding: 0;">
+                                <label class="mp-name-label">名 <span>warrior name</span></label>
+                                <input type="text" id="mp-name-input" class="mp-name-input" placeholder="..." maxlength="15" autocomplete="off" spellcheck="false">
+                            </div>
+                            <div class="mp-join-section">
+                                <input type="text" id="mp-join-code" class="mp-code-input" placeholder="ROOM CODE" maxlength="6"
+                                    autocomplete="off" spellcheck="false">
+                                <button id="mp-join-btn" class="mp-action-btn mp-join">
+                                    <i class="ri-login-box-line"></i>
+                                    Join Room
+                                </button>
+                            </div>
+                            <div class="mp-divider"><span>or create your own</span></div>
+                            <button id="mp-create-btn" class="mp-action-btn">
+                                <span class="mp-btn-content">
+                                    <i class="ri-sword-line"></i>
+                                    Create Room
+                                </span>
+                                <span class="mp-btn-arrow"><i class="ri-arrow-right-line"></i></span>
+                            </button>
                         </div>
                     </div>
-                    <button id="close-mp" class="close-btn"><i class="ri-close-line"></i></button>
-                </div>
-                <div class="mp-menu-body">
-                    <button id="mp-create-btn" class="mp-action-btn">
-                        <i class="ri-add-circle-line"></i>
-                        Create Room
-                    </button>
-                    <div class="mp-divider"><span>or</span></div>
-                    <div class="mp-join-section">
-                        <input type="text" id="mp-join-code" class="mp-code-input" placeholder="ROOM CODE" maxlength="6"
-                            autocomplete="off" spellcheck="false">
-                        <button id="mp-join-btn" class="mp-action-btn mp-join">
-                            <i class="ri-login-box-line"></i>
-                            Join Room
-                        </button>
+
+                    <!-- LOBBY VIEW -->
+                    <div id="mp-lobby" class="mp-view hidden">
+                        <div class="mp-scroll-header">
+                            <div class="mp-scroll-seal">道</div>
+                            <h2 class="mp-scroll-title">Room <span id="mp-room-code" class="mp-code-display"></span></h2>
+                            <p class="mp-scroll-sub" id="mp-player-count">1/5 warriors</p>
+                            <button id="mp-copy-code" class="mp-copy-btn" title="Copy invite link">
+                                <i class="ri-link"></i> Copy Link
+                            </button>
+                        </div>
+
+                        <div class="mp-scroll-divider"></div>
+
+                        <div class="mp-scroll-section">
+                            <label class="mp-scroll-label">Your Emblem</label>
+                            <div class="mp-emoji-picker">
+                                <div id="mp-emoji-options" class="mp-emoji-row">
+                                    <button class="mp-emoji-opt active" data-emoji="🚀">🚀</button>
+                                    <button class="mp-emoji-opt" data-emoji="🔥">🔥</button>
+                                    <button class="mp-emoji-opt" data-emoji="⚡">⚡</button>
+                                    <button class="mp-emoji-opt" data-emoji="👻">👻</button>
+                                    <button class="mp-emoji-opt" data-emoji="🐉">🐉</button>
+                                    <button class="mp-emoji-opt" data-emoji="🎯">🎯</button>
+                                    <button class="mp-emoji-opt" data-emoji="💎">💎</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mp-scroll-section" id="mp-battle-effects-section">
+                            <label class="mp-scroll-label">Battle Effects</label>
+                            <div class="mp-emoji-picker">
+                                <div id="mp-particle-options" class="mp-emoji-row">
+                                    <button class="mp-particle-opt" data-particle="none" title="None">✕</button>
+                                    <button class="mp-particle-opt active" data-particle="petals" title="Petals">🌸</button>
+                                    <button class="mp-particle-opt" data-particle="fire" title="Fire">🔥</button>
+                                    <button class="mp-particle-opt" data-particle="snow" title="Snow">❄</button>
+                                    <button class="mp-particle-opt" data-particle="leaves" title="Leaves">🍃</button>
+                                    <button class="mp-particle-opt" data-particle="sparks" title="Sparks">✧</button>
+                                    <button class="mp-particle-opt" data-particle="bubbles" title="Bubbles">◯</button>
+                                    <button class="mp-particle-opt" data-particle="default" title="Default">✦</button>
+                                    <button class="mp-particle-opt" data-particle="lightning" title="Lightning">⚡</button>
+                                    <button class="mp-particle-opt" data-particle="confetti" title="Confetti">🎊</button>
+                                    <button class="mp-particle-opt" data-particle="diamonds" title="Diamonds">◆</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mp-scroll-section">
+                            <label class="mp-scroll-label">Duration</label>
+                            <div id="mp-time-selector" class="mp-time-modes">
+                                <button class="mp-time-btn" data-time="15">15s</button>
+                                <button class="mp-time-btn active" data-time="30">30s</button>
+                                <button class="mp-time-btn" data-time="60">60s</button>
+                            </div>
+                        </div>
+
+                        <div class="mp-scroll-divider"></div>
+
+                        <div class="mp-scroll-section" id="mp-visual-mode-section">
+                            <label class="mp-scroll-label">Visual Mode</label>
+                            <div id="mp-mode-selector" class="mp-mode-selector">
+                                <button class="mp-mode-btn active" data-mode="zen">
+                                    <i class="ri-landscape-line"></i> Zen
+                                </button>
+                                <button class="mp-mode-btn" data-mode="clean">
+                                    <i class="ri-layout-line"></i> Clean
+                                </button>
+                                <button class="mp-mode-btn" data-mode="hagakure">
+                                    <i class="ri-sword-line"></i> Hagakure
+                                </button>
+                            </div>
+                            <div id="mp-theme-selector" class="mp-theme-selector hidden">
+                                <label class="mp-scroll-label mp-theme-cat">Japanese</label>
+                                <div class="mp-theme-grid">
+                                    <button class="mp-theme-opt active" data-theme="koi">Koi</button>
+                                    <button class="mp-theme-opt" data-theme="bushido">Bushido</button>
+                                    <button class="mp-theme-opt" data-theme="bloodscroll">Bloodscroll</button>
+                                    <button class="mp-theme-opt" data-theme="sumi">Sumi</button>
+                                    <button class="mp-theme-opt" data-theme="torii">Torii</button>
+                                    <button class="mp-theme-opt" data-theme="oni">Oni</button>
+                                    <button class="mp-theme-opt" data-theme="matcha">Matcha</button>
+                                    <button class="mp-theme-opt" data-theme="tsunami">Tsunami</button>
+                                    <button class="mp-theme-opt" data-theme="hanami">Hanami</button>
+                                    <button class="mp-theme-opt" data-theme="shogun">Shogun</button>
+                                    <button class="mp-theme-opt" data-theme="wabisabi">Wabi-Sabi</button>
+                                    <button class="mp-theme-opt" data-theme="yokai">Yokai</button>
+                                    <button class="mp-theme-opt" data-theme="ukiyo">Ukiyo</button>
+                                    <button class="mp-theme-opt" data-theme="fuji">Fuji</button>
+                                    <button class="mp-theme-opt" data-theme="ryokan">Ryokan</button>
+                                    <button class="mp-theme-opt" data-theme="karesansui">Karesansui</button>
+                                </div>
+                                <label class="mp-scroll-label mp-theme-cat">Dark</label>
+                                <div class="mp-theme-grid">
+                                    <button class="mp-theme-opt" data-theme="default">Carbon</button>
+                                    <button class="mp-theme-opt" data-theme="dracula">Dracula</button>
+                                    <button class="mp-theme-opt" data-theme="nord">Nord</button>
+                                    <button class="mp-theme-opt" data-theme="botanical">Botanical</button>
+                                    <button class="mp-theme-opt" data-theme="midnight">Midnight</button>
+                                    <button class="mp-theme-opt" data-theme="sunset">Sunset</button>
+                                    <button class="mp-theme-opt" data-theme="ocean">Ocean</button>
+                                    <button class="mp-theme-opt" data-theme="lavender">Lavender</button>
+                                    <button class="mp-theme-opt" data-theme="neon">Neon</button>
+                                    <button class="mp-theme-opt" data-theme="sakura">Sakura</button>
+                                    <button class="mp-theme-opt" data-theme="mocha">Mocha</button>
+                                    <button class="mp-theme-opt" data-theme="arctic">Arctic</button>
+                                    <button class="mp-theme-opt" data-theme="ember">Ember</button>
+                                    <button class="mp-theme-opt" data-theme="void">Void</button>
+                                    <button class="mp-theme-opt" data-theme="copper">Copper</button>
+                                </div>
+                                <label class="mp-scroll-label mp-theme-cat">Light</label>
+                                <div class="mp-theme-grid">
+                                    <button class="mp-theme-opt" data-theme="paper">Paper</button>
+                                    <button class="mp-theme-opt" data-theme="snow">Snow</button>
+                                    <button class="mp-theme-opt" data-theme="cream">Cream</button>
+                                    <button class="mp-theme-opt" data-theme="linen">Linen</button>
+                                    <button class="mp-theme-opt" data-theme="sepia">Sepia</button>
+                                    <button class="mp-theme-opt" data-theme="frost">Frost</button>
+                                </div>
+                            </div>
+                            <div id="mp-hagakure-lines" class="mp-hagakure-lines hidden">
+                                <label class="mp-scroll-label mp-theme-cat">Lines</label>
+                                <div class="mp-mode-selector">
+                                    <button class="mp-line-btn" data-lines="10">1 Line</button>
+                                    <button class="mp-line-btn active" data-lines="25">3 Lines</button>
+                                    <button class="mp-line-btn" data-lines="40">5 Lines</button>
+                                    <button class="mp-line-btn" data-lines="60">Original</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mp-scroll-divider"></div>
+
+                        <div class="mp-scroll-section">
+                            <label class="mp-scroll-label">Warriors</label>
+                            <div id="mp-players-list" class="mp-players"></div>
+                        </div>
+
+                        <div class="mp-perf-toggle">
+                            <label class="mp-perf-label">
+                                <input type="checkbox" id="mp-low-perf" class="mp-perf-checkbox">
+                                <span class="mp-perf-text">Low performance mode</span>
+                            </label>
+                        </div>
+
+                        <div class="mp-lobby-actions">
+                            <button id="mp-leave-btn" class="mp-btn-secondary">
+                                <i class="ri-logout-box-line"></i> Leave
+                            </button>
+                            <button id="mp-start-btn" class="mp-btn-primary mp-fight-btn" disabled>
+                                <span class="mp-fight-kanji">戦</span>
+                                <span class="mp-fight-text">FIGHT</span>
+                                <span class="mp-fight-splash mp-splash-1"></span>
+                                <span class="mp-fight-splash mp-splash-2"></span>
+                                <span class="mp-fight-splash mp-splash-3"></span>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
-
-            <!-- LOBBY VIEW -->
-            <div id="mp-lobby" class="mp-view hidden">
-                <div class="settings-header">
-                    <div class="settings-header-left">
-                        <div class="settings-icon-wrap" style="background: rgba(0, 212, 255, 0.2); color: #00d4ff;">
-                            <i class="ri-group-line"></i>
-                        </div>
-                        <div>
-                            <h2 class="settings-title">Room <span id="mp-room-code" class="mp-code-display"></span></h2>
-                            <p class="settings-subtitle" id="mp-player-count">1/5 players</p>
-                        </div>
-                    </div>
-                    <button id="mp-copy-code" class="mp-copy-btn" title="Copy room code">
-                        <i class="ri-file-copy-line"></i>
-                    </button>
-                </div>
-
-                <div class="mp-emoji-picker">
-                    <span class="mp-emoji-label">Your icon:</span>
-                    <div id="mp-emoji-options" class="mp-emoji-row">
-                        <button class="mp-emoji-opt active" data-emoji="🏎️">🏎️</button>
-                        <button class="mp-emoji-opt" data-emoji="🚀">🚀</button>
-                        <button class="mp-emoji-opt" data-emoji="🔥">🔥</button>
-                        <button class="mp-emoji-opt" data-emoji="⚡">⚡</button>
-                        <button class="mp-emoji-opt" data-emoji="👻">👻</button>
-                        <button class="mp-emoji-opt" data-emoji="🐉">🐉</button>
-                        <button class="mp-emoji-opt" data-emoji="🎯">🎯</button>
-                        <button class="mp-emoji-opt" data-emoji="💎">💎</button>
-                    </div>
-                </div>
-
-                <div id="mp-time-selector" class="mp-time-modes">
-                    <button class="mp-time-btn" data-time="15">15s</button>
-                    <button class="mp-time-btn active" data-time="30">30s</button>
-                    <button class="mp-time-btn" data-time="60">60s</button>
-                </div>
-
-                <div id="mp-players-list" class="mp-players">
-                    <!-- Player cards rendered by JS -->
-                </div>
-
-                <div class="mp-lobby-actions">
-                    <button id="mp-leave-btn" class="mp-btn-secondary">
-                        <i class="ri-logout-box-line"></i> Leave
-                    </button>
-                    <button id="mp-start-btn" class="mp-btn-primary" disabled>
-                        <i class="ri-play-fill"></i> Start Race
-                    </button>
-                </div>
-            </div>
+            <div class="mp-scroll-rod mp-scroll-rod-bottom"></div>
         </div>
     </div>
 
     <!-- MP RACE BAR (Progress tracks during race) -->
     <div id="mp-race-bar" class="hidden">
-        <div id="mp-race-players">
-            <!-- Dynamically rendered player lanes -->
-        </div>
+        <canvas id="mp-race-canvas"></canvas>
+        <div id="mp-race-players"><!-- kept for JS compat --></div>
+    </div>
+
+    <!-- MP FLOATING CROWN (below typing panel during race) -->
+    <div id="mp-crown-area" class="hidden">
+        <canvas id="mp-crown-canvas" width="200" height="120"></canvas>
     </div>
 
     <!-- MP COUNTDOWN OVERLAY -->
@@ -2183,23 +2408,98 @@
 
     <!-- MP RESULTS OVERLAY -->
     <div id="mp-results-overlay" class="hidden">
-        <div class="mp-results-content">
-            <h1 class="mp-results-title">Race Results</h1>
-            <div id="mp-podium" class="mp-podium">
-                <!-- Podium rendered by JS -->
-            </div>
-            <div id="mp-standings-extra" class="mp-standings-extra">
-                <!-- 4th-5th place if applicable -->
-            </div>
-            <div class="mp-results-actions">
-                <button id="mp-rematch-btn" class="mp-btn-primary">
-                    <i class="ri-restart-line"></i> Back to Lobby
-                </button>
-                <button id="mp-leave-results-btn" class="mp-btn-secondary">
-                    <i class="ri-logout-box-line"></i> Leave Room
-                </button>
-            </div>
+        <canvas id="mp-results-canvas"></canvas>
+        <div class="mp-results-buttons">
+            <button id="mp-rematch-btn" class="mp-btn-primary">
+                <i class="ri-restart-line"></i> Back to Lobby
+            </button>
+            <button id="mp-leave-results-btn" class="mp-btn-secondary">
+                <i class="ri-logout-box-line"></i> Leave Room
+            </button>
         </div>
+    </div>
+
+    <!-- MP CHAT PANEL — Scroll Frame -->
+    <div id="mp-chat-panel" class="hidden">
+      <div class="mp-scroll-chat-outer">
+        <!-- Top Rod -->
+        <div class="mpc-rod">
+          <div class="mpc-rod-cap left"></div>
+          <div class="mpc-rod-cap right"></div>
+          <div class="mpc-string left"><div class="mpc-tassel"></div></div>
+          <div class="mpc-string right"><div class="mpc-tassel"></div></div>
+        </div>
+        <!-- Scroll Body -->
+        <div class="mpc-body">
+          <div class="mpc-deco left"></div>
+          <div class="mpc-deco right"></div>
+          <div class="mpc-seal">戦</div>
+          <div class="mpc-player-count"><i class="ri-group-line"></i> <span id="mp-chat-online-count">0</span> online</div>
+          <!-- Header -->
+          <div class="mpc-header">
+            <div class="mpc-kanji">戦室</div>
+            <div class="mpc-title">War Room</div>
+            <div class="mpc-live"><span class="mpc-live-dot"></span> LIVE</div>
+          </div>
+          <!-- Messages -->
+          <div id="mp-chat-messages" class="mpc-messages">
+            <!-- Typing indicator (inside messages so it scrolls) -->
+            <div id="mp-chat-typing" class="mp-chat-typing" style="display:none">
+              <span class="mp-typing-avatar"></span>
+              <div class="mp-typing-content">
+                <span class="mp-typing-name"></span>
+                <div class="mp-typing-dots"><span></span><span></span><span></span></div>
+              </div>
+            </div>
+          </div>
+          <!-- Input -->
+          <div class="mpc-input-area">
+            <div class="mpc-input-row">
+              <div class="mpc-input-bar">
+                <div class="mp-emoji-wrap">
+                  <button class="mpc-icon-btn" id="mp-chat-emoji-btn" title="Emoji"><i class="ri-emotion-line"></i></button>
+                  <div class="mp-emoji-popup" id="mp-emoji-popup"></div>
+                </div>
+                <input type="text" id="mp-chat-input" placeholder="Inscribe a message..." maxlength="200" autocomplete="off" spellcheck="false">
+                <div class="mp-menu-wrap">
+                  <button class="mpc-icon-btn" id="mp-chat-menu-btn" title="Options"><i class="ri-quill-pen-line"></i></button>
+                  <div class="mp-chat-menu" id="mp-chat-menu">
+                    <!-- Scroll Theme -->
+                    <button class="mp-menu-item" id="mpc-theme-menu-item">
+                      <div class="mp-menu-icon theme-icon"><i class="ri-palette-line"></i></div>
+                      <span class="mp-menu-text">Scroll Theme</span>
+                      <span class="mp-menu-arrow"><i class="ri-arrow-right-s-line"></i></span>
+                    </button>
+                    <div class="mpc-theme-submenu" id="mpc-theme-submenu">
+                      <div class="mpc-theme-submenu-inner">
+                        <button class="mpc-theme-opt active" data-pick="gold"><div class="mpc-theme-dot" data-color="gold"></div><div class="mpc-theme-opt-info"><span class="mpc-theme-opt-name">Gold Parchment</span><span class="mpc-theme-opt-desc">Classic war room</span></div></button>
+                        <button class="mpc-theme-opt" data-pick="crimson"><div class="mpc-theme-dot" data-color="crimson"></div><div class="mpc-theme-opt-info"><span class="mpc-theme-opt-name">Blood & Crimson</span><span class="mpc-theme-opt-desc">Dark samurai</span></div></button>
+                        <button class="mpc-theme-opt" data-pick="ice"><div class="mpc-theme-dot" data-color="ice"></div><div class="mpc-theme-opt-info"><span class="mpc-theme-opt-name">Ice & Moonlight</span><span class="mpc-theme-opt-desc">Frozen warrior</span></div></button>
+                        <button class="mpc-theme-opt" data-pick="void"><div class="mpc-theme-dot" data-color="void"></div><div class="mpc-theme-opt-info"><span class="mpc-theme-opt-name">Void & Neon</span><span class="mpc-theme-opt-desc">Cyber samurai</span></div></button>
+                        <button class="mpc-theme-opt" data-pick="emerald"><div class="mpc-theme-dot" data-color="emerald"></div><div class="mpc-theme-opt-info"><span class="mpc-theme-opt-name">Emerald Shadow</span><span class="mpc-theme-opt-desc">Forest assassin</span></div></button>
+                        <button class="mpc-theme-opt" data-pick="sunset"><div class="mpc-theme-dot" data-color="sunset"></div><div class="mpc-theme-opt-info"><span class="mpc-theme-opt-name">Sunset Blaze</span><span class="mpc-theme-opt-desc">Burning horizon</span></div></button>
+                        <button class="mpc-theme-opt" data-pick="phantom"><div class="mpc-theme-dot" data-color="phantom"></div><div class="mpc-theme-opt-info"><span class="mpc-theme-opt-name">Phantom Smoke</span><span class="mpc-theme-opt-desc">Monochrome ghost</span></div></button>
+                      </div>
+                    </div>
+                    <!-- Chat Sounds -->
+                    <div class="mp-menu-item" id="mp-sound-menu-item" style="cursor:pointer">
+                      <div class="mp-menu-icon sound-icon"><i class="ri-volume-up-line"></i></div>
+                      <span class="mp-menu-text">Chat Sounds</span>
+                      <div class="mp-sound-toggle on" id="mp-sound-toggle"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <button id="mp-chat-send" class="mpc-send-btn"><i class="ri-send-plane-fill"></i></button>
+            </div>
+          </div>
+        </div>
+        <!-- Bottom Rod -->
+        <div class="mpc-rod">
+          <div class="mpc-rod-cap left"></div>
+          <div class="mpc-rod-cap right"></div>
+        </div>
+      </div>
     </div>
 
     <!-- ═══════════════════ END MULTIPLAYER ═══════════════════ -->
@@ -3870,7 +4170,7 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <!-- STAR ROAD SPLASH -->
     <div id="starroad-splash" class="hidden">
@@ -4334,6 +4634,24 @@
                 </div>
                 <button id="dev-results-restart"><i class="ri-refresh-line"></i> next test</button>
             </div>
+        </div>
+    </div>
+
+    <!-- 3D Mode floating settings button -->
+    <button id="three-settings-btn" aria-label="3D Settings"><i class="ri-settings-4-line"></i></button>
+
+    <!-- 3D Dojo Mode toast notification -->
+    <div id="three-mode-toast">⛩ 3D Dojo Mode</div>
+
+    <!-- 3D Mode sliders -->
+    <div id="three-sliders" class="hidden">
+        <div class="three-slider-row">
+            <label for="three-brightness">brightness</label>
+            <input type="range" id="three-brightness" min="0" max="100" value="50">
+        </div>
+        <div class="three-slider-row">
+            <label for="three-keylight">key flash</label>
+            <input type="range" id="three-keylight" min="0" max="100" value="50">
         </div>
     </div>
 
