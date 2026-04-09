@@ -436,6 +436,34 @@
                 </div>
 
                 <div class="dojo-group-sep">Visual</div>
+                <div class="settings-row">
+                    <span class="settings-label"><i class="ri-palette-line"></i> Dojo Vibe</span>
+                    <select id="three-dojo-vibe">
+                        <option value="purple">Where We Started</option>
+                        <option value="default">Default</option>
+                    </select>
+                </div>
+
+                <div class="settings-row">
+                    <span class="settings-label"><i class="ri-sparkling-line"></i> Ambience</span>
+                    <select id="dojo-ambience">
+                        <option value="shards">Holo Shards</option>
+                        <option value="rain">Digital Rain</option>
+                        <option value="warp">Warp Lines</option>
+                        <option value="pulse">Grid Pulses</option>
+                        <option value="orbs">Light Orbs</option>
+                        <option value="sparks">Neon Sparks</option>
+                        <option value="diamonds">Floating Diamonds</option>
+                        <option value="wisps">Lens Wisps</option>
+                        <option value="kanji">Floating Kanji</option>
+                        <option value="dust">Neon Dust</option>
+                        <option value="aurora">Aurora Ribbons</option>
+                        <option value="glitch">Glitch Streaks</option>
+                        <option value="stars">Star Streaks</option>
+                        <option value="phantom">Phantom Keys</option>
+                        <option value="petals">Sakura Petals</option>
+                    </select>
+                </div>
 
                 <div class="settings-row">
                     <span class="settings-label"><i class="ri-sun-line"></i> Brightness</span>
@@ -485,6 +513,7 @@
                     <select id="three-kb-theme">
                         <option value="default">Default</option>
                         <option value="jade">Jade ✦</option>
+                        <option value="purple">Purple ✦</option>
                         <option value="forge">Ripple Forge ✦</option>
                     </select>
                 </div>
@@ -527,6 +556,32 @@
                     <span class="settings-label"><i class="ri-star-line"></i> Quality</span>
                     <input type="range" id="three-quality" min="0" max="100" value="100" class="settings-slider" data-default="100">
                     <button class="three-reset-btn" data-target="three-quality"><i class="ri-refresh-line"></i></button>
+                </div>
+
+                <div class="dojo-group-sep">TV Screen</div>
+                <div class="settings-row">
+                    <span class="settings-label"><i class="ri-tv-line"></i> TV Left/Right</span>
+                    <input type="range" id="tv-pos-x" min="-15" max="15" value="0" step="0.5" class="settings-slider" data-default="0">
+                    <span class="tv-val" id="tv-pos-x-val">0</span>
+                    <button class="three-reset-btn" data-target="tv-pos-x"><i class="ri-refresh-line"></i></button>
+                </div>
+                <div class="settings-row">
+                    <span class="settings-label"><i class="ri-tv-line"></i> TV Up/Down</span>
+                    <input type="range" id="tv-pos-y" min="1" max="20" value="13" step="0.5" class="settings-slider" data-default="13">
+                    <span class="tv-val" id="tv-pos-y-val">13</span>
+                    <button class="three-reset-btn" data-target="tv-pos-y"><i class="ri-refresh-line"></i></button>
+                </div>
+                <div class="settings-row">
+                    <span class="settings-label"><i class="ri-tv-line"></i> TV Depth</span>
+                    <input type="range" id="tv-pos-z" min="-50" max="-8" value="-16" step="1" class="settings-slider" data-default="-16">
+                    <span class="tv-val" id="tv-pos-z-val">-16</span>
+                    <button class="three-reset-btn" data-target="tv-pos-z"><i class="ri-refresh-line"></i></button>
+                </div>
+                <div class="settings-row">
+                    <span class="settings-label"><i class="ri-tv-line"></i> TV Size</span>
+                    <input type="range" id="tv-size" min="3" max="40" value="26" step="0.5" class="settings-slider" data-default="26">
+                    <span class="tv-val" id="tv-size-val">26</span>
+                    <button class="three-reset-btn" data-target="tv-size"><i class="ri-refresh-line"></i></button>
                 </div>
 
                 <button id="exit-three-mode-btn">

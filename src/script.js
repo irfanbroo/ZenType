@@ -23,7 +23,8 @@ import { initThreeScene, onThreeKeyPress, updateThreeWPM,
     setThreeBrightness, setThreeKeyFlash, setKeyboardPosition, setKeyboardTheme,
     setThreeColorTheme, setThreeQuality, setThreeWordSpeed,
     setThreeExitAnim, setSceneType, getSceneType,
-    setCameraPreset, getCameraPresets, setZenGroundType } from './three-scene.js';
+    setCameraPreset, getCameraPresets, setZenGroundType, setDojoTVTransform, setDojoTVSong, setDojoVibe,
+    setDojoAmbience, isLyricsModeActive, setLyricCallback, setVideoEndCallback } from './three-scene.js';
 
 
 
@@ -8538,6 +8539,55 @@ if (threeQualitySlider) {
     });
 }
 
+// Dojo vibe selector
+const dojoVibeSelect = document.getElementById('three-dojo-vibe');
+if (dojoVibeSelect) dojoVibeSelect.addEventListener('change', (e) => {
+    setDojoVibe(e.target.value);
+
+    if (e.target.value === 'purple') {
+        // Clear typing words — wait silently for first lyric
+        state.words = [];
+        state.currWordIndex = 0;
+        state.currCharIndex = 0;
+        renderWords();
+    } else {
+        // Restore normal random words
+        state.words = generateWordList(60);
+        state.currWordIndex = 0;
+        state.currCharIndex = 0;
+        renderWords();
+    }
+
+    // Auto-switch TV song to match
+    setDojoTVSong(e.target.value === 'purple' ? 'U9pGr6KMdyg' : 'K4DyBUG242c');
+});
+
+// Dojo ambience selector
+const dojoAmbienceSelect = document.getElementById('dojo-ambience');
+if (dojoAmbienceSelect) dojoAmbienceSelect.addEventListener('change', (e) => setDojoAmbience(e.target.value));
+
+// TV song selector
+const tvSongSelect = document.getElementById('tv-song');
+if (tvSongSelect) tvSongSelect.addEventListener('change', (e) => setDojoTVSong(e.target.value));
+
+// TV position/size sliders
+function syncTVSliders() {
+    const x    = parseFloat(document.getElementById('tv-pos-x')?.value ?? -7.5);
+    const y    = parseFloat(document.getElementById('tv-pos-y')?.value ?? 4.0);
+    const z    = parseFloat(document.getElementById('tv-pos-z')?.value ?? -18);
+    const size = parseFloat(document.getElementById('tv-size')?.value  ?? 22);
+    setDojoTVTransform(x, y, z, size);
+}
+['tv-pos-x','tv-pos-y','tv-pos-z','tv-size'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', () => {
+        const val = document.getElementById(id);
+        const display = document.getElementById(id + '-val');
+        if (display) display.textContent = val.value;
+        syncTVSliders();
+    });
+});
+
 // Color theme selector
 const threeColorSelect = document.getElementById('three-color-theme');
 if (threeColorSelect) {
@@ -8686,6 +8736,7 @@ if (threeModeBtn) {
             // Lazy-init the Three.js scene on first activation
             if (threeCanvas && !isThreeSceneRunning()) {
                 initThreeScene(threeCanvas);
+                if (dojoVibeSelect) dojoVibeSelect.dispatchEvent(new Event('change'));
             }
             // Init word queue with current words
             if (isThreeSceneRunning() && state.words.length > 0) {
@@ -9862,11 +9913,9 @@ _tapeObserver.observe(document.body, { attributes: true, attributeFilter: ['clas
 
 function generateWordList(count = 60) {
     const pool = wordPools[0];
-
     const list = [];
     for (let i = 0; i < count; i++) {
-        const word = pool[Math.floor(Math.random() * pool.length)];
-        list.push(word.toLowerCase());
+        list.push(pool[Math.floor(Math.random() * pool.length)].toLowerCase());
     }
     return list;
 }
@@ -9885,7 +9934,30 @@ function renderWords() {
     }
 }
 
+// Lyrics typing mode — when a new lyric line hits, replace typing words
+setLyricCallback((lyricLine) => {
+    if (!userConfig.threeMode) return;
+    const words = lyricLine.toLowerCase().replace(/[,!?.()]/g, '').split(/\s+/).filter(Boolean);
+    state.words = words;
+    state.currWordIndex = 0;
+    state.currCharIndex = 0;
+    UI.input.value = '';
+    renderWords();
+    setTimeout(() => { updateCaretPosition(); UI.container.scrollTop = 0; }, 10);
+});
+
+// Song ended — switch back to Default vibe
+setVideoEndCallback(() => {
+    if (!userConfig.threeMode) return;
+    const vibeSelect = document.getElementById('three-dojo-vibe');
+    if (vibeSelect) {
+        vibeSelect.value = 'default';
+        vibeSelect.dispatchEvent(new Event('change'));
+    }
+});
+
 function appendWords(count = 30) {
+    if (isLyricsModeActive()) return; // don't append — wait for next lyric line
     const newWords = generateWordList(count);
     const startIndex = state.words.length;
     state.words = state.words.concat(newWords);
@@ -10028,7 +10100,7 @@ UI.input.addEventListener('keydown', (e) => {
 UI.input.addEventListener('input', (e) => {
     // Dev mode handles its own input
     if (state.gameMode === 'dev') return;
-    if (!state.isActive && state.timeLeft > 0) startTimer();
+    if (!state.isActive && state.timeLeft > 0 && !isLyricsModeActive()) startTimer();
 
     // Init audio on first interaction
     initAudio();
@@ -10265,6 +10337,7 @@ function startTimer() {
 }
 
 function endGame() {
+    if (isLyricsModeActive()) return; // never end during lyrics mode
     clearInterval(state.timerInterval);
     state.isActive = false;
     document.body.classList.remove('is-typing');
@@ -11109,6 +11182,7 @@ document.addEventListener('keydown', (e) => {
     if (e.key === 'Tab') {
         e.preventDefault();
         if (window.mpState?.isMultiplayer) return; // Don't restart during MP race
+        if (isLyricsModeActive()) return; // Don't restart during lyrics mode
         clearInterval(state.timerInterval);
         initGame();
     }

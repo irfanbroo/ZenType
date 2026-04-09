@@ -27,6 +27,75 @@ let clock;
 let PETAL_COUNT = 250;
 let petalMesh = null;
 let petalData = [];
+
+// Dojo ambience particle mode: 'petals' | 'shards' | 'rain'
+let dojoAmbienceType = 'petals';
+
+// Holographic shards
+let SHARD_COUNT = 180;
+let shardMesh = null;
+let shardData = [];
+
+// Digital rain streaks
+let RAIN_COUNT = 200;
+let rainMesh = null;
+let rainData = [];
+
+// Warp lines
+let WARP_COUNT = 80;
+let warpMesh = null;
+let warpData = [];
+
+// Grid pulses
+let PULSE_COUNT = 14;
+let pulseMesh = null;
+let pulseData = [];
+
+// Light orbs
+let ORB_COUNT = 60;
+let orbMesh = null;
+let orbData = [];
+
+// Neon sparks
+let SPARK_COUNT = 150;
+let sparkMesh = null;
+let sparkData = [];
+
+// Floating diamonds
+let DIAMOND_COUNT = 100;
+let diamondMesh = null;
+let diamondData = [];
+
+// Lens flare wisps
+let WISP_COUNT = 45;
+let wispMesh = null;
+let wispData = [];
+
+// Floating kanji
+let kanjiPool = [];
+
+// Neon dust motes
+let dustPoints = null;
+let dustPositions = null;
+let dustVelocities = null;
+let DUST_COUNT = 400;
+
+// Aurora ribbons
+let auroraRibbons = [];
+
+// Glitch streaks
+let glitchPool = [];
+
+// Star streaks
+let STAR_COUNT = 180;
+let starMesh = null;
+let starData = [];
+
+// Phantom keys
+let PHANTOM_COUNT = 35;
+let phantomMesh = null;
+let phantomData = [];
+
 const dummy = new THREE.Object3D();
 const _tmpColor = new THREE.Color();
 
@@ -77,6 +146,104 @@ let zenLanternLights = [];
 let reflectorMesh = null;
 let zenGroundMesh = null;
 let zenGroundType = 'obsidian'; // 'obsidian' | 'stone'
+
+// Dojo vibe system
+const DOJO_VIBES = {
+    default: {
+        bg: 0x020208, fog: 0x020208,
+        ambient: 0x0a0a1a, moon: 0x1a2255, floorRim: 0x4400aa,
+        floor: 0x0a0510, floorEmit: 0x060312,
+        gridBright: 0x5522cc, gridDim: 0x2a1166,
+        pillar: 0x5a1212, pillarEmit: 0x2a0808,
+        pillarBase: 0x1a0808, pillarBaseEmit: 0x0a0303,
+        torii: 0x8b1515, toriiEmit: 0x4a0808,
+        toriiLantern: 0xff4400, toriiLanternEmit: 0xff3300,
+        toriiGlow: 0xff2200, fireMat: 0xff6600, fireEmit: 0xff4400, fireLight: 0xff5500,
+        lanternBody: 0xff6633, lanternEmit: 0xff4411, lanternLight: 0xff7733,
+        petal: 0xffccdd, petalEmit: 0xff6688,
+        keypress: 0x00d4ff,
+        beam: 0x1a0808, beamEmit: 0x0a0404,
+    },
+    purple: {
+        bg: 0x060215, fog: 0x060215,
+        ambient: 0x1a0840, moon: 0x6644dd, floorRim: 0xbb00ff,
+        floor: 0x0a0420, floorEmit: 0x1a0840,
+        gridBright: 0xbb66ff, gridDim: 0x6633cc,
+        pillar: 0x5a1212, pillarEmit: 0x2a0808,
+        pillarBase: 0x1a0808, pillarBaseEmit: 0x0a0303,
+        torii: 0x9922cc, toriiEmit: 0x7700ee,
+        toriiLantern: 0xff66ff, toriiLanternEmit: 0xdd44ff,
+        toriiGlow: 0xcc00ff, fireMat: 0xee66ff, fireEmit: 0xcc33ff, fireLight: 0xdd55ff,
+        lanternBody: 0xff66ff, lanternEmit: 0xdd33ff, lanternLight: 0xcc55ff,
+        petal: 0xeebbff, petalEmit: 0xcc66ff,
+        keypress: 0xee44ff,
+        beam: 0x1a0835, beamEmit: 0x3a1270,
+    },
+};
+let currentVibe = 'default';
+const dojoMats = {
+    pillar: null, pillarBase: null, torii: null,
+    toriiLantern: null, fireMats: [], fireLights: [],
+    floor: null, grid: null, lanternBody: null, petal: null,
+    beam: null, ambientLight: null, moonLight: null, floorRimLight: null,
+    toriiGlowLight: null,
+};
+
+// Dojo TV screen
+const DOJO_SCREEN_POS = new THREE.Vector3(0, 13.0, -16.0);
+const DOJO_SCREEN_SIZE = 26.0; // back wall mounted TV
+const _screenLeft  = new THREE.Vector3();
+const _screenRight = new THREE.Vector3();
+let dojoScreenEl = null;
+let dojoScreenIframe = null;
+let ytPlayer = null;
+let pendingVideoId = null; // set before player is ready, loaded in onReady
+let lyricEl = null;
+let currentLyricIdx = -2;
+let lyricsActive = false;
+let ytApiReady = false;
+const _ytReadyCbs = [];
+
+// Parsed from LRC — "Where We Started" by Lost Sky ft. Jex
+const WWS_LYRICS = [
+    [2.0,  "no skip button here.",     true],
+    [5.5,  "you finish what you start.", true],
+    [9.5,  "let's begin.",                true],
+    [13.63, "Our empty hearts and neon lights"],
+    [17.08, "They're playing with my mind"],
+    [19.39, "Gotta get out of it tonight"],
+    [23.08, "Oh when I run, I'll fight through"],
+    [27.49, "And I'll tell myself it's fine to be alone"],
+    [34.21, "Just to find somewhere that finally feels like home"],
+    [40.99, "I hate all this overthinking"],
+    [47.39, "The more I swim, the more I'm sinking"],
+    [50.39, "Take me to a world of silver"],
+    [54.00, "No more heartbreaks is painkillers"],
+    [56.30, "Take me somewhere unfamiliar"],
+    [60.22, "Bring me back to Where We Started"],
+    [67.76, "Get me out of now"],
+    [74.33, "To Where We Started"],
+    [80.64, "Get me out of now"],
+    [87.17, "To Where We Started"],
+    [94.23, "La, La, La, La, La, Oh, Oh"],
+    [100.70, "Get me out of now"],
+    [103.63, "Broken hearts and starting fights"],
+    [107.25, "Turning truths to lies"],
+    [109.64, "Gotta get out, stop wasting time"],
+    [113.18, "Oh when I run, I'll fight through"],
+    [118.21, "And I'll tell myself it's fine to be alone"],
+    [124.41, "Just to find somewhere that finally feels like home"],
+    [130.77, "I hate all this overthinking"],
+    [137.21, "The more I swim, the more I'm sinking"],
+    [140.78, "Take me to a world of silver"],
+    [143.78, "No more heartbreaks is painkillers"],
+    [147.08, "Take me somewhere unfamiliar"],
+    [150.14, "Bring me back to Where We Started"],
+    [158.42, "Get me out of now"],
+    [164.51, "To Where We Started"],
+    [171.21, "Get me out of now"],
+    [177.43, "To Where We Started"],
+];
 
 // 3D Keyboard
 const KEYBOARD_ROWS = [
@@ -249,6 +416,22 @@ export function initThreeScene(canvas) {
         buildToriiGate();
         buildHangingLanterns();
         buildSakuraPetals();
+        buildHolographicShards();
+        buildDigitalRainStreaks();
+        buildWarpLines();
+        buildGridPulses();
+        buildLightOrbs();
+        buildNeonSparks();
+        buildFloatingDiamonds();
+        buildLensFlareWisps();
+        buildFloatingKanji();
+        buildNeonDustMotes();
+        buildAuroraRibbons();
+        buildGlitchStreaks();
+        buildStarStreaks();
+        buildPhantomKeys();
+        applyDojoAmbience();
+        buildDojoTV();
     }
 
     buildKeyboard();
@@ -269,10 +452,12 @@ export function initThreeScene(canvas) {
 // ══════════════════════════════════════════════════════════
 function buildLighting() {
     // Ambient — very dim blue
-    scene.add(new THREE.AmbientLight(0x0a0a1a, 1.0));
+    dojoMats.ambientLight = new THREE.AmbientLight(0x0a0a1a, 1.0);
+    scene.add(dojoMats.ambientLight);
 
     // Moonlight from above-right — gives depth to all surfaces
     const moon = new THREE.DirectionalLight(0x1a2255, 1.2);
+    dojoMats.moonLight = moon;
     moon.position.set(5, 15, 8);
     moon.castShadow = true;
     moon.shadow.mapSize.set(1024, 1024);
@@ -287,6 +472,7 @@ function buildLighting() {
     // Floor uplight — violet rim
     const floorRim = new THREE.PointLight(0x4400aa, 1.2, 12);
     floorRim.position.set(0, 0.1, 5);
+    dojoMats.floorRimLight = floorRim;
     scene.add(floorRim);
 
     // Keypress reactive light
@@ -308,6 +494,7 @@ function buildFloor() {
         emissive: 0x060312,
         emissiveIntensity: 0.4,
     });
+    dojoMats.floor = floorMat;
     const floor = new THREE.Mesh(floorGeo, floorMat);
     floor.rotation.x = -Math.PI / 2;
     floor.position.set(0, 0, -10);
@@ -319,6 +506,7 @@ function buildFloor() {
     grid.position.set(0, 0.02, -10);
     grid.material.opacity = 0.6;
     grid.material.transparent = true;
+    dojoMats.grid = grid;
     scene.add(grid);
 
     // Mirror reflection plane
@@ -348,6 +536,7 @@ function buildPillars() {
         emissive: 0x2a0808,
         emissiveIntensity: 0.8,
     });
+    dojoMats.pillar = pillarMat;
 
     const pillarBaseMat = new THREE.MeshStandardMaterial({
         color: 0x1a0808,
@@ -355,6 +544,7 @@ function buildPillars() {
         emissive: 0x0a0303,
         emissiveIntensity: 0.4,
     });
+    dojoMats.pillarBase = pillarBaseMat;
 
     // 7 pairs of pillars going into the distance
     for (let i = 0; i < 7; i++) {
@@ -462,6 +652,7 @@ function buildCeilingBeams() {
         emissive: 0x0a0404,
         emissiveIntensity: 0.4,
     });
+    dojoMats.beam = beamMat;
 
     for (let i = 0; i < 7; i++) {
         const z = 4 - i * 4.5;
@@ -498,6 +689,9 @@ function buildToriiGate() {
         emissive: 0x4a0808,
         emissiveIntensity: 1.2,
     });
+    dojoMats.torii = mat;
+    dojoMats.fireMats = [];
+    dojoMats.fireLights = [];
 
     const Z = -22;
 
@@ -535,6 +729,7 @@ function buildToriiGate() {
         emissiveIntensity: 4,
         roughness: 0,
     });
+    dojoMats.toriiLantern = lanternMat;
     const lantern = new THREE.Mesh(lanternGeo, lanternMat);
     lantern.position.set(0, 8.5, Z + 0.4);
     scene.add(lantern);
@@ -542,6 +737,7 @@ function buildToriiGate() {
     // Torii deep red glow
     const glow = new THREE.PointLight(0xff2200, 4, 15);
     glow.position.set(0, 6, Z + 2);
+    dojoMats.toriiGlowLight = glow;
     scene.add(glow);
 
     // Ground fire pots on each side of gate
@@ -561,12 +757,14 @@ function buildToriiGate() {
             emissive: 0xff4400,
             emissiveIntensity: 3,
         });
+        dojoMats.fireMats.push(fireMat);
         const fire = new THREE.Mesh(fireGeo, fireMat);
         fire.position.set(side * 2.5, 0.6, Z + 1);
         scene.add(fire);
 
         const fireLight = new THREE.PointLight(0xff5500, 2, 6);
         fireLight.position.set(side * 2.5, 0.8, Z + 1);
+        dojoMats.fireLights.push(fireLight);
         lanternLights.push(fireLight);
         scene.add(fireLight);
     }
@@ -584,6 +782,7 @@ function buildHangingLanterns() {
         transparent: true,
         opacity: 0.9,
     });
+    dojoMats.lanternBody = bodyMat;
     const frameMat = new THREE.MeshStandardMaterial({
         color: 0x1a0a05,
         roughness: 0.8,
@@ -643,8 +842,15 @@ function buildHangingLanterns() {
 // SAKURA PETALS — instanced mesh floating through the dojo
 // ══════════════════════════════════════════════════════════
 function buildSakuraPetals() {
-    const geo = new THREE.PlaneGeometry(0.15, 0.11);
-    const mat = new THREE.MeshStandardMaterial({
+    // Sakura petal — wide oval, slightly pointed at bottom
+    const petalShape = new THREE.Shape();
+    petalShape.moveTo(0, -0.09);
+    petalShape.bezierCurveTo( 0.05, -0.05,  0.09,  0.0,  0.08,  0.04);
+    petalShape.bezierCurveTo( 0.07,  0.09,  0.03,  0.10, 0,     0.10);
+    petalShape.bezierCurveTo(-0.03,  0.10, -0.07,  0.09, -0.08, 0.04);
+    petalShape.bezierCurveTo(-0.09,  0.0,  -0.05, -0.05,  0,   -0.09);
+    const geo = new THREE.ShapeGeometry(petalShape, 5);
+    const mat = dojoMats.petal = new THREE.MeshStandardMaterial({
         color: 0xffccdd,
         side: THREE.DoubleSide,
         transparent: true,
@@ -688,6 +894,746 @@ function randomPetal(fromRight = false) {
         phase: Math.random() * Math.PI * 2,
         wobble: 0.001 + Math.random() * 0.002,
     };
+}
+
+// ══════════════════════════════════════════════════════════
+// HOLOGRAPHIC SHARDS
+// ══════════════════════════════════════════════════════════
+function buildHolographicShards() {
+    const shape = new THREE.Shape();
+    shape.moveTo(0, 0.10);
+    shape.lineTo(0.045, 0.01);
+    shape.lineTo(0.028, -0.10);
+    shape.lineTo(-0.028, -0.10);
+    shape.lineTo(-0.045, 0.01);
+    shape.closePath();
+    const geo = new THREE.ShapeGeometry(shape, 1);
+
+    const mat = new THREE.MeshStandardMaterial({
+        color: 0xcc88ff,
+        emissive: 0xaa44ff,
+        emissiveIntensity: 1.8,
+        transparent: true,
+        opacity: 0.75,
+        side: THREE.DoubleSide,
+        roughness: 0.1,
+        metalness: 0.6,
+    });
+
+    shardMesh = new THREE.InstancedMesh(geo, mat, SHARD_COUNT);
+    shardMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+    shardData = [];
+    for (let i = 0; i < SHARD_COUNT; i++) {
+        shardData.push(randomShard());
+        updateShardMatrix(i);
+    }
+    shardMesh.instanceMatrix.needsUpdate = true;
+    scene.add(shardMesh);
+}
+
+function randomShard() {
+    return {
+        x: (Math.random() - 0.5) * 12,
+        y: Math.random() * 8 + 0.5,
+        z: Math.random() * 35 - 25,
+        rx: Math.random() * Math.PI * 2,
+        ry: Math.random() * Math.PI * 2,
+        rz: Math.random() * Math.PI * 2,
+        vx: (Math.random() - 0.5) * 0.008,
+        vy: -(Math.random() * 0.008 + 0.003),
+        vrx: (Math.random() - 0.5) * 0.04,
+        vry: (Math.random() - 0.5) * 0.03,
+        vrz: (Math.random() - 0.5) * 0.04,
+        phase: Math.random() * Math.PI * 2,
+        glitchTimer: Math.random() * 2,
+        scale: 0.5 + Math.random() * 1.0,
+    };
+}
+
+function updateShardMatrix(i) {
+    const p = shardData[i];
+    dummy.position.set(p.x, p.y, p.z);
+    dummy.rotation.set(p.rx, p.ry, p.rz);
+    dummy.scale.setScalar(p.scale);
+    dummy.updateMatrix();
+    shardMesh.setMatrixAt(i, dummy.matrix);
+}
+
+// ══════════════════════════════════════════════════════════
+// DIGITAL RAIN STREAKS
+// ══════════════════════════════════════════════════════════
+function buildDigitalRainStreaks() {
+    // Thin tall rectangle — streak shape
+    const geo = new THREE.PlaneGeometry(0.025, 0.28);
+
+    const mat = new THREE.MeshStandardMaterial({
+        color: 0x9933ff,
+        emissive: 0x7700ff,
+        emissiveIntensity: 2.5,
+        transparent: true,
+        opacity: 0.7,
+        side: THREE.DoubleSide,
+        roughness: 0.0,
+    });
+
+    rainMesh = new THREE.InstancedMesh(geo, mat, RAIN_COUNT);
+    rainMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+    rainData = [];
+    for (let i = 0; i < RAIN_COUNT; i++) {
+        rainData.push(randomRainStreak());
+        updateRainMatrix(i);
+    }
+    rainMesh.instanceMatrix.needsUpdate = true;
+    scene.add(rainMesh);
+}
+
+function randomRainStreak() {
+    return {
+        x: (Math.random() - 0.5) * 12,
+        y: Math.random() * 10 + 1,
+        z: Math.random() * 35 - 25,
+        vy: -(Math.random() * 0.06 + 0.03),
+        opacity: 0.3 + Math.random() * 0.7,
+        phase: Math.random() * Math.PI * 2,
+    };
+}
+
+function updateRainMatrix(i) {
+    const p = rainData[i];
+    dummy.position.set(p.x, p.y, p.z);
+    dummy.rotation.set(0, 0, 0);
+    dummy.scale.setScalar(1);
+    dummy.updateMatrix();
+    rainMesh.setMatrixAt(i, dummy.matrix);
+}
+
+// ══════════════════════════════════════════════════════════
+// WARP LINES — hyperspace streaks shooting toward camera
+// ══════════════════════════════════════════════════════════
+function buildWarpLines() {
+    // Thin elongated box pointing along Z — looks like a speed streak
+    const geo = new THREE.BoxGeometry(0.018, 0.018, 2.2);
+    const mat = new THREE.MeshStandardMaterial({
+        emissive: 0xcc44ff,
+        emissiveIntensity: 3.0,
+        color: 0x000000,
+        roughness: 0.0,
+        transparent: true,
+        opacity: 0.85,
+    });
+    warpMesh = new THREE.InstancedMesh(geo, mat, WARP_COUNT);
+    warpMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+    warpMesh.instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(WARP_COUNT * 3), 3);
+    warpData = [];
+    for (let i = 0; i < WARP_COUNT; i++) {
+        warpData.push(randomWarpLine());
+        updateWarpMatrix(i);
+    }
+    warpMesh.instanceMatrix.needsUpdate = true;
+    warpMesh.instanceColor.needsUpdate = true;
+    scene.add(warpMesh);
+}
+
+const _WARP_COLORS = [0xcc44ff, 0x00eeff, 0xffffff, 0xff44cc, 0x8844ff];
+function randomWarpLine() {
+    return {
+        laneX: (Math.random() - 0.5) * 10,
+        laneY: Math.random() * 5.5 + 0.3,
+        z: -(Math.random() * 28 + 4),
+        speed: 0.25 + Math.random() * 0.5,
+        col: _WARP_COLORS[Math.floor(Math.random() * _WARP_COLORS.length)],
+    };
+}
+
+function updateWarpMatrix(i) {
+    const p = warpData[i];
+    dummy.position.set(p.laneX, p.laneY, p.z);
+    dummy.rotation.set(0, 0, 0);
+    dummy.scale.set(1, 1, 1);
+    dummy.updateMatrix();
+    warpMesh.setMatrixAt(i, dummy.matrix);
+    _tmpColor.setHex(p.col);
+    warpMesh.setColorAt(i, _tmpColor);
+}
+
+// ══════════════════════════════════════════════════════════
+// GRID PULSES — expanding neon rings rising from the floor
+// ══════════════════════════════════════════════════════════
+function buildGridPulses() {
+    const geo = new THREE.RingGeometry(0.9, 1.0, 48);
+    const mat = new THREE.MeshStandardMaterial({
+        emissive: 0x7722ff,
+        emissiveIntensity: 3.5,
+        color: 0x000000,
+        transparent: true,
+        opacity: 0.9,
+        side: THREE.DoubleSide,
+        roughness: 0.0,
+    });
+    pulseMesh = new THREE.InstancedMesh(geo, mat, PULSE_COUNT);
+    pulseMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+    pulseMesh.instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(PULSE_COUNT * 3), 3);
+    pulseData = [];
+    for (let i = 0; i < PULSE_COUNT; i++) {
+        pulseData.push(randomPulse(i / PULSE_COUNT));
+        updatePulseMatrix(i);
+    }
+    pulseMesh.instanceMatrix.needsUpdate = true;
+    pulseMesh.instanceColor.needsUpdate = true;
+    scene.add(pulseMesh);
+}
+
+const _PULSE_COLORS = [0x9933ff, 0x00ccff, 0xff33cc];
+function randomPulse(progress = 0) {
+    const maxS = 3.5 + Math.random() * 4.5;
+    return {
+        x: (Math.random() - 0.5) * 8,
+        z: Math.random() * 22 - 18,
+        scale: progress * maxS,       // stagger starting scales
+        maxScale: maxS,
+        growSpeed: 0.018 + Math.random() * 0.018,
+        col: _PULSE_COLORS[Math.floor(Math.random() * _PULSE_COLORS.length)],
+    };
+}
+
+function updatePulseMatrix(i) {
+    const p = pulseData[i];
+    const t = p.scale / p.maxScale;           // 0→1 as ring expands
+    const opacity = 1 - t;
+    dummy.position.set(p.x, 0.05, p.z);
+    dummy.rotation.set(-Math.PI / 2, 0, 0);   // flat on floor
+    dummy.scale.setScalar(p.scale);
+    dummy.updateMatrix();
+    pulseMesh.setMatrixAt(i, dummy.matrix);
+    _tmpColor.setHex(p.col).multiplyScalar(opacity); // fade via color
+    pulseMesh.setColorAt(i, _tmpColor);
+}
+
+// ══════════════════════════════════════════════════════════
+// LIGHT ORBS
+// ══════════════════════════════════════════════════════════
+function buildLightOrbs() {
+    const geo = new THREE.SphereGeometry(0.065, 7, 7);
+    const mat = new THREE.MeshStandardMaterial({ color:0x000000, emissive:0xbb55ff, emissiveIntensity:3.5, transparent:true, opacity:0.9, roughness:0 });
+    orbMesh = new THREE.InstancedMesh(geo, mat, ORB_COUNT);
+    orbMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+    orbData = [];
+    for (let i = 0; i < ORB_COUNT; i++) { orbData.push(randomOrb()); updateOrbMatrix(i); }
+    orbMesh.instanceMatrix.needsUpdate = true;
+    scene.add(orbMesh);
+}
+function randomOrb() {
+    return { x:(Math.random()-0.5)*11, y:Math.random()*6+0.5, z:Math.random()*30-22, vx:(Math.random()-0.5)*0.004, vy:(Math.random()-0.5)*0.003, phase:Math.random()*Math.PI*2, bob:0.003+Math.random()*0.004 };
+}
+function updateOrbMatrix(i) {
+    const p = orbData[i]; dummy.position.set(p.x,p.y,p.z); dummy.rotation.set(0,0,0); dummy.scale.setScalar(1); dummy.updateMatrix(); orbMesh.setMatrixAt(i, dummy.matrix);
+}
+
+// ══════════════════════════════════════════════════════════
+// NEON SPARKS
+// ══════════════════════════════════════════════════════════
+const _SPARK_COLS = [0xff44ff, 0x00eeff, 0xffee44, 0xff4488, 0x88ffff];
+function buildNeonSparks() {
+    const geo = new THREE.SphereGeometry(0.028, 4, 4);
+    const mat = new THREE.MeshStandardMaterial({ color:0x000000, emissive:0xff44ff, emissiveIntensity:5, transparent:true, opacity:0.95, roughness:0 });
+    sparkMesh = new THREE.InstancedMesh(geo, mat, SPARK_COUNT);
+    sparkMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+    sparkMesh.instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(SPARK_COUNT*3), 3);
+    sparkData = [];
+    for (let i = 0; i < SPARK_COUNT; i++) { sparkData.push(randomSpark()); updateSparkMatrix(i); }
+    sparkMesh.instanceMatrix.needsUpdate = true;
+    sparkMesh.instanceColor.needsUpdate = true;
+    scene.add(sparkMesh);
+}
+function randomSpark() {
+    return { x:(Math.random()-0.5)*10, y:Math.random()*5+0.5, z:Math.random()*28-20, vx:(Math.random()-0.5)*0.04, vy:0.02+Math.random()*0.04, grav:0.0008+Math.random()*0.0006, col:_SPARK_COLS[Math.floor(Math.random()*_SPARK_COLS.length)] };
+}
+function updateSparkMatrix(i) {
+    const p = sparkData[i]; dummy.position.set(p.x,p.y,p.z); dummy.rotation.set(0,0,0); dummy.scale.setScalar(1); dummy.updateMatrix(); sparkMesh.setMatrixAt(i, dummy.matrix);
+    _tmpColor.setHex(p.col); sparkMesh.setColorAt(i, _tmpColor);
+}
+
+// ══════════════════════════════════════════════════════════
+// FLOATING DIAMONDS
+// ══════════════════════════════════════════════════════════
+function buildFloatingDiamonds() {
+    const s = new THREE.Shape();
+    s.moveTo(0,0.10); s.lineTo(0.065,0); s.lineTo(0,-0.10); s.lineTo(-0.065,0); s.closePath();
+    const geo = new THREE.ShapeGeometry(s, 1);
+    const mat = new THREE.MeshStandardMaterial({ color:0xcc44ff, emissive:0xaa22ee, emissiveIntensity:2.2, transparent:true, opacity:0.8, side:THREE.DoubleSide, roughness:0.1, metalness:0.5 });
+    diamondMesh = new THREE.InstancedMesh(geo, mat, DIAMOND_COUNT);
+    diamondMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+    diamondData = [];
+    for (let i = 0; i < DIAMOND_COUNT; i++) { diamondData.push(randomDiamond()); updateDiamondMatrix(i); }
+    diamondMesh.instanceMatrix.needsUpdate = true;
+    scene.add(diamondMesh);
+}
+function randomDiamond() {
+    return { x:(Math.random()-0.5)*12, y:Math.random()*7+0.5, z:Math.random()*32-24, vx:(Math.random()-0.5)*0.006, vy:-(0.003+Math.random()*0.004), rz:Math.random()*Math.PI*2, vrz:(Math.random()-0.5)*0.05, phase:Math.random()*Math.PI*2 };
+}
+function updateDiamondMatrix(i) {
+    const p = diamondData[i]; dummy.position.set(p.x,p.y,p.z); dummy.rotation.set(0,0,p.rz); dummy.scale.setScalar(1); dummy.updateMatrix(); diamondMesh.setMatrixAt(i, dummy.matrix);
+}
+
+// ══════════════════════════════════════════════════════════
+// LENS FLARE WISPS
+// ══════════════════════════════════════════════════════════
+const _WISP_COLS = [0xffffff, 0xcc88ff, 0x44ddff, 0xff88dd];
+function buildLensFlareWisps() {
+    const geo = new THREE.BoxGeometry(0.012, 0.012, 1.1);
+    const mat = new THREE.MeshStandardMaterial({ color:0x000000, emissive:0xffffff, emissiveIntensity:2.5, transparent:true, opacity:0.6, roughness:0 });
+    wispMesh = new THREE.InstancedMesh(geo, mat, WISP_COUNT);
+    wispMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+    wispMesh.instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(WISP_COUNT*3), 3);
+    wispData = [];
+    for (let i = 0; i < WISP_COUNT; i++) { wispData.push(randomWisp()); updateWispMatrix(i); }
+    wispMesh.instanceMatrix.needsUpdate = true;
+    wispMesh.instanceColor.needsUpdate = true;
+    scene.add(wispMesh);
+}
+function randomWisp() {
+    return { x:(Math.random()-0.5)*12, y:Math.random()*6+0.3, z:Math.random()*30-22, vx:(Math.random()-0.5)*0.012, vy:(Math.random()-0.5)*0.005, rx:(Math.random()-0.5)*0.5, ry:Math.random()*Math.PI, rz:Math.random()*Math.PI, col:_WISP_COLS[Math.floor(Math.random()*_WISP_COLS.length)], life:Math.random(), decay:0.003+Math.random()*0.004 };
+}
+function updateWispMatrix(i) {
+    const p = wispData[i]; dummy.position.set(p.x,p.y,p.z); dummy.rotation.set(p.rx,p.ry,p.rz); dummy.scale.setScalar(1); dummy.updateMatrix(); wispMesh.setMatrixAt(i, dummy.matrix);
+    _tmpColor.setHex(p.col).multiplyScalar(p.life); wispMesh.setColorAt(i, _tmpColor);
+}
+
+// ══════════════════════════════════════════════════════════
+// FLOATING KANJI
+// ══════════════════════════════════════════════════════════
+const _KANJI_CHARS = ['愛','心','夢','光','星','月','空','風','水','火','山','道','時','命','音','詩','花','雪','春','夜'];
+function buildFloatingKanji() {
+    kanjiPool = [];
+    for (let i = 0; i < 22; i++) {
+        const km = new Text();
+        km.text = _KANJI_CHARS[Math.floor(Math.random()*_KANJI_CHARS.length)];
+        km.fontSize = 0.28 + Math.random()*0.38;
+        km.color = 0xcc66ff; km.anchorX = 'center'; km.anchorY = 'middle';
+        km.fillOpacity = 0; km.outlineColor = 0xaa33ee; km.outlineBlur = '12%'; km.outlineOpacity = 0;
+        const kd = { mesh:km, x:(Math.random()-0.5)*10, y:Math.random()*5+0.5, z:Math.random()*28-20, vy:0.005+Math.random()*0.007, opacity:Math.random()*0.6, fadeDir:Math.random()>0.5?1:-1, fadeSpeed:0.003+Math.random()*0.004 };
+        km.position.set(kd.x, kd.y, kd.z); km.sync();
+        scene.add(km);
+        kanjiPool.push(kd);
+    }
+}
+
+// ══════════════════════════════════════════════════════════
+// NEON DUST MOTES
+// ══════════════════════════════════════════════════════════
+function buildNeonDustMotes() {
+    dustPositions = new Float32Array(DUST_COUNT*3);
+    dustVelocities = new Float32Array(DUST_COUNT*3);
+    for (let i = 0; i < DUST_COUNT; i++) {
+        dustPositions[i*3]=(Math.random()-0.5)*12; dustPositions[i*3+1]=Math.random()*7; dustPositions[i*3+2]=Math.random()*32-24;
+        dustVelocities[i*3]=(Math.random()-0.5)*0.004; dustVelocities[i*3+1]=0.001+Math.random()*0.003; dustVelocities[i*3+2]=(Math.random()-0.5)*0.002;
+    }
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(dustPositions, 3));
+    const mat = new THREE.PointsMaterial({ size:0.045, color:0xcc88ff, transparent:true, opacity:0.7, blending:THREE.AdditiveBlending, depthWrite:false });
+    dustPoints = new THREE.Points(geo, mat);
+    scene.add(dustPoints);
+}
+
+// ══════════════════════════════════════════════════════════
+// AURORA RIBBONS
+// ══════════════════════════════════════════════════════════
+function buildAuroraRibbons() {
+    const colors = [0x8833ff, 0x33ccff, 0xff33aa, 0x33ffcc];
+    auroraRibbons = [];
+    for (let i = 0; i < 4; i++) {
+        const geo = new THREE.PlaneGeometry(14, 0.28);
+        const mat = new THREE.MeshStandardMaterial({ color:colors[i], emissive:colors[i], emissiveIntensity:1.8, transparent:true, opacity:0.16, side:THREE.DoubleSide, roughness:0 });
+        const mesh = new THREE.Mesh(geo, mat);
+        const rd = { mesh, baseY:1.5+i*1.4, phase:i*Math.PI*0.5, speed:0.18+Math.random()*0.1, amp:0.3+Math.random()*0.4, baseX:(Math.random()-0.5)*2 };
+        mesh.position.set(rd.baseX, rd.baseY, -8);
+        scene.add(mesh);
+        auroraRibbons.push(rd);
+    }
+}
+
+// ══════════════════════════════════════════════════════════
+// GLITCH STREAKS
+// ══════════════════════════════════════════════════════════
+function buildGlitchStreaks() {
+    const colors = [0xcc44ff, 0x00ffff, 0xff44cc, 0xffffff];
+    glitchPool = [];
+    for (let i = 0; i < 6; i++) {
+        const geo = new THREE.PlaneGeometry(13, 0.045);
+        const mat = new THREE.MeshStandardMaterial({ color:0x000000, emissive:colors[i%colors.length], emissiveIntensity:4.0, transparent:true, opacity:0, side:THREE.DoubleSide });
+        const mesh = new THREE.Mesh(geo, mat);
+        mesh.position.set(0, 2, -5);
+        scene.add(mesh);
+        glitchPool.push({ mesh, timer:Math.random()*3, active:false });
+    }
+}
+
+// ══════════════════════════════════════════════════════════
+// STAR STREAKS
+// ══════════════════════════════════════════════════════════
+function buildStarStreaks() {
+    const geo = new THREE.BoxGeometry(0.012, 0.012, 0.18);
+    const mat = new THREE.MeshStandardMaterial({ color:0x000000, emissive:0xbb55ff, emissiveIntensity:2.8, transparent:true, opacity:0.7, roughness:0 });
+    starMesh = new THREE.InstancedMesh(geo, mat, STAR_COUNT);
+    starMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+    starData = [];
+    for (let i = 0; i < STAR_COUNT; i++) { starData.push(randomStarStreak()); updateStarMatrix(i); }
+    starMesh.instanceMatrix.needsUpdate = true;
+    scene.add(starMesh);
+}
+function randomStarStreak() {
+    return { x:(Math.random()-0.5)*12, y:Math.random()*7+0.3, z:-(Math.random()*30+5), speed:0.05+Math.random()*0.12 };
+}
+function updateStarMatrix(i) {
+    const p = starData[i]; dummy.position.set(p.x,p.y,p.z); dummy.rotation.set(0,0,0); dummy.scale.setScalar(1); dummy.updateMatrix(); starMesh.setMatrixAt(i, dummy.matrix);
+}
+
+// ══════════════════════════════════════════════════════════
+// PHANTOM KEYS
+// ══════════════════════════════════════════════════════════
+function buildPhantomKeys() {
+    const geo = new THREE.BoxGeometry(0.52, 0.52, 0.18);
+    const mat = new THREE.MeshStandardMaterial({ color:0x9933ff, emissive:0x6600ff, emissiveIntensity:2.0, transparent:true, opacity:0.35, roughness:0.3, metalness:0.4 });
+    phantomMesh = new THREE.InstancedMesh(geo, mat, PHANTOM_COUNT);
+    phantomMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+    phantomData = [];
+    for (let i = 0; i < PHANTOM_COUNT; i++) { phantomData.push(randomPhantomKey()); updatePhantomMatrix(i); }
+    phantomMesh.instanceMatrix.needsUpdate = true;
+    scene.add(phantomMesh);
+}
+function randomPhantomKey() {
+    return { x:(Math.random()-0.5)*9, y:Math.random()*0.8, z:(Math.random()-0.5)*4+6, vy:0.008+Math.random()*0.012, ry:Math.random()*0.3-0.15, vry:(Math.random()-0.5)*0.015 };
+}
+function updatePhantomMatrix(i) {
+    const p = phantomData[i]; dummy.position.set(p.x,p.y,p.z); dummy.rotation.set(0,p.ry,0); dummy.scale.setScalar(1); dummy.updateMatrix(); phantomMesh.setMatrixAt(i, dummy.matrix);
+}
+
+function applyDojoAmbience() {
+    if (petalMesh)   petalMesh.visible   = (dojoAmbienceType === 'petals');
+    if (shardMesh)   shardMesh.visible   = (dojoAmbienceType === 'shards');
+    if (rainMesh)    rainMesh.visible    = (dojoAmbienceType === 'rain');
+    if (warpMesh)    warpMesh.visible    = (dojoAmbienceType === 'warp');
+    if (pulseMesh)   pulseMesh.visible   = (dojoAmbienceType === 'pulse');
+    if (orbMesh)     orbMesh.visible     = (dojoAmbienceType === 'orbs');
+    if (sparkMesh)   sparkMesh.visible   = (dojoAmbienceType === 'sparks');
+    if (diamondMesh) diamondMesh.visible = (dojoAmbienceType === 'diamonds');
+    if (wispMesh)    wispMesh.visible    = (dojoAmbienceType === 'wisps');
+    if (dustPoints)  dustPoints.visible  = (dojoAmbienceType === 'dust');
+    if (starMesh)    starMesh.visible    = (dojoAmbienceType === 'stars');
+    if (phantomMesh) phantomMesh.visible = (dojoAmbienceType === 'phantom');
+    kanjiPool.forEach(k => k.mesh.visible = (dojoAmbienceType === 'kanji'));
+    auroraRibbons.forEach(r => r.mesh.visible = (dojoAmbienceType === 'aurora'));
+    glitchPool.forEach(g => { g.mesh.visible = (dojoAmbienceType === 'glitch'); });
+}
+
+export function setDojoAmbience(type) {
+    dojoAmbienceType = type;
+    applyDojoAmbience();
+}
+
+// ══════════════════════════════════════════════════════════
+// DOJO TV SCREEN — YouTube embed mounted on back wall
+// ══════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════
+// CYBER BUILDINGS — neon wireframe skyscrapers for purple vibe
+// ══════════════════════════════════════════════════════════
+let cyberGroup = null;
+
+function buildCyberBuildings() {
+    cyberGroup = new THREE.Group();
+    cyberGroup.visible = false;
+
+    // Window glow material — small emissive panels
+    const winMat = new THREE.MeshBasicMaterial({ color: 0x7744dd, transparent: true, opacity: 0.5, side: THREE.DoubleSide });
+    const winMatBright = new THREE.MeshBasicMaterial({ color: 0xcc66ff, transparent: true, opacity: 0.7, side: THREE.DoubleSide });
+    const winMatPink = new THREE.MeshBasicMaterial({ color: 0xff44aa, transparent: true, opacity: 0.6, side: THREE.DoubleSide });
+    const winMats = [winMat, winMatBright, winMatPink];
+
+    // Building layers: [x, z, w, d, h, opacity] — near to far for parallax depth
+    const buildings = [
+        // === NEAR foreground (beside camera) ===
+        [-7,   2,  2.5, 2,  14, 0.9],
+        [7,    3,  3,   2,  16, 0.9],
+        // === Mid layer (beside corridor) ===
+        [-8,  -5,  3,   3,  18, 0.8],
+        [-9,  -14, 4,   3,  25, 0.7],
+        [8,   -8,  3,   3,  20, 0.8],
+        [9,   -18, 4,   4,  28, 0.7],
+        [-11, -10, 3,   3,  22, 0.6],
+        [11,  -12, 3,   2,  19, 0.6],
+        // === Deep layer (beside/behind torii) ===
+        [-7,  -24, 3,   4,  15, 0.5],
+        [-10, -30, 5,   4,  30, 0.5],
+        [7,   -28, 3,   3,  16, 0.5],
+        [10,  -35, 5,   3,  24, 0.5],
+        [-12, -20, 4,   5,  22, 0.45],
+        [12,  -22, 4,   5,  26, 0.45],
+        // === Far background ===
+        [-8,  -40, 3,   3,  20, 0.35],
+        [8,   -45, 3,   4,  18, 0.35],
+        [-4,  -35, 6,   4,  22, 0.3],
+        [4,   -38, 5,   5,  20, 0.3],
+        [0,   -48, 4,   4,  30, 0.25],
+        [-6,  -55, 3,   3,  15, 0.2],
+        [6,   -52, 4,   3,  18, 0.2],
+        // === Ultra far — faint silhouettes ===
+        [-14, -45, 5,   5,  35, 0.15],
+        [14,  -50, 6,   4,  32, 0.15],
+        [-10, -60, 4,   4,  25, 0.12],
+        [10,  -65, 5,   5,  28, 0.12],
+        [0,   -70, 8,   6,  40, 0.10],
+    ];
+
+    const winGeo = new THREE.PlaneGeometry(0.4, 0.6);
+
+    for (let i = 0; i < buildings.length; i++) {
+        const [bx, bz, bw, bd, bh, opa] = buildings[i];
+
+        // Wireframe edges with distance-based opacity
+        const color = i % 3 === 0 ? 0x6633cc : i % 3 === 1 ? 0xaa55ff : 0xff44cc;
+        const mat = new THREE.LineBasicMaterial({ color, transparent: true, opacity: opa });
+
+        const geo = new THREE.BoxGeometry(bw, bh, bd);
+        const edges = new THREE.EdgesGeometry(geo);
+        const wire = new THREE.LineSegments(edges, mat);
+        wire.position.set(bx, bh / 2, bz);
+        cyberGroup.add(wire);
+
+        // Floor lines every 2.5 units
+        const floorMat = new THREE.LineBasicMaterial({ color: 0x4422aa, transparent: true, opacity: opa * 0.5 });
+        const fc = Math.floor(bh / 2.5);
+        for (let f = 1; f < fc; f++) {
+            const pts = [
+                new THREE.Vector3(-bw/2, 0, -bd/2), new THREE.Vector3(bw/2, 0, -bd/2),
+                new THREE.Vector3(bw/2, 0, -bd/2),  new THREE.Vector3(bw/2, 0, bd/2),
+                new THREE.Vector3(bw/2, 0, bd/2),   new THREE.Vector3(-bw/2, 0, bd/2),
+                new THREE.Vector3(-bw/2, 0, bd/2),  new THREE.Vector3(-bw/2, 0, -bd/2),
+            ];
+            const fl = new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(pts), floorMat);
+            fl.position.set(bx, f * 2.5, bz);
+            cyberGroup.add(fl);
+        }
+
+        // Glowing windows — random scattered on the front face
+        if (opa > 0.2) {
+            const windowCount = Math.floor(bh * bw * 0.15);
+            const wm = winMats[i % 3];
+            for (let w = 0; w < windowCount; w++) {
+                const wx = bx + (Math.random() - 0.5) * (bw - 0.5);
+                const wy = 1 + Math.random() * (bh - 2);
+                const wz = bz + bd / 2 + 0.02; // on front face
+                const win = new THREE.Mesh(winGeo, wm);
+                win.position.set(wx, wy, wz);
+                cyberGroup.add(win);
+            }
+        }
+    }
+
+    // Neon accent lines — tall vertical glowing streaks
+    const accentMat = new THREE.LineBasicMaterial({ color: 0xff22aa, transparent: true, opacity: 0.9 });
+    const accentDim = new THREE.LineBasicMaterial({ color: 0xaa1188, transparent: true, opacity: 0.5 });
+    const accents = [
+        [-7,  0, -12, -7,  22, -12, accentMat],
+        [7,   0, -15, 7,   24, -15, accentMat],
+        [0,   0, -42, 0,   30, -42, accentMat],
+        [-10, 5, -25, -10, 28, -25, accentDim],
+        [10,  3, -30, 10,  22, -30, accentDim],
+        [-13, 0, -40, -13, 35, -40, accentDim],
+        [13,  0, -45, 13,  30, -45, accentDim],
+        [-6,  0, -55, -6,  20, -55, accentDim],
+        [6,   0, -60, 6,   25, -60, accentDim],
+    ];
+    for (const [x1, y1, z1, x2, y2, z2, m] of accents) {
+        const g = new THREE.BufferGeometry().setFromPoints([
+            new THREE.Vector3(x1, y1, z1), new THREE.Vector3(x2, y2, z2),
+        ]);
+        cyberGroup.add(new THREE.LineSegments(g, m));
+    }
+
+    scene.add(cyberGroup);
+}
+
+function buildDojoTV() {
+    // 3D bezel — 4 thin black bars forming a TV frame
+    const bezelMat = new THREE.MeshStandardMaterial({
+        color: 0x080808,
+        emissive: 0x111111,
+        emissiveIntensity: 0.4,
+        roughness: 0.9,
+        metalness: 0.3,
+    });
+
+    const W = DOJO_SCREEN_SIZE;
+    const H = W / (16 / 9);
+    const T = 0.12; // bezel thickness
+    const D = 0.08; // bezel depth
+
+    // top bar
+    const topGeo = new THREE.BoxGeometry(W + T * 2, T, D);
+    const topBar = new THREE.Mesh(topGeo, bezelMat);
+    topBar.position.set(DOJO_SCREEN_POS.x, DOJO_SCREEN_POS.y + H / 2 + T / 2, DOJO_SCREEN_POS.z);
+    scene.add(topBar);
+
+    // bottom bar
+    const botBar = new THREE.Mesh(topGeo, bezelMat);
+    botBar.position.set(DOJO_SCREEN_POS.x, DOJO_SCREEN_POS.y - H / 2 - T / 2, DOJO_SCREEN_POS.z);
+    scene.add(botBar);
+
+    // left bar
+    const sideGeo = new THREE.BoxGeometry(T, H, D);
+    const leftBar = new THREE.Mesh(sideGeo, bezelMat);
+    leftBar.position.set(DOJO_SCREEN_POS.x - W / 2 - T / 2, DOJO_SCREEN_POS.y, DOJO_SCREEN_POS.z);
+    scene.add(leftBar);
+
+    // right bar
+    const rightBar = new THREE.Mesh(sideGeo, bezelMat);
+    rightBar.position.set(DOJO_SCREEN_POS.x + W / 2 + T / 2, DOJO_SCREEN_POS.y, DOJO_SCREEN_POS.z);
+    scene.add(rightBar);
+
+    // DOM overlay container
+    dojoScreenEl = document.createElement('div');
+    dojoScreenEl.id = 'dojo-yt-screen';
+
+    // Placeholder div — YT.Player replaces this with an iframe
+    const ytPlaceholder = document.createElement('div');
+    ytPlaceholder.id = 'dojo-yt-placeholder';
+    dojoScreenEl.appendChild(ytPlaceholder);
+    document.body.appendChild(dojoScreenEl);
+
+    // Lyric overlay
+    lyricEl = document.createElement('div');
+    lyricEl.id = 'dojo-lyric';
+    document.body.appendChild(lyricEl);
+
+    // Separate progress bar (outside lyric div so opacity doesn't hide it)
+    const barWrap = document.createElement('div');
+    barWrap.id = 'dojo-lyric-bar';
+    barWrap.innerHTML = '<div id="dojo-lyric-bar-fill"></div>';
+    document.body.appendChild(barWrap);
+
+    // Load YouTube IFrame API once and create player
+    function createYTPlayer(videoId) {
+        ytPlayer = new window.YT.Player('dojo-yt-placeholder', {
+            videoId,
+            playerVars: {
+                autoplay: 1, controls: 0, loop: 1,
+                playlist: videoId, modestbranding: 1,
+                rel: 0, showinfo: 0, iv_load_policy: 3,
+            },
+            events: {
+                onReady: (e) => {
+                    e.target.setPlaybackQuality('hd1080');
+                    if (pendingVideoId && pendingVideoId !== videoId) {
+                        e.target.loadVideoById({ videoId: pendingVideoId, startSeconds: 0 });
+                        pendingVideoId = null;
+                    }
+                },
+                onStateChange: (e) => {
+                    // Video ended (not looping) — reset lyric state
+                    if (e.data === 0) {
+                        currentLyricIdx = -2;
+                        if (lyricEl) { lyricEl.textContent = ''; lyricEl.classList.remove('visible'); }
+                        const bar = document.getElementById('dojo-lyric-bar');
+                        if (bar) bar.classList.remove('visible');
+                        if (_onVideoEnd) _onVideoEnd();
+                    }
+                },
+            },
+        });
+    }
+
+    if (ytApiReady) {
+        createYTPlayer('K4DyBUG242c');
+    } else {
+        _ytReadyCbs.push(() => createYTPlayer('K4DyBUG242c'));
+        if (!document.getElementById('yt-iframe-api-script')) {
+            const tag = document.createElement('script');
+            tag.id = 'yt-iframe-api-script';
+            tag.src = 'https://www.youtube.com/iframe_api';
+            document.head.appendChild(tag);
+            const prev = window.onYouTubeIframeAPIReady;
+            window.onYouTubeIframeAPIReady = function() {
+                if (prev) prev();
+                ytApiReady = true;
+                _ytReadyCbs.forEach(cb => cb());
+                _ytReadyCbs.length = 0;
+            };
+        }
+    }
+}
+
+function tickDojoTV() {
+    if (!dojoScreenEl || !camera) return;
+
+    const W = DOJO_SCREEN_SIZE_LIVE;
+
+    // Project left and right edge center to screen space
+    _screenLeft.set(DOJO_SCREEN_POS.x - W / 2, DOJO_SCREEN_POS.y, DOJO_SCREEN_POS.z);
+    _screenRight.set(DOJO_SCREEN_POS.x + W / 2, DOJO_SCREEN_POS.y, DOJO_SCREEN_POS.z);
+
+    _screenLeft.project(camera);
+    _screenRight.project(camera);
+
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+
+    const lx = (_screenLeft.x  * 0.5 + 0.5) * vw;
+    const rx = (_screenRight.x * 0.5 + 0.5) * vw;
+    const cy = (-_screenLeft.y * 0.5 + 0.5) * vh; // y flipped
+
+    const pxW = Math.abs(rx - lx);
+    const pxH = pxW / (16 / 9);
+
+    dojoScreenEl.style.left   = (Math.min(lx, rx)) + 'px';
+    dojoScreenEl.style.top    = (cy - pxH / 2) + 'px';
+    dojoScreenEl.style.width  = pxW + 'px';
+    dojoScreenEl.style.height = pxH + 'px';
+
+    // Lyric sync
+    if (lyricsActive && lyricEl && ytPlayer && typeof ytPlayer.getCurrentTime === 'function') {
+        try {
+            const t = ytPlayer.getCurrentTime();
+            const dur = typeof ytPlayer.getDuration === 'function' ? ytPlayer.getDuration() : 0;
+            const playerState = typeof ytPlayer.getPlayerState === 'function' ? ytPlayer.getPlayerState() : 1;
+            const isEnded = playerState === 0 || playerState === 2 && dur > 0 && t >= dur - 1;
+            const isLoopRestart = t < 1.0 && currentLyricIdx > 0;
+
+            // Detect video ended or loop restart — fire cleanup once
+            if ((isEnded || isLoopRestart) && currentLyricIdx !== -99) {
+                currentLyricIdx = -99; // sentinel to prevent re-firing
+                if (lyricEl) { lyricEl.textContent = ''; lyricEl.classList.remove('visible'); }
+                const bar = document.getElementById('dojo-lyric-bar');
+                if (bar) bar.classList.remove('visible');
+                if (_onVideoEnd) _onVideoEnd();
+                clearThreeText();
+                return;
+            }
+            if (currentLyricIdx === -99 && !isEnded && t > 1.0) { currentLyricIdx = -2; } // un-sentinel on replay
+            let idx = -1;
+            for (let i = 0; i < WWS_LYRICS.length; i++) {
+                if (t >= WWS_LYRICS[i][0]) idx = i; else break;
+            }
+            if (idx !== currentLyricIdx) {
+                currentLyricIdx = idx;
+                // Update text (keep bar element)
+                const textNode = lyricEl.firstChild;
+                if (textNode && textNode.nodeType === Node.TEXT_NODE) textNode.remove();
+                lyricEl.insertBefore(document.createTextNode(idx >= 0 ? WWS_LYRICS[idx][1] : ''), lyricEl.firstChild);
+                lyricEl.classList.toggle('visible', idx >= 0);
+                const bar = document.getElementById('dojo-lyric-bar');
+                if (bar) bar.classList.toggle('visible', idx >= 0);
+                if (_onLyricChange && idx >= 0 && !WWS_LYRICS[idx][2]) _onLyricChange(WWS_LYRICS[idx][1]);
+            }
+            // Update progress bar
+            if (idx >= 0) {
+                const start = WWS_LYRICS[idx][0];
+                const end   = idx + 1 < WWS_LYRICS.length ? WWS_LYRICS[idx + 1][0] : start + 5;
+                const pct   = Math.min(1, Math.max(0, (t - start) / (end - start)));
+                const fill  = document.getElementById('dojo-lyric-bar-fill');
+                if (fill) fill.style.width = (pct * 100) + '%';
+            }
+        } catch(e) {}
+    }
 }
 
 // ══════════════════════════════════════════════════════════
@@ -1153,8 +2099,12 @@ let zenSkyYOff = 0.50; // locked at horizon level
 
 function buildZenSky(yOff = zenSkyYOff) {
     zenSkyYOff = yOff;
-    if (zenSkySphere) { scene.remove(zenSkySphere); zenSkySphere.geometry.dispose(); zenSkySphere.material.dispose(); }
-    const W = 4096, H = 2048;
+    if (zenSkySphere) {
+        scene.remove(zenSkySphere);
+        if (zenSkySphere.geometry) zenSkySphere.geometry.dispose();
+        if (zenSkySphere.material) zenSkySphere.material.dispose();
+    }
+    const W = 6144, H = 3072;
     const c = document.createElement('canvas');
     c.width = W; c.height = H;
     const ctx = c.getContext('2d');
@@ -1179,6 +2129,11 @@ function buildZenSky(yOff = zenSkyYOff) {
     hg.addColorStop(1,   'rgba(20, 10, 50, 0)');
     ctx.fillStyle = hg;
     ctx.fillRect(0, H * 0.6, W, H * 0.4);
+
+    // ── Blur pass to kill 8-bit banding at 6K ──
+    ctx.filter = `blur(${Math.round(W / 400)}px)`;
+    ctx.drawImage(c, 0, 0);
+    ctx.filter = 'none';
 
     // ── 3. Milky Way band (diagonal) ──
     ctx.save();
@@ -1322,16 +2277,17 @@ function buildZenSky(yOff = zenSkyYOff) {
     ctx.fillStyle = atmos;
     ctx.fillRect(0, H * 0.82, W, H * 0.18);
 
-    // ── Apply to sky sphere ──
+    // ── Apply to sky sphere — custom shader for pixel-perfect equirect sampling ──
     const skyTex = new THREE.CanvasTexture(c);
-    skyTex.mapping = THREE.EquirectangularReflectionMapping;
     skyTex.generateMipmaps = false;
     skyTex.minFilter = THREE.LinearFilter;
     skyTex.magFilter = THREE.LinearFilter;
+
     zenSkySphere = new THREE.Mesh(
-        new THREE.SphereGeometry(80, 32, 16),
+        new THREE.SphereGeometry(80, 64, 32),
         new THREE.MeshBasicMaterial({ map: skyTex, side: THREE.BackSide, depthWrite: false, fog: false })
     );
+    scene.add(zenSkySphere);
     scene.add(zenSkySphere);
 
     // Moon glow light
@@ -1472,7 +2428,7 @@ function buildZenGround() {
         map: obsidianTex,
         emissiveMap: crackTex,
         emissive: new THREE.Color(0x3355ee),
-        emissiveIntensity: 1.6,
+        emissiveIntensity: 0.9,
         roughness: 0.12,
         metalness: 0.55,
     });
@@ -2060,6 +3016,18 @@ const KB_THEMES = {
         texBorder: 'rgba(60, 200, 100, 0.50)',
         texLabel:  'rgba(210, 255, 215, 0.95)',
     },
+    purple: {
+        sideColor:   0x1a0e30, sideEmissive:   0x0d0822,
+        bottomColor: 0x0a0618, bottomEmissive: 0x060412,
+        topEmissive: 0x1a0e40,
+        plateColor:  0x0a0618, plateEmissive:  0x060310,
+        idleEmissive: 0x120830,
+        pressColor:  0xcc44ff,
+        underglow: 0x9933ff,  overheadColor: 0xaa66ff,
+        texBg0: '#1a0e38', texBg1: '#0e0620',
+        texBorder: 'rgba(180, 100, 255, 0.50)',
+        texLabel:  'rgba(230, 210, 255, 0.95)',
+    },
     forge: {
         sideColor:    0x1c1008, sideEmissive:   0x5a2200,
         bottomColor:  0x100a04, bottomEmissive: 0x280f00,
@@ -2126,7 +3094,7 @@ function createKeyTexture(char, wide = false, theme = null) {
 const KB_POSITIONS = [
     { y: 0.05, z: 5.5, rx: -0.05, s: 1.0 },   // 1: Floor flat (current)
     { y: 0.15, z: 5.5, rx: -0.25, s: 0.85 },  // 2: Desk tilt
-    { y: 0.25, z: 3.2, rx: 0.20, s: 0.65 },   // 3: Laptop angle (tilted toward user)
+    { y: 0.25, z: 5.6, rx: 0.20, s: 0.65 },   // 3: Laptop angle (tilted toward user)
     { y: 0.05, z: 7.0, rx: -0.05, s: 1.3 },   // 4: Floor close-up
     { y: 0.3,  z: 4.0, rx: -0.15, s: 0.6 },   // 5: Far away
 ];
@@ -2887,8 +3855,8 @@ function animate() {
     // Wind from WPM
     const wind = 1 + Math.min(currentWPM / 60, 2.8);
 
-    // Particles — petals (dojo) or embers (forge)
-    if (sceneType === 'dojo' && petalMesh) {
+    // Particles — petals/shards/rain (dojo) or embers (forge)
+    if (sceneType === 'dojo' && dojoAmbienceType === 'petals' && petalMesh) {
         for (let i = 0; i < PETAL_COUNT; i++) {
             const p = petalData[i];
             p.x += p.vx * wind;
@@ -2909,6 +3877,133 @@ function animate() {
             petalMesh.setMatrixAt(i, dummy.matrix);
         }
         petalMesh.instanceMatrix.needsUpdate = true;
+    } else if (sceneType === 'dojo' && dojoAmbienceType === 'shards' && shardMesh) {
+        for (let i = 0; i < SHARD_COUNT; i++) {
+            const p = shardData[i];
+            p.x += p.vx;
+            p.y += p.vy;
+            p.rx += p.vrx;
+            p.ry += p.vry * wind;
+            p.rz += p.vrz;
+            p.glitchTimer -= delta;
+            if (p.glitchTimer < 0) {
+                // glitch: snap to random position briefly
+                p.glitchTimer = 0.5 + Math.random() * 3;
+                if (Math.random() < 0.3) p.x += (Math.random() - 0.5) * 1.2;
+            }
+            if (p.y < -0.5) Object.assign(p, randomShard());
+            updateShardMatrix(i);
+        }
+        shardMesh.instanceMatrix.needsUpdate = true;
+    } else if (sceneType === 'dojo' && dojoAmbienceType === 'rain' && rainMesh) {
+        for (let i = 0; i < RAIN_COUNT; i++) {
+            const p = rainData[i];
+            p.y += p.vy * wind;
+            if (p.y < -0.5) Object.assign(p, randomRainStreak());
+            updateRainMatrix(i);
+        }
+        rainMesh.instanceMatrix.needsUpdate = true;
+    } else if (sceneType === 'dojo' && dojoAmbienceType === 'warp' && warpMesh) {
+        for (let i = 0; i < WARP_COUNT; i++) {
+            const p = warpData[i];
+            p.z += p.speed * wind * 0.4;
+            if (p.z > 12) Object.assign(p, randomWarpLine());
+            updateWarpMatrix(i);
+        }
+        warpMesh.instanceMatrix.needsUpdate = true;
+        warpMesh.instanceColor.needsUpdate = true;
+    } else if (sceneType === 'dojo' && dojoAmbienceType === 'pulse' && pulseMesh) {
+        for (let i = 0; i < PULSE_COUNT; i++) {
+            const p = pulseData[i];
+            p.scale += p.growSpeed;
+            if (p.scale >= p.maxScale) Object.assign(p, randomPulse(0));
+            updatePulseMatrix(i);
+        }
+        pulseMesh.instanceMatrix.needsUpdate = true;
+        pulseMesh.instanceColor.needsUpdate = true;
+    } else if (sceneType === 'dojo' && dojoAmbienceType === 'orbs' && orbMesh) {
+        for (let i = 0; i < ORB_COUNT; i++) {
+            const p = orbData[i];
+            p.x += p.vx; p.y += p.vy + Math.sin(time*0.6+p.phase)*p.bob;
+            if (p.x < -7 || p.x > 7 || p.y < 0 || p.y > 8) Object.assign(p, randomOrb());
+            updateOrbMatrix(i);
+        }
+        orbMesh.instanceMatrix.needsUpdate = true;
+    } else if (sceneType === 'dojo' && dojoAmbienceType === 'sparks' && sparkMesh) {
+        for (let i = 0; i < SPARK_COUNT; i++) {
+            const p = sparkData[i];
+            p.x += p.vx; p.vy -= p.grav; p.y += p.vy;
+            if (p.y < -0.5) Object.assign(p, randomSpark());
+            updateSparkMatrix(i);
+        }
+        sparkMesh.instanceMatrix.needsUpdate = true;
+        sparkMesh.instanceColor.needsUpdate = true;
+    } else if (sceneType === 'dojo' && dojoAmbienceType === 'diamonds' && diamondMesh) {
+        for (let i = 0; i < DIAMOND_COUNT; i++) {
+            const p = diamondData[i];
+            p.x += p.vx; p.y += p.vy; p.rz += p.vrz;
+            const pulse = 0.85 + Math.sin(time*1.2+p.phase)*0.15;
+            dummy.position.set(p.x,p.y,p.z); dummy.rotation.set(0,0,p.rz); dummy.scale.setScalar(pulse); dummy.updateMatrix(); diamondMesh.setMatrixAt(i, dummy.matrix);
+            if (p.y < -0.5) Object.assign(p, randomDiamond());
+        }
+        diamondMesh.instanceMatrix.needsUpdate = true;
+    } else if (sceneType === 'dojo' && dojoAmbienceType === 'wisps' && wispMesh) {
+        for (let i = 0; i < WISP_COUNT; i++) {
+            const p = wispData[i];
+            p.x += p.vx; p.y += p.vy; p.life -= p.decay;
+            if (p.life <= 0) Object.assign(p, randomWisp());
+            updateWispMatrix(i);
+        }
+        wispMesh.instanceMatrix.needsUpdate = true;
+        wispMesh.instanceColor.needsUpdate = true;
+    } else if (sceneType === 'dojo' && dojoAmbienceType === 'kanji') {
+        for (const kd of kanjiPool) {
+            kd.y += kd.vy; kd.mesh.position.y = kd.y;
+            kd.opacity += kd.fadeDir * kd.fadeSpeed;
+            if (kd.opacity >= 0.7) kd.fadeDir = -1;
+            if (kd.opacity <= 0) { kd.y = 0; kd.x = (Math.random()-0.5)*10; kd.mesh.position.x = kd.x; kd.mesh.text = _KANJI_CHARS[Math.floor(Math.random()*_KANJI_CHARS.length)]; kd.fadeDir = 1; kd.opacity = 0; }
+            kd.mesh.fillOpacity = kd.opacity; kd.mesh.outlineOpacity = kd.opacity * 0.6; kd.mesh.sync();
+        }
+    } else if (sceneType === 'dojo' && dojoAmbienceType === 'dust' && dustPoints) {
+        for (let i = 0; i < DUST_COUNT; i++) {
+            dustPositions[i*3]   += dustVelocities[i*3];
+            dustPositions[i*3+1] += dustVelocities[i*3+1];
+            dustPositions[i*3+2] += dustVelocities[i*3+2];
+            if (dustPositions[i*3+1] > 8) { dustPositions[i*3+1] = 0; dustPositions[i*3] = (Math.random()-0.5)*12; }
+        }
+        dustPoints.geometry.attributes.position.needsUpdate = true;
+    } else if (sceneType === 'dojo' && dojoAmbienceType === 'aurora') {
+        for (const rd of auroraRibbons) {
+            rd.mesh.position.y = rd.baseY + Math.sin(time*rd.speed+rd.phase)*rd.amp;
+            rd.mesh.position.x = rd.baseX + Math.sin(time*rd.speed*0.5+rd.phase)*0.6;
+            rd.mesh.rotation.z = Math.sin(time*rd.speed*0.3+rd.phase)*0.08;
+        }
+    } else if (sceneType === 'dojo' && dojoAmbienceType === 'glitch') {
+        for (const g of glitchPool) {
+            g.timer -= delta;
+            if (g.timer <= 0) {
+                g.active = !g.active;
+                g.timer = g.active ? 0.04+Math.random()*0.12 : 0.3+Math.random()*2.5;
+                if (g.active) { g.mesh.position.y = 0.5+Math.random()*5; g.mesh.position.z = -3+Math.random()*8; g.mesh.material.opacity = 0.4+Math.random()*0.5; }
+            }
+            if (!g.active) g.mesh.material.opacity = Math.max(0, g.mesh.material.opacity - delta*8);
+        }
+    } else if (sceneType === 'dojo' && dojoAmbienceType === 'stars' && starMesh) {
+        for (let i = 0; i < STAR_COUNT; i++) {
+            const p = starData[i];
+            p.z += p.speed;
+            if (p.z > 14) Object.assign(p, randomStarStreak());
+            updateStarMatrix(i);
+        }
+        starMesh.instanceMatrix.needsUpdate = true;
+    } else if (sceneType === 'dojo' && dojoAmbienceType === 'phantom' && phantomMesh) {
+        for (let i = 0; i < PHANTOM_COUNT; i++) {
+            const p = phantomData[i];
+            p.y += p.vy; p.ry += p.vry;
+            if (p.y > 8) Object.assign(p, randomPhantomKey());
+            updatePhantomMatrix(i);
+        }
+        phantomMesh.instanceMatrix.needsUpdate = true;
     } else if (sceneType === 'forge' && emberMesh) {
         for (let i = 0; i < EMBER_COUNT; i++) {
             const e = emberData[i];
@@ -3003,6 +4098,9 @@ function animate() {
 
     // Ghost dissolve planes
     tickGhostPlanes(delta);
+
+    // Dojo TV screen projection
+    if (sceneType === 'dojo') tickDojoTV();
 
     // Camera — gentle breathing sway driven by preset
     {
@@ -3115,9 +4213,20 @@ export function updateThreeTyping(typedInput, targetWord) {
     for (let i = 0; i < entry.charMeshes.length; i++) {
         const cm = entry.charMeshes[i];
         if (i < typedInput.length) {
-            cm.color = typedInput[i] === targetWord[i] ? C_CORRECT : C_WRONG;
+            const isCorrect = typedInput[i] === targetWord[i];
+            cm.color = isCorrect ? currentTheme.correct : C_WRONG;
+            if (lyricsActive && isCorrect) {
+                cm.outlineColor = currentTheme.correct;
+                cm.outlineBlur = '10%';
+                cm.outlineOpacity = 0.5;
+            } else {
+                cm.outlineBlur = 0;
+                cm.outlineOpacity = 0;
+            }
         } else {
             cm.color = C_ACTIVE;
+            cm.outlineBlur = 0;
+            cm.outlineOpacity = 0;
         }
         cm.sync();
     }
@@ -3131,6 +4240,10 @@ export function advanceThreeQueue(wasCorrect, words, nextBackIndex) {
     const completed = queueEntries.shift();
     if (completed.charMeshes) {
         const hitColor = wasCorrect ? 0x00ffaa : 0xff4444;
+
+        // In lyrics mode: wrong words use slash (clean fade) instead of ink-burst
+        const _savedMode = exitAnimMode;
+        if (lyricsActive && exitAnimMode === 'ink-burst' && !wasCorrect) exitAnimMode = 'slash';
 
         // Flash color on all chars first
         completed.charMeshes.forEach(cm => { cm.color = hitColor; cm.sync(); });
@@ -3371,8 +4484,9 @@ export function advanceThreeQueue(wasCorrect, words, nextBackIndex) {
             const flashColor = wasCorrect ? 0xaaffee : 0xff9999;
             completed.charMeshes.forEach(cm => { cm.color = flashColor; cm.sync(); });
         } else if (exitAnimMode === 'ink-burst') {
-            // Flash to white then dark ink
-            completed.charMeshes.forEach(cm => { cm.color = 0xffffff; cm.sync(); });
+            // Flash then dark ink — purple in lyrics mode
+            if (lyricsActive && exitParticleMesh) exitParticleMesh.material.emissive.setHex(0xcc55ff);
+            completed.charMeshes.forEach(cm => { cm.color = lyricsActive ? 0xcc55ff : 0xffffff; cm.sync(); });
             setTimeout(() => {
                 completed.charMeshes.forEach(cm => { if (cm) { cm.color = wasCorrect ? 0x112233 : 0x440000; cm.sync(); } });
             }, 80);
@@ -3391,7 +4505,8 @@ export function advanceThreeQueue(wasCorrect, words, nextBackIndex) {
             completed.charMeshes.forEach(cm => { cm.fillOpacity = 0; });
             spawnGhostDissolve(completed.word, completed.posY, completed.posZ, wasCorrect);
         } else if (exitAnimMode === 'blood-rain') {
-            completed.charMeshes.forEach(cm => { cm.color = wasCorrect ? 0xff1111 : 0x880000; cm.sync(); });
+            if (exitParticleMesh) exitParticleMesh.material.emissive.setHex(0xff1111);
+            completed.charMeshes.forEach(cm => { cm.color = 0xff1111; cm.sync(); });
             spawnExitParticles(completed.charMeshes, 'blood-rain');
         } else if (exitAnimMode === 'lightning-arc') {
             completed.charMeshes.forEach(cm => { cm.color = 0xffffff; cm.sync(); });
@@ -3449,6 +4564,7 @@ export function advanceThreeQueue(wasCorrect, words, nextBackIndex) {
             word: completed.word,
             wasCorrect,
         });
+        exitAnimMode = _savedMode; // restore after per-word override
     }
 
     // 2. Slot 1 becomes slot 0 — need to create char meshes
@@ -3667,14 +4783,21 @@ function animateQueue(delta) {
                     m.fillOpacity = 1.0 - ease * 0.3;
                 });
             } else {
-                d.opacity = Math.max(0, d.opacity - delta * 3.5);
+                d.opacity = Math.max(0, d.opacity - delta * (lyricsActive ? 1.2 : 3.5));
                 d.meshes.forEach((m, j) => {
                     const v = d.velocities[j];
                     if (!v.implosionDone) {
                         v.implosionDone = true;
+                        if (lyricsActive) {
+                            m.text = _KANJI_CHARS[Math.floor(Math.random()*_KANJI_CHARS.length)]; m.fontSize = 0.22; m.color = 0xcc55ff; m.sync();
+                            v.sway = 0.8 + Math.random() * 1.5;
+                            v.swayPhase = Math.random() * Math.PI * 2;
+                            v.gravity = -1.6;
+                            v.vy = -0.3;
+                        }
                     }
                     v.vy += v.gravity * delta;
-                    m.position.x += v.vx * delta;
+                    m.position.x += v.vx * delta + (lyricsActive ? Math.sin(time * v.sway + (v.swayPhase || 0)) * 0.008 : 0);
                     m.position.y += v.vy * delta;
                     m.fillOpacity = d.opacity;
                 });
@@ -4059,6 +5182,140 @@ export function setThreeQuality(val) {
     }
 }
 
+/** Switch dojo color vibe */
+export function setDojoVibe(name) {
+    const pal = DOJO_VIBES[name];
+    if (!pal || !scene) return;
+    currentVibe = name;
+
+    // Background & fog
+    if (scene.background) scene.background.setHex(pal.bg);
+    if (scene.fog) scene.fog.color.setHex(pal.fog);
+
+    // Lights
+    if (dojoMats.ambientLight)   dojoMats.ambientLight.color.setHex(pal.ambient);
+    if (dojoMats.moonLight)      dojoMats.moonLight.color.setHex(pal.moon);
+    if (dojoMats.floorRimLight)  dojoMats.floorRimLight.color.setHex(pal.floorRim);
+    if (keypressLight)           keypressLight.color.setHex(pal.keypress);
+    if (dojoMats.toriiGlowLight) dojoMats.toriiGlowLight.color.setHex(pal.toriiGlow);
+
+    // Materials
+    if (dojoMats.floor) {
+        dojoMats.floor.color.setHex(pal.floor);
+        dojoMats.floor.emissive.setHex(pal.floorEmit);
+    }
+    if (dojoMats.pillar) {
+        dojoMats.pillar.color.setHex(pal.pillar);
+        dojoMats.pillar.emissive.setHex(pal.pillarEmit);
+    }
+    if (dojoMats.pillarBase) {
+        dojoMats.pillarBase.color.setHex(pal.pillarBase);
+        dojoMats.pillarBase.emissive.setHex(pal.pillarBaseEmit);
+    }
+    if (dojoMats.torii) {
+        dojoMats.torii.color.setHex(pal.torii);
+        dojoMats.torii.emissive.setHex(pal.toriiEmit);
+    }
+    if (dojoMats.toriiLantern) {
+        dojoMats.toriiLantern.color.setHex(pal.toriiLantern);
+        dojoMats.toriiLantern.emissive.setHex(pal.toriiLanternEmit);
+    }
+    if (dojoMats.beam) {
+        dojoMats.beam.color.setHex(pal.beam);
+        dojoMats.beam.emissive.setHex(pal.beamEmit);
+    }
+    if (dojoMats.lanternBody) {
+        dojoMats.lanternBody.color.setHex(pal.lanternBody);
+        dojoMats.lanternBody.emissive.setHex(pal.lanternEmit);
+    }
+    if (dojoMats.petal) {
+        dojoMats.petal.color.setHex(pal.petal);
+        dojoMats.petal.emissive.setHex(pal.petalEmit);
+    }
+
+    // Lantern point lights
+    for (const ll of lanternLights) ll.color.setHex(pal.lanternLight);
+
+    // Fire materials & lights
+    for (const fm of dojoMats.fireMats) {
+        fm.color.setHex(pal.fireMat);
+        fm.emissive.setHex(pal.fireEmit);
+    }
+    for (const fl of dojoMats.fireLights) fl.color.setHex(pal.fireLight);
+
+    // Grid — rebuild colors
+    if (dojoMats.grid) {
+        const mats = Array.isArray(dojoMats.grid.material) ? dojoMats.grid.material : [dojoMats.grid.material];
+        if (mats[0]) mats[0].color.setHex(pal.gridBright);
+        if (mats[1]) mats[1].color.setHex(pal.gridDim);
+    }
+
+    // Color theme — switch to purple typing glow
+    if (name === 'purple') {
+        currentTheme = { correct: 0xdd55ff, flash: [0xcc00ff, 0xaa22ee, 0xdd55ff, 0x8800ff, 0xff00cc], mode: 'single' };
+        if (bloomPass) { bloomPass.threshold = 0.3; bloomPass.strength = 0.82; } // lower threshold so purple blooms, reduced strength so untyped letters don't blast
+    } else {
+        currentTheme = COLOR_THEMES.default;
+        if (bloomPass) { bloomPass.threshold = 0.7; bloomPass.strength = 1.1; } // restore default
+    }
+
+    // Lyrics — auto-enable for WWS vibe (song auto-switches in script.js)
+    if (name === 'purple') {
+        lyricsActive = true;
+    } else {
+        lyricsActive = false;
+        currentLyricIdx = -2;
+        if (lyricEl) { lyricEl.textContent = ''; lyricEl.classList.remove('visible'); }
+    }
+
+    // Keyboard theme swap
+    setKeyboardTheme(name === 'purple' ? 'purple' : 'default');
+
+    // Defaults per vibe
+    dojoAmbienceType = name === 'purple' ? 'stars' : 'petals';
+    applyDojoAmbience();
+    const ambienceSelect = document.getElementById('dojo-ambience');
+    if (ambienceSelect) ambienceSelect.value = dojoAmbienceType;
+
+    exitAnimMode = name === 'purple' ? 'ink-burst' : 'slash';
+    const exitSelect = document.getElementById('three-exit-anim');
+    if (exitSelect) exitSelect.value = exitAnimMode;
+
+    setKeyboardPosition(name === 'purple' ? 2 : currentKBPos); // Laptop angle for WWS
+    const kbSelect = document.getElementById('three-kb-pos');
+    if (kbSelect) kbSelect.value = name === 'purple' ? '2' : String(currentKBPos);
+
+    // CSS class toggle for HUD colors
+    document.body.classList.toggle('vibe-purple', name === 'purple');
+}
+
+export function isLyricsModeActive() { return lyricsActive; }
+
+let _onLyricChange = null;
+export function setLyricCallback(fn) { _onLyricChange = fn; }
+
+let _onVideoEnd = null;
+export function setVideoEndCallback(fn) { _onVideoEnd = fn; }
+
+/** Swap the TV song */
+export function setDojoTVSong(videoId) {
+    pendingVideoId = videoId;
+    lyricsActive = (videoId === 'U9pGr6KMdyg');
+    currentLyricIdx = -2;
+    if (lyricEl) { lyricEl.textContent = ''; lyricEl.classList.remove('visible'); }
+    if (ytPlayer && typeof ytPlayer.loadVideoById === 'function') {
+        ytPlayer.loadVideoById({ videoId, startSeconds: 0 });
+        pendingVideoId = null;
+    }
+}
+
+/** Adjust TV screen position/size live */
+export function setDojoTVTransform(x, y, z, size) {
+    DOJO_SCREEN_POS.set(x, y, z);
+    DOJO_SCREEN_SIZE_LIVE = size;
+}
+let DOJO_SCREEN_SIZE_LIVE = DOJO_SCREEN_SIZE;
+
 /** Switch color theme (keyboard lights only) */
 export function setThreeColorTheme(name) {
     const theme = COLOR_THEMES[name];
@@ -4101,6 +5358,25 @@ export function destroyThreeScene() {
     keyboardGroup = null;
     petalData = [];
     petalMesh = null;
+    shardData = [];
+    shardMesh = null;
+    rainData = [];
+    rainMesh = null;
+    warpData = [];
+    warpMesh = null;
+    pulseData = [];
+    pulseMesh = null;
+    orbData = []; orbMesh = null;
+    sparkData = []; sparkMesh = null;
+    diamondData = []; diamondMesh = null;
+    wispData = []; wispMesh = null;
+    kanjiPool.forEach(k => { k.mesh.dispose?.(); scene?.remove(k.mesh); }); kanjiPool = [];
+    if (dustPoints) { dustPoints.geometry.dispose(); scene?.remove(dustPoints); dustPoints = null; }
+    dustPositions = null; dustVelocities = null;
+    auroraRibbons.forEach(r => scene?.remove(r.mesh)); auroraRibbons = [];
+    glitchPool.forEach(g => scene?.remove(g.mesh)); glitchPool = [];
+    starData = []; starMesh = null;
+    phantomData = []; phantomMesh = null;
     lanternLights = [];
     emberData = [];
     emberMesh = null;
@@ -4127,6 +5403,20 @@ export function destroyThreeScene() {
     // Lightning cleanup
     lightningLine = null;
     lightningAnim = null;
+
+    // Cyber buildings cleanup
+    cyberGroup = null;
+
+    // Dojo TV screen cleanup
+    if (dojoScreenEl) { dojoScreenEl.remove(); dojoScreenEl = null; }
+    dojoScreenIframe = null;
+    if (ytPlayer && typeof ytPlayer.destroy === 'function') { try { ytPlayer.destroy(); } catch(e) {} }
+    ytPlayer = null;
+    if (lyricEl) { lyricEl.remove(); lyricEl = null; }
+    const _bar = document.getElementById('dojo-lyric-bar');
+    if (_bar) _bar.remove();
+    lyricsActive = false;
+    currentLyricIdx = -2;
 
     // Ghost dissolve planes cleanup
     ghostPlanes.forEach(g => {

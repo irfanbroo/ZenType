@@ -274,7 +274,7 @@ body.three-mode #clean-toolbar {
     border-top: 1px solid rgba(0, 180, 255, 0.12);
     border-bottom: 1px solid rgba(0, 180, 255, 0.08);
     background: linear-gradient(180deg, rgba(0, 15, 35, 0.65) 0%, rgba(0, 8, 20, 0.45) 100%);
-    overflow: hidden;
+    overflow: visible;
 }
 
 /* Header */
@@ -611,4 +611,131 @@ body.zen-scene #three-dojo-settings {
 
 body.zen-scene .three-reset-btn:hover {
     color: rgba(160, 210, 120, 0.8);
+}
+
+/* ── Purple "Where We Started" vibe overrides ────────────── */
+body.vibe-purple.three-mode .glass-panel .word .letter {
+    color: rgba(200, 170, 255, 0.55) !important;
+    text-shadow: 0 0 6px rgba(150, 50, 255, 0.1), 0 2px 4px rgba(0, 0, 0, 0.6);
+}
+
+body.vibe-purple.three-mode .glass-panel .word .letter.correct {
+    color: rgba(230, 200, 255, 0.95) !important;
+    text-shadow: 0 0 8px rgba(180, 80, 255, 0.8), 0 0 20px rgba(150, 50, 255, 0.4), 0 0 40px rgba(120, 30, 255, 0.15), 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+body.vibe-purple.three-mode .glass-panel .word .letter.incorrect {
+    color: rgba(255, 100, 180, 0.95) !important;
+    text-shadow: 0 0 8px rgba(255, 50, 150, 0.8), 0 0 20px rgba(255, 30, 120, 0.4);
+}
+
+body.vibe-purple.three-mode #timer {
+    color: rgba(180, 120, 255, 0.9) !important;
+    text-shadow: 0 0 12px rgba(150, 80, 255, 0.6), 0 0 30px rgba(120, 50, 255, 0.2);
+}
+
+body.vibe-purple.three-mode #wpm {
+    color: rgba(255, 180, 255, 0.9) !important;
+    text-shadow: 0 0 12px rgba(255, 120, 220, 0.5), 0 0 25px rgba(200, 80, 255, 0.15);
+}
+
+body.vibe-purple.three-mode #caret {
+    box-shadow: 0 0 8px rgba(180, 80, 255, 0.8), 0 0 20px rgba(150, 50, 255, 0.4), 0 0 40px rgba(120, 30, 255, 0.15) !important;
+    background: rgba(180, 80, 255, 0.9) !important;
+}
+
+body.vibe-purple.three-mode .glass-panel #words-container {
+    background-image: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(150, 50, 255, 0.015) 3px, rgba(150, 50, 255, 0.015) 4px);
+}
+
+/* ── Dojo lyric overlay ──────────────────────────────────── */
+#dojo-lyric {
+    position: fixed;
+    bottom: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.3rem;
+    font-weight: 300;
+    letter-spacing: 0.06em;
+    text-align: center;
+    color: rgba(230, 200, 255, 0.0);
+    text-shadow:
+        0 0 20px rgba(180, 80, 255, 0.0),
+        0 0 40px rgba(150, 50, 255, 0.0);
+    pointer-events: none;
+    z-index: 5;
+    white-space: nowrap;
+    transition: color 0.4s ease, text-shadow 0.4s ease, opacity 0.4s ease;
+    opacity: 0;
+}
+
+#dojo-lyric-bar {
+    position: fixed;
+    bottom: 45px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 500px;
+    height: 4px;
+    background: rgba(150, 80, 255, 0.25);
+    border-radius: 4px;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 5;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+#dojo-lyric.visible ~ #dojo-lyric-bar,
+#dojo-lyric-bar.visible {
+    opacity: 1;
+}
+
+#dojo-lyric-bar-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, rgba(140, 60, 255, 0.95), rgba(255, 80, 220, 0.95));
+    border-radius: 4px;
+    box-shadow: 0 0 10px rgba(180, 80, 255, 0.9), 0 0 20px rgba(200, 80, 255, 0.4);
+    transition: width 0.15s linear;
+}
+
+#dojo-lyric.visible {
+    color: rgba(230, 200, 255, 0.95);
+    text-shadow:
+        0 0 16px rgba(180, 80, 255, 0.9),
+        0 0 35px rgba(150, 50, 255, 0.5),
+        0 0 60px rgba(120, 30, 255, 0.2);
+    opacity: 1;
+}
+
+/* ── TV slider value readout ─────────────────────────────── */
+.tv-val {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: rgba(0, 212, 255, 0.9);
+    min-width: 36px;
+    text-align: right;
+    flex-shrink: 0;
+}
+
+/* ── Dojo TV screen ───────────────────────────────────────── */
+/* z-index: -1 puts iframe in front of canvas (-2).
+   mix-blend-mode: screen makes dark areas invisible and bright
+   areas glow additively — like a real TV in a dark room.        */
+#dojo-yt-screen {
+    position: fixed;
+    z-index: -1;
+    pointer-events: none;
+    overflow: hidden;
+    border-radius: 2px;
+    background: #000;
+    mix-blend-mode: screen;
+}
+
+#dojo-yt-screen iframe {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: none;
 }
