@@ -94,6 +94,12 @@ spec:
               value: "*"
             - name: PORT
               value: "3001"
+            - name: SUPABASE_URL
+              value: "https://zcubjnqfouqurxacssrj.supabase.co"
+            - name: SUPABASE_SERVICE_ROLE_KEY
+              value: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpjdWJqbnFmb3VxdXJ4YWNzc3JqIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MDkxMTcxNSwiZXhwIjoyMDg2NDg3NzE1fQ.yf4kI247J78qEfrgAlN26PGXWCVEz84DMlquXBYq61o"
+            - name: SUPABASE_JWT_SECRET
+              value: "oPsGtnOL4dwD7V591vNf06+IfYtxAl6r9LrSu4Ra6EUIgsjgIR3lQq9w11jVB0BAbpSjivdqGoBBRpmBSX3B4A=="
           ports:
             - containerPort: 3001
           resources:

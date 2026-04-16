@@ -1,7 +1,13 @@
 const { generateWordList, generateHagakureWordList } = require('./words');
+const { z } = require('zod');
 
 // In-memory room store
 const rooms = new Map();
+
+// ─── Zod schemas for player input ────────────────────────
+const usernameSchema = z.string().trim().min(1).max(20)
+  .transform(s => s.replace(/<[^>]*>/g, '')); // Strip HTML
+const emojiSchema = z.string().max(8).optional(); // Emoji can be multi-codepoint
 
 // Valid clean mode themes
 const VALID_THEMES = new Set([
@@ -24,12 +30,14 @@ function generateRoomCode() {
   return code;
 }
 
-function createPlayer(userId, username, socketId, emoji) {
+function createPlayer(userId, rawUsername, socketId, rawEmoji) {
+  const nameParsed = usernameSchema.safeParse(rawUsername);
+  const emojiParsed = emojiSchema.safeParse(rawEmoji);
   return {
     id: userId,
-    username: (username || 'Player').slice(0, 20),
+    username: nameParsed.success ? nameParsed.data : 'Player',
     socketId,
-    emoji: emoji || DEFAULT_EMOJIS[0],
+    emoji: emojiParsed.success && emojiParsed.data ? emojiParsed.data : DEFAULT_EMOJIS[0],
     currentWordIndex: 0,
     correctChars: 0,
     totalCharsTyped: 0,
@@ -202,7 +210,9 @@ function registerRoomHandlers(io, socket) {
     const player = room.players.get(socket.id);
     if (!player) return;
 
-    player.emoji = emoji;
+    const parsed = emojiSchema.safeParse(emoji);
+    if (!parsed.success) return;
+    player.emoji = parsed.data || player.emoji;
     io.to(room.code).emit('room:player_updated', { player: serializePlayer(player) });
   });
 

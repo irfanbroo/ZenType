@@ -7,9 +7,12 @@
     "dev": "node --watch src/index.js"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.103.2",
     "express": "^4.21.0",
-    "socket.io": "^4.8.0",
+    "jsonwebtoken": "^9.0.2",
+    "jwks-rsa": "^4.0.1",
     "pg": "^8.13.0",
-    "jsonwebtoken": "^9.0.2"
+    "socket.io": "^4.8.0",
+    "zod": "^4.3.6"
   }
 }
