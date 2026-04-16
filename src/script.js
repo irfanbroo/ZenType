@@ -6781,6 +6781,7 @@ async function dojoLevel7Victory() {
     document.body.appendChild(overlay);
 
     // Record in Supabase (Global Leaderboard) in BACKGROUND
+    document.dispatchEvent(new CustomEvent('__zt_dojo_win'));
     if (window.recordDojoWin) {
         window.recordDojoWin().then(dbWins => {
             if (dbWins != null) {
@@ -7957,6 +7958,10 @@ function initHagakureGame() {
         if (!state.isActive && value.length === 1) {
             state.isActive = true;
             state.startTime = Date.now();
+            state._testToken = null;
+            if (window.requestTestToken) {
+                window.requestTestToken().then(t => { state._testToken = t; });
+            }
             startHagakureTimer();
         }
 
@@ -8104,7 +8109,8 @@ function showHagakureVictory() {
     // SAVE STATS (HAGAKURE MODE)
     if (window.updateUserStats) {
         const timeSeconds = (Date.now() - state.startTime) / 1000;
-        window.updateUserStats(wpm, timeSeconds, 'hagakure');
+        const hAccuracy = state.totalCharsTyped > 0 ? Math.round((state.correctChars / state.totalCharsTyped) * 100) : 0;
+        window.updateUserStats(wpm, timeSeconds, 'hagakure', state._testToken, state.totalCharsTyped, hAccuracy);
     }
 
     let rank = "RONIN";
@@ -10266,6 +10272,12 @@ function startTimer() {
     state.isActive = true;
     document.body.classList.add('is-typing');
     state.startTime = Date.now();
+    state._wasInstantLegend = !!userConfig.instantLegend; // Lock at start
+    // Request server-side test token (async, don't block typing)
+    state._testToken = null;
+    if (window.requestTestToken) {
+        window.requestTestToken().then(t => { state._testToken = t; });
+    }
     discordPresence.setTyping(state.timeLimit);
     state.lastRecordTime = state.startTime;
     state.lastTotalChars = state.totalCharsTyped;
@@ -10417,8 +10429,8 @@ function endGame() {
     drawResultChart(state.wpmHistory);
 
     // Save stats if user is logged in — skip if Instant Legend or Multiplayer
-    if (window.updateUserStats && !userConfig.instantLegend && !window.mpState?.isMultiplayer) {
-        window.updateUserStats(netWpm, finalTimeMin * 60);
+    if (window.updateUserStats && !state._wasInstantLegend && !userConfig.instantLegend && !window.mpState?.isMultiplayer) {
+        window.updateUserStats(netWpm, finalTimeMin * 60, 'standard', state._testToken, state.totalCharsTyped, accuracy);
     }
 
     // In multiplayer, send results to server instead of showing normal results

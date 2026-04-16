@@ -22,3 +22,7 @@ steam-build*/
 # Local config
 config.js
 .vscode/
+
+# Secrets — never commit these
+server/k8s-deploy.yaml
+*.kubeconfig

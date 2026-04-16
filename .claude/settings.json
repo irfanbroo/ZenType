@@ -2,7 +2,16 @@
   "permissions": {
     "allow": [
       "Bash(grep -B2 -A20 '_\\\\$ae=function')",
-      "Bash(grep -B2 -A30 '_\\\\$5s=function')"
+      "Bash(grep -B2 -A30 '_\\\\$5s=function')",
+      "Bash(kubectl --kubeconfig \"c:/Users/irfan/OneDrive/Desktop/DESKTOP/Shizuka/server/.kubeconfig\" logs pod/zentype-ws-6d595b665d-w5mtv -n ns-ts2raneh)",
+      "Bash(grep -E \"\\\\.js$|^d\")",
+      "Bash(find src *)",
+      "WebFetch(domain:github.com)",
+      "Bash(kubectl --kubeconfig c:/Users/irfan/OneDrive/Desktop/DESKTOP/Shizuka/server/.kubeconfig rollout restart deployment zentype -n ns-ts2raneh)",
+      "Bash(kubectl --kubeconfig \"c:/Users/irfan/OneDrive/Desktop/DESKTOP/Shizuka/server/.kubeconfig\" get pods -n ns-ts2raneh -l \"app in \\(zentype,zentype-ws\\)\")",
+      "Bash(kubectl --kubeconfig \"c:/Users/irfan/OneDrive/Desktop/DESKTOP/Shizuka/server/.kubeconfig\" logs deployment/zentype-ws -n ns-ts2raneh --tail=10)",
+      "Bash(kubectl --kubeconfig \"c:/Users/irfan/OneDrive/Desktop/DESKTOP/Shizuka/server/.kubeconfig\" logs pod/zentype-ws-6b9c5579fd-xdzdq -n ns-ts2raneh)",
+      "Bash(kubectl --kubeconfig c:/Users/irfan/OneDrive/Desktop/DESKTOP/Shizuka/server/.kubeconfig logs deployment/zentype-ws -n ns-ts2raneh --tail=5)"
     ]
   }
 }

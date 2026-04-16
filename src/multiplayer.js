@@ -116,15 +116,15 @@ function registerSocketListeners() {
     assignPlayerColors();
     renderLobbyPlayers();
     updateStartButton();
-    mpToast(`${player.username} joined`);
-    appendSystemMessage(`${player.username} joined the war room`);
+    mpToast(`${escapeHtml(player.username)} joined`);
+    appendSystemMessage(`${escapeHtml(player.username)} joined the war room`);
   });
 
   socket.on('room:player_left', ({ playerId }) => {
     if (!mpState.room) return;
     const leaving = mpState.room.players.find(p => p.id === playerId);
     mpState.room.players = mpState.room.players.filter(p => p.id !== playerId);
-    if (leaving) appendSystemMessage(`${leaving.username} left`);
+    if (leaving) appendSystemMessage(`${escapeHtml(leaving.username)} left`);
     assignPlayerColors();
     renderLobbyPlayers();
     updateStartButton();
@@ -700,8 +700,8 @@ function renderLobbyPlayers() {
 
   list.innerHTML = mpState.room.players.map(p => `
     <div class="mp-player-card">
-      <span class="mp-player-emoji">${p.emoji}</span>
-      <span class="mp-player-name">${p.username}</span>
+      <span class="mp-player-emoji">${escapeHtml(p.emoji)}</span>
+      <span class="mp-player-name">${escapeHtml(p.username)}</span>
       ${p.id === mpState.room.hostId ? '<span class="mp-player-host">HOST</span>' : ''}
       ${p.id === mpState.localPlayerId ? '<span class="mp-player-you">YOU</span>' : ''}
     </div>
@@ -1637,10 +1637,10 @@ function showRaceResults(standings) {
     const winnerHtml = w ? `
       <div class="mp-podium-winner">
         <div class="mp-podium-crown">👑</div>
-        <div class="mp-podium-emoji">${w.emoji}</div>
-        <div class="mp-podium-name">${w.username}</div>
-        <div class="mp-podium-wpm">${w.wpm} <small>WPM</small></div>
-        <div class="mp-podium-acc-bar"><div class="mp-podium-acc-fill" style="width:${w.accuracy || 0}%"></div></div>
+        <div class="mp-podium-emoji">${escapeHtml(w.emoji)}</div>
+        <div class="mp-podium-name">${escapeHtml(w.username)}</div>
+        <div class="mp-podium-wpm">${Number(w.wpm) || 0} <small>WPM</small></div>
+        <div class="mp-podium-acc-bar"><div class="mp-podium-acc-fill" style="width:${Math.min(100, Math.max(0, Number(w.accuracy) || 0))}%"></div></div>
         <div class="mp-podium-acc-label">${Math.round(w.accuracy || 0)}% acc</div>
       </div>` : '';
 
@@ -1651,11 +1651,11 @@ function showRaceResults(standings) {
       const colorClass = i === 0 ? 'silver' : i === 1 ? 'bronze' : '';
       return `<div class="mp-chat-rank-row ${colorClass}">
         <span class="mp-rank-medal">${medal}</span>
-        <span class="mp-rank-emoji">${s.emoji}</span>
-        <span class="mp-rank-name">${s.username}</span>
+        <span class="mp-rank-emoji">${escapeHtml(s.emoji)}</span>
+        <span class="mp-rank-name">${escapeHtml(s.username)}</span>
         <div class="mp-rank-stats">
-          <span class="mp-rank-wpm">${s.wpm} <small>WPM</small></span>
-          <div class="mp-rank-acc-bar"><div class="mp-rank-acc-fill ${colorClass}" style="width:${s.accuracy || 0}%"></div></div>
+          <span class="mp-rank-wpm">${Number(s.wpm) || 0} <small>WPM</small></span>
+          <div class="mp-rank-acc-bar"><div class="mp-rank-acc-fill ${colorClass}" style="width:${Math.min(100, Math.max(0, Number(s.accuracy) || 0))}%"></div></div>
         </div>
       </div>`;
     }).join('');
@@ -2902,7 +2902,7 @@ function appendChatMessage(msg) {
   const emoji = player?.emoji || '\u{1F4AC}';
   const wpm = playerWpmMap.get(msg.playerId);
   const wpmStr = wpm ? ` (${wpm})` : '';
-  const nameText = `${rank === 1 ? '\u{1F451} ' : ''}${msg.username}${wpmStr}`;
+  const nameText = `${rank === 1 ? '\u{1F451} ' : ''}${escapeHtml(msg.username)}${wpmStr}`;
 
   const div = document.createElement('div');
   div.className = `mp-chat-msg ${isYou ? 'is-you' : 'is-other'} ${rankClass}`;
@@ -2932,7 +2932,10 @@ function appendSystemMessage(text) {
   if (!el) return;
   const div = document.createElement('div');
   div.className = 'mp-chat-msg is-system';
-  div.innerHTML = `<div class="mp-chat-msg-body"><div class="mp-chat-msg-text">${text}</div></div>`;
+  const msgTextDiv = document.createElement('div');
+  msgTextDiv.className = 'mp-chat-msg-body';
+  msgTextDiv.innerHTML = `<div class="mp-chat-msg-text">${escapeHtml(text)}</div>`;
+  div.appendChild(msgTextDiv);
   const typingEl = document.getElementById('mp-chat-typing');
   if (typingEl && el.contains(typingEl)) el.insertBefore(div, typingEl);
   else el.appendChild(div);

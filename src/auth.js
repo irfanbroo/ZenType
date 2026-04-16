@@ -121,6 +121,11 @@ try {
 // AUTHENTICATION LOGIC
 // ══════════════════════════════════════════════════════════
 
+function escapeHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+}
+
 function initAuth() {
     console.log("Auth.js: Initializing...");
 
@@ -440,129 +445,71 @@ function initAuth() {
 
 
     // Expose update function globally for script.js
-    window.updateUserStats = async (wpm, timeElapsedSeconds, mode = 'standard') => {
+    // Helper: get JWT token for server API calls
+    async function getAuthToken() {
+        if (!supabaseClient) return null;
+        const { data } = await supabaseClient.auth.getSession();
+        return data?.session?.access_token || null;
+    }
+
+    // Helper: call server API with auth
+    const API_BASE = location.hostname === 'localhost' ? 'http://localhost:3001' : '';
+    async function apiCall(endpoint, body = {}) {
+        const token = await getAuthToken();
+        if (!token) return { error: 'Not logged in' };
+
+        const res = await fetch(`${API_BASE}/api/${endpoint}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(body)
+        });
+        return res.json();
+    }
+
+    // Request a test token from the server when a test starts
+    window.requestTestToken = async () => {
+        const result = await apiCall('test/start');
+        return result.token || null;
+    };
+
+    window.updateUserStats = async (wpm, timeElapsedSeconds, mode = 'standard', testToken, charCount = 0, accuracy = 0) => {
         if (!supabaseClient) return;
-        const { data: { user } } = await supabaseClient.auth.getUser();
-        if (!user) return;
 
-        console.log(`Saving Stats: WPM=${wpm}, Time=${timeElapsedSeconds}s, Mode=${mode}`);
-
-        // 1. Get current stats
-        let { data: current, error: fetchError } = await supabaseClient
-            .from('profiles')
-            .select('tests_completed, best_wpm, best_hagakure_wpm, time_typed_seconds, activity_log, wpm_history')
-            .eq('id', user.id)
-            .single();
-
-        if (fetchError && !current) {
-            // Real fetch error (network, RLS, etc.) — abort to avoid overwriting existing data
-            console.error("[SCORE SAVE] Failed to fetch profile, aborting to protect data:", fetchError);
+        // Must have a server-issued test token
+        if (!testToken) {
+            console.warn("[SCORE] No test token — rejected");
             return;
         }
 
-        if (!current) {
-            console.warn("Profile missing during update. Creating...");
-            const { error: insertError } = await supabaseClient.from('profiles').insert([
-                {
-                    id: user.id,
-                    username: 'ZenTyper',
-                    bio: 'Just started typing...',
-                    tests_completed: 0,
-                    best_wpm: 0,
-                    best_hagakure_wpm: 0,
-                    time_typed_seconds: 0,
-                    activity_log: {},
-                    wpm_history: []
-                }
-            ]);
+        // Client-side validation (defense in depth — server validates too)
+        wpm = Math.round(Number(wpm));
+        timeElapsedSeconds = Math.round(Number(timeElapsedSeconds));
+        charCount = Math.round(Number(charCount));
+        accuracy = Math.round(Number(accuracy));
+        if (!Number.isFinite(wpm) || wpm < 1 || wpm > 350) return;
+        if (!Number.isFinite(timeElapsedSeconds) || timeElapsedSeconds < 5 || timeElapsedSeconds > 600) return;
 
-            current = { tests_completed: 0, best_wpm: 0, best_hagakure_wpm: 0, time_typed_seconds: 0, activity_log: {}, wpm_history: [] };
-        }
+        console.log(`[SCORE] Saving: WPM=${wpm}, Time=${timeElapsedSeconds}s, Mode=${mode}, Chars=${charCount}`);
 
-        // 2. Calculate new values
-        const newTests = (current.tests_completed || 0) + 1;
-        const newTime = (current.time_typed_seconds || 0) + Math.round(timeElapsedSeconds);
+        const result = await apiCall('stats', { wpm, time: timeElapsedSeconds, mode, testToken, charCount, accuracy });
 
-        // CLASSIC BEST (Unchanged if in Hagakure mode)
-        let newBest = current.best_wpm || 0;
-        if (mode !== 'hagakure') {
-            newBest = Math.max(newBest, wpm);
-            console.log(`[SCORE SAVE] Classic Mode: Comparing ${wpm} with current best ${current.best_wpm || 0}. Result: ${newBest}`);
+        if (result.error) {
+            console.error("[SCORE] Server rejected:", result.error);
         } else {
-            console.log(`[SCORE SAVE] Hagakure Mode: Skipping Classic best_wpm update. current best remains ${newBest}`);
-        }
-
-        // HAGAKURE BEST
-        let newHagakureBest = current.best_hagakure_wpm || 0;
-        if (mode === 'hagakure') {
-            newHagakureBest = Math.max(newHagakureBest, wpm);
-            console.log(`[SCORE SAVE] Hagakure Mode: Comparing ${wpm} with current best ${current.best_hagakure_wpm || 0}. Result: ${newHagakureBest}`);
-        }
-
-        // Heatmap & History
-        const today = new Date().toISOString().split('T')[0];
-        const activity = current.activity_log || {};
-        activity[today] = (activity[today] || 0) + 1;
-
-        let history = current.wpm_history;
-        if (!Array.isArray(history)) {
-            history = [];
-        }
-        history.push(wpm);
-        if (history.length > 20) history = history.slice(history.length - 20);
-
-        // 3. Update Supabase
-        const updates = {
-            tests_completed: newTests,
-            time_typed_seconds: newTime,
-            best_wpm: newBest,
-            activity_log: activity,
-            wpm_history: history,
-            last_updated: new Date().toISOString()
-        };
-
-        if (mode === 'hagakure') {
-            updates.best_hagakure_wpm = newHagakureBest;
-        }
-
-        console.log("[SCORE SAVE] Updates object constructed:", updates);
-
-        const { error: updateError } = await supabaseClient
-            .from('profiles')
-            .update(updates)
-            .eq('id', user.id);
-
-        if (updateError) {
-            console.error("[SCORE SAVE] Failed to save stats:", updateError);
-        } else {
-            console.log("[SCORE SAVE] Stats saved successfully!");
+            console.log("[SCORE] Saved via server:", result);
             fetchUserStats(); // Refresh UI
         }
     };
 
-    // Save Theme Publicly
+    // Save Theme via server API
     window.saveUserTheme = async (themeData) => {
-        console.log("DEBUG: auth.js - saveUserTheme called with:", themeData);
+        if (!supabaseClient || !themeData || typeof themeData !== 'object') return;
 
-        if (!supabaseClient) {
-            console.error("DEBUG: auth.js - supabaseClient missing.");
-            return;
-        }
-
-        const { data: { user } } = await supabaseClient.auth.getUser();
-        if (!user) {
-            console.error("DEBUG: auth.js - No user logged in.");
-            return;
-        }
-
-        console.log("DEBUG: auth.js - Saving for user:", user.id);
-        const { error } = await supabaseClient
-            .from('profiles')
-            .update({ profile_theme: themeData })
-            .eq('id', user.id);
-
-        if (error) console.error("DEBUG: auth.js - Supabase Error:", error);
-        else console.log("DEBUG: auth.js - Theme saved successfully to DB.");
+        const result = await apiCall('theme', themeData);
+        if (result.error) console.error("Theme save error:", result.error);
     };
 
     // --- LEADERBOARD LOGIC ---
@@ -765,7 +712,7 @@ function initAuth() {
                 const score = player[column] || 0;
                 item.innerHTML = `
                     <div class="s-rank">#${rank}</div>
-                    <div class="s-name">${player.username || 'ZEN WARRIOR'}</div>
+                    <div class="s-name">${escapeHtml(player.username) || 'ZEN WARRIOR'}</div>
                     <div class="s-flow">${score}</div>
                 `;
             } else if (mode === 'dojo') {
@@ -778,7 +725,7 @@ function initAuth() {
                 const score = player[column] || 0;
                 item.innerHTML = `
                     <div class="d-rank">#${rank}</div>
-                    <div class="d-name">${player.username || 'ZEN WARRIOR'}</div>
+                    <div class="d-name">${escapeHtml(player.username) || 'ZEN WARRIOR'}</div>
                     <div class="d-wins">${score}</div>
                 `;
             } else {
@@ -794,10 +741,10 @@ function initAuth() {
                 item.innerHTML = `
                     <div class="l-left">
                         <div class="l-rank">#${rank}</div>
-                        <div class="l-avatar">${initial}</div>
+                        <div class="l-avatar">${escapeHtml(initial)}</div>
                     </div>
                     <div class="l-info">
-                        <div class="l-name">${player.username || 'ZenTyper'}</div>
+                        <div class="l-name">${escapeHtml(player.username) || 'ZenTyper'}</div>
                         <div class="l-stats"><span class="l-stat-pill"><i class="ri-time-line"></i> ${timeStr}</span></div>
                     </div>
                     <div class="l-right">
@@ -815,38 +762,14 @@ function initAuth() {
     // --- DOJO WIN RECORDING ---
     window.recordDojoWin = async () => {
         if (!supabaseClient) return;
-        const { data: { user } } = await supabaseClient.auth.getUser();
-        if (!user) return;
 
-        console.log("Recording Dojo Win for:", user.id);
-
-        // 1. Get current wins
-        const { data: current, error: fetchError } = await supabaseClient
-            .from('profiles')
-            .select('dojo_wins')
-            .eq('id', user.id)
-            .single();
-
-        if (fetchError) {
-            console.error("Error fetching dojo wins:", fetchError);
-            return;
-        }
-
-        const newWins = (current.dojo_wins || 0) + 1;
-
-        // 2. Update
-        const { error: updateError } = await supabaseClient
-            .from('profiles')
-            .update({ dojo_wins: newWins })
-            .eq('id', user.id);
-
-        if (updateError) {
-            console.error("Error updating dojo wins:", updateError);
+        const result = await apiCall('dojo-win');
+        if (result.error) {
+            console.error("[DOJO] Server rejected:", result.error);
             return null;
-        } else {
-            console.log("Dojo Win Recorded! Total:", newWins);
-            return newWins;
         }
+        console.log("[DOJO] Win recorded! Total:", result.dojo_wins);
+        return result.dojo_wins;
     };
 
 
@@ -859,8 +782,8 @@ function initAuth() {
         if (!editBtn || !nameDisplay || !bioDisplay) return;
 
         // Reset to view mode initially (clean slate)
-        nameDisplay.innerHTML = currentUsername || 'ZenTyper';
-        bioDisplay.innerHTML = currentBio || 'ZenTyper';
+        nameDisplay.textContent = currentUsername || 'ZenTyper';
+        bioDisplay.textContent = currentBio || 'ZenTyper';
         editBtn.innerHTML = '<i class="ri-pencil-fill"></i>';
 
         // Remove old event listeners by cloning
@@ -879,11 +802,11 @@ function initAuth() {
 
                 // Name Input
                 const currentName = nameDisplay.innerText;
-                nameDisplay.innerHTML = `<input type="text" id="edit-name-input" class="profile-input name-input" value="${currentName}" maxLength="15">`;
+                nameDisplay.innerHTML = `<input type="text" id="edit-name-input" class="profile-input name-input" value="${escapeHtml(currentName)}" maxLength="15">`;
 
                 // Bio Input
                 const currentBioText = bioDisplay.innerText;
-                bioDisplay.innerHTML = `<input type="text" id="edit-bio-input" class="profile-input bio-input" value="${currentBioText}" maxLength="25">`;
+                bioDisplay.innerHTML = `<input type="text" id="edit-bio-input" class="profile-input bio-input" value="${escapeHtml(currentBioText)}" maxLength="25">`;
 
                 // Focus Name
                 document.getElementById('edit-name-input').focus();
@@ -895,12 +818,13 @@ function initAuth() {
 
                 if (!nameInput || !bioInput) return; // Safety
 
-                const newName = nameInput.value.trim() || 'ZenTyper';
-                const newBio = bioInput.value.trim() || 'ZenTyper';
+                // Sanitize: strip any HTML/script tags, cap length
+                const newName = nameInput.value.trim().replace(/<[^>]*>/g, '').slice(0, 15) || 'ZenTyper';
+                const newBio = bioInput.value.trim().replace(/<[^>]*>/g, '').slice(0, 25) || 'ZenTyper';
 
                 // Optimistic Update
-                nameDisplay.innerHTML = newName;
-                bioDisplay.innerHTML = newBio;
+                nameDisplay.textContent = newName;
+                bioDisplay.textContent = newBio;
 
                 // Reset Button
                 isEditing = false;
@@ -908,17 +832,9 @@ function initAuth() {
                 newBtn.style.background = ''; // Revert to CSS default
                 newBtn.style.color = '';
 
-                // Save to Supabase
-                const { data: { user } } = await supabaseClient.auth.getUser();
-                if (user) {
-                    await supabaseClient
-                        .from('profiles')
-                        .update({
-                            username: newName,
-                            bio: newBio
-                        })
-                        .eq('id', user.id);
-                }
+                // Save via server API
+                const result = await apiCall('profile', { username: newName, bio: newBio });
+                if (result.error) console.error("Profile save error:", result.error);
             }
         };
     }
@@ -1129,8 +1045,8 @@ function initAuth() {
             // Set simple text if not owner (remove inputs if any)
             const nameDisplay = document.getElementById('user-email-display');
             const bioDisplay = document.getElementById('user-bio-display');
-            if (nameDisplay) nameDisplay.innerHTML = data.username || 'ZenTyper';
-            if (bioDisplay) bioDisplay.innerHTML = data.bio || 'ZenTyper';
+            if (nameDisplay) nameDisplay.textContent = data.username || 'ZenTyper';
+            if (bioDisplay) bioDisplay.textContent = data.bio || 'ZenTyper';
         }
 
         // Common Render Logic
